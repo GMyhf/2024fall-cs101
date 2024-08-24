@@ -1,6 +1,6 @@
 # 20240910-Week1-计算概论课程概述
 
-Updated 1142 GMT+8 Aug 24, 2024
+Updated 1458 GMT+8 Aug 24, 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -57,12 +57,14 @@ Python是一门非常适合于讲解算法的语言，语法干净简洁，用�
 | 上机时间: 1-15周 每周 周四 7-8节<br/>期末机考时间: 2025.12.26 周四 7-8节<br/>期末笔试时间: 2025年1月7日下午 | 地点：7号机房（理科1号楼三层1339房间）和8号机房（1338房间） |
 | 助教：熊江凯、罗熙佑、涂程颖、王嘉林                         | 在课程微信群中的名字是“TA-”开始，地点：理科1号楼1220        |
 
-7-9节时间是 15:00~18:00 北京
-线上教室：
-https://teams.microsoft.com/l/meetup-join/19%3ameeting_NDFmZjdiOGUtODg3My00MjQ5LTg4NjMtMDNkMTA0MmMxMTkx%40thread.v2/0?context=%7b%22Tid%22%3a%22cd66712e-8aa9-44ad-9e42-02ea2d037e64%22%2c%22Oid%22%3a%227fae1325-5f9b-401d-bd3f-42dd9a7d27b8%22%7d
+主题：2024fall-cs101-ADS 计算概论（B）
+时间：2024年9月～12月，每周二15:00~18:00 北京
+加入Teams会议：
+https://teams.microsoft.com/l/meetup-join/19%3ameeting_MGVhMWY3NmUtMGUxNi00YTM4LThkNDAtOGRhMjRkMjFiNmJl%40thread.v2/0?context=%7b%22Tid%22%3a%22cd66712e-8aa9-44ad-9e42-02ea2d037e64%22%2c%22Oid%22%3a%227fae1325-5f9b-401d-bd3f-42dd9a7d27b8%22%7d
 
-Meeting ID: 479 606 888 228
-Passcode: nGujBW
+Meeting ID: 467 329 315 882
+Passcode: zSs3ve
+
 
 
 
