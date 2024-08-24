@@ -24,6 +24,7 @@ to do
 ### ==2024/08/31
 
 **2024年8月24日**
+
 CF50A: 多米诺堆叠 Domino piling
 greedy, math, 800, http://codeforces.com/problemset/problem/50/A
 
