@@ -26,7 +26,7 @@ to do
 
 **2024年8月26日**
 
-CF112A: Petya and Strings
+CF112A: Petya and Strings.
 implementation,strings, 800, http://codeforces.com/problemset/problem/112/A
 
 CF158A: Next Round
@@ -35,19 +35,19 @@ CF158A: Next Round
 
 **2024年8月25日**
 
-CF1A: Theatre Square
+CF1A: Theatre Square.
 math, 1000, https://codeforces.com/problemset/problem/1/A
 
-CF4A: Watermelong
+CF4A: Watermelong.
 brute force, math, 800: http://codeforces.com/problemset/problem/4/A
 
 
 **2024年8月24日**
 
-CF50A: 多米诺堆叠 Domino piling
+CF50A: 多米诺堆叠 Domino piling.
 greedy, math, 800, http://codeforces.com/problemset/problem/50/A
 
-CF200B: 饮料 Drinks
+CF200B: 饮料 Drinks.
 implementation, math, 800, https://codeforces.com/problemset/problem/200/B
 
 
