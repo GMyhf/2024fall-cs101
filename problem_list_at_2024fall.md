@@ -23,6 +23,16 @@ to do
 ## 2024fall 每日选做
 
 ### ==2024/08/31
+
+**2024年8月26日**
+
+CF112A: Petya and Strings
+implementation,strings, 800, http://codeforces.com/problemset/problem/112/A
+
+CF158A: Next Round
+*special problem, implementation, 800, http://codeforces.com/problemset/problem/158/A
+
+
 **2024年8月25日**
 
 CF1A: Theatre Square
@@ -44,8 +54,8 @@ implementation, math, 800, https://codeforces.com/problemset/problem/200/B
 
 **2024年8月23日**
 
-02733:判断闰年
+02733: 判断闰年
 http://cs101.openjudge.cn/2024fallroutine/02733/
 
-02750:鸡兔同笼
+02750: 鸡兔同笼
 http://cs101.openjudge.cn/2024fallroutine/02750/
