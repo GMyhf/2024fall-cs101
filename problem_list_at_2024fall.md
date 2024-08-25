@@ -23,6 +23,14 @@ to do
 ## 2024fall 每日选做
 
 ### ==2024/08/31
+**2024年8月25日**
+
+CF1A: Theatre Square
+math, 1000, https://codeforces.com/problemset/problem/1/A
+
+CF4A: Watermelong
+brute force, math, 800: http://codeforces.com/problemset/problem/4/A
+
 
 **2024年8月24日**
 
