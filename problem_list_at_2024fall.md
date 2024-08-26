@@ -24,6 +24,16 @@ to do
 
 <!-- ### ==2024/08/31 -->
 
+==20240827
+CF231A: Team
+
+bruteforce, greedy, 800, http://codeforces.com/problemset/problem/231/A
+
+CF236A. Boy or Girl
+
+brute force, implementation, strings, 800, https://codeforces.com/problemset/problem/236/A
+
+
 ==20240826
 
 CF112A: Petya and Strings.
