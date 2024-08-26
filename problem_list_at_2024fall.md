@@ -28,7 +28,7 @@ to do
 
 ==20240831
 
-CF427A: Police Recruits
+CF427A: Police Recruits.
 implementation, https://codeforces.com/problemset/problem/427/A
 
 
