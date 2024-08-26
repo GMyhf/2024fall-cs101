@@ -27,6 +27,7 @@ to do
 <!-- ### ==2024/08/31 -->
 
 ==20240831
+
 CF427A: Police Recruits
 implementation, https://codeforces.com/problemset/problem/427/A
 
