@@ -1,6 +1,6 @@
 # cs101计概编程题目
 
-Updated 2144 GMT+8 Aug 26 2024
+Updated 2232 GMT+8 Aug 26 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -25,6 +25,12 @@ to do
 ## 2024fall 每日选做
 
 <!-- ### ==2024/08/31 -->
+
+==20240831
+CF427A: Police Recruits
+implementation, https://codeforces.com/problemset/problem/427/A
+
+
 
 ==20240830
 
