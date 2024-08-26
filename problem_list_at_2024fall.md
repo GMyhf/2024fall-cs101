@@ -1,6 +1,6 @@
 # cs101计概编程题目
 
-Updated 1626 GMT+8 Aug 26 2024
+Updated 2144 GMT+8 Aug 26 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -25,6 +25,15 @@ to do
 ## 2024fall 每日选做
 
 <!-- ### ==2024/08/31 -->
+
+==20240830
+
+CF1335A: Candies and Two Sisters.
+math, 800, https://codeforces.com/problemset/problem/1335/A
+
+CF1352A: Sum of Round Numbers.
+implementation, math, 800, https://codeforces.com/problemset/problem/1352/A
+
 
 ==20240829
 
