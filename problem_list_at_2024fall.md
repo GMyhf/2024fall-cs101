@@ -24,7 +24,7 @@ to do
 
 <!-- ### ==2024/08/31 -->
 
-**2024年8月26日**
+==20240826
 
 CF112A: Petya and Strings.
 implementation,strings, 800, http://codeforces.com/problemset/problem/112/A
@@ -33,7 +33,7 @@ CF158A: Next Round
 *special problem, implementation, 800, http://codeforces.com/problemset/problem/158/A
 
 
-**2024年8月25日**
+==20240825
 
 CF1A: Theatre Square.
 math, 1000, https://codeforces.com/problemset/problem/1/A
@@ -42,7 +42,7 @@ CF4A: Watermelong.
 brute force, math, 800: http://codeforces.com/problemset/problem/4/A
 
 
-**2024年8月24日**
+==20240824
 
 CF50A: 多米诺堆叠 Domino piling.
 greedy, math, 800, http://codeforces.com/problemset/problem/50/A
@@ -52,7 +52,7 @@ implementation, math, 800, https://codeforces.com/problemset/problem/200/B
 
 
 
-**2024年8月23日**
+==20240823
 
 02733: 判断闰年
 http://cs101.openjudge.cn/2024fallroutine/02733/
