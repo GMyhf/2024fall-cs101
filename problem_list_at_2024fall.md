@@ -1,6 +1,6 @@
 # cs101计概编程题目
 
-Updated 0853 GMT+8 Aug 25 2024
+Updated 1626 GMT+8 Aug 26 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -23,6 +23,15 @@ to do
 ## 2024fall 每日选做
 
 <!-- ### ==2024/08/31 -->
+
+==20240828
+
+263A: Beautiful Matrix.
+implementation, 800, http://codeforces.com/problemset/problem/263/A
+
+CF266A: Stones on the Table.
+implementation, 800, http://codeforces.com/problemset/problem/266/A
+
 
 ==20240827
 
