@@ -26,9 +26,18 @@ to do
 
 <!-- ### ==2024/08/31 -->
 
+==20240829
+
+CF1328A: Divisibility Problem.
+math, 800, https://codeforces.com/problemset/problem/1328/A
+
+CF996A: Hit the Lottery
+dp, greedy, 800,https://codeforces.com/problemset/problem/996/A
+
+
 ==20240828
 
-263A: Beautiful Matrix.
+CF263A: Beautiful Matrix.
 implementation, 800, http://codeforces.com/problemset/problem/263/A
 
 CF266A: Stones on the Table.
