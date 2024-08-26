@@ -27,27 +27,33 @@ to do
 ==20240826
 
 CF112A: Petya and Strings.
+
 implementation,strings, 800, http://codeforces.com/problemset/problem/112/A
 
 CF158A: Next Round
+
 *special problem, implementation, 800, http://codeforces.com/problemset/problem/158/A
 
 
 ==20240825
 
 CF1A: Theatre Square.
+
 math, 1000, https://codeforces.com/problemset/problem/1/A
 
 CF4A: Watermelong.
+
 brute force, math, 800: http://codeforces.com/problemset/problem/4/A
 
 
 ==20240824
 
 CF50A: 多米诺堆叠 Domino piling.
+
 greedy, math, 800, http://codeforces.com/problemset/problem/50/A
 
 CF200B: 饮料 Drinks.
+
 implementation, math, 800, https://codeforces.com/problemset/problem/200/B
 
 
