@@ -29,7 +29,10 @@ to do
 ==20240831
 
 CF427A: Police Recruits.
-implementation, https://codeforces.com/problemset/problem/427/A
+implementation, 800, https://codeforces.com/problemset/problem/427/A
+
+CF151A: Soft Drinking.
+implementation, math, 800, https://codeforces.com/problemset/problem/151/A
 
 
 
