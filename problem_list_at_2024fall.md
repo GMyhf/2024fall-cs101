@@ -25,6 +25,7 @@ to do
 <!-- ### ==2024/08/31 -->
 
 ==20240827
+
 CF231A: Team
 
 bruteforce, greedy, 800, http://codeforces.com/problemset/problem/231/A
