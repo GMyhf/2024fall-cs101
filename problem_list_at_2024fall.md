@@ -14,6 +14,10 @@ Updated 2232 GMT+8 Aug 26 2024
 
 0J上面太简单题目少，所以开始尽量选了CF题目。加油！争取第一次课我们上习题课！
 
+题解在 https://github.com/GMyhf/2020fall-cs101 中的
+[2020fall_cs101.openjudge.cn_problems.md](https://github.com/GMyhf/2020fall-cs101/blob/main/2020fall_cs101.openjudge.cn_problems.md),
+[2020fall_Codeforces_problems.md](https://github.com/GMyhf/2020fall-cs101/blob/main/2020fall_Codeforces_problems.md)
+
 
 <!--
 ## Homework
