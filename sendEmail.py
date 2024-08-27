@@ -1,6 +1,6 @@
 import pandas as pd
 
-df = pd.read_excel('studentListInCourse-20240824.xls')
+df = pd.read_excel('studentListInCourse-20240827.xls')
 student_id = df['学号'].tolist()
 
 sent_id = {
