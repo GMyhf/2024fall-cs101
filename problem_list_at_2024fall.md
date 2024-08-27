@@ -30,23 +30,23 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
-| 2024-08-31 | 427A: Police Recruits          | implementation                       | 800  | https://codeforces.com/problemset/problem/427/A  |
+| 20240831 | 427A: Police Recruits          | implementation                       | 800  | https://codeforces.com/problemset/problem/427/A  |
 |            | 151A: Soft Drinking            | implementation, math                 | 800  | https://codeforces.com/problemset/problem/151/A  |
-| 2024-08-30 | 1335A: Candies and Two Sisters | math                                 | 800  | https://codeforces.com/problemset/problem/1335/A |
+| 20240830 | 1335A: Candies and Two Sisters | math                                 | 800  | https://codeforces.com/problemset/problem/1335/A |
 |            | 1352A: Sum of Round Numbers    | implementation, math                 | 800  | https://codeforces.com/problemset/problem/1352/A |
-| 2024-08-29 | 1328A: Divisibility Problem    | math                                 | 800  | https://codeforces.com/problemset/problem/1328/A |
+| 20240829 | 1328A: Divisibility Problem    | math                                 | 800  | https://codeforces.com/problemset/problem/1328/A |
 |            | 996A: Hit the Lottery          | dp, greedy                           | 800  | https://codeforces.com/problemset/problem/996/A  |
-| 2024-08-28 | 263A: Beautiful Matrix         | implementation                       | 800  | http://codeforces.com/problemset/problem/263/A   |
+| 20240828 | 263A: Beautiful Matrix         | implementation                       | 800  | http://codeforces.com/problemset/problem/263/A   |
 |            | 266A: Stones on the Table      | implementation                       | 800  | http://codeforces.com/problemset/problem/266/A   |
-| 2024-08-27 | 231A: Team                     | bruteforce, greedy                   | 800  | http://codeforces.com/problemset/problem/231/A   |
+| 20240827 | 231A: Team                     | bruteforce, greedy                   | 800  | http://codeforces.com/problemset/problem/231/A   |
 |            | 236A: Boy or Girl              | brute force, implementation, strings | 800  | https://codeforces.com/problemset/problem/236/A  |
-| 2024-08-26 | 112A: Petya and Strings        | implementation, strings              | 800  | http://codeforces.com/problemset/problem/112/A   |
+| 20240826 | 112A: Petya and Strings        | implementation, strings              | 800  | http://codeforces.com/problemset/problem/112/A   |
 |            | 158A: Next Round               | *special problem, implementation     | 800  | http://codeforces.com/problemset/problem/158/A   |
-| 2024-08-25 | 1A: Theatre Square             | math                                 | 1000 | https://codeforces.com/problemset/problem/1/A    |
+| 20240825 | 1A: Theatre Square             | math                                 | 1000 | https://codeforces.com/problemset/problem/1/A    |
 |            | 4A: Watermelong                | brute force, math                    | 800  | http://codeforces.com/problemset/problem/4/A     |
-| 2024-08-24 | 50A: Domino piling             | greedy, math                         | 800  | http://codeforces.com/problemset/problem/50/A    |
+| 20240824 | 50A: Domino piling             | greedy, math                         | 800  | http://codeforces.com/problemset/problem/50/A    |
 |            | 200B: Drinks                   | implementation, math                 | 800  | https://codeforces.com/problemset/problem/200/B  |
-| 2024-08-23 | 02733: 判断闰年                | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/02733/ |
+| 20240823 | 02733: 判断闰年                | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/02733/ |
 |            | 02750: 鸡兔同笼                | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/02750/ |
 
 
