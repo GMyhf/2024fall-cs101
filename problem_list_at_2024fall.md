@@ -37,6 +37,8 @@ to do
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 | 0903 | 1475A. Odd Divisor             | math, number theory                  | 900  | https://codeforces.com/problemset/problem/1475/A |
 |            | 34B. Sale                      | greedy, sortings                     | 900  | https://codeforces.com/problemset/problem/34/B   |
+| 0902 | 25A. IQ test                   | brute force                          | 1300 | https://codeforces.com/problemset/problem/25/A   |
+|            | 281A. Word Capitalization      | implementation, strings              | 800  | http://codeforces.com/problemset/problem/281/A   |
 | 0901 | 174A. Sum                      | implementation                       | 800  | https://codeforces.com/problemset/problem/1742/A |
 |            | 1154A. Restoring Three Numbers | math                                 | 800  | https://codeforces.com/problemset/problem/1154/A |
 | 0831 | 427A. Police Recruits          | implementation                       | 800  | https://codeforces.com/problemset/problem/427/A  |
