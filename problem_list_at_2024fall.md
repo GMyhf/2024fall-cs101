@@ -35,6 +35,8 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 0901 | 174A. Sum                      | implementation                       | 800  | https://codeforces.com/problemset/problem/1742/A |
+             | 1154A. Restoring Three Numbers | math                                 | 800  | https://codeforces.com/problemset/problem/1154/A |
 | 0831 | 427A. Police Recruits          | implementation                       | 800  | https://codeforces.com/problemset/problem/427/A  |
 |            | 151A. Soft Drinking            | implementation, math                 | 800  | https://codeforces.com/problemset/problem/151/A  |
 | 0830 | 1335A. Candies and Two Sisters | math                                 | 800  | https://codeforces.com/problemset/problem/1335/A |
