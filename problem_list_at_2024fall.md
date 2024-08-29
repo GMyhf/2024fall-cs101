@@ -35,6 +35,8 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 0904 | 96A. Football                  | implementation, strings              | 900  | http://codeforces.com/problemset/problem/96/A    |
+             | 160A. Twins                    | greedy, sortings                     | 900  | https://codeforces.com/problemset/problem/160/A  |
 | 0903 | 1475A. Odd Divisor             | math, number theory                  | 900  | https://codeforces.com/problemset/problem/1475/A |
 |            | 34B. Sale                      | greedy, sortings                     | 900  | https://codeforces.com/problemset/problem/34/B   |
 | 0902 | 25A. IQ test                   | brute force                          | 1300 | https://codeforces.com/problemset/problem/25/A   |
