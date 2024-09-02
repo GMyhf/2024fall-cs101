@@ -33,6 +33,8 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 0906 | 12566: 编码字符串              | -                                    | -    | http://cs101.openjudge.cn/practice/12556/ |
+|            | 06376: 文字排版                | -                                    | -    | http://cs101.openjudge.cn/practice/06376/ |
 | 0905 | 1833B. Restore the Weather     | greedy, sortings                     | 900  | https://codeforces.com/problemset/problem/1833/B |
 |            | 1879B. Chips on the Board      | constructive algorithms, greedy      | 900  | https://codeforces.com/contest/1879/problem/B    |
 | 0904 | 96A. Football                  | implementation, strings              | 900  | http://codeforces.com/problemset/problem/96/A    |
