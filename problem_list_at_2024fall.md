@@ -1,6 +1,6 @@
 # cs101计概编程题目
 
-Updated 0959 GMT+8 Aug 29 2024
+Updated 1704 GMT+8 Sep 2 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -33,8 +33,10 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 0907 | 19949: 提取实体                | -                                    | -    | http://cs101.openjudge.cn/practice/19949/ |
+|            | 02808: 校门外的树              | -                                    | -    | http://cs101.openjudge.cn/practice/02808/ |
 | 0906 | 12566: 编码字符串              | -                                    | -    | http://cs101.openjudge.cn/practice/12556/ |
-|            | 06376: 文字排版                | -                                    | -    | http://cs101.openjudge.cn/practice/06374/ |
+|            | 06374: 文字排版                | -                                    | -    | http://cs101.openjudge.cn/practice/06374/ |
 | 0905 | 1833B. Restore the Weather     | greedy, sortings                     | 900  | https://codeforces.com/problemset/problem/1833/B |
 |            | 1879B. Chips on the Board      | constructive algorithms, greedy      | 900  | https://codeforces.com/contest/1879/problem/B    |
 | 0904 | 96A. Football                  | implementation, strings              | 900  | http://codeforces.com/problemset/problem/96/A    |
