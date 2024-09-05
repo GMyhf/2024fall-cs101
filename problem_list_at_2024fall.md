@@ -1,6 +1,6 @@
 # cs101计概编程题目
 
-Updated 1704 GMT+8 Sep 2 2024
+Updated 1643 GMT+8 Sep 5 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -33,6 +33,7 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 0909 | 1374B. Multiply by 2, divide by 6    | math                           | 900  | https://codeforces.com/problemset/problem/1374/B |
 | 0908 | 18223: 24点                    | -                                    | -    | http://cs101.openjudge.cn/practice/18223/ |
 |            | 21532: 数学密码                | -                                    | -    | http://cs101.openjudge.cn/practice/21532/ |
 | 0907 | 19949: 提取实体                | -                                    | -    | http://cs101.openjudge.cn/practice/19949/ |
