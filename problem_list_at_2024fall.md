@@ -37,8 +37,8 @@ to do
 |            | 01003: Hangover          | -                                    | -    | http://cs101.openjudge.cn/practice/01003/ |
 | 0908 | 18223: 24点                    | -                                    | -    | http://cs101.openjudge.cn/practice/18223/ |
 |            | 21532: 数学密码                | -                                    | -    | http://cs101.openjudge.cn/practice/21532/ |
-| 0907 | 19949: 提取实体                | -                                    | -    | http://cs101.openjudge.cn/practice/19949/ |
-|            | 02808: 校门外的树              | -                                    | -    | http://cs101.openjudge.cn/practice/02808/ |
+| 0907 | 19949: 提取实体                | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/19949/ |
+|            | 02808: 校门外的树              | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/02808/ |
 | 0906 | 12566: 编码字符串              | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/12556/ |
 |            | 06374: 文字排版                | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/06374/ |
 | 0905 | 1833B. Restore the Weather     | greedy, sortings                     | 900  | https://codeforces.com/problemset/problem/1833/B |
