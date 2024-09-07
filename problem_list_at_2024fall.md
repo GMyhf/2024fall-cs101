@@ -35,8 +35,8 @@ to do
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 | 0909 | 1374B. Multiply by 2, divide by 6    | math                           | 900  | https://codeforces.com/problemset/problem/1374/B |
 |            | 01003: Hangover          | -                                    | -    | http://cs101.openjudge.cn/practice/01003/ |
-| 0908 | 18223: 24点                    | -                                    | -    | http://cs101.openjudge.cn/practice/18223/ |
-|            | 21532: 数学密码                | -                                    | -    | http://cs101.openjudge.cn/practice/21532/ |
+| 0908 | 18223: 24点                    | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/18223/ |
+|            | 21532: 数学密码                | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/21532/ |
 | 0907 | 19949: 提取实体                | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/19949/ |
 |            | 02808: 校门外的树              | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/02808/ |
 | 0906 | 12566: 编码字符串              | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/12556/ |
