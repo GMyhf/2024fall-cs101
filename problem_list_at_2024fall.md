@@ -38,7 +38,7 @@ to do
 | 0910 | 23564: 数论                    | -                                    | -    | http://cs101.openjudge.cn/practice/23564         |
 |            | 460A. Vasya and Socks          | brute force, implementation, math    | 900  | https://codeforces.com/contest/460/problem/A     |
 | 0909 | 1374B. Multiply by 2, divide by 6    | math                           | 900  | https://codeforces.com/problemset/problem/1374/B |
-|            | 01003: Hangover          | -                                          | -    | http://cs101.openjudge.cn/practice/01003/        |
+|            | 01003: Hangover                | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/01003/ |
 | 0908 | 18223: 24点                    | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/18223/ |
 |            | 21532: 数学密码                | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/21532/ |
 | 0907 | 19949: 提取实体                | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/19949/ |
