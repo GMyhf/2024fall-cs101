@@ -1,6 +1,6 @@
 # 20240910-Week1-计算概论课程概述
 
-Updated 1539 GMT+8 Sep 9, 2024
+Updated 2354 GMT+8 Sep 9, 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -63,9 +63,9 @@ Python是一门非常适合于讲解算法的语言，语法干净简洁，用�
 > - The language should have an own entry on [Wikipedia](http://en.wikipedia.org/) and Wikipedia should clearly state that it concerns a programming language. 
 >
 > - The programming language should be [Turing complete](http://en.wikipedia.org/wiki/Turing_completeness).
->   - In [computability theory](https://en.wikipedia.org/wiki/Computability_theory), a system of data-manipulation rules (such as a [model of computation](https://en.wikipedia.org/wiki/Model_of_computation), a computer's [instruction set](https://en.wikipedia.org/wiki/Instruction_set), a [programming language](https://en.wikipedia.org/wiki/Programming_language), or a [cellular automaton](https://en.wikipedia.org/wiki/Cellular_automaton)) is said to be **Turing-complete** or **computationally universal** if it can be used to simulate any [Turing machine](https://en.wikipedia.org/wiki/Turing_machine)[*[citation needed](https://en.wikipedia.org/wiki/Wikipedia:Citation_needed)*] (devised by English mathematician and computer scientist [Alan Turing](https://en.wikipedia.org/wiki/Alan_Turing)). This means that this system is able to recognize or decode other data-manipulation rule sets. Turing completeness is used as a way to express the power of such a data-manipulation rule set. Virtually all programming languages today are Turing-complete.
+>   - In [computability theory](https://en.wikipedia.org/wiki/Computability_theory), a system of data-manipulation rules (such as a [model of computation](https://en.wikipedia.org/wiki/Model_of_computation), a computer's [instruction set](https://en.wikipedia.org/wiki/Instruction_set), a [programming language](https://en.wikipedia.org/wiki/Programming_language), or a [cellular automaton](https://en.wikipedia.org/wiki/Cellular_automaton)) is said to be **Turing-complete** or **computationally universal** if it can be used to simulate any [Turing machine](https://en.wikipedia.org/wiki/Turing_machine)[*[citation needed](https://en.wikipedia.org/wiki/Wikipedia:Citation_needed)*] (devised by English mathematician and computer scientist [Alan Turing](https://en.wikipedia.org/wiki/Alan_Turing)). This means that this system is able to recognize or decode other data-manipulation rule sets. Turing completeness is used as a way to express the power of such a data-manipulation rule set. Virtually all programming languages today are Turing-complete. 翻译：在[可计算性理论](https://zh.wikipedia.org/wiki/%E5%8F%AF%E8%AE%A1%E7%AE%97%E6%80%A7%E7%90%86%E8%AE%BA)中，一个数据操作规则系统（如[计算模型](https://zh.wikipedia.org/wiki/%E8%AE%A1%E7%AE%97%E6%A8%A1%E5%9E%8B)、计算机的[指令集](https://zh.wikipedia.org/wiki/%E6%95%88%E6%8C%87%E9%9B%86)、[编程语言](https://zh.wikipedia.org/wiki/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80)或[细胞自动机](https://zh.wikipedia.org/wiki/%E7%BB%86%E8%85%BA%E8%87%AA%E5%8A%A8%E6%9C%BA)）如果能够用来模拟任何[图灵机](https://zh.wikipedia.org/wiki/%E5%9B%BE%E7%81%B5%E6%9C%BA)（由英国数学家兼计算机科学家[艾伦·图灵](https://zh.wikipedia.org/wiki/%E8%89%BE%E4%BC%A6%C2%B7%E5%9B%BE%E7%81%B5)发明）则被称为**图灵完备**或**计算通用**。这意味着该系统能够识别或解码其他的数据操作规则集。图灵完备性被用来表示这种数据操作规则集的能力。几乎当今所有的编程语言都是图灵完备的。
 >   - 推荐一个电影，The Imitation Game ，是图灵自传。https://pku.instructuremedia.com/embed/6f8ab27f-9485-497e-a8ae-24f8be176f22
->   - 
+>   - 布莱切利园（Bletchley Park） 之旅报告，郭姵妤，2022 年 11 月 23 日，https://github.com/GMyhf/2024fall-cs101/blob/main/Report_on_the_Visit_to_Bletchley_Park.pdf
 >
 > - The programming language should have at least 5,000 hits for +"<language> programming" for Google.
 
@@ -93,21 +93,39 @@ Passcode: zSs3ve
 
 
 
-### 1.1.2 考试相关
+### 1.1.2 2024 fall 上机说明
 
-平时上机不来不影响，但是期末有机考+笔试，都必须参加。
-期末机考时间: 2024.12.26 周四 7-8节。往年是6个题目，需要在机房完成。
-期末笔试时间: 2025年1月7日下午。往年平行班题目包括：填空15分、单选15分、计算题20分，编码应用题12分，程序阅读12分，程序填空10分，流程图与编程12分，问答4分。
+时间：2-16周每周四7-8节（15:10~17:00）。
+地点：7号机房（理科1号楼三层1339房间）和8号机房（1338房间）。
+使用机房电脑：打开电脑后，用学号和网关密码登陆，机房电脑有pycharm、anaconda/spyder和vscode。
 
-> 往年是提高班，今年2024fall是平行班，也需要参加笔试。
+同学可以选择去机房完成作业或其他编程练习，暂时没有固定座位，机房会有助教为大家答疑。
+有助教因为校区较远，可能无法每次都线下参与，其余时间会以线上会议的方式参与上机课的答疑。如果学生不多，答疑有可能会集中在一个机房进行。
+
+建议大家充分利用上机时间集中答疑，避免其他时间1对1找老师或助教debug。
+
+另外：
+1）网络问题，计算中心 62751023；
+2）机房上机，账号/登录等问题，计算中心值班老师。
+机房二楼值班室：理科一号楼1254W，电话：62753392
+机房三楼值班室：理科一号楼1343W，电话：62753352
+
+
+
+### 1.1.3 期末考试时间
+
+平时上机不来不影响成绩，但是期末有机考+笔试，都必须参加。
+期末机考时间: 第16周上机时间，即2024.12.26 周四 7-8节。往年是6个题目，需要在机房完成。
+期末笔试时间: 2025年1月7日下午。往年平行班笔试包括：填空15分、单选15分、计算题20分，编码应用题12分，程序阅读12分，程序填空10分，流程图与编程12分，问答4分。
+
+> 我们班往年是提高班，今年2024fall是平行班，所以增加了笔试。
 >
-> 万一考试时间冲突了怎么办？
+> 万一考试时间冲突了怎么办？只能同学自己协调，极端情况是：去年有化院同学只能参加30分钟考试。没有补考。
 >
-> 只能同学自己协调，极端情况是：去年有化院同学只能参加30分钟考试。没有补考。
 
 
 
-### 1.1.3 答疑安排
+### 1.1.4 答疑安排
 
 线上7*24小时答疑：课程微信群。
 
@@ -143,23 +161,41 @@ Passcode: zSs3ve
 | 10. 算法（2/6）：递归和动态规划 | 11. 算法（3/6）：递归和动态规划 | 12. 算法（4/6）：搜索（1/3） |
 | 13. 算法（5/6）：搜索（2/3）    | 14. 算法（6/6）：搜索（3/3）    | 15~16. 课程总结（1/2、2/2）  |
 
-### 
-
-1.3 每周都有作业，完成时限是一周
-
-Assignment1 和 AssignmentP已经发布。
 
 
+## 1.3 每周都有作业
+
+通常完成时限是一周。Assignment0，Assignment1 和 AssignmentP已经发布。
+
+因为学校Canvas教学平台，课程补退选结束后9月19日才启动，前三周作业都是10月1日周二23:59截止。之后每次作业是下周二23:59截止。
+
+### 1.3.1 集成开发环境
+
+写python程序，通常是建议使用pycharm (https://www.jetbrains.com/pycharm/ ), anaconda/spyder (https://www.anaconda.com/)，这两个计算中心的机房有，考试的时候可以用。另外，机房也有 vscode。
+
+### 1.3.2 编程平台
+
+我们的做题平台主要使用 OJ（http://cs101.openjudge.cn）和 CF（https://codeforces.com/）。
+
+我们也欢迎使用 Luogu（https://www.luogu.com.cn）和 LeetCode（https://leetcode.cn）。
+
+特别是 OJ，对于后续的《数据结构与算法B》课程来说非常重要，几乎所有的班级都在使用它。
+
+> https://github.com/GMyhf/2024spring-cs201/blob/main/progress_of_various_classes.md
 
 
 
-## 1.3 开课前说明
+
+
+## 1.4 开课前说明
 
 
 
 ### 20240909
 
-1) 对于题目数据（通常编号介于1000至3256之间，例如：02692: 假币问题），当同学们有需求时，将会以单一的zip文件形式单独提供。请注意，出于管理规定，我们不允许批量发送题目测试数据。2）如果您希望查看特定同学提交的代码（如通过题目统计栏查看），无论是0毫秒的C++代码，还是21毫秒的Python3代码，都可以直接在群内提出请求。
+1）对于题目数据（通常编号介于1000至3256之间，例如：02692: 假币问题），当同学们有需求时，将会以单一的zip文件形式单独提供。请注意，出于管理规定，我们不允许批量发送题目测试数据。
+
+2）如果您希望查看特定同学提交的代码（如通过题目统计栏查看），无论是0毫秒的C++代码，还是21毫秒的Python3代码，都可以直接在群内提出请求。
 
 <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202409092018592.png" alt="image-20240909201821628" style="zoom: 33%;" />
 
@@ -167,7 +203,13 @@ Assignment1 和 AssignmentP已经发布。
 
 ### 20240907
 
-1）我们班的计概及后续课程将会使用 Markdown 文件。Typora 是一款优秀的 Markdown 编辑软件，但学校并未提供免费版本。2）大家可以关注一下目前的一个优惠活动（距离活动结束还有7天），优惠价格为80.10元。具体信息可参考以下链接：Typora官网 https://typoraio.cn，优惠购买页面 https://lizhi.shop/site/products/id/520 3）过去也有三位同学一起购买的情况，因为一个许可证可以激活三台设备。4）购买并非强制性的。以往也有同学使用 Word 或其他软件完成作业，同样没有问题。
+1）我们班的计概及后续课程将会使用 Markdown 文件。Typora 是一款优秀的 Markdown 编辑软件，但学校并未提供免费版本。
+
+2）大家可以关注一下目前的一个优惠活动（距离活动结束还有7天），优惠价格为80.10元。具体信息可参考以下链接：Typora官网 https://typoraio.cn，优惠购买页面 https://lizhi.shop/site/products/id/520 
+
+3）过去也有三位同学一起购买的情况，因为一个许可证可以激活三台设备。
+
+4）购买并非强制性的。以往也有同学使用 Word 或其他软件完成作业，同样没有问题。
 
 > typora是文本编辑器，可以写markdown格式文件，课件、作业用，python程序加入markdown中不乱的。pycharm, anaconda/spyder是写python程序的集成开发环境，选择一个就可以。
 >
@@ -183,21 +225,36 @@ Assignment1 和 AssignmentP已经发布。
 
 3）即使没有选上我们班的同学，如果愿意，也可以一起探讨编程问题。
 
+> 课程微信群，在里面C，C++, Python问题都可以问的。课程资料也都会发的。
+> 入门语法：
+> https://www.runoob.com/python3/python3-tutorial.html
+> https://www.runoob.com/cprogramming/c-tutorial.html
+> https://www.runoob.com/cplusplus/cpp-tutorial.html
+>
+> 语法掌握后，就是在 CF ，OJ 做题：
+> 我们主要是用OJ平台，后续课程数算也是这平台。
+> http://cs101.openjudge.cn，另外我们英文题目用 https://codeforces.com 。这两个平台大家都需要注册账号。
+>
+> 编程语言是想通的，掌握一个语法后，很快就会另外一个，不会冲突的。
+
 
 
 ### 20240904
 
 1）根据往年情况，选课时候，如果学生找教务多，教务会慢慢放出名额，尽量让同学选上。我这里没有选课权限，加不了学生。
 信息科学技术学院教务：董晓晖，地点：理科1号楼1118，电话：010-62755414，邮箱：dxh@pku.edu.cn
+
 2）有经验的教务老师，根据每年选课人数，会有调整策略。例如：目前（2024年5月10日）校本部计算概论（B）每个班选课人数先录入150人，是想要大点的教室，避免教室过于拥挤。待教室排定后，我再把人数降到120人。
 
 
 
 ### 20240829
 
-1）我们班上课地点在二教107，有217个座位；上机地点7号机房学生机109台，8号102台。
+我们班上课地点在二教107，有217个座位；上机地点7号机房学生机109台，8号102台。
 
-2）选课权限在教务老师（目前看到是有120选课名额），我这里不过滤都接收，需要签字同意等都没有问题。往年教务老师会根据选课情况逐渐调整（第一周放点名额，第二周放点名额），比如调整到150或者更高到教室容量的上限。
+选课权限在教务老师（目前20240906看到是初设的120开课人数，提高到150，再提高到180），我这里不过滤都接收，需要签字同意等都没有问题。往年教务老师会根据选课情况逐渐调整（第一周放点名额，第二周放点名额），比如调整到150或者更高到教室容量的上限。
+
+任课教师和助教无权帮助学生选课。信息科学技术学院教务：董晓晖，地点：理科1号楼1118，电话：010-62755414，邮箱：[dxh@pku.edu.cn](mailto:dxh@pku.edu.cn)
 
 
 
@@ -212,28 +269,30 @@ Assignment1 和 AssignmentP已经发布。
 
 ### 20240824
 
-1.一直以来“上机课”0学分，都不录入成绩。可以不选的。但是期末机考一定要参加，是上机时间。
+1）一直以来“上机课”0学分，都不录入成绩。可以不选的。但是期末机考一定要参加，是上机时间。
 另外有每个月初有一次月考，是在机房进行，尽量参加，熟悉环境。
 
 上机课是助教答疑时间，同学自行安排是否出现。最后一次上机（2025.12.26周四 7-8节）考试出现是必须的。
 
-2.零基础同学尽快熟悉语法：《Python 编程：从入门到实践》(Eric Matthes)，中涉及数据类型和控制结构的部分。或者 https://www.runoob.com/python3/python3-tutorial.html。 这些内容将帮助学习者掌握基本的语法结构和概念，为后续编程学习打下基础。
+2）零基础同学尽快熟悉语法：《Python 编程：从入门到实践》(Eric Matthes)，中涉及数据类型和控制结构的部分。或者 https://www.runoob.com/python3/python3-tutorial.html。 这些内容将帮助学习者掌握基本的语法结构和概念，为后续编程学习打下基础。
 
-3.跟上每日选做，开始放出来的都是最简单的题目。题目以及之后的作业，都有题解同时发布。
+3）跟上每日选做，开始放出来的都是最简单的题目。题目以及之后的作业，都有题解同时发布。
 
-4.善用 chatgpt，例如：通义千问，https://tongyi.aliyun.com/qianwen 
+4）善用 chatgpt，例如：通义千问，https://tongyi.aliyun.com/qianwen 
 
 任何相关问题，都可以在大群问。私人问题可以问我或者助教。
 
-
-
-1.4 编程平台
-
-我们的做题平台主要使用 OJ（http://cs101.openjudge.cn）和 CF（https://codeforces.com/）。我们也欢迎使用 Luogu（https://www.luogu.com.cn）和 LeetCode（https://leetcode.cn）。特别是 OJ，对于后续的《数据结构与算法B》课程来说非常重要，几乎所有的班级都在使用它。
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202409092343428.png" alt="image-20240909234340206" style="zoom: 25%;" />
 
 
 
-1.5 课程微信群
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202409092349693.png" alt="image-20240909234917287" style="zoom:50%;" />
+
+
+
+## 1.5 其他说明
+
+### 1.5.1 课程微信群
 
 请同学修改课程微信群昵称为实名。
 
@@ -241,7 +300,7 @@ Assignment1 和 AssignmentP已经发布。
 
 
 
-1.6 学生成绩评定方法上
+### 1.5.2 学生成绩评定方法上
 
 第16周，来机考就可以。
 我们采用综合评定方法对学生成绩进行评定。学生成绩分为三部分，大致占比是30%的成绩来自每周1次的作业（其中有3次作业对应3次月考）成绩，另外70%的成绩来自期末上机考试、笔试。我们注重学期中的学习过程评定，因此成绩评定不仅考虑学生的考试成绩，还综合考虑学生的平时表现和参与度。
@@ -250,76 +309,23 @@ Assignment1 和 AssignmentP已经发布。
 
 
 
-1.7 善用gpt
+### 1.5.3 善用gpt
 
 1）请善用gpt。poe.com需要翻墙。国内阿里的 通义千问也好用，https://tongyi.aliyun.com 。课程相关问题，都可以在课程微信群里面问。例如：考试时间、作业、上机、签到、大作业有否等。
 
-2）课程网站使用 canvas, https://pku.instructure.com。学校通知canvas，在9月19日导入选课名单后启用。
-
-3）可能需要北大学长提供的Clash，请自己取用。
+2）可能需要北大学长提供的Clash，请自己取用。
 https://189854.xyz/verify/
 https://blog.189854.xyz/blog/walless/2023/11/04/clash.html
 
 
 
-1.8 Canvas课程网站
+### 1.5.4 Canvas课程网站
 
 教发中心通知，由于Canvas付费用户帐号数量有限（每全年仅支持3000多个师生用户），新学期Canvas用户数量将严格控制，学生名单将在补退选结束后导入（本科生9月19日，研究生9月24日）。特殊情况，请发邮件说明。
 
 O365（含teams）账号申请链接：https://www.wjx.cn/vm/Y5XwfHD.aspx#
 
 > Canvas 是学校为我们班级提供的平台，选课的同学可以免费使用。O365 是面向全校的服务，即使没有选课也可以申请使用。
-
-
-
-1.9 同学想选课，我都同意
-
-我们班上课地点在二教107，有217个座位；上机地点7号机房学生机109台，8号102台。
-
-选课权限在教务老师（目前看到是初设的120开课人数，提高到150，再提高到180），我这里不过滤都接收，需要手动选课签字等都没有问题。往年教务老师会根据选课情况统筹安排，比如调整到150，180或者更高到教室容量的上限。
-
-任课教师和助教无权帮助学生选课。信息科学技术学院教务：董晓晖，地点：理科1号楼1118，电话：010-62755414，邮箱：[dxh@pku.edu.cn](mailto:dxh@pku.edu.cn)
-
-
-
-1.10 2024 fall 上机说明
-
-时间：2-16周每周四7-8节（15:10~17:00）。
-地点：7号机房（理科1号楼三层1339房间）和8号机房（1338房间）。
-使用机房电脑：打开电脑后，用学号和网关密码登陆，机房电脑有pycharm、anaconda/spyder和vscode。
-
-同学可以选择去机房完成作业或其他编程练习，暂时没有固定座位，机房会有助教为大家答疑。
-有助教因为校区较远，可能无法每次都线下参与，其余时间会以线上会议的方式参与上机课的答疑。如果学生不多，答疑有可能会集中在一个机房进行。
-
-建议大家充分利用上机时间集中答疑，避免其他时间1对1找老师或助教debug。
-
-另外：
-1）网络问题，计算中心 62751023；
-2）机房上机，账号/登录等问题，计算中心值班老师。
-机房二楼值班室：理科一号楼1254W，电话：62753392
-机房三楼值班室：理科一号楼1343W，电话：62753352
-
-
-
-1.11 集成开发环境
-
-写python程序，通常是建议使用pycharm (https://www.jetbrains.com/pycharm/ ), anaconda/spyder (https://www.anaconda.com/)，这两个计算中心的机房有，考试的时候可以用。另外，机房也有 vscode。
-
-
-
-
-
-
-
-1.13 助教办公室答疑
-地点在理科1#1220E，2-16周
-罗熙佑：周一，19:00-20:00
-涂程颖：周二，19:00-20:00
-刘昊文：周三，19:00-20:00
-熊江凯：周四，19:00-20:00
-王嘉林：周五，19:00-20:00
-
-
 
 
 
@@ -407,23 +413,7 @@ graph LR
 
 
 
-### 1.3.2 为何学习数据结构及抽象数据类型
-
-为了控制问题及其求解过程的复杂度，计算机科学家利用抽象来帮助自己专注于全局，从而避免迷失在众多细节中。通过对问题进行建模，可以更高效地解决问题。模型可以帮助计算机科学家更一致地描述算法要用到的数据。
-
-如前所述，过程抽象将功能的实现细节隐藏起来，从而使用户能从更高的视角来看待功能。**数据抽象**的基本思想与此类似。**抽象数据类型**（有时简称为ADT）从逻辑上描述了如何看待数据及其对应运算而无须考虑具体实现。这意味着我们仅需要关心数据代表了什么，而可以忽略它们的构建方式。通过这样的抽象，我们对数据进行了一层封装，其基本思想是封装具体的实现细节，使它们对用户不可见，这被称为信息隐藏。
-
-图1-2展示了抽象数据类型及其原理。用户通过利用抽象数据类型提供的操作来与接口交互。抽象数据类型是与用户交互的外壳。真正的实现则隐藏在内部。用户并不需要关心各种实现细节。
-
-![../_images/adt.png](https://raw.githubusercontent.com/GMyhf/img/main/img/adt.png)
-
-图1-2 抽象数据类型
-
-抽象数据类型的实现常被称为**数据结构**，这需要我们通过编程语言的语法结构和原生数据类型从物理视角看待数据。正如之前讨论的，分成这两种不同的视角有助于为问题定义复杂的数据模型，而无须考虑模型的实现细节。这便提供了一个独立于实现的数据视角。由于实现抽象数据类型通常会有很多种方法，因此**独立于实现**的数据视角使程序员能够改变实现细节而不影响用户与数据的实际交互。用户能够始终专注于解决问题。
-
-
-
-### 1.3.3 为何学习算法
+### 1.3.2 为何学习算法
 
 计算机科学家通过经验来学习：观察他人如何解决问题，然后亲自解决问题。接触各种问题解决技巧并学习不同算法的设计方法，有助于解决新的问题。通过学习一系列不同的算法，可以举一反三，从而在遇到类似的问题时，能够快速加以解决。
 
@@ -727,21 +717,35 @@ print函数为输出Python程序的值提供了一种非常简便的方法。它
 
 
 
-# 三、题目
+# 三、每日选做
 
-27653:Fraction类
+2024fall 每日选做，https://github.com/GMyhf/2024fall-cs101/blob/main/problem_list_at_2024fall.md
 
-http://cs101.openjudge.cn/2024sp_routine/27653/
+从2024年8月23日开始，每天都会增加2个题目供同学们自愿练习,期中开始，每天增加1个题目。争取每20个题目难度提升100。
+
+建议大家跟上练习，其中很多题目可能会是之后作业。此外，机考在整个评估中占比较大，保持每天编程的手感很重要。只有通过持续的努力和实践，才能在机考中取得优异的成绩！
+
+0J上面太简单题目少，所以开始尽量选了CF题目。**加油！感觉900难度有明显提升，争取第一次课我们上习题课！**
+
+题解在 https://github.com/GMyhf/2020fall-cs101 中的 [2020fall_cs101.openjudge.cn_problems.md](https://github.com/GMyhf/2020fall-cs101/blob/main/2020fall_cs101.openjudge.cn_problems.md), [2020fall_Codeforces_problems.md](https://github.com/GMyhf/2020fall-cs101/blob/main/2020fall_Codeforces_problems.md)
 
 
 
-# 四、程序
+
+
+# 四、其他程序
 
 
 
 ## 4.1 洛谷运势
 
-在洛谷打卡，https://www.luogu.com.cn，有个运势，程序实现如下。
+在洛谷打卡，https://www.luogu.com.cn，有个运势，如图。
+
+![image-20240909235813481](/Users/hfyan/Library/Application Support/typora-user-images/image-20240909235813481.png)
+
+
+
+程序实现如下。
 
 https://github.com/GMyhf/2024fall-cs101/blob/main/code/fortune.py
 
@@ -844,9 +848,7 @@ for idx, name in enumerate(fortunes):
 
 # 参考
 
-Python数据结构与算法分析(第2版)，布拉德利·米勒 戴维·拉努姆/吕能,刁寿钧译，出版时间:2019-09
-
-Brad Miller and David Ranum, Problem Solving with Algorithms and Data Structures using Python, https://runestone.academy/ns/books/published/pythonds/index.html
+P。。。
 
 
 
