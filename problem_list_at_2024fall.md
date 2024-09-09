@@ -35,7 +35,7 @@ to do
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 | 0911 | 03143: 验证哥德巴赫猜想        | -                                    | -    | http://cs101.openjudge.cn/practice/03143         |
 |            | 474A. Keyboard                 | implementation                       | 900  | https://codeforces.com/contest/474/problem/A     |
-| 0910 | 23564: 数论                    | -                                    | -    | http://cs101.openjudge.cn/practice/23564         |
+| 0910 | 23564: 数论                    | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/23564         |
 |            | 460A. Vasya and Socks          | brute force, implementation, math    | 900  | https://codeforces.com/contest/460/problem/A     |
 | 0909 | 1374B. Multiply by 2, divide by 6    | math                           | 900  | https://codeforces.com/problemset/problem/1374/B |
 |            | 01003: Hangover                | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/01003/ |
