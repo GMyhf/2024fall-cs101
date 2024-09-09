@@ -1,6 +1,6 @@
 # 20240910-Week1-计算概论课程概述
 
-Updated 1518 GMT+8 Sep 7, 2024
+Updated 1539 GMT+8 Sep 9, 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -41,6 +41,8 @@ https://github.com/GMyhf/2024fall-cs101
 
 第二部分包括基本语法学习和编程练习。首先，学习 Python 和 C++ 语法 ，掌握与计算机进行交流的语言，侧重于讲授 Python 实现的代码，在两个编程平台上（codeforces.com, cs101.openjudge.cn）运用多种常见算法解决问题。一旦掌握了语法，会进一步练习更多的编程题目。
 
+> 我们的做题平台主要使用 OJ（http://cs101.openjudge.cn）和 CF（https://codeforces.com/）。也欢迎使用 Luogu（https://www.luogu.com.cn）和 LeetCode（https://leetcode.cn）。特别是 OJ，对于后续的《数据结构与算法B》课程来说非常重要，几乎所有的班级都在使用它。
+
 Python是一门非常适合于讲解算法的语言，语法干净简洁，用户环境直观，基本的数据类型十分强大和易用。
 
 我们相信，对于初学者来说，投入时间学习与算法和数据结构相关的基本思想是非常有益的。
@@ -60,6 +62,13 @@ Python是一门非常适合于讲解算法的语言，语法干净简洁，用�
 往年机考是6个题目，需要在机房完成。
 往年笔试题目包括：填空15分、单选15分、计算题20分，编码应用题12分，程序阅读12分，程序填空10分，流程图与编程12分，问答4分。
 
+助教办公室答疑时间，地点在理科1#1220E，2-16周
+罗熙佑：周一，19:00-20:00
+涂程颖：周二，19:00-20:00
+刘昊文：周三，19:00-20:00
+熊江凯：周四，19:00-20:00
+王嘉林：周五，19:00-20:00
+
 
 
 主题：2024fall-cs101-ADS 计算概论（B）
@@ -69,6 +78,8 @@ https://teams.microsoft.com/l/meetup-join/19%3ameeting_MGVhMWY3NmUtMGUxNi00YTM4L
 
 Meeting ID: 467 329 315 882
 Passcode: zSs3ve
+
+> 没有签到，可以线下、线上、回看方式学习。
 
 
 
@@ -96,7 +107,7 @@ Assignment1 和 AssignmentP已经发布。
 
 1.4 编程平台
 
-我们用到的编程平台主要是 http://cs101.openjudge.cn，https://codeforces.com 。
+我们的做题平台主要使用 OJ（http://cs101.openjudge.cn）和 CF（https://codeforces.com/）。我们也欢迎使用 Luogu（https://www.luogu.com.cn）和 LeetCode（https://leetcode.cn）。特别是 OJ，对于后续的《数据结构与算法B》课程来说非常重要，几乎所有的班级都在使用它。
 
 
 
@@ -166,10 +177,18 @@ O365（含teams）账号申请链接：https://www.wjx.cn/vm/Y5XwfHD.aspx#
 
 
 
-1.11 助教办公室答疑时间（从第2周开始），地点在理科1#1220E
-涂程颖：周一，19:00-20:00
-熊江凯：周二，19:00-20:00（线上）
-罗熙佑：周三，19:00-20:00
+1.11 集成开发环境
+
+写python程序，通常是建议使用pycharm (https://www.jetbrains.com/pycharm/ ), anaconda/spyder (https://www.anaconda.com/)，这两个计算中心的机房有，考试的时候可以用。另外，机房也有 vscode。
+
+
+
+1.12 助教办公室答疑
+地点在理科1#1220E，2-16周
+罗熙佑：周一，19:00-20:00
+涂程颖：周二，19:00-20:00
+刘昊文：周三，19:00-20:00
+熊江凯：周四，19:00-20:00
 王嘉林：周五，19:00-20:00
 
 
@@ -585,6 +604,111 @@ print函数为输出Python程序的值提供了一种非常简便的方法。它
 27653:Fraction类
 
 http://cs101.openjudge.cn/2024sp_routine/27653/
+
+
+
+# 四、程序
+
+
+
+## 4.1 洛谷运势
+
+在洛谷打卡，https://www.luogu.com.cn，有个运势，程序实现如下。
+
+https://github.com/GMyhf/2024fall-cs101/blob/main/code/fortune.py
+
+```python
+# 参考 https://blog.csdn.net/pythonwyw123321/article/details/136659699
+import random
+
+# 定义随机函数
+def get_random_int(a, b):
+    return random.randint(a, b)
+
+# 运势权重列表
+weights = [2, 4, 15, 15, 16, 16, 25, 7, 5]
+# 运势名称
+fortunes = [
+    "宇宙超级凶", "大凶", "中平", "小平",
+    "小凶", "中吉", "小吉", "超级吉", "中凶"
+]
+
+# 宜做的事情列表
+yi_list = [
+    ["宜:诸事不宜"] * 4,
+    ["宜:装弱", "宜:窝在家里", "宜:刷题", "宜:吃饭"],
+    ["宜:刷题", "宜:开电脑", "宜:写作业", "宜:睡觉"],
+    ["宜:发朋友圈", "宜:出去玩", "宜:打游戏", "宜:吃饭"],
+    ["宜:学习", "宜:研究Ruby", "宜:研究c#", "宜:玩游戏"],
+    ["宜:膜拜大神", "宜:扶老奶奶过马路", "宜:玩网游", "宜:喝可乐"],
+    ["宜:吃东西", "宜:打sdvx", "宜:打开洛谷", "宜:出行"],
+    ["宜:写程序", "宜:刷题", "宜:偷塔", "宜:上CSDN"],
+    ["宜:扶老奶奶过马路", "宜:上课", "宜:写作业", "宜:写程序"]
+]
+
+# 宜做的事情解释列表
+yi_shi_list = [
+    [""] * 4,
+    ["谦虚最好了", "不出门没有危险", "直接AC", "吃的饱饱的再学习"],
+    ["一次AC", "发现电脑死机了", "全对", "睡足了再学习"],
+    ["点赞量破百", "真开心", "十连胜", "吃饱了"],
+    ["都会", "有了新发现", "发现新大陆", "直接胜利"],
+    ["接受神之沐浴", "增加RP", "犹如神助", "真好喝"],
+    ["吃饱了", "今天状态好", "发现AC的题变多了", "路途顺畅"],
+    ["不会报错", "直接TLE", "胜利", "发现粉丝涨了200个"],
+    ["增加RP", "听懂了", "都会", "没有Bug"]
+]
+
+# 忌做的事情列表
+ji_list = [
+    ["忌:诸事不宜"] * 4,
+    ["忌:打sdvx", "忌:出行", "忌:玩手机", "忌:吃方便面"],
+    ["忌:关电脑", "忌:开挂", "忌:纳财", "忌:考试"],
+    ["忌:膜拜大神", "忌:评论", "忌:研究Java", "忌:吃方便面"],
+    ["忌:发朋友圈", "忌:打开洛谷", "忌:研究C++", "忌:出行"],
+    ["忌:探险", "忌:发视频", "忌:发博客", "忌:给别人点赞"],
+    ["忌:写程序", "忌:使用Unity打包exe", "忌:装弱", "忌:打开CSDN"],
+    ["忌:点开wx", "忌:刷题", "忌:打吃鸡", "忌:和别人分享你的程序"],
+    ["忌:纳财", "忌:写程序超过500行", "忌:断网", "忌:检测Bug"]
+]
+
+# 忌做的事情解释列表
+ji_shi_list = [
+    [""] * 4,
+    ["今天状态不好", "路途也许坎坷", "好家伙，直接死机", "没有调味料"],
+    ["死机了", "被制裁", "你没有财运", "没及格"],
+    ["被人嘲笑", "被喷", "心态崩溃", "只有一包调味料"],
+    ["被人当成买面膜的", "大凶", "五行代码198个报错", "路途坎坷"],
+    ["你失踪了", "被人喷", "阅读量1", "被人嘲笑"],
+    ["报错19999+", "电脑卡死，发现刚才做的demo全没了", "被人看穿", "被人陷害"],
+    ["被人陷害", "WA", "被队友炸死", "别人发现了Bug"],
+    ["没有财运", "99+报错", "连不上了", "503个Bug"]
+]
+
+# 计算权重总和
+total_weight = sum(weights)
+# 生成随机数
+random_value = random.randint(0, total_weight)
+fortune_index = 0
+
+# 根据权重选择运势
+for weight in weights:
+    if random_value <= weight:
+        break
+    random_value -= weight
+    fortune_index += 1
+
+# 输出运势结果
+print("\t\t你的运势是:")
+print("\t\t" + fortunes[fortune_index])
+for idx, name in enumerate(fortunes):
+    if name == fortunes[fortune_index]:
+        print("\t" + yi_list[idx][get_random_int(0, 3)], end="")
+        print("\t" + ji_list[idx][get_random_int(0, 3)])
+        print("\t" + yi_shi_list[idx][get_random_int(0, 3)], end="")
+        print("\t" + ji_shi_list[idx][get_random_int(0, 3)])
+        break
+```
 
 
 
