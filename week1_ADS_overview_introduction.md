@@ -47,29 +47,39 @@ Python是一门非常适合于讲解算法的语言，语法干净简洁，用�
 
 我们相信，对于初学者来说，投入时间学习与算法和数据结构相关的基本思想是非常有益的。
 
+> TIOBE 2024 年 09 月份的编程语言排行榜，https://www.tiobe.com/tiobe-index/
+>
+> | Sep 2024 | Sep 2023 | Change                                                       | Programming Language | Ratings |
+> | :------- | :------- | :----------------------------------------------------------- | :------------------- | :------ |
+> | 1        | 1        |                                                              | Python               | 20.17%  |
+> | 2        | 3        | ![change](https://www.tiobe.com/wp-content/themes/tiobe/tpci/images/up.png) | C++                  | 10.75%  |
+> | 3        | 4        | ![change](https://www.tiobe.com/wp-content/themes/tiobe/tpci/images/up.png) | Java                 | 9.45%   |
+> | 4        | 2        | ![change](https://www.tiobe.com/wp-content/themes/tiobe/tpci/images/down.png) | C                    | 8.89%   |
+>
+> 
+>
+> Programming Language
+>
+> - The language should have an own entry on [Wikipedia](http://en.wikipedia.org/) and Wikipedia should clearly state that it concerns a programming language. 
+>
+> - The programming language should be [Turing complete](http://en.wikipedia.org/wiki/Turing_completeness).
+>   - In [computability theory](https://en.wikipedia.org/wiki/Computability_theory), a system of data-manipulation rules (such as a [model of computation](https://en.wikipedia.org/wiki/Model_of_computation), a computer's [instruction set](https://en.wikipedia.org/wiki/Instruction_set), a [programming language](https://en.wikipedia.org/wiki/Programming_language), or a [cellular automaton](https://en.wikipedia.org/wiki/Cellular_automaton)) is said to be **Turing-complete** or **computationally universal** if it can be used to simulate any [Turing machine](https://en.wikipedia.org/wiki/Turing_machine)[*[citation needed](https://en.wikipedia.org/wiki/Wikipedia:Citation_needed)*] (devised by English mathematician and computer scientist [Alan Turing](https://en.wikipedia.org/wiki/Alan_Turing)). This means that this system is able to recognize or decode other data-manipulation rule sets. Turing completeness is used as a way to express the power of such a data-manipulation rule set. Virtually all programming languages today are Turing-complete.
+>   - 推荐一个电影，The Imitation Game ，是图灵自传。https://pku.instructuremedia.com/embed/6f8ab27f-9485-497e-a8ae-24f8be176f22
+>   - 
+>
+> - The programming language should have at least 5,000 hits for +"<language> programming" for Google.
 
 
-## 1 流水账事项
 
-1.1 线下和线上教室
+## 1.1 课程安排相关事项
+
+### 1.1.1 线下和线上教室
 
 | 课程号和名: 04831410，计算概论(B)                            | 班号: 11                                                    |
 | ------------------------------------------------------------ | ----------------------------------------------------------- |
 | 上课时间: 1-16周 每周 周二 7-9节                             | 线下地点: 二教107                                           |
 | 上机时间: 2-15周 每周 周四 7-8节<br/>期末机考时间: 2024.12.26 周四 7-8节<br/>期末笔试时间: 2025年1月7日下午 | 地点：7号机房（理科1号楼三层1339房间）和8号机房（1338房间） |
 | 助教：熊江凯、罗熙佑、涂程颖、王嘉林、刘昊文                 | 助教在微信群中的名字是“TA-”开始，地点：理科1号楼1220        |
-
-往年机考是6个题目，需要在机房完成。
-往年笔试题目包括：填空15分、单选15分、计算题20分，编码应用题12分，程序阅读12分，程序填空10分，流程图与编程12分，问答4分。
-
-助教办公室答疑时间，地点在理科1#1220E，2-16周
-罗熙佑：周一，19:00-20:00
-涂程颖：周二，19:00-20:00
-刘昊文：周三，19:00-20:00
-熊江凯：周四，19:00-20:00
-王嘉林：周五，19:00-20:00
-
-
 
 主题：2024fall-cs101-ADS 计算概论（B）
 时间：2024年9月～12月，每周二15:00~18:00 北京
@@ -83,8 +93,44 @@ Passcode: zSs3ve
 
 
 
+### 1.1.2 考试相关
 
-1.2 课程安排
+平时上机不来不影响，但是期末有机考+笔试，都必须参加。
+期末机考时间: 2024.12.26 周四 7-8节。往年是6个题目，需要在机房完成。
+期末笔试时间: 2025年1月7日下午。往年平行班题目包括：填空15分、单选15分、计算题20分，编码应用题12分，程序阅读12分，程序填空10分，流程图与编程12分，问答4分。
+
+> 往年是提高班，今年2024fall是平行班，也需要参加笔试。
+>
+> 万一考试时间冲突了怎么办？
+>
+> 只能同学自己协调，极端情况是：去年有化院同学只能参加30分钟考试。没有补考。
+
+
+
+### 1.1.3 答疑安排
+
+线上7*24小时答疑：课程微信群。
+
+> 通常提问给出：题目链接，清楚截图，遇到问题的描述，编写的源码（便于TA拷贝来本地测试）。
+>
+> 几个基础的报错：compile error是编译根本不成功，presentation error大家可能要考虑是不是结果对了但输出的形式有问题，比如多一个空格少一个空格，runtime error运行时错误一般是考虑除0，数组越界，输入为空这种情况，time limit exceeded和memory limit exceeded分别是爆时间和爆内存这时候要去考虑算法优化，wrong answer是结果错误，这种情况除了考虑正常样例之外可能还要检查设计逻辑，构造corner case，除了尝试题目里的样例还可以自己丢进去试一下。
+
+
+
+线下答疑：
+
+上机时间：助教轮流现场答疑。2-15周
+
+助教办公室答疑时间，地点在理科1#1220E，2-15周
+罗熙佑：周一，19:00-20:00
+涂程颖：周二，19:00-20:00（线上）
+刘昊文：周三，19:00-20:00
+熊江凯：周四，19:00-20:00
+王嘉林：周五，19:00-20:00
+
+
+
+## 1.2 课程内容
 
 没有固定教材，会全面介绍在经典计算机科学问题中出现的算法和必要的数据结构。尽管在学习顺序上并无严格要求，但是许多话题之间都存在一定的依赖关系，建议顺序学习。
 
@@ -102,6 +148,82 @@ Passcode: zSs3ve
 1.3 每周都有作业，完成时限是一周
 
 Assignment1 和 AssignmentP已经发布。
+
+
+
+
+
+## 1.3 开课前说明
+
+
+
+### 20240909
+
+1) 对于题目数据（通常编号介于1000至3256之间，例如：02692: 假币问题），当同学们有需求时，将会以单一的zip文件形式单独提供。请注意，出于管理规定，我们不允许批量发送题目测试数据。2）如果您希望查看特定同学提交的代码（如通过题目统计栏查看），无论是0毫秒的C++代码，还是21毫秒的Python3代码，都可以直接在群内提出请求。
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202409092018592.png" alt="image-20240909201821628" style="zoom: 33%;" />
+
+
+
+### 20240907
+
+1）我们班的计概及后续课程将会使用 Markdown 文件。Typora 是一款优秀的 Markdown 编辑软件，但学校并未提供免费版本。2）大家可以关注一下目前的一个优惠活动（距离活动结束还有7天），优惠价格为80.10元。具体信息可参考以下链接：Typora官网 https://typoraio.cn，优惠购买页面 https://lizhi.shop/site/products/id/520 3）过去也有三位同学一起购买的情况，因为一个许可证可以激活三台设备。4）购买并非强制性的。以往也有同学使用 Word 或其他软件完成作业，同样没有问题。
+
+> typora是文本编辑器，可以写markdown格式文件，课件、作业用，python程序加入markdown中不乱的。pycharm, anaconda/spyder是写python程序的集成开发环境，选择一个就可以。
+>
+> 听闻有Typora序列号生成机器，我有正版，没有尝试。https://blog.csdn.net/niceBCZZ/article/details/137568047 ，亲测可用
+
+
+
+### 20240906
+
+1）访问选课系统（elective.pku.edu.cn），看到教务调整到开课人数150（之前是120），已选人数150。
+
+2）不知道后期是否还调整（同学可以邮件等方式联系 信息科学技术学院教务：董晓晖，地点：理科1号楼1118，电话：010-62755414，邮箱：dxh@pku.edu.cn），教务老师昨天回复我是“统筹安排”。
+
+3）即使没有选上我们班的同学，如果愿意，也可以一起探讨编程问题。
+
+
+
+### 20240904
+
+1）根据往年情况，选课时候，如果学生找教务多，教务会慢慢放出名额，尽量让同学选上。我这里没有选课权限，加不了学生。
+信息科学技术学院教务：董晓晖，地点：理科1号楼1118，电话：010-62755414，邮箱：dxh@pku.edu.cn
+2）有经验的教务老师，根据每年选课人数，会有调整策略。例如：目前（2024年5月10日）校本部计算概论（B）每个班选课人数先录入150人，是想要大点的教室，避免教室过于拥挤。待教室排定后，我再把人数降到120人。
+
+
+
+### 20240829
+
+1）我们班上课地点在二教107，有217个座位；上机地点7号机房学生机109台，8号102台。
+
+2）选课权限在教务老师（目前看到是有120选课名额），我这里不过滤都接收，需要签字同意等都没有问题。往年教务老师会根据选课情况逐渐调整（第一周放点名额，第二周放点名额），比如调整到150或者更高到教室容量的上限。
+
+
+
+### 20240826
+
+同学选课后，还要自动抽签。之后权限在教务老师，我这里不过滤都接收，需要签字同意等都没有问题。往年教务老师会根据选课情况调整，比如调整到教室容量的上限。
+信息科学技术学院教务：董晓晖，地点：理科1号楼1118，电话：010-62755414，邮箱：dxh@pku.edu.cn
+
+权限都在教务！第0周（开课前一周）周五对超过预定选课人数的课程进行抽签，公布选课结果；之后安排课程补选、退选，学生可以在网上查看自己的已选课程记录，并可退课或补选。其中：第一周周三晚各院系本科必修和限选课程的剩余名额向全校所有本科生开放选课；系统给各院系教务预留时间设置课程对外开放名额，期间学生不能选课；第二周周二上午10：00―周四上午10：00，只能补选，不能退课；此后选课系统关闭，网上选课结束。
+
+
+
+### 20240824
+
+1.一直以来“上机课”0学分，都不录入成绩。可以不选的。但是期末机考一定要参加，是上机时间。
+另外有每个月初有一次月考，是在机房进行，尽量参加，熟悉环境。
+
+上机课是助教答疑时间，同学自行安排是否出现。最后一次上机（2025.12.26周四 7-8节）考试出现是必须的。
+
+2.零基础同学尽快熟悉语法：《Python 编程：从入门到实践》(Eric Matthes)，中涉及数据类型和控制结构的部分。或者 https://www.runoob.com/python3/python3-tutorial.html。 这些内容将帮助学习者掌握基本的语法结构和概念，为后续编程学习打下基础。
+
+3.跟上每日选做，开始放出来的都是最简单的题目。题目以及之后的作业，都有题解同时发布。
+
+4.善用 chatgpt，例如：通义千问，https://tongyi.aliyun.com/qianwen 
+
+任何相关问题，都可以在大群问。私人问题可以问我或者助教。
 
 
 
@@ -146,6 +268,8 @@ https://blog.189854.xyz/blog/walless/2023/11/04/clash.html
 
 O365（含teams）账号申请链接：https://www.wjx.cn/vm/Y5XwfHD.aspx#
 
+> Canvas 是学校为我们班级提供的平台，选课的同学可以免费使用。O365 是面向全校的服务，即使没有选课也可以申请使用。
+
 
 
 1.9 同学想选课，我都同意
@@ -183,7 +307,11 @@ O365（含teams）账号申请链接：https://www.wjx.cn/vm/Y5XwfHD.aspx#
 
 
 
-1.12 助教办公室答疑
+
+
+
+
+1.13 助教办公室答疑
 地点在理科1#1220E，2-16周
 罗熙佑：周一，19:00-20:00
 涂程颖：周二，19:00-20:00
