@@ -34,7 +34,7 @@ to do
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 | 0912 | 19944: 这一天星期几            | -                                    | -    | http://cs101.openjudge.cn/practice/19944         |
-|            | 580A. Kefa and First Step      | brute force, dp,implementation       | 900  | https://codeforces.com/problemset/580/A     |
+|            | 580A. Kefa and First Step      | brute force, dp,implementation       | 900  | https://codeforces.com/problemset/problem/580/A  |
 | 0911 | 03143: 验证哥德巴赫猜想        | -                                    | -    | http://cs101.openjudge.cn/practice/03143         |
 |            | 474A. Keyboard                 | implementation                       | 900  | https://codeforces.com/contest/474/problem/A     |
 | 0910 | 23564: 数论                    | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/23564         |
