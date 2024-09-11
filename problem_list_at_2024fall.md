@@ -33,13 +33,14 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+|  |           | -                                    | -   | Mid-Autumn Festival end          |
 | 0917 |      | -                                     | -   |          |
-| Mid-Autumn Festival | 723A. The New Year: Meeting Friends | implementation, math, sorting | 800  | https://codeforces.com/contest/723/problem/A    |
+|            | 723A. The New Year: Meeting Friends | implementation, math, sorting   | 800  | https://codeforces.com/contest/723/problem/A    |
 | 0916 | 615A. Bulbs     | implementation                                      | 800  | https://codeforces.com/problemset/problem/615/A  |
-| Mid-Autumn Festival | 705A. Hulk      | implementation   | 800  | https://codeforces.com/contest/705/problem/A    |
+|            | 705A. Hulk               | implementation                             | 800  | https://codeforces.com/contest/705/problem/A    |
 | 0915 | 282A. Bit++     | implementation                                      | 800  | https://codeforces.com/problemset/problem/282/A  |
-| Mid-Autumn Festival | 339A. Helpful Maths      | greedy, implementation, sortings, strings   | 800  | https://codeforces.com/contest/339/problem/A    |
-|  |           | -                                    | -    |          |
+|            | 339A. Helpful Maths      | greedy, implementation, sortings, strings  | 800  | https://codeforces.com/contest/339/problem/A    |
+|  |           | -                                    | -    | Mid-Autumn Festival begin         |
 | 0912 | 19944: 这一天星期几            | -                                    | -    | http://cs101.openjudge.cn/practice/19944         |
 |            | 580A. Kefa and First Step      | brute force, dp,implementation       | 900  | https://codeforces.com/problemset/problem/580/A  |
 | 0911 | 03143: 验证哥德巴赫猜想        | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/03143         |
