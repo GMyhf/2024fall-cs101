@@ -1,10 +1,6 @@
 # cs101计概编程题目
 
-Updated 1623 GMT+8 Sep 11 2024
-
-2024 fall, Complied by Hongfei Yan
-
-
+Updated 1623 GMT+8 Sep 11 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 0911 中秋节期间（15~17）放800难度题目。CF上的题目难度有时可能存在标注不准确的情况，标注较高的题目可能实际上较为简单。
