@@ -40,13 +40,15 @@ to do
 | 0915 | 282A. Bit++     | implementation                                      | 800  | https://codeforces.com/problemset/problem/282/A  |
 |            | 339A. Helpful Maths      | greedy, implementation, sortings, strings  | 800  | https://codeforces.com/contest/339/problem/A    |
 |  |           | -                                    | -    | Mid-Autumn Festival begin         |
-| 0913 | 02701: 与7无关的数             | -                                    | 1000  | http://cs101.openjudge.cn/practice/02701         |
-|            | 58A. Chat room           | greedy, strings                      | 1000  | https://codeforces.com/problemset/problem/58/A  |
-| 0912 | 19944: 这一天星期几            | -                                    | 900  | http://cs101.openjudge.cn/2024fallroutine/19944         |
+| 0914 | 03248: 最大公约数              | -                                    | 1000  | http://cs101.openjudge.cn/practice/03248        |
+|            | 69A. Young Physicist     | implementation, math                       | 1000  | https://codeforces.com/problemset/problem/69/A  |
+| 0913 | 02701: 与7无关的数             | -                                    | 1000  | http://cs101.openjudge.cn/practice/02701        |
+|            | 58A. Chat room           | greedy, strings                      | 1000  | https://codeforces.com/problemset/problem/58/A        |
+| 0912 | 19944: 这一天星期几            | -                                    | 900  | http://cs101.openjudge.cn/2024fallroutine/19944  |
 |            | 580A. Kefa and First Step      | brute force, dp,implementation       | 900  | https://codeforces.com/problemset/problem/580/A  |
-| 0911 | 03143: 验证哥德巴赫猜想        | -                                    | 900  | http://cs101.openjudge.cn/2024fallroutine/03143         |
+| 0911 | 03143: 验证哥德巴赫猜想        | -                                    | 900  | http://cs101.openjudge.cn/2024fallroutine/03143  |
 |            | 474A. Keyboard                 | implementation                       | 900  | https://codeforces.com/contest/474/problem/A     |
-| 0910 | 23564: 数论                    | -                                    | 900  | http://cs101.openjudge.cn/2024fallroutine/23564         |
+| 0910 | 23564: 数论                    | -                                    | 900  | http://cs101.openjudge.cn/2024fallroutine/23564  |
 |            | 460A. Vasya and Socks          | brute force, implementation, math    | 900  | https://codeforces.com/contest/460/problem/A     |
 | 0909 | 1374B. Multiply by 2, divide by 6    | math                           | 900  | https://codeforces.com/problemset/problem/1374/B |
 |            | 01003: Hangover                | -                                    | 900  | http://cs101.openjudge.cn/2024fallroutine/01003/ |
