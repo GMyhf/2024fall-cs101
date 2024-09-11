@@ -37,27 +37,27 @@ to do
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 |  |           | -                                    | -   | Mid-Autumn Festival end          |
-| 0917 | 02689: 大小写字母互换          | -                                    | -   |  http://cs101.openjudge.cn/practice/02689         |
+| 0917 | 02689: 大小写字母互换          | -                                    | 800 |  http://cs101.openjudge.cn/practice/02689         |
 |            | 723A. The New Year: Meeting Friends | implementation, math, sorting   | 800  | https://codeforces.com/contest/723/problem/A    |
 | 0916 | 615A. Bulbs     | implementation                                      | 800  | https://codeforces.com/problemset/problem/615/A  |
 |            | 705A. Hulk               | implementation                             | 800  | https://codeforces.com/contest/705/problem/A    |
 | 0915 | 282A. Bit++     | implementation                                      | 800  | https://codeforces.com/problemset/problem/282/A  |
 |            | 339A. Helpful Maths      | greedy, implementation, sortings, strings  | 800  | https://codeforces.com/contest/339/problem/A    |
 |  |           | -                                    | -    | Mid-Autumn Festival begin         |
-| 0912 | 19944: 这一天星期几            | -                                    | -    | http://cs101.openjudge.cn/practice/19944         |
+| 0912 | 19944: 这一天星期几            | -                                    | 900  | http://cs101.openjudge.cn/practice/19944         |
 |            | 580A. Kefa and First Step      | brute force, dp,implementation       | 900  | https://codeforces.com/problemset/problem/580/A  |
-| 0911 | 03143: 验证哥德巴赫猜想        | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/03143         |
+| 0911 | 03143: 验证哥德巴赫猜想        | -                                    | 900  | http://cs101.openjudge.cn/2024fallroutine/03143         |
 |            | 474A. Keyboard                 | implementation                       | 900  | https://codeforces.com/contest/474/problem/A     |
-| 0910 | 23564: 数论                    | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/23564         |
+| 0910 | 23564: 数论                    | -                                    | 900  | http://cs101.openjudge.cn/2024fallroutine/23564         |
 |            | 460A. Vasya and Socks          | brute force, implementation, math    | 900  | https://codeforces.com/contest/460/problem/A     |
 | 0909 | 1374B. Multiply by 2, divide by 6    | math                           | 900  | https://codeforces.com/problemset/problem/1374/B |
-|            | 01003: Hangover                | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/01003/ |
-| 0908 | 18223: 24点                    | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/18223/ |
-|            | 21532: 数学密码                | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/21532/ |
-| 0907 | 19949: 提取实体                | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/19949/ |
-|            | 02808: 校门外的树              | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/02808/ |
-| 0906 | 12566: 编码字符串              | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/12556/ |
-|            | 06374: 文字排版                | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/06374/ |
+|            | 01003: Hangover                | -                                    | 900  | http://cs101.openjudge.cn/2024fallroutine/01003/ |
+| 0908 | 18223: 24点                    | -                                    | 900  | http://cs101.openjudge.cn/2024fallroutine/18223/ |
+|            | 21532: 数学密码                | -                                    | 900  | http://cs101.openjudge.cn/2024fallroutine/21532/ |
+| 0907 | 19949: 提取实体                | -                                    | 900  | http://cs101.openjudge.cn/2024fallroutine/19949/ |
+|            | 02808: 校门外的树              | -                                    | 900  | http://cs101.openjudge.cn/2024fallroutine/02808/ |
+| 0906 | 12566: 编码字符串              | -                                    | 900  | http://cs101.openjudge.cn/2024fallroutine/12556/ |
+|            | 06374: 文字排版                | -                                    | 900  | http://cs101.openjudge.cn/2024fallroutine/06374/ |
 | 0905 | 1833B. Restore the Weather     | greedy, sortings                     | 900  | https://codeforces.com/problemset/problem/1833/B |
 |            | 1879B. Chips on the Board      | constructive algorithms, greedy      | 900  | https://codeforces.com/contest/1879/problem/B    |
 | 0904 | 96A. Football                  | implementation, strings              | 900  | http://codeforces.com/problemset/problem/96/A    |
@@ -84,7 +84,7 @@ to do
 |            | 4A. Watermelong                | brute force, math                    | 800  | http://codeforces.com/problemset/problem/4/A     |
 | 0824 | 50A. Domino piling             | greedy, math                         | 800  | http://codeforces.com/problemset/problem/50/A    |
 |            | 200B. Drinks                   | implementation, math                 | 800  | https://codeforces.com/problemset/problem/200/B  |
-| 0823 | 02733: 判断闰年                | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/02733/ |
-|            | 02750: 鸡兔同笼                | -                                    | -    | http://cs101.openjudge.cn/2024fallroutine/02750/ |
+| 0823 | 02733: 判断闰年                | -                                    | 800    | http://cs101.openjudge.cn/2024fallroutine/02733/ |
+|            | 02750: 鸡兔同笼                | -                                    | 800  | http://cs101.openjudge.cn/2024fallroutine/02750/ |
 
 
