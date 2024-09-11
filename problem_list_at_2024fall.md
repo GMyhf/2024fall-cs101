@@ -1,4 +1,4 @@
-# cs101计概编程题目
+# cs101计概（计算机基础1）编程题目
 
 Updated 1623 GMT+8 Sep 11 2024. 2024 fall, Complied by Hongfei Yan
 
