@@ -40,6 +40,8 @@ to do
 | 0915 | 282A. Bit++     | implementation                                      | 800  | https://codeforces.com/problemset/problem/282/A  |
 |            | 339A. Helpful Maths      | greedy, implementation, sortings, strings  | 800  | https://codeforces.com/contest/339/problem/A    |
 |  |           | -                                    | -    | Mid-Autumn Festival begin         |
+| 0913 | 02701: 与7无关的数             | -                                    | 1000  | http://cs101.openjudge.cn/practice/19944         |
+|            | 58A. Chat room           | greedy, strings                      | 1000  | https://codeforces.com/problemset/problem/58/A  |
 | 0912 | 19944: 这一天星期几            | -                                    | 900  | http://cs101.openjudge.cn/2024fallroutine/19944         |
 |            | 580A. Kefa and First Step      | brute force, dp,implementation       | 900  | https://codeforces.com/problemset/problem/580/A  |
 | 0911 | 03143: 验证哥德巴赫猜想        | -                                    | 900  | http://cs101.openjudge.cn/2024fallroutine/03143         |
