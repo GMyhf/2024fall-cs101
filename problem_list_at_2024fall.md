@@ -33,6 +33,10 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 0917 |      | -                                     | -   |          |
+| Mid-Autumn Festival | 723A. The New Year: Meeting Friends | implementation, math, sorting | 800  | https://codeforces.com/contest/723/problem/A    |
+| 0916 | 615A. Bulbs     | implementation                                      | 800  | https://codeforces.com/problemset/problem/615/A  |
+| Mid-Autumn Festival | 705A. Hulk      | implementation   | 800  | https://codeforces.com/contest/705/problem/A    |
 | 0915 | 282A. Bit++     | implementation                                      | 800  | https://codeforces.com/problemset/problem/282/A  |
 | Mid-Autumn Festival | 339A. Helpful Maths      | greedy, implementation, sortings, strings   | 800  | https://codeforces.com/contest/339/problem/A    |
 |  |           | -                                    | -    |          |
