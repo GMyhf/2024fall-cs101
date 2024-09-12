@@ -42,7 +42,7 @@ to do
 |  |           | -                                    | -    | Mid-Autumn Festival begin         |
 | 0914 | 03248: 最大公约数              | -                                    | 1000  | http://cs101.openjudge.cn/practice/03248        |
 |            | 69A. Young Physicist     | implementation, math                       | 1000  | https://codeforces.com/problemset/problem/69/A  |
-| 0913 | 02701: 与7无关的数             | -                                    | 1000  | http://cs101.openjudge.cn/practice/02701        |
+| 0913 | 02701: 与7无关的数             | -                                    | 1000  | http://cs101.openjudge.cn/2024fallroutine/02701        |
 |            | 58A. Chat room           | greedy, strings                      | 1000  | https://codeforces.com/problemset/problem/58/A        |
 | 0912 | 19944: 这一天星期几            | -                                    | 900  | http://cs101.openjudge.cn/2024fallroutine/19944  |
 |            | 580A. Kefa and First Step      | brute force, dp,implementation       | 900  | https://codeforces.com/problemset/problem/580/A  |
