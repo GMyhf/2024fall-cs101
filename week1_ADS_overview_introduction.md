@@ -503,7 +503,7 @@ Python是一门现代、易学、面向对象的编程语言。它拥有强大�
 
 #### 1．内建原子数据类型
 
-我们首先复习原子数据类型。Python有两大內建数据类实现了整数类型和浮点数类型，相应的Python类就是int和float。标准的数学运算符，即+、-、＊、/以及＊＊（幂），可以和能够改变运算优先级的括号一起使用。其他非常有用的运算符包括取余（取模）运算符%，以及整除运算符//。注意，当两个整数相除时，其结果是一个浮点数，而整除运算符截去小数部分，只返回商的整数部分。
+我们首先看原子数据类型。Python有两大內建数据类实现了整数类型和浮点数类型，相应的Python类就是int和float。标准的数学运算符，即+、-、＊、/以及＊＊（幂），可以和能够改变运算优先级的括号一起使用。其他非常有用的运算符包括取余（取模）运算符%，以及整除运算符//。注意，当两个整数相除时，其结果是一个浮点数，而整除运算符截去小数部分，只返回商的整数部分。
 
 Python通过bool类实现对表达真值非常有用的布尔数据类型。布尔对象可能的状态值是True或者False，布尔运算符有and、or以及not。
 
@@ -720,7 +720,7 @@ print函数为输出Python程序的值提供了一种非常简便的方法。它
 
 
 
-列表可以可以不通过迭代结构和分支结构来创建，这种方式被称为列表解析式。通过列表解析式，可以根据一些处理和分支标准轻松创建列表。Returning to lists, there is an alternative method for creating a list that uses iteration and selection constructs known as a **list comprehension**. A list comprehension allows you to easily create a list based on some processing or selection criteria. 
+列表可以不通过迭代结构和分支结构来创建，这种方式被称为列表解析式。通过列表解析式，可以根据一些处理和分支标准轻松创建列表。Returning to lists, there is an alternative method for creating a list that uses iteration and selection constructs known as a **list comprehension**. A list comprehension allows you to easily create a list based on some processing or selection criteria. 
 
 
 
@@ -853,7 +853,7 @@ else:
 
 **数学思维** vs **计算机思维**，即抽象、简化 vs 分解、执行
 
-这种方法体现了深刻的数学洞察力，可能不是短时间内就能想到的。在解决这类问题时，用计算机思维的枚举策略同样能够获得正确的答案（AC）。如果超时了，可以考虑改变遍历方向。OJ评测系统中题目的测试数据，通常比较弱，考试时候给出的测试数据一般不超过20组。
+数学思维体现了深刻的数学洞察力，可能不是短时间内就能想到的。在解决这类问题时，用计算机思维的枚举策略同样能够获得正确的答案（AC）。如果超时了，可以考虑改变遍历方向。OJ评测系统中题目的测试数据，通常比较弱，考试时候给出的测试数据一般不超过20组。
 
 ```python
 t = int(input())
@@ -905,13 +905,13 @@ print(t//s)
 
 https://github.com/GMyhf/2024fall-cs101/blob/main/code/sendEmail.py
 
-
+选课同学过百，群发邮件会被封，申请白名单。
 
 <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20240910141018886.png" alt="image-20240910141018886" style="zoom:50%;" />
 
 ## 4.2 选课学生院系分布
 
-
+统计院系选课分布，有中文输出，也要单独找到字体。通常加亚洲字符，比较麻烦，我们课程的程序尽量限制在 ascii 码范围内。
 
 ```python
 import pandas as pd
