@@ -942,7 +942,7 @@ plt.show()
 
 
 
-<img src="/Users/hfyan/Library/Application Support/typora-user-images/image-20240910141230439.png" alt="image-20240910141230439" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20240910141230439.png" alt="image-20240910141230439" style="zoom:50%;" />
 
 
 
