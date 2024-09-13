@@ -40,7 +40,7 @@ to do
 | 0915 | 282A. Bit++     | implementation                                      | 800  | https://codeforces.com/problemset/problem/282/A  |
 |            | 339A. Helpful Maths      | greedy, implementation, sortings, strings  | 800  | https://codeforces.com/contest/339/problem/A    |
 |  |           | -                                    | -    | Mid-Autumn Festival begin         |
-| 0914 | 03248: 最大公约数              | -                                    | 1000  | http://cs101.openjudge.cn/practice/03248        |
+| 0914 | 03248: 最大公约数              | -                                    | 1000  | http://cs101.openjudge.cn/2024fallroutine/03248        |
 |            | 69A. Young Physicist     | implementation, math                       | 1000  | https://codeforces.com/problemset/problem/69/A  |
 | 0913 | 02701: 与7无关的数             | -                                    | 1000  | http://cs101.openjudge.cn/2024fallroutine/02701        |
 |            | 58A. Chat room           | greedy, strings                      | 1000  | https://codeforces.com/problemset/problem/58/A        |
