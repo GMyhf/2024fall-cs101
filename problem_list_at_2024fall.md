@@ -34,7 +34,7 @@ to do
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 |  |           | -                                    | -   | Mid-Autumn Festival end          |
 | 0918 | 18161: 矩阵运算          | -                                    | 1000 |  http://cs101.openjudge.cn/practice/18161         |
-|            | 71A. Way Too Long Words | strings   | 1000  | https://codeforces.com/contest/71/problem/A    |
+|            | 118A. String Task | implementation, strings   | 1000  | https://codeforces.com/contest/118/problem/A    |
 | 0917 | 02689: 大小写字母互换          | -                                    | 800 |  http://cs101.openjudge.cn/2024fallroutine/02689         |
 |            | 723A. The New Year: Meeting Friends | implementation, math, sorting   | 800  | https://codeforces.com/contest/723/problem/A    |
 | 0916 | 615A. Bulbs     | implementation                                      | 800  | https://codeforces.com/problemset/problem/615/A  |
