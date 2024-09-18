@@ -28,6 +28,7 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 0920 | 04015: 邮箱验证          | -                                    | 1000 |  http://cs101.openjudge.cn/2024fallroutine/04015         |
 | 0919 | 02707: 求一元二次方程的根          | -                                    | 1000 |  http://cs101.openjudge.cn/2024fallroutine/02707         |
 |            | 122A. Lucky Division | brute force, number theory   | 1000  | https://codeforces.com/contest/122/problem/A    |
 | 0918 | 18161: 矩阵运算          | -                                    | 1000 |  http://cs101.openjudge.cn/2024fallroutine/18161         |
