@@ -28,7 +28,7 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
-| 0918 | 18161: 矩阵运算          | -                                    | 1000 |  http://cs101.openjudge.cn/practice/18161         |
+| 0918 | 18161: 矩阵运算          | -                                    | 1000 |  http://cs101.openjudge.cn/2024fallroutine/18161         |
 |            | 118A. String Task | implementation, strings   | 1000  | https://codeforces.com/contest/118/problem/A    |
 |  |           | -                                    | -   | Mid-Autumn Festival end          |
 | 0917 | 02689: 大小写字母互换          | -                                    | 800 |  http://cs101.openjudge.cn/2024fallroutine/02689         |
