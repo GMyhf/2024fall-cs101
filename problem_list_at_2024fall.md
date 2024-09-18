@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 1623 GMT+8 Sep 11 2024. 2024 fall, Complied by Hongfei Yan
+Updated 2055 GMT+8 Sep 18 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 0823 每天放2个题目供同学们自愿练习，期中开始，每天放1个题目。争取每20个题目难度提升100。  
@@ -28,6 +28,8 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 0919 | 02707: 求一元二次方程的根          | -                                    | 1000 |  http://cs101.openjudge.cn/practice/02707         |
+|            | 122A. Lucky Division | brute force, number theory   | 1000  | https://codeforces.com/contest/122/problem/A    |
 | 0918 | 18161: 矩阵运算          | -                                    | 1000 |  http://cs101.openjudge.cn/2024fallroutine/18161         |
 |            | 118A. String Task | implementation, strings   | 1000  | https://codeforces.com/contest/118/problem/A    |
 |  |           | -                                    | -   | Mid-Autumn Festival end          |
