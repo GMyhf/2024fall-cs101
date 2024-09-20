@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 0029 GMT+8 Sep 20 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0048 GMT+8 Sep 21 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 0823 每天放2个题目供同学们自愿练习，期中开始，每天放1个题目。争取每20个题目难度提升100。  
@@ -28,6 +28,8 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 0921 | 27273: 简单的数学题          | -                                    | E |  http://cs101.openjudge.cn/2024fallroutine/27273         |
+|            | 270A. Fancy Fence | geometry, implementation, math   | 1100  | https://codeforces.com/contest/270/problem/A    |
 | 0920 | 04015: 邮箱验证          | -                                    | 1000 |  http://cs101.openjudge.cn/2024fallroutine/04015         |
 |            | 71A. Way Too Long Words | strings   | 800  | https://codeforces.com/contest/71/problem/A    |
 | 0919 | 02707: 求一元二次方程的根          | -                                    | 1000 |  http://cs101.openjudge.cn/2024fallroutine/02707         |
