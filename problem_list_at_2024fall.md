@@ -1,15 +1,16 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 0003 GMT+8 Sep 22 2024. 2024 fall, Complied by Hongfei Yan
+Updated 2043 GMT+8 Sep 22 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 0823 每天放2个题目供同学们自愿练习，期中开始，每天放1个题目。争取每20个题目难度提升100。  
 建议跟上练习，很多题目可能会是之后作业。机考在整个评估中占比较大，保持每天编程的手感很重要。只有通过持续的努力和实践，才能取得优异的成绩！  
 0J上面太简单题目少，所以开始尽量选了CF题目。
 
-题解在 https://github.com/GMyhf/2020fall-cs101 中的
+题解在 
 [2020fall_cs101.openjudge.cn_problems.md](https://github.com/GMyhf/2020fall-cs101/blob/main/2020fall_cs101.openjudge.cn_problems.md),
-[2020fall_Codeforces_problems.md](https://github.com/GMyhf/2020fall-cs101/blob/main/2020fall_Codeforces_problems.md)
+[2020fall_Codeforces_problems.md](https://github.com/GMyhf/2020fall-cs101/blob/main/2020fall_Codeforces_problems.md),
+[sunnywhy_problems.md](https://github.com/GMyhf/2024spring-cs201/blob/main/sunnywhy_problems.md)
 
 
 <!--
