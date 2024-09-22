@@ -28,8 +28,10 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 0923 | 23554: 小朋友春游      | -                                    | E |  http://cs101.openjudge.cn/practice/23554         |
+|            | sy60: 水仙花数II | implementation   | E  | https://sunnywhy.com/sfbj/3/1/60    |
 | 0922 | 25538: 二进制回文的整数      | -                                    | E |  http://cs101.openjudge.cn/2024fallroutine/25538         |
-|            | sy56. 单调递增序列 | implementation   | E  | https://sunnywhy.com/sfbj/3/1/56    |
+|            | sy56: 单调递增序列 | implementation   | E  | https://sunnywhy.com/sfbj/3/1/56    |
 | 0921 | 27273: 简单的数学题          | -                                    | E |  http://cs101.openjudge.cn/2024fallroutine/27273         |
 |            | 270A. Fancy Fence | geometry, implementation, math   | 1100  | https://codeforces.com/contest/270/problem/A    |
 | 0920 | 04015: 邮箱验证          | -                                    | 1000 |  http://cs101.openjudge.cn/2024fallroutine/04015         |
