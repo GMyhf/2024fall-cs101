@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 2043 GMT+8 Sep 22 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0010 GMT+8 Sep 24 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 0823 每天放2个题目供同学们自愿练习，期中开始，每天放1个题目。争取每20个题目难度提升100。  
@@ -29,6 +29,8 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 0924 | 21459: How old are you？      | -                                    | E |  http://cs101.openjudge.cn/2024fallroutine/21459         |
+|            | sy64: 寻找元素对 | -   | E  | https://sunnywhy.com/sfbj/3/2/64    |
 | 0923 | 23554: 小朋友春游      | -                                    | E |  http://cs101.openjudge.cn/2024fallroutine/23554         |
 |            | sy60: 水仙花数II | implementation   | E  | https://sunnywhy.com/sfbj/3/1/60    |
 | 0922 | 25538: 二进制回文的整数      | -                                    | E |  http://cs101.openjudge.cn/2024fallroutine/25538         |
