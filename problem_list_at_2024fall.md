@@ -30,7 +30,7 @@ to do
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 | 0925 | 01017: 装箱问题      | -                                    | M |  http://cs101.openjudge.cn/2024fallroutine/01017         |
-|            | sy66: 等腰直角三角形II 简单 | -   | E  | https://sunnywhy.com/sfbj/3/2/66    |
+|            | sy66: 等腰直角三角形II  | -   | E  | https://sunnywhy.com/sfbj/3/2/66    |
 | 0924 | 21459: How old are you？      | -                                    | E |  http://cs101.openjudge.cn/2024fallroutine/21459         |
 |            | sy64: 寻找元素对 | -   | E  | https://sunnywhy.com/sfbj/3/2/64    |
 | 0923 | 23554: 小朋友春游      | -                                    | E |  http://cs101.openjudge.cn/2024fallroutine/23554         |
