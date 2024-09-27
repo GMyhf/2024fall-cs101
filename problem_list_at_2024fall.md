@@ -29,6 +29,8 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 0927 | 04110: 圣诞老人的礼物-Santa Clau’s Gifts      | -                      | - |  http://cs101.openjudge.cn/2024fallroutine/04110         |
+|            | 230B. T-primes | binary search, implementation, math, number theory   | 1300  | https://codeforces.com/contest/230/problem/B    |
 | 0926 | 01218: THE DRUNK JAILER      | -                                    | - |  http://cs101.openjudge.cn/2024fallroutine/01218         |
 |            | sy69: 日期加法   | -   | -  | https://sunnywhy.com/sfbj/3/2/69    |
 | 0925 | 01017: 装箱问题      | -                                    | M |  http://cs101.openjudge.cn/2024fallroutine/01017         |
