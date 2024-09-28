@@ -29,6 +29,8 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 0929 | 02783: Holiday Hotel      | -                      | - |  http://cs101.openjudge.cn/practice/02783         |
+|            | 456A. Laptops | sortings   | 1100  | https://codeforces.com/contest/456/problem/A    |
 | 0928 | 02746: 约瑟夫问题      | -                      | - |  http://cs101.openjudge.cn/2024fallroutine/02746         |
 |            | 313B. Ilya and Queries | dp, implementation   | 1100  | https://codeforces.com/contest/313/problem/B    |
 | 0927 | 04110: 圣诞老人的礼物-Santa Clau’s Gifts      | -                      | - |  http://cs101.openjudge.cn/2024fallroutine/04110         |
