@@ -30,7 +30,7 @@ to do
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 | 0930 | 01852: Ants      | -                      | - |  http://cs101.openjudge.cn/practice/01852         |
-|            | 489B. BerSU Ball | greedy, sortings, two pointers   | 1200  | https://codeforces.com/contest/489/problem/B    |
+|            | 489B. BerSU Ball | dfs and similar, dp, graph matchings, greedy, sortings, two pointers | 1200  | https://codeforces.com/contest/489/problem/B    |
 | 0929 | 02783: Holiday Hotel      | -                      | - |  http://cs101.openjudge.cn/2024fallroutine/02783         |
 |            | 456A. Laptops | sortings   | 1100  | https://codeforces.com/contest/456/problem/A    |
 | 0928 | 02746: 约瑟夫问题      | -                      | - |  http://cs101.openjudge.cn/2024fallroutine/02746         |
