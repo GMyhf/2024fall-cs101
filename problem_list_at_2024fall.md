@@ -29,6 +29,8 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 1001 | 02786: Pell数列       | -                      | - |  http://cs101.openjudge.cn/practice/02786         |
+|            | 492B. Vanya and Lanterns  | binary search, implementation, math, sorting | 1200  | https://codeforces.com/contest/492/problem/B    |
 | 1001 | 02753: 菲波那契数列       | -                      | - |  http://cs101.openjudge.cn/2024fallroutine/02753         |
 |            | 433B. Kuriyama Mirai's Stones  | dp, implementation, sorting | 1200  | https://codeforces.com/contest/433/problem/B    |
 | 0930 | 01852: Ants      | -                      | - |  http://cs101.openjudge.cn/2024fallroutine/01852         |
