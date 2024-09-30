@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 2103 GMT+8 Sep 29 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0548 GMT+8 Oct 1 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 0823 每天放2个题目供同学们自愿练习，期中开始，每天放1个题目。争取每20个题目难度提升100。  
@@ -29,6 +29,8 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 1001 | 02753: 菲波那契数列       | -                      | - |  http://cs101.openjudge.cn/2024fallroutine/02753         |
+|            | 433B. Kuriyama Mirai's Stones  | dp, implementation, sorting | 1200  | https://codeforces.com/contest/433/problem/B    |
 | 0930 | 01852: Ants      | -                      | - |  http://cs101.openjudge.cn/2024fallroutine/01852         |
 |            | 489B. BerSU Ball | dfs and similar, dp, graph matchings, greedy, sortings, two pointers | 1200  | https://codeforces.com/contest/489/problem/B    |
 | 0929 | 02783: Holiday Hotel      | -                      | - |  http://cs101.openjudge.cn/2024fallroutine/02783         |
