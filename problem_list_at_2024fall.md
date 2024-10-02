@@ -29,7 +29,7 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
-| 1006 | 03253: 约瑟夫问题No.2      | -                                    | E |  http://cs101.openjudge.cn/2024fallroutine/03253         |
+| 1006 | 03253: 约瑟夫问题No.2      | -                                    | - |  http://cs101.openjudge.cn/2024fallroutine/03253         |
 |            | sy76: 十进制转K进制 简单 | -   | E  | https://sunnywhy.com/sfbj/3/5/76    |
 | 1005 | 02981: 大整数加法       | -                      | - |  http://cs101.openjudge.cn/practice/02981         |
 |            | 903C. Boxes Packing  | greedy | 1300  | https://codeforces.com/contest/903/problem/C    |
