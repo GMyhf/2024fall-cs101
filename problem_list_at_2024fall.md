@@ -35,7 +35,7 @@ to do
 |            | 903C. Boxes Packing  | greedy | 1300  | https://codeforces.com/contest/903/problem/C    |
 | 1004 | 02810: 完美立方       | -                      | - |  http://cs101.openjudge.cn/practice/02810         |
 |            | 545D. Queue  | brute force | 1300  | https://codeforces.com/contest/545/problem/D    |
-| 1003 | 02792: 集合加法       | -                      | - |  http://cs101.openjudge.cn/practice/02792         |
+| 1003 | 02792: 集合加法       | -                      | - |  http://cs101.openjudge.cn/2024fallroutine/02792         |
 |            | 508A. Pasha and Pixels  | brute force | 1100  | https://codeforces.com/contest/508/problem/A    |
 | 1002 | 02786: Pell数列       | -                      | - |  http://cs101.openjudge.cn/2024fallroutine/02786         |
 |            | 492B. Vanya and Lanterns  | binary search, implementation, math, sorting | 1200  | https://codeforces.com/contest/492/problem/B    |
