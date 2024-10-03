@@ -37,7 +37,7 @@ to do
 |            | sy76: 十进制转K进制 简单 | -   | E  | https://sunnywhy.com/sfbj/3/5/76    |
 | 1005 | 02981: 大整数加法       | -                      | - |  http://cs101.openjudge.cn/practice/02981         |
 |            | 903C. Boxes Packing  | greedy | 1300  | https://codeforces.com/contest/903/problem/C    |
-| 1004 | 02810: 完美立方       | -                      | - |  http://cs101.openjudge.cn/practice/02810         |
+| 1004 | 02810: 完美立方       | -                      | - |  http://cs101.openjudge.cn/2024fallroutine/02810         |
 |            | 545D. Queue  | brute force | 1300  | https://codeforces.com/contest/545/problem/D    |
 | 1003 | 02792: 集合加法       | -                      | - |  http://cs101.openjudge.cn/2024fallroutine/02792         |
 |            | 508A. Pasha and Pixels  | brute force | 1100  | https://codeforces.com/contest/508/problem/A    |
