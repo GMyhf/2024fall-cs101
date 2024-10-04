@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 2348 GMT+8 Oct 3 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0003 GMT+8 Oct 5 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 0823 每天放2个题目供同学们自愿练习，期中开始，每天放1个题目。争取每20个题目难度提升100。  
@@ -35,7 +35,7 @@ to do
 |            | sy83: 公共前缀 | -   | -  | https://sunnywhy.com/sfbj/3/6/83    |
 | 1006 | 03253: 约瑟夫问题No.2      | -                                    | - |  http://cs101.openjudge.cn/practice/03253         |
 |            | sy76: 十进制转K进制 简单 | -   | E  | https://sunnywhy.com/sfbj/3/5/76    |
-| 1005 | 02981: 大整数加法       | -                      | - |  http://cs101.openjudge.cn/practice/02981         |
+| 1005 | 02981: 大整数加法       | -                      | - |  http://cs101.openjudge.cn/2024fallroutine/02981         |
 |            | 903C. Boxes Packing  | greedy | 1300  | https://codeforces.com/contest/903/problem/C    |
 | 1004 | 02810: 完美立方       | -                      | - |  http://cs101.openjudge.cn/2024fallroutine/02810         |
 |            | 545D. Queue  | brute force | 1300  | https://codeforces.com/contest/545/problem/D    |
