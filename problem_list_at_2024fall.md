@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 0006 GMT+8 Oct 7 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0744 GMT+8 Oct 8 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 0823 每天放2个题目供同学们自愿练习，期中开始，每天放1个题目。争取每20个题目难度提升100。  
@@ -29,7 +29,7 @@ to do
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 | 1009 | 04148: 生理周期       | -                                    | - |  http://cs101.openjudge.cn/practice/04148         |
 |            | sy570: 三方喜欢 | -   | -  | https://sunnywhy.com/sfbj/3/7/570    |
-| 1008 | 04146: 数字方格       | -                                    | - |  http://cs101.openjudge.cn/practice/04146         |
+| 1008 | 04146: 数字方格       | -                                    | - |  http://cs101.openjudge.cn/2024fallroutine/04146         |
 |            | sy569: 双向喜欢 | -   | -  | https://sunnywhy.com/sfbj/3/7/569    |
 | 1007 | 04183: 质数的和与积       | -                                    | - |  http://cs101.openjudge.cn/2024fallroutine/04138         |
 |            | sy83: 公共前缀 | -   | -  | https://sunnywhy.com/sfbj/3/6/83    |
