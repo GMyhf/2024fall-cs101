@@ -1,6 +1,6 @@
-# 20241008-Week5-黎明
+# 20241008-Week5-黎明/My flight
 
-Updated 0752 GMT+8 Oct 8, 2024
+Updated 1105 GMT+8 Oct 8, 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -12,23 +12,69 @@ Updated 0752 GMT+8 Oct 8, 2024
 
 考试时候只有 G++,Python：OJ上面 Python的时限是10倍（因为Python程序跑的慢），C/C++是没有放宽的。洛谷 上面Python吃亏，因为没有放宽时限，拼不过C/C++。
 
+> **2024fall 计概B 十月模考出题安排**
+>
+> 题目难度暂定三档，参考CF, 800~900, 1000~1100，1200～1400。
+>
+> 每个题目
+> 1）时间限制1000ms（如需要可加大），内存限制：65536KB（如需要可加大）。时间和内存如果需要修改，请注明。
+> 2）题面需要中英文双语。其中变量，给出范围。
+> 3）内容包括：描述、输入、输出、两组样例数据，及输出的必要解释。
+> 4）每个题目20组数据。另外，提供几组考虑边界或者特殊情况的手搓数据（可选）。
+> 5）给出题目类型tags和难度，例如：sortings, strings, implementation, 1100。
+> 6）可以是搬来的题目，如从 codeforces.com,  leetcode.cn, luogu.com.cn搬来，注明出处。例如给出link，或者 Leetcode 1552。
 
 
 
+> **2023fall 题目设计考虑**
+>
+> Updated 0934 GMT+8 Dec 25, 2023
+>
+> 1. 考察知识点：题目应涵盖语法、数据结构和算法等主要知识点，以测试学生对这些知识的理解和应用能力。
+>
+> 2. 难度控制：Easy题目大约需要10分钟完成；Medium题目大约需要20分钟完成；Tough题目因为每个学生的能力不同，因人而异。
+>
+> 3. 难度水平：题目的难度低于12份月考和平时最难的几次作业，以确保大多数学生都能够应对。
+>
+> 4. 简洁性：在题目设计时应避免设计过于繁琐的模拟题目，尽量保持简洁明了，突出重点。
+>
+> 5. 可解性：题目设计时应避免设计过于困难或者难以找到思路的题目，如高级贪心题目。学生应该能够有一定的思路来解决问题。
+>
+> 6. 知识点整合：可以将不同的知识点进行组合，例如结合数据结构、常规的贪心算法和动态规划等，以提高题目的综合性和难度。
+>
+> 7. 单一问题：除非特意增加难度，题目设计时尽量避免设计一题多问的情况，让学生集中精力解决一个问题。
+>
+> 8. 学生掌握情况：题目设计应根据班级大多数学生的掌握情况，确保题目的难度与学生的水平相匹配，既不过于简单也不过于困难。
+>
+> 9. 考试2小时：在考试前，学生应保持最佳状态，==充足的睡眠和身体健康非常重要==，这样才能发挥最佳水平。
 
-# Book 计算思维算法实践ch1&ch2 
+
+
+# 一、Book 计算思维算法实践ch1&ch2 
 
 引自《 计算思维算法实践》/Book_my_flight
 
 ## 前言
 
-掌握了编程语言的语法后，学习的重点就转移到结合具体的题目体会解题中的思维方式。本书为练习题目选择了两个主要的编程平台，https://codeforces.com/（记为 CF），和 http://openjudge.cn/ （记为 OJ）。Codeforces 是国外著名的编程竞赛平台。题目种类丰富、分为不同的难度等级，还提供测试数据。很多题目非常有意思，有不少陷阱，很能训练思维。该平台最为友好的地方是代码和解题思路是公开的，能看到很多高水平的代码。题目页面右下角可以看到题目的 tags 和 tutorial 解题思路提示。如果想查看某个题目其他人提交的代码，替换链接中数字和最后一个字母，例如查看580C 可以访问
+### 致使用本书的学生
+
+当我们阅读时，另一个人替我们思考：我们只是重复他的思维过程。
+
+When we read, another person thinks for us: we merely repeat his mental process. 
+
+——叔本华
+
+
+
+​	计算思维离不了从数学的角度和计算机的角度考虑问题，有时候也涉及到对物理知识的应用。很多题目是对现实问题的再现、简化或变形，因此解题是训练新手解决现实问题的一种有效手段。在解题过程中，学习者需要保持清晰的思路缜密的逻辑，形成思考问题的方式方法，如此日积月累，自然而然就会养成计算思维。下面摘录两位初学者在培养计算思维的过程中给出的心得体会。
+
+​	掌握了编程语言的语法后，学习的重点就转移到结合具体的题目体会解题中的思维方式。本书为练习题目选择了两个主要的编程平台，https://codeforces.com/（记为 CF），和 http://openjudge.cn/ （记为 OJ）。Codeforces 是国外著名的编程竞赛平台。题目种类丰富、分为不同的难度等级，还提供测试数据。很多题目非常有意思，有不少陷阱，很能训练思维。该平台最为友好的地方是代码和解题思路是公开的，能看到很多高水平的代码。题目页面右下角可以看到题目的 tags 和 tutorial 解题思路提示。如果想查看某个题目其他人提交的代码，替换链接中数字和最后一个字母，例如查看580C 可以访问
 
 http://codeforces.com/problemset/status/580/problem/C。
 
 ​	Openjudge是北京大学研制的 ACM 训练和相关程序课程在线练习、考试系统，国内有很多高校和兴趣社区在其中开设了自己的小组，用户可以加到各个小组中做题。本书涉及到的中文题目都在 cs101 小组，所以文中出现的 OJ 通常指 http://cs101.openjudge.cn。OJ 上面的题目没有给出难度分类，因此本书特意给出了部分题目的难度分类作为示例，便于初学者从简单题目开始练习。在 OJ 上找到题目的方法是，访问 http://cs101.openjudge.cn/, 登录后，点击“加入”按钮（ 表示加入"cs101"组，只需要初次访问时候加入 1 次），然后点击 “题库（包括计概、数算题目）。 其中编号小于等于04152的题目是从“百练”小组 http://bailian.openjudge.cn/ 引入到 cs101 小组的，因此题目 ID 尽量保持末四位一致。如"装箱问题"的题目 ID 是 01017，对应百练小组中的 1017 题目。
 
-​	在这些平台上编程所用的语言主要选择 Python。个别题目超时不能 AC 时选择 C++。选用 Python 语言对于学习编程的人来说有个特别大的好处：有的题目用 C++ 写就直接 AC 了，但是用 Python 写会超时，这种情况下，学习者会琢磨如何优化，比如分析时间复杂度、更换算法等，这对于理解计算机相关原理特别有帮助。问题求解的关键在于算法，因此如何想到解决问题的办法是思维训练的重点，相比而言，语言之间的可移植性、代码的模块化程度和执行效率等方面的差异已经变得不那么重要了。
+​	在这些平台上编程所用的语言主要选择 Python。个别题目超时不能 AC 时选择 C++。选用 Python 语言对于学习编程的人来说有个特别大的好处：有的题目用 C++ 写就直接 AC 了，但是用 Python 写会超时，这种情况下，学习者会琢磨**如何优化，比如分析时间复杂度、更换算法**等，这对于理解计算机相关原理特别有帮助。问题求解的关键在于算法，因此如何想到解决问题的办法是思维训练的重点，相比而言，语言之间的可移植性、代码的模块化程度和执行效率等方面的差异已经变得不那么重要了。
 
 ​	各个知识点对应的题目难度怎么定呢？本书采用多个平台横向比较，按照经验进行了对应。如图P-1所示，是国内比较知名的算法和程序设计类题库洛谷（http://luogu.com.cn/），其中的 “普及/提高-” 级别大致对应CF 中题目难度范围为 “1200~1600”；“入门” 级别大致对应CF中 “800~1000”的范畴。学习者可以通过了解编程语法入门，而后通过有适配难度的题目进行思维训练，将解决问题的能力上升到更高的高度。
 
@@ -40,11 +86,336 @@ http://codeforces.com/problemset/status/580/problem/C。
 
 
 
+### 致使用本书的教师
+
+​	本书的编写初衷是想将《计算概论》教学中积累的内容进行系统整理，使之成为以培养计算思维算法实践为目标的合适教材。因此本节在表P-1附上笔者 2021 年秋季学期《计算概论》课程安排，供阅读本书的教学工作者参考。第3章的附录 3A 初学编程常见问题，附录 3B 是 课程作业和两位选课学生提供的答案。一学期有 16 周，每周 3 学时，练习到的题目约为100~120 个。实践题目分布在 CF 和 OJ 两个编程平台上，在OJ平台的课程小组中有作者教学团队贡献的题目。
+
+​	为了避免编程平台偶尔的访问故障、题目网址的变化，并确保本书的完整性，书中对题目给出了描述信息，及访问链接。所有题目均给出我们的题解以及简单明了的解题思路，下载地址是 https://github.com/GMyhf/2020fall-cs101。这些内容来自教师、助教，甚至选课学生的贡献，也包括从网上或者其他书籍整理借鉴的部分内容，对于这类内容，本书已尽可能详细地列出了参考来源，如有遗漏将尽量及时更正。
+
+​	简明的解题思路在启发思考、激活联想中非常重要，如果能用一两句话说明的，就尽量避免冗长叙述。本着这一原则，本书有些题目的解题思路会甄选学习亲历者给出的言简意赅、具有点睛效果的解题思路。
+
+
+
+表P-1 北京大学2021年秋季学期《计算概论》课程安排
+
+| 1. 课程介绍和概述      | 2. Python语法                |
+| ---------------------- | ---------------------------- |
+| 3. 计算机发展简史      | 4. 开发环境、程序语言        |
+| 5. 月考、习题总结      | 6. 数据类型                  |
+| 7. 控制结构（1/2）     | 8. 控制结构（2/2）           |
+| 9. 月考、二维数组      | 10. 递归、动态规划（1/2）    |
+| 11. 动态规划（2/2）    | 12. DFS搜索                  |
+| 13. 月考、算法分析     | 14. BFS搜索                  |
+| 15. 课程总结、习题总结 | 16. 课时允许情况下的拓展项目 |
+
+
+
+​	本书精心选择了难度在“普及/提高-”级别的120个题目，分门别类组织到如图P-2所示的编程题目类型框架中，供有需要的学习者和教学者参考。其中非算法类题目 69 个，算法类题目 51 个，如表P-2 所示。算法类题目重点学习①贪心、②动态规划和③图搜索，学习者可以参照这个划分选择自己先从哪里入手。
+
+
+
+![image-20231010001700956](https://raw.githubusercontent.com/GMyhf/img/main/img/202310100017260.png)
+
+<center>图P-2 编程题目类型框架</center>
+
+
+
+表P-2 每种题目类型需要练习的数目
+
+| 题目类型 | 题目数                         |
+| -------- | ------------------------------ |
+| 语法     | 44（至少需要练习其中的 30 个） |
+| 数学     | 18（其中 10 个是矩阵相关）     |
+| 数据结构 | 7                              |
+| 贪心     | 18                             |
+| 动态规划 | 13                             |
+| 递归     | 3                              |
+| 二分查找 | 3                              |
+| 图搜索   | 14                             |
+
+
+
+​	编程题目中的非算法题是基础，侧重从计算机的工作模式来解决问题。算法题则通常既要了解计算机工作模式，又要结合数学的思考方法，并使用恰当的数据结构。算法是一步一步解决问题的过程，一个好的算法在时间或空间方面具有优势，不同类型的题目需要不同的算法来解决，同一个题目可能用不同的算法来解决。基本算法包括`穷举`（brute force）、`贪心`（greedy）、`动态规划`（Dynamic Programming, DP）、`深度优先搜索`（Depth First Search, DFS，是一种回溯法）、`广度优先搜索`（Breath First Search, BFS）、`二分查找` （binary search）和`递归`（recursive）。其中尤为重要的三类算法是：贪心、动态规划和回溯法。非算法题目包括：`语法`类、`数学`类和`数据结构`类。它们主要侧重语法的掌握以及对数据结构的熟悉和运用。因为 Python 等高级语言通常已将排序函数进行了很好的包装并提供调用，所以本章不单独列出排序算法一类，但冒泡排序稍有例外，它的本质是贪心法，因此在书中贪心算法一节会带出这个知识点。此外，虽然高级语言也经常会提供二分查找的现成函数，但是往往不满足需求，多数还需要自己实现。博弈和并查集算法也是现实中常见的问题，本书把博弈归入了数学类，并查集归入了数据结构部分。加入这两种问题的相关算法也是为了拓展读者的解题思路。
+
+​	计算思维算法实践学习建议：
+
+1）初学者可以从非算法题目中的语法部分开始，以熟练掌握编程语言的数据类型和两种控制结构为主要目标，对应3.2节。鉴于 CF 平台提供测试数据，所以推荐在 CF 上找难度为 800~1000 的题目开始练习，如果对英文题面有畏难情绪，也可以在 OJ 平台进行。语法题目通常涉及到简单计算、 排序、字符串、穷举和模拟实现等类型。语法题目至少需要练习其中的 30 个，有基础或者进展快的读者可以相应减少本部分的练习数目。另外，穷举是很直观的算法，因此本书把穷举型题目归入了语法类；排序题目可直接使用 Python 编程语言提供的函数来实现就可以。
+
+2）`数学`类题目对应3.2节，主要是考察用数学知识解决计算问题，包括`矩阵`型、`几何`、`数论`和`博弈`等类型。本书所选的数学类题目难度级别对应中级或者难题。
+
+① 其中， 矩阵型题目是必须掌握的，因为很多算法的实现离不开对矩阵的理解。有时题干较长但题目不难，通常需要双重循环，行列要分清楚，另外注意行号、列号访问不要越界。需要练习 10 个矩阵题目。
+
+② 几何题目需要能够推导出数学公式，或者找到现成的计算公式，如`CF270A: Fancy Fence`。
+
+③ 在稍微复杂一点的数论和博弈题目求解过程中，本书想特别谈一下超时的问题。首先，做题阶段遇到运行超时并不一定就是坏事。虽然编程历来要考虑计算效率，时间是程序可行性的一个重要考虑因素，但初学者遇到解题超时可以“倒逼”他们想解决办法。以数论题目`CF230B: T-primes`为例，这道题如果按常规的除余法来解，用 Python 编写的代码运行就容易超时，提交不通过。网上可以找到时间复杂度更低的筛法，如果学习者能不断设法优化，就能既掌握时间复杂度原理，又体会到筛法的动态规划思想。这个题目如果用 C++ 来解，则失去了“倒逼”的意义，因为用简单的除余法就可以 AC，也就不会让人想到要改进筛法。
+
+​	其次，遇到超时如何排查？通常是先考虑换用时间复杂度低的数据结构、算法，如果仍超时，再考虑使用 PyPy、 C++ 或者 C 语言提交。以博弈题目 `CF1425A: Arena of Greed` 为例，这一题即使思路正确也容易超时。但如果提交时选择 PyPy 解释器来解释代码就可以AC，这是因为PyPy的解释速度比较高，只是考虑兼容性问题，通常都是选择 Python。
+
+3）`数据结构`类题目对应3.4节，重点是分清楚每种数据结构（包括：`字典`、`集合`、`序列`、`栈`、`队列`、`堆`、`图`、`树`）的定义及时间复杂度，可以结合 2.6 节算法分析来理解。不少高级语言已经很好地封装了常用的数据结构，如 Python 中对字典、集合等数据类型的实现就已经在时间复杂度上做了优化考虑，可以方便的以数据类型方式直接使用。程序是数据结构加算法，算法题目的练习会大量结合数据结构使用，如深度优先搜索会用到栈，宽度优先搜索会用到队列。数组更是几乎每一个题目都要用到。鉴于算法部分会练习到数据结构，本章3.4节只安排了 7 个题目的练习。
+
+4）`贪心`算法类包括`常规`和`非常规`两种，对应3.5节。常规的贪心算法类似于中规中矩的穷举法，根据题干描述容易确定贪心策略，只是需要注意逻辑清晰。读者可以结合 `OJ01017：装箱问题`来体会。非常规的贪心算法包括`双指针`、`冒泡排序`和`哈夫曼编码`等典型问题。这些题目的贪心策略不拘一格，不容易想到，需要先在纸上规划。有的属于难题级别，如双指针策略的`OJ022287：田忌赛马`。哈夫曼编码策略的`OJ18164：剪绳子`，如果使用堆这种数据结构，可以简化寻找最短绳子的过程。`OJ12559：最大最小整数 v0.3`一题对于初学也是难题，是冒泡排序使用了贪心策略。其他的题目如`OJ01852: Ants`涉及到物理知识，如果能想到弹性碰撞就比较容易找出解法。另外因为只是编程序而不需要证明，有时候想到一个贪心策略即使拿不准能够保证全局最优，也可以直接编程提交测试。本书中的贪心类题目练习达到 18个。
+
+5）第3.6节进入具有挑战性的部分——`动态规划`。这类题目乍一看可以用`穷举法`来实现，但是会超时。可以先考虑更换`数据结构`，比如把顺序访问的数组更换为时间复杂度低的字典或者集合。如果依然超时，还可以考虑采用类似于归纳法的动态规划，以空间换时间，对搜索过的路径或者子问题保存结果，避免之后遇到相同的子问题再重复计算。这类算法需要计算思维上的一个悟的过程，如果想不清楚可以在纸上或者利用 pythontutor.com 辅助规划。从相对简单的`序列`型动态规划题目开始，进而练习`矩阵`型。本书中的动态规划题目练习有13 个。
+
+6）`递归`类题目对应3.7节，递归的特点是一个函数直接或间接地调用自己。所有的递归算法都有一个基础案例，递归算法必须改变其状态，并向着基础案例的方向发展。典型的递归题目是 `OJ02694：波兰表达式`和`OJ04147：汉诺塔问题`。本书有递归练习题目3个，递归法是回溯法的基础。
+
+7）`二分查找`类的题目对应3.8节，二分查找是按照计算机的工作方式考虑问题的典型，即对于规模有限的问题，讲究先完成、再完美，用逻辑简单的“尝试”的思路来解决问题。虽然 Python 编程语言提供了二分查找函数，但是最好要自己实现二分查找来解决形形色色的实际问题。典型的二分查找题目是`OJ4135：月度开销`和`OJ08210：河中跳房子`。本书中二分查找题目练习3个。
+
+8）`图搜索`对应3.9节，DFS（深度优先搜索）和BFS（广度优先搜索）都是图搜索算法。它们的目标都是在图中寻找特定的节点或遍历整个图。DFS是一种通过沿着图的深度进行搜索的算法。它从起始节点开始，沿着一条路径一直深入直到无法再继续深入为止，然后回溯到前序节点，继续探索下一条路径。DFS通常使用递归或栈数据结构实现。BFS则是一种通过按照距离起始节点的距离逐层进行搜索的算法。它从起始节点开始，首先访问其所有的直接邻居节点，然后再逐层访问它们的邻居节点，直到找到目标节点或遍历完整个图。BFS通常使用队列数据结构实现。
+
+回溯法可以看作是一种利用深度优先搜索策略的、在解空间树中搜索解的算法。它是一种通过不断地尝试可能的解决方案，并在不满足条件时进行回退的算法。它按深度优先搜索策略，从根结点出发深入搜索解空间树。当探索到某一结点时，要先判断该结点是否包含问题的解，如果包含，就从该结点出发继续探索，如果该结点不包含问题的解，则撤销该选择并回溯到上一级节点。若用回溯法的所有可能的搜索路径都搜索不到解，则问题的解不存在。
+
+典型的深度优先搜索题目，如`OJ05585：晶矿的个数`，`OJ2754：八皇后`。典型的宽度优先搜索题目，如`OJ21608：你和你比较熟悉的同学`，`CF580C: Kefa and Park`。
+
+​	DFS类的题目可以结合`动态规划`、`图`、`矩阵`等知识形成更难的题目，如`OJ01088：滑雪`和`OJ01661: Help Jimmy`就比较难；还可以结合剪枝技术，如`OJ04129：变换的迷宫`。但是图搜索题目通常遵循一定的套路，一旦掌握，会感觉比`动态规划`题目简单。
+
+​	本书中图搜索题目练习达到14个。
+
+
+
+### 题目类型
+
+​	为了感悟和提高计算思维，需要在简单、中等、困难三个层次的题目上，结合不同的算法或数据结构来考虑如何解决问题。本书配套的题目通过 标签（tag）来指明题目的类型，即主要考察的算法或数据结构，再按照不同难度层次给出相应题目的解答。
+
+#### 算法标签
+
+​	沿用 Codeforces.com 习惯，每个题目主要考察的算法或者数据结构用tag标明，初学编程的人需要练习的题目，主要涉及到的tag包括：
+
+​	bfs（breadth-first search，宽度优先遍历，记为 bfs）, binary search, brute force, 
+
+​	dfs（depth-first search深度优先遍历，记为 dfs）,  data structures, dict , dp（dynamic programming，动态规划，记为 dp）, 
+
+​	graph, greedy, implementation, math, matrices, number theory, physics, recursion, 
+
+​	sorting, stack, strings, tree, two pointers。
+
+
+
+​	在理解 bfs和dfs 之前，先介绍图遍历（ graph traversal, also known as graph search ）概念。图的遍历是指访问图中每个顶点的过程，这种遍历是按照访问顶点的顺序来分类的。一个问题的求解过程是从最开始的状态，利用已经存在的规则和条件改变当前状态，直到把当前状态变为最终目的状态。遍历是把中间出现的状态全部连接起来，形成一条遍历路径的过程。通过图的遍历，可以找到这条径。图的遍历算法主要有两种，一种是按照深度优先的顺序展开遍历的算法，也就是dfs；另一种是按照宽度优先的顺序展开遍历的算法，也就是bfs。bfs和dfs都是盲目的遍历方法，也就是说，遍历算法并不使用经验法则算法， 并不考虑结果的可能地址，只是彻底地遍历整张图，直到找到结果为止。
+
+​	数论（ number theory ）主要研究整数的性质。初等数论是用初等方法研究的数论，它的研究方法本质上说，就是利用整数环的整除性质，主要包括整除理论、同余理论、连分数理论。
+
+
+
+> 我学算法的时候感觉也并没有多难。因为每一种算法都会有它独特的地方，即使最开始接触的时候不能理解，做几道例题并把题解看懂完全可以踏进新算法的大门。而学到最后，我发现同一个算法即使隐藏在不同的题目中，代码的核心部分也都极为相似。例如dp 的核心是状态转移方程，搜索的核心是用列表储存访问过的点，再将新点不断加入待访问列表中（不同搜索方法会以不同的顺序），理解了算法的核心操作那么算法就不再是一件难事了。 【学习者 和沛淼，2021年秋】
+
+
+
+#### 难度分级
+
+​	openjudge.cn 编程平台中题目没有难度指示，而codeforces.com 平台有提供题目难度指示，用整数表示，数字越大题目难度越大。针对零基础的初学者，本书把 两个编程平台中需要练习的题目，按照简单、中等、困难（Easy, Medium, Hard）分为三个层次，每层进一步给出两级难度。难度依次升高的顺序是 Easy_Level1 -> Easy_Level2 -> Medium_Level1 -> Medium_Level2 -> Hard_Level1 -> Hard_Level2。针对每一级难度，给出相应题目的ID （ OJ 开始的 ID 表示题目在 cs101.openjudge.cn 平台，CF 开始的 ID 表示题目在 codeforces.com 平台 ）、标题、tag。根据题目ID，可以在相应平台上找到题目。题目ID前面有*号的，表示该题目对于初学编程者较难。
+
+​	书中给出了两个编程平台的部分题目的难度级别，而没有涵盖本书中所有题目。因为熟悉这些题目后，学习者就能够逐渐自行判断出其他题目的难度。两个平台都运行了多年，很多题目是经典题目，CF 平台本身提供答案、解题思路和测试数据，cs101.openjudge.cn 通常可以通过搜索引擎获得答案。鉴于 CF 提供信息多，编程开始推荐使用 CF 平台，练习题目过半时候，可以考虑开始并行使用 OJ 平台。
+
+​	OJ 的题目列表如图P-3所示。在CF上的题目有一列表示难度，如图P-4所示主表格右数第二列的整数是难度级别指示。CF题目难度从800开始，800表示最简单的题目。800～1000难度的题目适合练习编程语法，1000～1600适合计算思维实践。有些读者对英文题目不太适应，可以先借助一些在线翻译工具帮助理解，题目读多了就会慢慢熟悉 。
+
+
+
+![image-20230109200757678](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20230109200757678.png)
+
+<center>图P-3 cs101.openjudge.cn 题目列表，以中文为主、没有难度指示，不提供答案和解题思路</center>
+
+
+
+![image-20230109200835412](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20230109200835412.png)
+
+<center>图P-4 codeforces.com 题目列表，以英文为主、提供答案、解题思路和测试数据</center>
+
+
+
+​	有的题目标题后面有 v0.x 字眼，说明题目有 bug，修改过。有的题目可以利用不同的算法或者数据结构求解，在 tag 中并列给出。初学者可以先不看有星号标识的题目，这些题目相对较难。
+
+
+
+**Easy_Level1**
+
+​	给出 4 个题目，Tags包括：brute force, math, number theory, strings。
+
+OJ02733：判断闰年, math
+
+OJ02981：大整数加法, math/strings
+
+OJ03143：验证“哥德巴赫猜想”, math
+
+CF122A: Lucky Division, brute force, number theory, 1000
+
+
+
+**Easy_Level2**
+
+​	给出 9 个题目，Tags包括：binary search, brute force, greedy, implementation, matrices, math, number theory, strings, sorting。
+
+OJ02808：校门外的树，implementation
+
+*OJ19943：图的拉普拉斯矩阵，matrices
+
+*OJ19944：这一天星期几v0.2，math
+
+OJ19949：提取实体v0.2，strings
+
+OJ03670：计算鞍点，matrice
+
+OJ04110：圣诞老人的礼物，greedy
+
+OJ18223：24点，brute force/implementation
+
+OJ21532：数学密码，brute force/implementation/number theory
+
+CF492B: Vanya and Lanterns, binary search/implementation/math/sortings, 1200
+
+
+
+**Medium_Level1**
+
+​	给出 17 个题目，Tags包括：dp, geometry, greedy, implementation, matrices, physics, recursion, stack, strings
+
+OJ01852: Ants, physics/greedy
+
+*OJ02694：波兰表达式，recursion/strings/stack
+
+*OJ02746：约斯夫问题，implementation
+
+OJ02757：最长上升子序列，dp
+
+OJ02760：数字三角形，dp
+
+OJ02806：公共子序列，dp
+
+OJ04015：邮箱验证，strings
+
+OJ03532：最大上升子序列和，dp
+
+OJ12558：岛屿周长，matrice
+
+OJ12560：生存游戏，matrices
+
+*OJ18106：螺旋矩阵，matrice
+
+OJ18161：矩阵运算，matrices
+
+OJ19942：二维矩阵上的卷积运算v0.2，matrices
+
+OJ21554：排队做实验v0.2，greedy
+
+CF270A: Fancy Fence, geometry/implementation/math, 1100
+
+CF313B: Ilya and Queries, dp/implementation, 1100
+
+CF545C: Woodcutters, dp/greedy, 1500
+
+
+
+**Medium_Level2**
+
+​	给出 15 个题目，Tags包括：dfs, dict, dp, greedy, implementation, number theory, stack , strings, two pointers
+
+*OJ01017：装箱问题，greedy
+
+OJ02773：采药，dp
+
+OJ03704：括号匹配，stack
+
+OJ05585：晶矿的个数，dfs
+
+OJ12559：最大最小整数v0.3，strings
+
+*OJ12757：阿尔法星人翻译官，implementation
+
+OJ16528：充实的寒假生活，greedy
+
+OJ18108：池塘数目，dfs
+
+OJ18182：打怪兽，dict
+
+OJ18160：最大连通域面积，dfs
+
+OJ18211：军备竞赛，greedy/two pointers
+
+OJ23421：小偷背包，dp
+
+*CF189A: Cut Ribbon, brute force/dp, 1300
+
+*CF230B: T-Primes, binary search/implementation/math/number theory, 1300
+
+CF368B: Sereja and Suffixes, data structures/dp, 1100
+
+
+
+**Hard_Level1**
+
+​	给出 15 个题目，Tags包括：binary search, brute force, data structures, dfs, dp, implementation, matrices, two pointers
+
+*OJ01088：滑雪，dfs/dp
+
+OJ02698：八皇后问题解输出，dfs
+
+*OJ02754：八皇后，dfs
+
+OJ02995：登山，dp
+
+*OJ04123：马走日，dfs
+
+*OJ04135：月度开销，binary search
+
+*OJ08210：河中跳房子，binary search
+
+*OJ16531：上机考试，matrices
+
+OJ19930：寻宝，bfs
+
+OJ19948：因材施教，greedy
+
+*OJ21577：护林员盖房子，matrix/implementation
+
+OJ21608：你和你比较熟悉的同学，bfs/dfs
+
+CF455A: Boredom, dp, 1500
+
+CF466C: Number of Ways, binary search/brute force/data structures/dp/two pointers, 1700
+
+CF1443C: The Delivery Dilemma, binary search/greedy/sortings, 1400
+
+
+
+**Hard_Level2**
+
+​	给出 6 个题目，Tags包括：bfs, dfs, dp, graph, greedy , tree
+
+OJ01011: Sticks, dfs
+
+*OJ01661: Help Jimmy, dfs/dp
+
+*OJ02287: Tian Ji -- The Horse Racing, greedy
+
+OJ04129：变换的迷宫，bfs
+
+*OJ18164：剪绳子，greedy
+
+*CF580C: Kefa and Park, bfs/dfs
+
+
+
+### 编程题目逐行讲解
+
+​	对于初次编程的同学，如果看不懂代码，可以参考编程题目逐行讲解视频，如图P-5所示，主要是2021年秋课程助教录制的。这些有逐行代码讲解的视频，是一学期中的作业题目，放在 https://space.bilibili.com/502167099/channel/collectiondetail?sid=454037。
+
+​	本书中涉及题目的代码是笔者整理的，放在 https://github.com/GMyhf/2020fall-cs101。
+
+![image-20230109201933468](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20230109201933468.png)
+
+<center>图 P-5 逐行讲解题目合集</center>
+
+
+
+
+
+
+
 ## 第1章计算机文化历史和原理
 
-## 1.1 计算机文化历史
+### 1.1 计算机文化历史
 
-### 1.1.1 计算机科学
+#### 1.1.1 计算机科学
 
 ​	在当今世界，几乎所有专业都与计算机息息相关。但是，只有某些特定职业和学科才会深入研究计算机本身的制造、编程和使用技术。用来诠释计算机学科内不同研究领域的各个学术名词的涵义不断发生变化，同时新学科也层出不穷。六个主要的计算机学科（discipline of computing）包括^[1][2]^： 
 
@@ -71,7 +442,7 @@ http://codeforces.com/problemset/status/580/problem/C。
 
 <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202410080818117.png" alt="image-20241008081759823" style="zoom:50%;" />
 
-### 1.1.2 摩尔定律
+##### 1.1.2 摩尔定律
 
 ​	摩尔定律（Moore's law）是由英特尔（Intel）创始人之一戈登·摩尔（Gordon Moore）提出的，被称为计算机第一定律。它是指集成电路上可容纳的晶体管数目，约每隔两年便会增加一倍。而后来被英特尔首席执行官大卫·豪斯（David House）修正为，预计18个月芯片的性能将会提高一倍，也就是说集成电路上晶体管集成度越高，将使造出的芯片的处理速度越快，性能大约以集成度的倍数增长。
 
@@ -87,9 +458,9 @@ http://codeforces.com/problemset/status/580/problem/C。
 
 ​	戈登·摩尔是CPU 生产商 Intel 公司的创始人之一。1965 年提出“摩尔定律”， 1968 年创办 Intel 公司。摩尔 1929 年 1 月 3 日出生在美国加州的旧金山，曾获得加州大学伯克利分校的化学学士学位，并且在加州理工大学（CIT）获得物理和化学两个博士学位。50 年代中期他和集成电路的发明者罗伯特·诺伊斯（Robert Noyce，1927 年 12 月 12 日－ 1990 年 6 月 3 日）一起，在威廉·肖克利半导体公司工作。后来，诺伊斯和摩尔等 8 人集体辞职创办了半导体工业史上有名的仙童半导体公司（Fairchild Semiconductor）。仙童成为现在的  Intel 和 AMD 之父。 1968年，摩尔和诺伊斯一起退出仙童公司，创办了 Intel。Intel 初期致力于开发当时计算机工业尚未开发的数据存储领域，后来，Intel 进行战略转移，专攻微型计算机的核心部件 CPU。
 
-### 1.1.3、1.1.4 skip
+##### 1.1.3、1.1.4 skip
 
-### 1.1.5 计算机发展简史
+##### 1.1.5 计算机发展简史
 
 ​	硬件是计算机中固态可见的部分，看得见，摸得到。计算机械有着很长的历史，然而最初的计算设备是为特殊用途而设计的。大约公元前 100 年出现的安提凯希拉装置（Antikythera mechanism），1901 年于希腊安提凯希拉岛上的一艘古船残骸中被发现的随船沉没的钟形装置。该装置由一系列可以被控制的铜质齿轮（超过30个）、曲柄和刻度盘组成。百余年后，科学家终于在现代先进技术辅助下，揭开它惊人谜底——这座名为“安提凯希拉装置”的装置竟然是一台两千年前的超级天文“计算机”，天文学家计算天体运行周期的工具，它的先进性在其制成后千年间无人超越。算盘之类的算术工具，尤其是在亚洲地区已经有上千年的使用历史。在约翰·纳皮耶描述了对数之后不久，计算尺于17世纪早期被发明了出来。和现代计算机最接近的先驱是雅各提花织机，在 19 世纪左右由法国的约瑟夫·马里·雅各发明，通过多行打孔的矩形卡片来确定特定的编织图案。这种提花织机是“可编程的”，可以通过改变打孔卡片发出的指令来改变编织的图案。这种可节省人力的纺织机械的发明，导致很多编织工人失去了工作，并因此造成了社会混乱。1811~1816 年在英国发生的卢德运动就是一个针对机械化的暴力抗议。现代的计算机技术同样会对一些传统工作带来冲击。
 
@@ -111,7 +482,7 @@ http://codeforces.com/problemset/status/580/problem/C。
 
 ​	第四代（1971~至今）计算机，主要逻辑元件是大规模和超大规模集成电路，运算速度达到了每秒上亿次，甚至上千万亿（10^15^）次，操作系统不断完善；微型机在家庭得到了普及，并开始了计算机网络时代。
 
-## 1.2 计算机原理
+### 1.2 计算机原理
 
 硬件和软件的组合形成可用的计算系统。硬件通常由软件指示以执行任何命令或指令。计算机硬件包括计算机的物理，有形部件或组件，例如主板（Main Board） 、中央处理器（Central Processing Unit, CPU）、显示器、键盘和鼠标。计算机软件包括系统软件和应用软件。系统软件负责管理计算机系统中各种独立的硬件，使得它们可以协调工作。系统软件中常用的操作系统有 Linux、macOS、Unix、Windows等。应用软件是为了某种特定的用途而被开发的软件。常见的应用软件有文字处理、程序设计、网页浏览器、输入法和媒体播放器等。
 
@@ -119,7 +490,7 @@ http://codeforces.com/problemset/status/580/problem/C。
 
 
 
-### 1.2.1 对计算机的感性认识
+#### 1.2.1 对计算机的感性认识
 
 ​	为了让零基础的同学，产生感性认识，先给出使用 Windows 操作系统的计算机和部件 ，然后展示使用 macOS 系统的 Mac mini 和 MacBook Pro 笔记本。
 
@@ -242,9 +613,9 @@ http://codeforces.com/problemset/status/580/problem/C。
 
 
 
-### 1.2.2 、1.2.3 skip
+#### 1.2.2 、1.2.3 skip
 
-### 1.2.4 ASCII 表
+#### 1.2.4 ASCII 表
 
 ​	在《 计算机科学导论》[6]第三章中讲到，计算机外部的不同数据类型（Text, Number, Image, Audio, Video）的数据都采用统一的数据表示法转换后存入计算机中，输出时再还原回来，这种通用的格式称为位模式（bit pattern）。不同数据类型的存储如图1-16所示。
 
@@ -383,7 +754,7 @@ print(chr(uppera))
 
 
 
-# 第2章 编程语法
+## 第2章 编程语法
 
 ​	在开启计算思维实践之前，需要先掌握一门编程语法。本书以 Python 语言为主，因为它容易上手、功能丰富，是一种极受欢迎的解释型高级编程语言，目前被广泛使用。它支持结构化编程和面向对象编程，拥有动态类型系统和垃圾回收功能，能够自动管理内存使用，并且其本身拥有标准库。Python 语法简洁，使用空格缩进划分代码块。在 1991 年 2 月，吉多·范罗苏姆（荷兰語：Guido van Rossum，1956 年 1 月 31 日－）发布 Python，截止 2022 年 6 月，python.org 推出的最新版本是 3.10.4。
 
@@ -393,7 +764,7 @@ print(chr(uppera))
 
 
 
-## 2.1 Python基础
+### 2.1 Python基础
 
 ​	本节对 Python 重要的基本语法给出总结，包括基本数据类型，控制结构和函数。其他细节可以参考 https://docs.python.org/3/tutorial/index.html，https://www.runoob.com/python3/python3-tutorial.html，Goodrich 等人在2013年出版的《Data Structures and Algorithms in Python》 [9] 或者 Matthes 在2019年出版的《Python编程：从入门到实践》 [10]。
 
@@ -509,7 +880,7 @@ cond(no)->e
 
 
 
-## 2.2 C++ 基础
+### 2.2 C++ 基础
 
 ​	当你遇到不会的题目时，通常在网上能搜索到的是C/C++代码，因此就需要大家能了解一些C/C++语言。另外，编程平台上有的题目对运行效率有要求，当用 Python编写的代码 超时不被接受时，可以尝试改写为 C++或者 C 语言的代码提交。由于C 语言是 C++ 的子集，因此本节不单独介绍 C 语言。
 
@@ -561,7 +932,7 @@ cond(no)->e
 
 
 
-## 2.3 把 C++ 程序翻译为 Python
+### 2.3 把 C++ 程序翻译为 Python
 
 ​	当有题目做不出来时，借助搜索引擎在网上通常可以找到经典题目的 C++ 程序解法，但是可能没有现成的 Python 代码，因此需要我们能看懂 C++ 程序，并翻译到 Python 语言。我们来看两个把 C++ 翻译到 Python 的题目。考虑到版权问题，本书不重复描述题面，而是给出出处。请读者按照链接访问，并对照本书给出的详细题解来思考。
 
@@ -848,11 +1219,11 @@ for _ in range(int(input())):
 
 
 
-## 2.4 终端窗口命令
+### 2.4 终端窗口命令
 
 ​	有时候需要在命令行方式执行或者调试程序，因此需要掌握终端窗口命令。两种常用操作系统是 macOS 和 Windows。终端窗口的开启，在 Windows 中是打开 cmd 窗口，在 macOS 中是打开 terminal 窗口。 
 
-### 2.4.1 Windows 中的 cmd 窗口
+#### 2.4.1 Windows 中的 cmd 窗口
 
 ​	在 Windows 系统中，点击任务栏左下角窗口图标 “开始” 按钮；在弹窗中输入 “cmd”，点击“打开”；则 “命令提示符”应用 的黑窗口就打开了，如图2-10所示。这个窗口，称为 cmd 窗口或者 dos 窗口。在 cmd 窗口中运行 help 指令，可以列出常用命令，如表2-5所示。
 
@@ -892,7 +1263,7 @@ for _ in range(int(input())):
 
 
 
-### 2.4.2 macOS 中的 terminal 终端
+#### 2.4.2 macOS 中的 terminal 终端
 
 ​	在 macOS 系统中，开启终端窗口的方法是：点击 Dock 中的 Launchpad 图标 <img src="/Users/hfyan/Library/Application Support/typora-user-images/image-20230906180859373.png" alt="image-20230906180859373" style="zoom:33%;" /> ，在搜索栏中输入 “terminal”，然后点击 Terminal，如图2-11所示。常用 terminal 命令，如表2-6所示。
 
@@ -928,11 +1299,11 @@ for _ in range(int(input())):
 
 
 
-## 2.5 调试代码
+### 2.5 调试代码
 
 ​	写出来的程序通常要经过多次调试（debug），不会一次提交就被编程平台 AC。当问题稍微复杂时，代码也会变长一些，比如超过 20 行，可以用 print 输出变量状态信息，对 Python 代码的进行调试；还可以采用下面几种方法，本小节将依次直观的可视化调试工具 Pythontutor， Spyder 集成环境自带的调试工具，以及用题目的测试数据来调试的方法。
 
-### 2.5.1 Pythontutor可视化
+#### 2.5.1 Pythontutor可视化
 
 ​	Pythontutor（ https://pythontutor.com）,是在线的代码执行可视化工具。它可以 Next 前进执行程序，也可以 Prev 后退执行，帮助我们了解计算机运行每一行代码时会发生什么。即对于抽象的计算机原理，如内存结构，能够直观的呈现出来，如图2-12所示。它简单易用，点击“Start writting and visualizing code now”开始使用即可，但是它的缺点是不能调试长代码及迭代次数多的代码。
 
@@ -944,7 +1315,17 @@ for _ in range(int(input())):
 
 
 
-### 2.5.2 Spyder 集成开发环境
+#### 2.5.2 集成开发环境
+
+**PyCharm**
+
+集成Copilot的Pycharm IDE。
+
+![image-20241008141627635](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20241008141627635.png)
+
+
+
+##### **Spyder**
 
 ​	先启动 Anaconda Navigator，如图2-13所示，其中 Spyder 是我们使用的 Python 集成开发环境。点击“Launch”，启动 Spyder，如图2-14所示。
 
@@ -966,7 +1347,7 @@ for _ in range(int(input())):
 
 
 
-### 2.5.3 使用题目的测试数据
+#### 2.5.3 使用题目的测试数据
 
 ​	在 Windows 的cmd 窗口中，先要找到 python 能运行，然后才能导入测试数据文件。
 
@@ -1000,11 +1381,11 @@ offline_judge_at_win， https://www.bilibili.com/video/BV1jT4y1B7eU?share_source
 
 
 
-## 2.6 算法分析
+### 2.6 算法分析
 
 ​	数据结构是组织和访问数据的方式，算法是顺序执行任务的过程。要区分数据结构和算法的性能，需要算法分析。
 
-### 2.6.1 重要的基本函数
+#### 2.6.1 重要的基本函数
 
 ​	在算法分析中重要的7个基本函数是：
 
@@ -1164,7 +1545,7 @@ if __name__ == '__main__':
 
 
 
-### 2.6.2 时间复杂度
+#### 2.6.2 时间复杂度
 
 ​	在设计满足问题要求的算法时，时间复杂度（Time complexity）是非常重要的考虑因素。因为不可能把每个想到的算法都去实现一遍看看是否足够快，应当估算一个算法的运行时间。时间复杂度是一个函数，它定性描述算法的运行时间，是一个代表算法输入规模的函数。一般使用大 $O$ 符号表述时间复杂度，不包括这个函数的低阶项和常数项。使用这种方式时，时间复杂度可被称为是渐近的，即考察输入值大小趋近无穷时的情况。例如，程序执行了二重循环，每重 $n$ 次，运行时间与 $n^2$ 成正比，那么它的渐近时间复杂度是 $O(n^2)$ 。
 
@@ -1186,8 +1567,10 @@ if __name__ == '__main__':
 
 
 
-> ### 字典
+> CF508A. Pasha and pixels，https://codeforces.com/contest/508/problem/A
 >
+> 能否问下这个题用字典为啥会这么慢呢（虽然AC了），就是说什么时候列表快，什么时候字典快呢？
+> 
 > ```python
 > from collections import defaultdict
 > 
@@ -1198,68 +1581,97 @@ if __name__ == '__main__':
 > dict = defaultdict(list)
 > ans = False
 > 
-> # 处理每一对 (a, b)
-> for i in range(k):
+>    # 处理每一对 (a, b)
+>     for i in range(k):
 >     a, b = map(int, input().split())
->     
+>    
 >     # 如果 b 不在 dict[a] 中，则添加
 >     if b not in dict[a]:
 >         dict[a].append(b)
->     else:
+>      else:
 >         continue
->     
+>    
 >     # 检查条件
 >     if (b - 1 in dict[a] and b in dict[a - 1] and b - 1 in dict[a - 1]) or \
 >        (b + 1 in dict[a] and b in dict[a - 1] and b + 1 in dict[a - 1]) or \
 >        (b - 1 in dict[a] and b in dict[a + 1] and b - 1 in dict[a + 1]) or \
 >        (b + 1 in dict[a] and b in dict[a + 1] and b + 1 in dict[a + 1]):
 >         print(i + 1)
->         ans = True
->         break
+>      ans = True
+>      break
 > 
-> # 如果没有找到符合条件的情况，输出 0
+>    # 如果没有找到符合条件的情况，输出 0
 > if not ans:
->     print(0)
+> print(0)
 > ```
 >
-> CF508A. Pasha and pixels，能否问下这个题用字典为啥会这么慢呢（虽然ac了），就是说什么时候列表快，什么时候字典快呢？
+> 
 >
 > 你这个相当于判断 item in alist，自然是慢的。O(1)时候都快。
 >
+
+
+
+
+
+> 02792: 集合加法, http://cs101.openjudge.cn/practice/02792/
+>
+> 参考答案似乎是直接暴力遍历，最坏情况复杂度应该是在O(ab)量级吧，但是a,b可以达到10E4量级，再考虑到有多组测试数据，为什么能不超时反而只用了48ms呢？答案相当于对每一个集合A的字典的键key，去找s-key是否in集合B的字典，那复杂度为啥不是a乘b呢？
+> 
+> 
+> 
+> Counter 是一个非常有用的工具，特别适用于需要统计元素出现次数的场景。**它继承自字典**，但提供了更多专门用于计数的功能。
+> 
+> ```python
+> from collections import Counter
+> 
+> def calculate_pairs(arr1, arr2, target_sum):
+>     counter1 = Counter(arr1)
+>     counter2 = Counter(arr2)
+>    
+>         ans = 0
+>        for item in counter1:
+>            if target_sum - item in counter2:
+>                ans += counter1[item] * counter2[target_sum - item]
+>    
+>        return ans
+>     
+>    
+>    for _ in range(int(input())):
+>        s = int(input())
+>        input()
+>        l1 = list(map(int, input().split()))
+>        input()
+>        l2 = list(map(int, input().split()))
+>    
+>     ans = calculate_pairs(l1, l2, s)
+>     print(ans)
+> ```
+>    
 > 
 >
-> ### 02792: 集合加法
->
-> 想问一下，集合加法这道题，参考答案似乎是直接暴力遍历，最坏情况复杂度应该是在O(ab)量级吧，但是a,b可以达到10E4量级，再考虑到有多组测试数据，为什么能不超时反而只用了48ms呢
->
-> 为什么呢？答案相当于对每一个集合A的字典的键key，去找s-key是否in集合B的字典，那复杂度为啥不是a乘b呢？
->
-> > 当然，我可以帮你格式化并整理这段文字，使其更清晰易读。以下是格式化后的版本：
-> >
-> > ---
-> >
 > > **程序主要逻辑**
-> >
+>>
 > > 这个程序的主要逻辑是在 `calculate_pairs` 函数中实现的。该函数接收两个列表 `arr1` 和 `arr2` 以及一个目标和 `target_sum`。函数的具体步骤如下：
-> >
+>>
 > > 1. **统计元素出现次数**：
-> >    - 使用 `Counter` 分别统计两个列表中各元素出现的次数。
-> >
-> > 2. **遍历并查找**：
+>>   - 使用 `Counter` 分别统计两个列表中各元素出现的次数。
+> > 
+>>2. **遍历并查找**：
 > >    - 遍历 `counter1` 中的每一个元素，检查 `target_sum - item` 是否存在于 `counter2` 中。
-> >    - 如果存在，则将两者出现次数的乘积累加到答案中。
+>>    - 如果存在，则将两者出现次数的乘积累加到答案中。
 > >
-> > **时间复杂度分析**
-> >
+>> **时间复杂度分析**
+> > 
 > > 1. **创建 `Counter` 对象**：
-> >    - 对于 `arr1` 和 `arr2` 创建 `Counter` 对象的时间复杂度分别是 O(a)和 O(b)，其中 a 和 b分别是 `arr1` 和 `arr2` 的长度。这是因为 `Counter` 在创建时需要遍历整个列表来统计每个元素的出现次数。
-> >
-> > 2. **遍历 `counter1` 并查找 `counter2`**：
-> >    - 这部分的核心操作是对 `counter1` 的每个元素执行一次 `counter2` 的查找操作。由于 `Counter` 是基于字典实现的，查找操作的平均时间复杂度为 O(1)。
+> >   - 对于 `arr1` 和 `arr2` 创建 `Counter` 对象的时间复杂度分别是 O(a)和 O(b)，其中 a 和 b分别是 `arr1` 和 `arr2` 的长度。这是因为 `Counter` 在创建时需要遍历整个列表来统计每个元素的出现次数。
+> > 
+> >2. **遍历 `counter1` 并查找 `counter2`**：
+> >    - 这部分的核心操作是对 `counter1` 的每个元素执行一次 `counter2` 的查找操作。由于 ==`Counter` 是基于字典实现的，查找操作的平均时间复杂度为 O(1)==。
 > >    - 因此，遍历 `counter1` 并进行查找的总时间复杂度为 O(a)。
 > >
 > > 综合以上两部分，对于单组测试数据，程序的时间复杂度为 O(a + b)。
-> >
+> > 
 > > **多组测试数据的时间复杂度**
 > >
 > > 考虑到输入中可能有多组测试数据，假设最多有 n 组测试数据，每组数据的 a 和 b 的最大值都是 10000，那么最坏情况下的总时间复杂度为 $O(n \cdot (a + b))$。
@@ -1267,14 +1679,123 @@ if __name__ == '__main__':
 > > 
 > >
 > > 
->
 > 
->
+> 
+> 
 > 
 
 
 
-# 模拟implementation 
+# 二、CF Tags 题目类型
+
+
+
+![image-20241008120241391](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20241008120241391.png)
+
+
+
+说明：常用解题步骤/技巧/算法，在codeforces.com中记为Tag，功能是帮助用户找到一类特定的问题。下面是一些常见的标记及其解释：
+1) dp (Dynamic Programming): 这是一种算法设计策略，主要用于需要考虑预计结果和当前情境的复杂问题；它将问题分解为更小的子问题，并存储这些子问题的解，以避免重复计算。
+2) greedy: 贪婪算法是一种寻找工作最优解的算法，它总是选取当前状态下最好的选项，不考虑结果对未来的影响。
+3) math: 这个标签用于那些需要一定数学知识来解答的问题，如概率、组合数学、数论或几何等。
+4) ds (Data Structures): 对于需要使用到数据结构（例如数组、链表、队列、栈、哈希表、树、图等）的题目，会使用这个标签。
+5) graphs: 这个标签用于图论相关的题目，如最短路径、最小生成树、网络流等问题。
+6) sortings：这个标签用于涉及各种排序方法（比如冒泡排序，选择排序，插入排序，快速排序等）的题目。
+7) binary search: 对于涉及到二分查找的题目，会使用这个标签。
+8) constructive algorithms: 这个标签用于那些需要构造性地找出解的问题，即不仅要找出一个解，还需要构造出解的策略或过程。
+9) strings: 这个标签用于字符串相关的课题，如字符串匹配、操作等。
+10) combinatorics: 组合数学问题，主要涉及到计数，排列，组合等问题。
+11) number theory：可能涉及到一些主题。质数与因数：题目可能要求找到一个数的所有因数，判断一个数是否为质数，或者计算一个区间内的质数数量等。
+最大公约数与最小公倍数：题目可能要求计算两个数的最大公约数（GCD）或最小公倍数（LCM），或者需要利用最大公约数解决其他问题。
+同余与模运算：题目可能要求计算整数除以一个模数的余数，或者判断两个数是否是同余的，也可能涉及到欧拉定理、费马小定理等相关知识。
+数字运算：题目可能涉及到对整数进行各种运算，比如数字和、数字位数之和、数字重排等。
+整数序列：题目可能涉及到寻找某种规律的整数序列，比如斐波那契数列、卡塔兰数列等。
+12) two pointers: 双指针法通常用于解决一些需要通过对数组或链表进行两个位置的遍历、对比或查找的问题。例如，在一个有序数组中查找两个数之和等于给定目标值的问题，可以使用两个指针从数组的两端向中间靠拢进行查找。这样可以减少不必要的遍历和比较。
+
+
+
+# 三、Considerations 编程注意事项
+
+2022-2023 计算概论B，TA: 李畅 戴舒羽，2022.12.13
+
+**debug通用方法**
+
+•分析报错提示
+
+•Print中间结果，检查是否符合手动计算/推理的预期
+
+•也可以打断点
+
+•构造多组不同于样例的数据投入检查，最好有一些corner case
+
+
+
+**常见情况（1/2）**
+
+•各种报错和解决方案：
+
+1) CE 2) WA 3) TLE 4) MLE 5) RTE 6) PE……
+
+•RTE: 很可能是数组越界/除0
+
+•TLE/MLE:
+
+1) 程序错误，e.g.递归边界忘记设置导致一直递归，数组开得过大
+2) 很大把握程序是正确的：时间复杂度/空间复杂度过高
+
+   Solution:
+
+   a.尝试使用更高效的数据结构 e.g. list换成dict
+
+   b.尝试使用更高效的算法 e.g. 进行复杂度分析/设计dp/greedy etc.
+
+   c.时间空间复杂度的平衡：用时间换空间，空间换时间
+
+
+
+**常见情况（2/2）**
+
+•不要忘记初始化变量和内存
+
+•一道题有多组数据，不同组别之间不能相互影响 
+
+  e.g.每次循环之后涉及一些变量的刷新
+
+•dfs回溯时候要记得清空一些状态
+
+•list的运用中，最好不要一边改一边遍历
+
+•注意数据类型：排序时字符串按照字典序，整数型按照数的大小
+
+•Python 里面的格式(tab)能决定一些逻辑
+
+•复制时候浅拷贝深拷贝不分
+
+
+
+**心态调整**
+
+•考前发现环境炸了
+
+•上来就不会做了
+
+•认为不太难的题目怎么都AC不了
+
+•发现考题难度激增，毫无思路
+
+•平时没会的题型被出题助教踩了个遍
+
+•考试过程中忍不住刷榜(理智刷榜!)
+
+•同考场的大佬提前AC走人了
+
+
+
+
+
+
+
+# 四、implementation 模拟
 
 模拟题是一类“题目怎么说，就怎么做”的题目。这类题目通常不涉及复杂的算法，而是要求根据题目的描述进行代码的编写。考查的是代码的逻辑性和正确性，确保每一步都符合题目的要求。
 
@@ -1292,35 +1813,37 @@ implementation, http://cs101.openjudge.cn/practice/02746
 
 > 模拟的方法直接按照题目描述的步骤进行操作，逐步移除报数到 \( m \) 的猴子，直到只剩下一个猴子为止。
 >
-> ### 模拟解法
-> 1. **初始化**：
+> **模拟解法**
+>
+> 1. 初始化：
 >    - 创建一个包含所有猴子编号的列表。
 >    - 设置起始位置为 0（即第 1 号猴子）。
 >
-> 2. **模拟过程**：
+> 2. 模拟过程：
 >    - 每次从当前起始位置开始报数，数到 \( m \) 的猴子出圈。
 >    - `pop` 操作会自动调整列表的索引，因此不需要显式地重置 `pos`。
 >
-> 3. **输出结果**：
+> 3. 输出结果：
 >    - 输出最后剩下的猴子的编号。
 >
-> ### 代码实现
+> **代码实现**
+>
 > 以下是使用模拟方法解决约瑟夫问题的代码实现：
 >
 > ```python
 > def josephus(n, m):
 >     if n == 0:
 >         return 0
->     
+> 
 >     monkeys = list(range(1, n + 1))  # 猴子的编号列表
 >     pos = 0  # 当前起始位置
->     
+> 
 >     while len(monkeys) > 1:
 >         # 计算当前出圈的猴子的位置
 >         pos = (pos + m - 1) % len(monkeys)
 >         # 移除出圈的猴子
 >         monkeys.pop(pos)
->     
+> 
 >     return monkeys[0]  # 返回最后剩下的猴子的编号
 > 
 > while True:
@@ -1331,13 +1854,14 @@ implementation, http://cs101.openjudge.cn/practice/02746
 >     print(result)
 > ```
 >
-> ### 代码解释
-> 1. **初始化**：
+> **代码解释**
+>
+> 1. 初始化：
 >    - `monkeys = list(range(1, n + 1))`：创建一个包含所有猴子编号的列表。
 >    - `pos = 0`：设置起始位置为 0（即第 1 号猴子）。
-> 2. **模拟过程**：
+> 2. 模拟过程：
 >    - `pos = (pos + m - 1) % len(monkeys)`：计算当前出圈的猴子的位置。这里减1是因为我们从1开始报数，而列表索引是从0开始的。
-> 3. **输出结果**：
+> 3. 输出结果：
 >    - `print(result)`：输出最后剩下的猴子的编号。
 >
 > 
@@ -1356,67 +1880,71 @@ n 个小孩围坐成一圈，并按顺时针编号为1,2,…,n，从编号为 p 
 >
 > ```python
 > def josephus(n, p, m):
->     if n == 0:
->         return []
->     
->     kids = list(range(1, n + 1))  # 孩子们的编号列表
->     pos = p - 1  # 将起始位置调整为0-based索引
->     out_order = []  # 记录出圈的顺序
->     
->     while kids:
->         pos = (pos + m - 1) % len(kids)  # 计算当前出圈的孩子的位置
->         out_order.append(kids.pop(pos))  # 将出圈的孩子添加到结果列表中
->     
->     return out_order
+>  if n == 0:
+>      return []
+> 
+>  kids = list(range(1, n + 1))  # 孩子们的编号列表
+>  pos = p - 1  # 将起始位置调整为0-based索引
+>  out_order = []  # 记录出圈的顺序
+> 
+>  while kids:
+>      pos = (pos + m - 1) % len(kids)  # 计算当前出圈的孩子的位置
+>      out_order.append(kids.pop(pos))  # 将出圈的孩子添加到结果列表中
+> 
+>  return out_order
 > 
 > while True:
->     n, p, m = map(int, input().split())
->     if n + p + m == 0:
->         break
->     result = josephus(n, p, m)
->     print(','.join(map(str, result)))
+>  n, p, m = map(int, input().split())
+>  if n + p + m == 0:
+>      break
+>  result = josephus(n, p, m)
+>  print(','.join(map(str, result)))
 > ```
 >
-> ### 代码解释
-> 1. **初始化**：
+> **代码解释**
+>
+> 1. 初始化：
 >    - `kids = list(range(1, n + 1))`：创建一个包含所有孩子编号的列表。
 >    - `pos = p - 1`：将起始位置调整为0-based索引。
 >    - `out_order = []`：用于记录出圈的顺序。
 >
-> 2. **模拟过程**：
+> 2. 模拟过程：
 >    - `pos = (pos + m - 1) % len(kids)`：计算当前出圈的孩子的位置。这里减1是因为我们从1开始报数，而列表索引是从0开始的。
 >    - `out_order.append(kids.pop(pos))`：将出圈的孩子添加到结果列表中，并从孩子列表中移除。
 >
-> 3. **输出结果**：
+> 3. 输出结果：
 >    - `print(','.join(map(str, result)))`：将结果列表中的编号用逗号连接成字符串并输出。
 >
-> ### 其他模拟题的例子
-> 1. **字符串操作**：如字符串反转、字符串替换等。
-> 2. **数组操作**：如数组排序、数组旋转等。
+> **其他模拟题的例子**
+>
+> 1. 字符串操作：如字符串反转、字符串替换等。
+> 2. 数组操作：如数组排序、数组旋转等。
 >
 
 
 
-# 查找元素
+# 五、Binary 查找
 
 查找操作是编程中的基本技能，根据数据集的大小和结构选择合适的查找方法可以显著提高效率。线性查找适用于较小或无序的数据集，而二分查找适用于较大的有序数据集。
 
+我发现二分查找容易理解，但是细节部分不容易写对（while的条件是<=，还是<；折半后是mid+1，mid-1，还是mid）。
 
-
-> ### 常见的查找方法
-> 1. **线性查找（Linear Search）**：
->    - **适用范围**：适用于较小的数据集或无序的数据集。
->    - **原理**：逐个检查数据集中的每个元素，直到找到满足条件的元素或遍历完所有元素。
->    - **时间复杂度**：O(n)，其中 n 是数据集的大小。
+> **常见的查找方法**
 >
-> 2. **二分查找（Binary Search）**：
->    - **适用范围**：适用于有序的数据集。
->    - **原理**：通过将数据集分成两半，逐步缩小查找范围，直到找到满足条件的元素或确定不存在。
->    - **时间复杂度**：O(log n)，其中 n 是数据集的大小。
+> 1. 线性查找（Linear Search）：
+>    - 适用范围：适用于较小的数据集或无序的数据集。
+>    - 原理：逐个检查数据集中的每个元素，直到找到满足条件的元素或遍历完所有元素。
+>    - 时间复杂度：O(n)，其中 n 是数据集的大小。
 >
-> ### 示例代码
+> 2. 二分查找（Binary Search）：
+>    - 适用范围：适用于有序的数据集。
+>    - 原理：通过将数据集分成两半，逐步缩小查找范围，直到找到满足条件的元素或确定不存在。
+>    - 时间复杂度：O(log n)，其中 n 是数据集的大小。
 >
-> #### 线性查找
+> **示例代码**
+>
+> 线性查找
+>
 > ```python
 > def linear_search(arr, target):
 >     for i, element in enumerate(arr):
@@ -1432,11 +1960,12 @@ n 个小孩围坐成一圈，并按顺时针编号为1,2,…,n，从编号为 p 
 > # Target 8 found at index 3
 > ```
 >
-> #### 二分查找
+> 二分查找
+>
 > ```python
 > def binary_search(arr, target):
 >     left, right = 0, len(arr) - 1
->     
+> 
 >     while left <= right:
 >         mid = (left + right) // 2
 >         if arr[mid] == target:
@@ -1445,7 +1974,7 @@ n 个小孩围坐成一圈，并按顺时针编号为1,2,…,n，从编号为 p 
 >             left = mid + 1
 >         else:
 >             right = mid - 1
->     
+> 
 >     return -1  # 如果未找到目标元素，返回 -1
 > 
 > # 示例
@@ -1456,26 +1985,28 @@ n 个小孩围坐成一圈，并按顺时针编号为1,2,…,n，从编号为 p 
 > # Target 8 found at index 7
 > ```
 >
-> ### 详细步骤
+> **详细步骤**
 >
-> #### 线性查找
-> 1. **初始化**：
+> **线性查找**
+>
+> 1. 初始化：
 >    - 遍历数据集中的每个元素。
-> 2. **查找过程**：
+> 2. 查找过程：
 >    - 逐个检查每个元素是否等于目标元素。
 >    - 如果找到目标元素，返回其索引。
 >    - 如果遍历完所有元素仍未找到目标元素，返回 -1。
 >
-> #### 二分查找
-> 1. **初始化**：
+> **二分查找**
+>
+> 1. 初始化：
 >    - 设置左边界 `left` 为 0，右边界 `right` 为数据集的最后一个索引。
-> 2. **查找过程**：
+> 2. 查找过程：
 >    - 计算中间位置 `mid`。
 >    - 如果中间位置的元素等于目标元素，返回其索引。
 >    - 如果中间位置的元素小于目标元素，调整左边界 `left` 为 `mid + 1`。
 >    - 如果中间位置的元素大于目标元素，调整右边界 `right` 为 `mid - 1`。
 >    - 重复上述步骤，直到找到目标元素或左边界超过右边界。
-> 3. **未找到目标元素**：
+> 3. 未找到目标元素：
 >    - 如果左边界超过右边界，返回 -1。
 >
 > 
@@ -1604,7 +2135,7 @@ https://github.com/python/cpython/blob/main/Lib/bisect.py
 
 
 
-# 知识点
+# 六、Common 知识点
 
 ## 浅拷贝
 
@@ -1737,7 +2268,7 @@ python开三次方根的误差特别大
 
 
 
-## 函数
+## 常用函数
 
 问一个初学者的问题:为什么在列表的方法中，有的方法可以连同列表本身作为一个“变量”，比如print(list1.pop())可以输出list1中最后一个元素，而有的方法却不行，比如print(list1.sort())会输出None（而不是排序后的list1）?区别这两种方法是只能靠记忆吗?
 
@@ -1813,7 +2344,244 @@ python开三次方根的误差特别大
 
 
 
+# 七、Optimize and improve算法
 
+Python 是一种高级编程语言，具有丰富的库和简洁的语法。然而，在处理大规模数据或高性能要求的应用时，优化代码是非常重要的。以下是一些常见的 Python 优化的技巧：
+
+
+
+> 1. **使用内置函数和库**
+>
+> Python 内置了许多高效的数据结构和函数，尽量利用这些内置功能可以提高性能。
+>
+> 示例：****
+>
+> - **列表推导式**：比传统的 `for` 循环更快。
+>   
+>   ```python
+>   # 传统方式
+>   squares = []
+>   for x in range(10):
+>       squares.append(x ** 2)
+>   
+>   # 列表推导式
+>   squares = [x ** 2 for x in range(10)]
+>   ```
+>   
+> - **`map()` 和 `filter()`**：比列表推导式稍慢，但在某些情况下更清晰。
+>   ```python
+>   # 传统方式
+>   numbers = [1, 2, 3, 4, 5]
+>   squares = list(map(lambda x: x ** 2, numbers))
+>     
+>   # 列表推导式
+>   squares = [x ** 2 for x in numbers]
+>   ```
+>
+> 2. **使用生成器**
+>
+> 生成器可以在需要时生成值，而不是一次性生成所有值，从而节省内存。
+>
+> #### 示例：
+> ```python
+> # 生成器表达式
+> squares = (x ** 2 for x in range(10))
+> 
+> # 生成器函数
+> def generate_squares(n):
+>     for x in range(n):
+>         yield x ** 2
+> 
+> # 使用生成器
+> for square in generate_squares(10):
+>     print(square)
+> ```
+>
+> 3. 使用 `set` 和 `dict` **进行成员测试**
+>
+> `set` 和 `dict` 的成员测试时间复杂度为 O(1)，而 `list` 和 `tuple` 的成员测试时间复杂度为 O(n)。
+>
+> **示例**：
+>
+> ```python
+> # 使用 list
+> numbers = list(range(1000000))
+> print(999999 in numbers)  # 较慢
+> 
+> # 使用 set
+> numbers_set = set(numbers)
+> print(999999 in numbers_set)  # 快速
+> ```
+>
+> 4. **避免全局变量**
+>
+> 访问全局变量比访问局部变量慢，尽量将变量放在局部作用域内。
+>
+> 示例：****
+>
+> ```python
+> global_var = 1000000
+> 
+> def function_with_global():
+>     global global_var
+>     for _ in range(1000000):
+>         global_var += 1
+> 
+> def function_with_local():
+>     local_var = 1000000
+>     for _ in range(1000000):
+>         local_var += 1
+> 
+> # 测量时间
+> import time
+> 
+> start = time.time()
+> function_with_global()
+> print("Global variable:", time.time() - start)
+> 
+> start = time.time()
+> function_with_local()
+> print("Local variable:", time.time() - start)
+> ```
+>
+> **5. 使用 `functools.lru_cache` 缓存结果**
+>
+> 对于耗时的函数调用，可以使用 `functools.lru_cache` 来缓存结果，避免重复计算。
+>
+> **示例**：
+>
+> ```python
+> from functools import lru_cache
+> 
+> @lru_cache(maxsize=128)
+> def fibonacci(n):
+>     if n < 2:
+>         return n
+>     return fibonacci(n - 1) + fibonacci(n - 2)
+> 
+> # 测量时间
+> import time
+> 
+> start = time.time()
+> print(fibonacci(30))
+> print("Time taken:", time.time() - start)
+> ```
+>
+> ~~**6. 使用 `numpy` 和 `pandas` 处理数值数据**~~
+>
+> ~~`numpy` 和 `pandas` 是专门为数值计算优化的库，可以显著提高性能。~~
+>
+> ~~**示例**：~~
+>
+> ```python
+> import numpy as np
+> 
+> # 传统方式
+> a = [i for i in range(1000000)]
+> b = [i * 2 for i in a]
+> 
+> # 使用 numpy
+> a_np = np.arange(1000000)
+> b_np = a_np * 2
+> 
+> # 测量时间
+> import time
+> 
+> start = time.time()
+> c = [x + y for x, y in zip(a, b)]
+> print("List time:", time.time() - start)
+> 
+> start = time.time()
+> c_np = a_np + b_np
+> print("NumPy time:", time.time() - start)
+> ```
+>
+> ~~**7. 使用多线程或多进程**~~
+>
+> ~~对于 CPU 密集型任务，可以使用多进程；对于 I/O 密集型任务，可以使用多线程。~~
+>
+> ~~**示例**：~~
+>
+> ```python
+> import concurrent.futures
+> 
+> def process_data(data):
+>     # 模拟耗时操作
+>     return data * 2
+> 
+> data_list = list(range(1000000))
+> 
+> # 单线程
+> start = time.time()
+> results = [process_data(data) for data in data_list]
+> print("Single thread time:", time.time() - start)
+> 
+> # 多线程
+> with concurrent.futures.ThreadPoolExecutor() as executor:
+>     start = time.time()
+>     results = list(executor.map(process_data, data_list))
+>     print("Multi-thread time:", time.time() - start)
+> 
+> # 多进程
+> with concurrent.futures.ProcessPoolExecutor() as executor:
+>     start = time.time()
+>     results = list(executor.map(process_data, data_list))
+>     print("Multi-process time:", time.time() - start)
+> ```
+>
+> ~~**8. 使用 `Cython` 或 `Numba` 进行 JIT 编译**~~
+>
+> ~~`Cython` 和 `Numba` 可以将 Python 代码编译成 C 代码，从而提高性能。~~
+>
+> #### ~~示例：~~
+> ```python
+> # 使用 Numba
+> import numba
+> 
+> @numba.jit(nopython=True)
+> def sum_of_squares(n):
+>     result = 0
+>     for i in range(n):
+>         result += i ** 2
+>     return result
+> 
+> # 测量时间
+> import time
+> 
+> start = time.time()
+> result = sum_of_squares(10000000)
+> print("Numba time:", time.time() - start)
+> ```
+>
+> ~~**9. 使用 `PyPy` 作为解释器**~~
+>
+> ~~`PyPy` 是一个兼容 Python 的解释器，使用 JIT 编译技术，可以显著提高某些类型程序的性能。~~
+>
+> ~~**10. 代码分析和优化**~~
+>
+> ~~使用 `cProfile` 和 `line_profiler` 等工具进行性能分析，找出瓶颈并进行优化。~~
+>
+> #### ~~示例：~~
+> ```python
+> import cProfile
+> import pstats
+> 
+> def my_function():
+>     # 模拟耗时操作
+>     for _ in range(1000000):
+>         pass
+> 
+> cProfile.run('my_function()', 'profile_stats')
+> 
+> # 分析结果
+> with open('profile_stats', 'r') as f:
+>     stats = pstats.Stats(f)
+>     stats.sort_stats('cumulative').print_stats(10)
+> ```
+>
+> 
+>
+> 通过这些优化技巧，可以显著提高 Python 代码的性能。选择合适的优化方法取决于具体的使用场景和需求。
 
 
 
@@ -1866,11 +2634,108 @@ The given test has three numbers. The first number 4 has exactly three divisors 
 
 求解素数的三种方法，包括：试除法（trial division）、埃氏筛（Sieve of Eratosthenes）、欧拉筛（Sieve of Euler，线性法），https://blog.dotcpp.com/a/69737
 
-优化的埃式筛法、或者欧拉筛，可以到 998ms。
+优化的埃式筛法、或者欧拉筛，可以到 1秒以下。
 
 
+
+Python3, Accepted, 748ms。用到了埃式筛法，内置函数math.sqrt, math.isqrt，set，第8行循环从i*i开始，使用 sys.stdin.read() 一次性读取所有输入，缓存一次性输出。
+
+```python
+import math
+
+def sieve(limit):
+    is_prime = [True] * (limit + 1)
+    is_prime[0] = is_prime[1] = False
+    for i in range(2, int(math.sqrt(limit)) + 1):
+        if is_prime[i]:
+            for j in range(i * i, limit + 1, i):
+                is_prime[j] = False
+    return [i for i in range(limit + 1) if is_prime[i]]
+
+def is_t_prime(x, primes_set):
+    if x < 2:
+        return False
+    root = int(math.isqrt(x))
+    return root * root == x and root in primes_set
+
+def main():
+    import sys
+    input = sys.stdin.read
+    data = input().split()
+    
+    n = int(data[0])
+    numbers = list(map(int, data[1:n+1]))
+    
+    limit = 10**6
+    primes = sieve(limit)
+    primes_set = set(primes)
+    
+    results = []
+    for number in numbers:
+        if is_t_prime(number, primes_set):
+            results.append("YES")
+        else:
+            results.append("NO")
+    
+    print("\n".join(results))
+
+if __name__ == "__main__":
+    main()
+```
+
+
+
+可以进一步优化，直接用is_prim列表。Python3, Accepted, 654ms。
+
+```python
+import math
+
+def sieve(limit):
+    is_prime = [True] * (limit + 1)
+    is_prime[0] = is_prime[1] = False
+    for i in range(2, int(math.sqrt(limit)) + 1):
+        if is_prime[i]:
+            for j in range(i * i, limit + 1, i):
+                is_prime[j] = False
+    #return [i for i in range(limit + 1) if is_prime[i]]
+    return is_prime
+
+#def is_t_prime(x, primes_set):
+def is_t_prime(x, primes_list):
+    if x < 2:
+        return False
+    root = int(math.isqrt(x))
+    #return root * root == x and root in primes_set
+    return root * root == x and primes_list[root]
+
+def main():
+    import sys
+    input = sys.stdin.read
+    data = input().split()
+
+    n = int(data[0])
+    numbers = list(map(int, data[1:n+1]))
+
+    limit = 10**6
+    primes = sieve(limit)
+    #primes_set = set(primes)
+
+    results = []
+    for number in numbers:
+        #if is_t_prime(number, primes_set):
+        if is_t_prime(number, primes):
+            results.append("YES")
+        else:
+            results.append("NO")
+
+    print("\n".join(results))
+
+if __name__ == "__main__":
+    main()
+```
 
 
 
 # 参考
 
+通义千问，https://tongyi.aliyun.com
