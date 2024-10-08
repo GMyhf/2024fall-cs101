@@ -1317,7 +1317,7 @@ for _ in range(int(input())):
 
 #### 2.5.2 集成开发环境
 
-**PyCharm**
+##### PyCharm
 
 集成Copilot的Pycharm IDE。
 
@@ -2373,7 +2373,7 @@ Python 是一种高级编程语言，具有丰富的库和简洁的语法。然�
 >   # 传统方式
 >   numbers = [1, 2, 3, 4, 5]
 >   squares = list(map(lambda x: x ** 2, numbers))
->     
+>       
 >   # 列表推导式
 >   squares = [x ** 2 for x in numbers]
 >   ```
