@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 0744 GMT+8 Oct 8 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0002 GMT+8 Oct 10 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 0823 每天放2个题目供同学们自愿练习，期中开始，每天放1个题目。争取每20个题目难度提升100。  
@@ -27,7 +27,8 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
-| 1010 | 04100: 进程检测       | -                                    | - |  http://cs101.openjudge.cn/practice/04100         |
+|  |           | -                                    | -   | 题目满百          |
+| 1010 | 04100: 进程检测       | -                                    | - |  http://cs101.openjudge.cn/2024fallroutine/04100         |
 |            | sy577: 一O交错 | -   | -  | https://sunnywhy.com/sfbj/3/7/577    |
 | 1009 | 04148: 生理周期       | -                                    | - |  http://cs101.openjudge.cn/2024fallroutine/04148         |
 |            | sy570: 三方喜欢 | -   | -  | https://sunnywhy.com/sfbj/3/7/570    |
