@@ -2,8 +2,6 @@
 
 Updated 1537 GMT+8 Oct 10, 2024
 
-
-
 2024 fall, Complied by Hongfei Yan==（请改为同学的姓名、院系）==
 
 
@@ -32,10 +30,10 @@ http://cs101.openjudge.cn/practice/28674/
 
 
 
-##### 代码
+代码
 
 ```python
-# 
+
 
 ```
 
@@ -57,10 +55,10 @@ http://cs101.openjudge.cn/practice/28691/
 
 
 
-##### 代码
+代码
 
 ```python
-# 
+
 
 ```
 
@@ -82,10 +80,10 @@ http://cs101.openjudge.cn/practice/28664/
 
 
 
-##### 代码
+代码
 
 ```python
-# 
+
 
 ```
 
@@ -107,10 +105,10 @@ http://cs101.openjudge.cn/practice/28678/
 
 
 
-##### 代码
+代码
 
 ```python
-# 
+
 
 ```
 
@@ -147,7 +145,7 @@ http://cs101.openjudge.cn/practice/28700/
 
 
 
-### T25353: 排队
+### *T25353: 排队 （选做）
 
 http://cs101.openjudge.cn/practice/25353/
 
@@ -157,10 +155,10 @@ http://cs101.openjudge.cn/practice/25353/
 
 
 
-##### 代码
+代码
 
 ```python
-# 
+
 
 ```
 
