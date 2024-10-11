@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 0002 GMT+8 Oct 10 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0002 GMT+8 Oct 12 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 0823 每天放2个题目供同学们自愿练习，期中开始，每天放1个题目。争取每20个题目难度提升100。  
@@ -27,12 +27,12 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
-| 1012 | 18211: 军备竞赛       | -                                    | - |  http://cs101.openjudge.cn/2024fallroutine/18211         |
-|            | sy176: 序列合并 | -   | -  | https://sunnywhy.com/sfbj/4/6/176    |
+| 1012 | 18211: 军备竞赛       | greedy, two pointers                | - |  http://cs101.openjudge.cn/2024fallroutine/18211         |
+|            | sy176: 序列合并 | two pointers   | -  | https://sunnywhy.com/sfbj/4/6/176    |
 | 1011 | 19942: 二维矩阵上的卷积运算       | -                                    | - |  http://cs101.openjudge.cn/2024fallroutine/19942         |
 |            | sy580: 四面楚歌 | -   | -  | https://sunnywhy.com/sfbj/3/7/580    |
 |  |           | -                                    | -   | 题目满百          |
-| 1010 | 04100: 进程检测       | -                                    | - |  http://cs101.openjudge.cn/2024fallroutine/04100         |
+| 1010 | 04100: 进程检测       | sortings                                    | - |  http://cs101.openjudge.cn/2024fallroutine/04100         |
 |            | sy577: 一O交错 | -   | -  | https://sunnywhy.com/sfbj/3/7/577    |
 | 1009 | 04148: 生理周期       | -                                    | - |  http://cs101.openjudge.cn/2024fallroutine/04148         |
 |            | sy570: 三方喜欢 | -   | -  | https://sunnywhy.com/sfbj/3/7/570    |
@@ -58,7 +58,7 @@ to do
 |            | 456A. Laptops | sortings   | 1100  | https://codeforces.com/contest/456/problem/A    |
 | 0928 | 02746: 约瑟夫问题      | -                      | - |  http://cs101.openjudge.cn/2024fallroutine/02746         |
 |            | 313B. Ilya and Queries | dp, implementation   | 1100  | https://codeforces.com/contest/313/problem/B    |
-| 0927 | 04110: 圣诞老人的礼物-Santa Clau’s Gifts      | -                      | - |  http://cs101.openjudge.cn/2024fallroutine/04110         |
+| 0927 | 04110: 圣诞老人的礼物-Santa Clau’s Gifts      | greedy                      | - |  http://cs101.openjudge.cn/2024fallroutine/04110         |
 |            | 230B. T-primes | binary search, implementation, math, number theory   | 1300  | https://codeforces.com/contest/230/problem/B    |
 | 0926 | 01218: THE DRUNK JAILER      | -                                    | - |  http://cs101.openjudge.cn/2024fallroutine/01218         |
 |            | sy69: 日期加法   | -   | -  | https://sunnywhy.com/sfbj/3/2/69    |
