@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 0002 GMT+8 Oct 12 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0007 GMT+8 Oct 13 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 0823 每天放2个题目供同学们自愿练习，期中开始，每天放1个题目。争取每20个题目难度提升100。  
@@ -27,6 +27,8 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 1013 | 19948: 军备竞赛       | greedy                | - |  http://cs101.openjudge.cn/2024fallroutine/19948         |
+|            | sy175: 2-SUM-双指针 | two pointers   | -  | https://sunnywhy.com/sfbj/4/6/175    |
 | 1012 | 18211: 军备竞赛       | greedy, two pointers                | - |  http://cs101.openjudge.cn/2024fallroutine/18211         |
 |            | sy176: 序列合并 | two pointers   | -  | https://sunnywhy.com/sfbj/4/6/176    |
 | 1011 | 19942: 二维矩阵上的卷积运算       | -                                    | - |  http://cs101.openjudge.cn/2024fallroutine/19942         |
