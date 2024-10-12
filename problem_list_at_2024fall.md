@@ -27,7 +27,7 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
-| 1013 | 19948: 军备竞赛       | greedy                | - |  http://cs101.openjudge.cn/2024fallroutine/19948         |
+| 1013 | 19948: 因材施教       | greedy                | - |  http://cs101.openjudge.cn/2024fallroutine/19948         |
 |            | sy175: 2-SUM-双指针 | two pointers   | -  | https://sunnywhy.com/sfbj/4/6/175    |
 | 1012 | 18211: 军备竞赛       | greedy, two pointers                | - |  http://cs101.openjudge.cn/2024fallroutine/18211         |
 |            | sy176: 序列合并 | two pointers   | -  | https://sunnywhy.com/sfbj/4/6/176    |
