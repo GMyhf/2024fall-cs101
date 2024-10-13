@@ -36,7 +36,7 @@ to do
 | 1011 | 19942: 二维矩阵上的卷积运算       | -                                    | - |  http://cs101.openjudge.cn/2024fallroutine/19942         |
 |            | sy580: 四面楚歌 | -   | -  | https://sunnywhy.com/sfbj/3/7/580    |
 |  |           | -                                    | -   | 题目满百          |
-| 1010 | 04100: 进程检测       | sortings                                    | - |  http://cs101.openjudge.cn/2024fallroutine/04100         |
+| 1010 | 04100: 进程检测       | greedy                                    | - |  http://cs101.openjudge.cn/2024fallroutine/04100         |
 |            | sy577: 一O交错 | -   | -  | https://sunnywhy.com/sfbj/3/7/577    |
 | 1009 | 04148: 生理周期       | -                                    | - |  http://cs101.openjudge.cn/2024fallroutine/04148         |
 |            | sy570: 三方喜欢 | -   | -  | https://sunnywhy.com/sfbj/3/7/570    |
