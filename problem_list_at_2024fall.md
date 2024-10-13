@@ -28,7 +28,7 @@ to do
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 | 1014 | 19757: Saruman's Army       | greedy                | - |  http://cs101.openjudge.cn/practice/19757         |
-|            | 489B: BerSU Ball | dfs and similar, dp, graph matchings, greedy, sortings, two pointers   | 1200  | https://codeforces.com/problemset/problem/489/B    |
+|            | 903C: Boxes Packing | greedy   | 1200  | https://codeforces.com/problemset/problem/903/C    |
 | 1013 | 19948: 因材施教       | greedy                | - |  http://cs101.openjudge.cn/2024fallroutine/19948         |
 |            | sy175: 2-SUM-双指针 | two pointers   | -  | https://sunnywhy.com/sfbj/4/6/175    |
 | 1012 | 18211: 军备竞赛       | greedy, two pointers                | - |  http://cs101.openjudge.cn/2024fallroutine/18211         |
