@@ -40,7 +40,11 @@ if __name__ == "__main__":
 
     # 筛选出 .in 和 .out 文件
     test_cases = [f for f in files if f.endswith('.in')]
+    test_cases = sorted(test_cases, key=lambda x: int(x.split('.')[0]))
+    #print(test_cases)
     expected_outputs = [f for f in files if f.endswith('.out')]
+    expected_outputs = sorted(expected_outputs, key=lambda x: int(x.split('.')[0]))
+    #print(expected_outputs)
 
     for infile, outfile in zip(test_cases, expected_outputs):
         if not test_code(script_path, infile, outfile):
