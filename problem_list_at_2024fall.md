@@ -27,6 +27,8 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 1015 | 22491: 冲刺GPA的贪心之路       | greedy                | - |  http://cs101.openjudge.cn/2024fallroutine/22491         |
+|            | 706B: Interesting drink | *special problem,greedy,implementation   | 1100  | https://codeforces.com/problemset/problem/706/B    |
 | 1014 | 19757: Saruman's Army       | greedy                | - |  http://cs101.openjudge.cn/2024fallroutine/19757         |
 |            | 158B: Taxi | *special problem,greedy,implementation   | 1100  | https://codeforces.com/problemset/problem/158/B    |
 | 1013 | 19948: 因材施教       | greedy                | - |  http://cs101.openjudge.cn/2024fallroutine/19948         |
