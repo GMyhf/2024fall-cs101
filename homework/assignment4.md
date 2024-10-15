@@ -39,7 +39,7 @@ greedy, sorting, 900, https://codeforces.com/problemset/problem/34/B
 
 
 
-代码运行截图 ==（至少包含有"Accepted"）==
+代码运行截图 <mark>（至少包含有"Accepted"）</mark>
 
 
 
@@ -85,7 +85,7 @@ constructive algorithms, greedy, 900, https://codeforces.com/problemset/problem/
 
 
 
-代码运行截图 ==（AC代码截图，至少包含有"Accepted"）==
+代码运行截图 <mark>（至少包含有"Accepted"）</mark>
 
 
 
@@ -108,7 +108,7 @@ constructive algorithms, greedy, 900, https://codeforces.com/problemset/problem/
 
 
 
-代码运行截图 ==（AC代码截图，至少包含有"Accepted"）==
+代码运行截图 <mark>（至少包含有"Accepted"）</mark>
 
 
 
@@ -131,7 +131,7 @@ binary search, implementation, math, number theory, 1300, http://codeforces.com/
 
 
 
-代码运行截图 ==（AC代码截图，至少包含有"Accepted"）==
+代码运行截图 <mark>（至少包含有"Accepted"）</mark>
 
 
 
@@ -154,7 +154,7 @@ greedy, strings, sortings, http://cs101.openjudge.cn/practice/12559
 
 
 
-代码运行截图 ==（AC代码截图，至少包含有"Accepted"）==
+代码运行截图 <mark>（至少包含有"Accepted"）</mark>
 
 
 
