@@ -10,49 +10,9 @@ Updated 0425 GMT+8 Oct 15, 2023
 >
 > 2024/10/15 复制自 20231017_notes.md，根据本学期进度进行修改。
 
-
-
 2024年10月份，主要是掌握矩阵、贪心题目，最好能涉及到简单的DP题目。
 
 时间复杂度在上一讲(2024108)，但是上次课时不够，没有展开讲，讲义里面有详细内容，重点是理解O(1)，O(n)，O(logn)。
-
-
-
-目录：
-
-
-
-
-
-​	
-
-**Greedy**: 
-
-​	01017:装箱问题，25353:排队，12559: 最大最小整数 v0.3。					
-
-
-
-**程序生成测试数据**: 
-
-​	26971:分发糖果，26976:摆动序列。这两个题目也是 greedy
-
-​	CF1868A. Fill in the Matrix, tags: constructive algorithms （If there are multiple solutions, you may output any of them. 多解的题目需要spj来处理，special judge）
-
-**Matrices**: 
-
-​	保护圈，for loop中 range 中使用 min、max 避免越界
-
-​	02659:Bomb Game，04133:垃圾炸弹。								
-
-**DP的影子**：
-
-​	优化问题除了使用时间复杂度更低的算法（如：线性筛/欧拉筛），还可以用DP。
-
-​	CF230B. T-primes，02810: 完美立方。 from functools import lru_cache; lru_cache(maxsize = None) 
-
-​	==greedy题目都可以用dp来完成？==
-
-
 
 # 一、Recap
 
@@ -1841,6 +1801,8 @@ https://stackoverflow.com/questions/43233535/explicitly-define-datatype-in-pytho
 
 
 ## 5.2 DP的影子
+
+优化问题除了使用时间复杂度更低的算法（如：线性筛/欧拉筛），还可以用DP。
 
 from functools import lru_cache; lru_cache(maxsize = None) 
 
