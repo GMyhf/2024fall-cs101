@@ -27,6 +27,10 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 1018 | 04133: 垃圾炸弹       | matirces                | - |  http://cs101.openjudge.cn/practice/04133        |
+| 1017 | 02659: Bomb Game       | matirces                | - |  http://cs101.openjudge.cn/practice/02659        |
+| 1016 | 12560: 生存游戏       | matirces                | - |  http://cs101.openjudge.cn/practice/12560        |
+|            | 1364A: XXXXX | brute force, data structures, number theory, two pointers   | 1200  | https://codeforces.com/problemset/problem/1364/A    |
 | 1015 | 22491: 冲刺GPA的贪心之路       | greedy                | - |  http://cs101.openjudge.cn/2024fallroutine/22491         |
 |            | 706B: Interesting drink | *special problem,greedy,implementation   | 1100  | https://codeforces.com/problemset/problem/706/B    |
 | 1014 | 19757: Saruman's Army       | greedy                | - |  http://cs101.openjudge.cn/2024fallroutine/19757         |
