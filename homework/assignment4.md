@@ -2,7 +2,7 @@
 
 Updated 0337 GMT+8 Oct 15, 2024
 
-2024 fall, Complied by ==同学的姓名、院系==
+2024 fall, Complied by <mark>同学的姓名、院系</mark>
 
 
 
@@ -162,7 +162,7 @@ greedy, strings, sortings, http://cs101.openjudge.cn/practice/12559
 
 ## 2. 学习总结和收获
 
-==如果作业题目简单，有否额外练习题目，比如：OJ“计概2024fall每日选做”、CF、LeetCode、洛谷等网站题目。==
+<mark>如果作业题目简单，有否额外练习题目，比如：OJ“计概2024fall每日选做”、CF、LeetCode、洛谷等网站题目。</mark>
 
 
 
