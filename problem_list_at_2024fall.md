@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 0019 GMT+8 Oct 16 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0036 GMT+8 Oct 17 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 0823 每天放2个题目供同学们自愿练习，期中开始，每天放1个题目。争取每20个题目难度提升100。  
@@ -29,7 +29,7 @@ to do
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 | 1018 | 04133: 垃圾炸弹       | matirces                | - |  http://cs101.openjudge.cn/practice/04133        |
 |            | 1443C: The Delivery Dilemma | binary search, greedy, sortings   | 1400  | https://codeforces.com/problemset/problem/1443/C    |
-| 1017 | 02659: Bomb Game       | matirces                | - |  http://cs101.openjudge.cn/practice/02659        |
+| 1017 | 02659: Bomb Game       | matirces                | - |  http://cs101.openjudge.cn/2024fallroutine/02659        |
 |            | 1221A: 2048 Game | brute force, greedy, math   | 1000  | https://codeforces.com/problemset/problem/1221/A    |
 | 1016 | 12560: 生存游戏       | matirces                | - |  http://cs101.openjudge.cn/2024fallroutine/12560        |
 |            | 1364A: XXXXX | brute force, data structures, number theory, two pointers   | 1200  | https://codeforces.com/problemset/problem/1364/A    |
