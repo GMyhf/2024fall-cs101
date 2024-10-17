@@ -27,6 +27,8 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 1020 | 01019: Number Sequence       | implementation                | - |  http://cs101.openjudge.cn/practice/01019        |
+|            | 466C: Number of Ways | two pointers   | 1700  | https://codeforces.com/problemset/problem/466/C    |
 | 1019 | 01008: Maya Calendar       | implementation                | - |  http://cs101.openjudge.cn/practice/01008        |
 |            | 1B: Spreadsheets | implementation, math   | 1600  | https://codeforces.com/problemset/problem/1/B    |
 | 1018 | 04133: 垃圾炸弹       | matirces                | - |  http://cs101.openjudge.cn/practice/04133        |
