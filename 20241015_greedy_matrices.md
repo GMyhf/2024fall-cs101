@@ -1,12 +1,14 @@
 # 2024/10/15 Tuesday 贪心和矩阵
 
-Updated 1856 GMT+8 Oct 15, 2023
+Updated 1055 GMT+8 Oct 18, 2023
 
 2024 fall, Complied by Hongfei Yan
 
 
 
 > Log:
+>
+> 2024/10/18 增加了3.2.1 two pointers，3.2.2 binary search的讲解。其中二分查找内容移自前一讲week5_dawn.md
 >
 > 2024/10/15 复制自 20231017_notes.md，根据本学期进度进行修改。
 
@@ -634,21 +636,342 @@ https://stackoverflow.com/questions/47238823/why-selection-sort-is-not-greedy
 
 
 
-## 3.2 编程题目
+## 3.2 双指针和二分查找
+
+双指针和二分查找是贪心算法中常用的技巧。常规贪心题目，例如：
+
+### 3.2.1 two pointers
+
+参考《算法笔记.胡凡》4.6
+
+two pointers 是算法编程中一种非常重要的思想，但是很少会有教材单独拿出来讲，其中一个原因是它更倾向于是一种编程技巧，而长得不太像是一个“算法”的模样。two pointers的思想十分简洁，但却提供了非常高的算法效率。
+
+以一个例子引入：给定一个递增的正整数序列和一个正整数 M，求序列中的两个不同位置的数a和 b，使得它们的和恰好为 M，输出所有满足条件的方案。例如给定序列{1,2,3,4,5.6}和正整数M=8，就存在2+6=8与3+5=8成立。
+本题的一个最直观的想法是，使用二重循环枚举序列中的整数a和 b，判断它们的和是否为 M，如果是，输出方案；如果不是，则继续枚举。代码如下:
+
+```python
+n = int(input())
+a = list(map(int, input().split()))
+M = int(input())
+
+for i in range(n):
+    for j in range(i + 1, n):
+        if a[i] + a[j] == M:
+            print(a[i],a[j])
+"""
+5
+1 2 3 4 5
+7
+
+2 5
+3 4
+"""
+```
+
+显然，这种做法的时间复杂度为 O(n^2)，对n在 10^5的规模时是不可承受的。
+
+two pointers 将利用有序序列的枚举特性来有效降低复杂度。它针对本题的算法过程是：令下标i的初值为 0，下标j的初值为n-1，即令i、j分别指向序列的第一个元素和最后一个元素，接下来根据 a[i] + a[j]与M 的大小来进行下面三种选择，使i不断向右移动、使j不断向左移动，直到i>j成立。
+
+① 如果满足 a[i] + a[] ==M，说明找到了其中一组方案。由于序列递增，不等式 a[i+1]+a[j]>M 与 a[i] + a[j-1]<M均成立，但是 a[i+1]+a[j-1]与M 的大小未知，因此剩余的方案只可能在[i+1,j-1]区间内产生，令i=i+1、j=j-1（即令i向右移动，j 向左移动）。
+
+② 如果满足 a[i] + a[j]>M,由于序列递增，不等式 a[i+1]+ a[j]>M 成立，但是 a[i]+ a[j-1]与M 的大小未知，因此剩余的方案只可能在[i,j-1]区间内产生，令j=j-1（即令j向左移动）。
+③ 如果满足 a[i]+a[j]<M，由于序列递增，不等式 a[i]+ a[j-1]<M 成立，但是 a[i+1]+a[j]与M 的大小未知，因此剩余的方案只可能在[i+1,j]区间内产生，令i=i+1（即令i向右移动）。
+反复执行上面三个判断，直到i>i成立。代码如下：
+
+```python
+n = int(input())
+a = list(map(int, input().split()))
+M = int(input())
+
+i = 0
+j = n - 1
+
+while i < j:
+    if a[i] + a[j] == M:
+        print(a[i], a[j])
+        i += 1
+        j -= 1
+    elif a[i] + a[j] < M:
+        i += 1
+    else:
+        j -= 1
+
+"""
+5
+1 2 3 4 5
+7
+
+2 5
+3 4
+"""
+```
+
+分析算法的复杂度，由于i的初值为 0，j的初值为 n-1，而程序中变量i只有递增操作、变量j只有递减操作，且循环当i>i时停止，因此i和i的操作次数最多为n次，时间复杂度为 O(n)。可以发现，two pointers 的思想充分利用了序列递增的性质，以很浅显的思想降低了复杂度。
+
+
+
+再来看序列合并问题。假设有两个递增序列A 与B，要求将它们合并为一个递增序列C。同样的，可以设置两个下标i和j，初值均为 0，表示分别指向序列 A 的第一个元素和序列B的第一个元素，然后根据 A[i]与 B[i]的大小来决定哪一个放入序列 C。
+
+① 若 A[i] < B[ì]，说明 A[i]是当前序列 A 与序列 B 的剩余元素中最小的那个，因此把A[i]加入序列 C 中，并让i加1（即让i右移一位）。
+
+② 若 A[ì] > B[j]，说明 B[i]是当前序列 A 与序列B 的剩余元素中最小的那个，因此把B[i]加入序列C 中，并让j加1（即让j右移一位）。
+
+③ 若 Aí] == B[j]，则任意选一个加入到序列 C 中，并让对应的下标加 1。上面的分支操作直到i、j中的一个到达序列末端为止，然后将另一个序列的所有元素依次加入序列C 中，代码如下:
+
+```python
+def merge(A, B):
+    i, j = 0, 0
+    c = []
+
+    # 合并两个有序数组
+    while i < len(A) and j < len(B):
+        if A[i] <= B[j]:
+            c.append(A[i])
+            i += 1
+        else:
+            c.append(B[j])
+            j += 1
+
+    # 将 A 的剩余元素加入 c
+    c.extend(A[i:])
+
+    # 将 B 的剩余元素加入 c
+    c.extend(B[j:])
+
+    return len(c), c
+
+# 示例
+A = [1, 3, 5, 7]
+B = [2, 4, 6, 8]
+
+length, c = merge(A, B)
+print(c)
+```
+
+two pointers 到底是怎样的一种思想？事实上，two pointers 最原始的含义就是针对本节第一个问题而言的，而广义上的 two pointers 则是利用问题本身与序列的特性，使用两个下标i、j对序列进行扫描（可以同向扫描，也可以反向扫描），以较低的复杂度（一般是 O(n)的复杂度）解决问题。在实际编程时要能够有使用这种思想的意识。
+
+### 3.2.2 Binary Search
+
+查找操作是编程中的基本技能，根据数据集的大小和结构选择合适的查找方法可以显著提高效率。线性查找适用于较小或无序的数据集，而二分查找适用于较大的有序数据集。
+
+我发现二分查找容易理解，但是细节部分不容易写对（while的条件是<=，还是<；折半后是mid+1，mid-1，还是mid）。
+
+> **常见的查找方法**
+>
+> 1. 线性查找（Linear Search）：
+>    - 适用范围：适用于较小的数据集或无序的数据集。
+>    - 原理：逐个检查数据集中的每个元素，直到找到满足条件的元素或遍历完所有元素。
+>    - 时间复杂度：O(n)，其中 n 是数据集的大小。
+>
+> 2. 二分查找（Binary Search）：
+>    - 适用范围：适用于有序的数据集。
+>    - 原理：通过将数据集分成两半，逐步缩小查找范围，直到找到满足条件的元素或确定不存在。
+>    - 时间复杂度：O(log n)，其中 n 是数据集的大小。
+>
+> **示例代码**
+>
+> 线性查找
+>
+> ```python
+> def linear_search(arr, target):
+>     for i, element in enumerate(arr):
+>         if element == target:
+>             return i  # 返回目标元素的索引
+>     return -1  # 如果未找到目标元素，返回 -1
+> 
+> # 示例
+> arr = [3, 5, 2, 8, 1, 9, 4]
+> target = 8
+> result = linear_search(arr, target)
+> print(f"Target {target} found at index {result}")
+> # Target 8 found at index 3
+> ```
+>
+> 二分查找
+>
+> ```python
+> def binary_search(arr, target):
+>     left, right = 0, len(arr) - 1
+> 
+>     while left <= right:
+>         mid = (left + right) // 2
+>         if arr[mid] == target:
+>             return mid  # 返回目标元素的索引
+>         elif arr[mid] < target:
+>             left = mid + 1
+>         else:
+>             right = mid - 1
+> 
+>     return -1  # 如果未找到目标元素，返回 -1
+> 
+> # 示例
+> arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+> target = 8
+> result = binary_search(arr, target)
+> print(f"Target {target} found at index {result}")
+> # Target 8 found at index 7
+> ```
+>
+> **详细步骤**
+>
+> **线性查找**
+>
+> 1. 初始化：
+>    - 遍历数据集中的每个元素。
+> 2. 查找过程：
+>    - 逐个检查每个元素是否等于目标元素。
+>    - 如果找到目标元素，返回其索引。
+>    - 如果遍历完所有元素仍未找到目标元素，返回 -1。
+>
+> **二分查找**
+>
+> 1. 初始化：
+>    - 设置左边界 `left` 为 0，右边界 `right` 为数据集的最后一个索引。
+> 2. 查找过程：
+>    - 计算中间位置 `mid`。
+>    - 如果中间位置的元素等于目标元素，返回其索引。
+>    - 如果中间位置的元素小于目标元素，调整左边界 `left` 为 `mid + 1`。
+>    - 如果中间位置的元素大于目标元素，调整右边界 `right` 为 `mid - 1`。
+>    - 重复上述步骤，直到找到目标元素或左边界超过右边界。
+> 3. 未找到目标元素：
+>    - 如果左边界超过右边界，返回 -1。
+>
+> 
+
+
+
+参考 bisect 源码的二分查找写法，
+
+https://github.com/python/cpython/blob/main/Lib/bisect.py
+
+> 当然可以！下面是一个基于 `bisect_left` 函数的实现，并提供一个详细的二分查找样例。
+>
+> **二分查找实现**
+>
+> ```python
+> def bisect_left(a, x, lo=0, hi=None, *, key=None):
+>  """Return the index where to insert item x in list a, assuming a is sorted.
+> 
+>  The return value i is such that all e in a[:i] have e < x, and all e in
+>  a[i:] have e >= x.  So if x already appears in the list, a.insert(i, x) will
+>  insert just before the leftmost x already there.
+> 
+>  Optional args lo (default 0) and hi (default len(a)) bound the
+>  slice of a to be searched.
+> 
+>  A custom key function can be supplied to customize the sort order.
+>  """
+> 
+>  if lo < 0:
+>      raise ValueError('lo must be non-negative')
+>  if hi is None:
+>      hi = len(a)
+>  # Note, the comparison uses "<" to match the
+>  # __lt__() logic in list.sort() and in heapq.
+>  if key is None:
+>      while lo < hi:
+>          mid = (lo + hi) // 2
+>          if a[mid] < x:
+>              lo = mid + 1
+>          else:
+>              hi = mid
+>  else:
+>      while lo < hi:
+>          mid = (lo + hi) // 2
+>          if key(a[mid]) < x:
+>              lo = mid + 1
+>          else:
+>              hi = mid
+>  return lo
+> 
+> # 二分查找函数
+> def binary_search(arr, target):
+>  index = bisect_left(arr, target)
+>  if index != len(arr) and arr[index] == target:
+>      return index  # 返回目标值的索引
+>  else:
+>      return -1  # 如果未找到目标值，返回 -1
+> 
+> # 示例
+> arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+> target = 8
+> result = binary_search(arr, target)
+> print(f"Target {target} found at index {result}")
+> ```
+>
+> ### 详细步骤
+>
+> 1. **定义 `bisect_left` 函数**：
+>    - **参数**：
+>      - `a`：已排序的列表。
+>      - `x`：要查找的目标值。
+>      - `lo`：搜索范围的起始索引，默认为 0。
+>      - `hi`：搜索范围的结束索引，默认为 `len(a)`。
+>      - `key`：可选的键函数，用于自定义排序顺序。
+>    - **逻辑**：
+>      - 检查 `lo` 是否非负。
+>      - 如果 `hi` 为 `None`，则设置 `hi` 为 `len(a)`。
+>      - 使用二分查找算法找到目标值 `x` 应该插入的位置。
+>      - 如果 `key` 为 `None`，直接比较 `a[mid]` 和 `x`。
+>      - 如果 `key` 不为 `None`，比较 `key(a[mid])` 和 `x`。
+>
+> 2. **定义 `binary_search` 函数**：
+>    - 使用 `bisect_left` 找到目标值在已排序列表中第一次出现的位置。
+>    - 检查目标值是否存在于列表中：
+>      - 如果 `index` 不等于列表的长度且 `arr[index]` 等于目标值，返回 `index`。
+>      - 否则，返回 -1。
+>
+> 
+>
+> **自定义键函数示例**
+>
+> 假设你有一个包含元组的列表，并且你希望根据元组的第二个元素进行二分查找：
+>
+> ```python
+> def binary_search_with_key(arr, target, key):
+>     index = bisect_left(arr, target, key=key)
+>     if index != len(arr) and key(arr[index]) == target:
+>         return index  # 返回目标值的索引
+>     else:
+>         return -1  # 如果未找到目标值，返回 -1
+> 
+> # 示例
+> arr = [(1, 'a'), (2, 'b'), (3, 'c'), (4, 'd'), (5, 'e')]
+> target = 'c'
+> result = binary_search_with_key(arr, target, key=lambda x: x[1])
+> print(f"Target {target} found at index {result}")
+> ```
+>
+> - **输入**：
+>
+>   ```python
+>   arr = [(1, 'a'), (2, 'b'), (3, 'c'), (4, 'd'), (5, 'e')]
+>   target = 'c'
+>   ```
+>
+> - **输出**：
+>
+>   ```python
+>   Target c found at index 2
+>   ```
+>
+> ### 总结
+>
+> 二分查找是一种高效的查找算法，适用于已排序的数据集。你可以使用 `bisect` 模块中的 `bisect_left` 函数来快速实现二分查找，也可以手动实现以学习算法的细节。
+
+
+
+
+
+## 3.3 编程题目
 
 在问题求解时，总是做出在当前看来是最好的选择，不从整体最优上考虑。贪心算法没有固定的算法框架，关键是贪心策略的选择，贪心策略使用的前提是局部最优能导致全局最优。
-
-双指针和二分查找是贪心算法中常用的技巧。
-
-常规贪心题目，例如：
 
 OJ01017：装箱问题 http://cs101.openjudge.cn/practice/01017
 
 CF1000B: Light It Up https://codeforces.com/problemset/problem/1000/B
 
 CF1221A: 2048 Game http://codeforces.com/problemset/problem/1221/A
-
-
 
 ### 01017: 装箱问题
 
