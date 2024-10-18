@@ -27,6 +27,8 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 1022 | 01026: Cipher       | implementation                | - |  http://cs101.openjudge.cn/practice/01026        |
+|            | 545C: Woodcutters | dp, greedy   | 1500  | https://codeforces.com/problemset/problem/545/C    |
 | 1021 | 01328: Radar Installation       | greedy                | - |  http://cs101.openjudge.cn/practice/01328        |
 |            | 1000B: Light It Up | greedy   | 1500  | https://codeforces.com/problemset/problem/1000/B    |
 | 1020 | 01019: Number Sequence       | implementation                | - |  http://cs101.openjudge.cn/practice/01019        |
