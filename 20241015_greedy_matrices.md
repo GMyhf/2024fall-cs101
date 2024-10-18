@@ -899,7 +899,7 @@ https://github.com/python/cpython/blob/main/Lib/bisect.py
 > print(f"Target {target} found at index {result}")
 > ```
 >
-> ### 详细步骤
+> **详细步骤**
 >
 > 1. **定义 `bisect_left` 函数**：
 >    - **参数**：
@@ -955,7 +955,7 @@ https://github.com/python/cpython/blob/main/Lib/bisect.py
 >   Target c found at index 2
 >   ```
 >
-> ### 总结
+> **总结**
 >
 > 二分查找是一种高效的查找算法，适用于已排序的数据集。你可以使用 `bisect` 模块中的 `bisect_left` 函数来快速实现二分查找，也可以手动实现以学习算法的细节。
 
