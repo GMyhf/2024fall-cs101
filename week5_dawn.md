@@ -1923,219 +1923,7 @@ n 个小孩围坐成一圈，并按顺时针编号为1,2,…,n，从编号为 p 
 
 
 
-# 五、Binary 查找
-
-查找操作是编程中的基本技能，根据数据集的大小和结构选择合适的查找方法可以显著提高效率。线性查找适用于较小或无序的数据集，而二分查找适用于较大的有序数据集。
-
-我发现二分查找容易理解，但是细节部分不容易写对（while的条件是<=，还是<；折半后是mid+1，mid-1，还是mid）。
-
-> **常见的查找方法**
->
-> 1. 线性查找（Linear Search）：
->    - 适用范围：适用于较小的数据集或无序的数据集。
->    - 原理：逐个检查数据集中的每个元素，直到找到满足条件的元素或遍历完所有元素。
->    - 时间复杂度：O(n)，其中 n 是数据集的大小。
->
-> 2. 二分查找（Binary Search）：
->    - 适用范围：适用于有序的数据集。
->    - 原理：通过将数据集分成两半，逐步缩小查找范围，直到找到满足条件的元素或确定不存在。
->    - 时间复杂度：O(log n)，其中 n 是数据集的大小。
->
-> **示例代码**
->
-> 线性查找
->
-> ```python
-> def linear_search(arr, target):
->     for i, element in enumerate(arr):
->         if element == target:
->             return i  # 返回目标元素的索引
->     return -1  # 如果未找到目标元素，返回 -1
-> 
-> # 示例
-> arr = [3, 5, 2, 8, 1, 9, 4]
-> target = 8
-> result = linear_search(arr, target)
-> print(f"Target {target} found at index {result}")
-> # Target 8 found at index 3
-> ```
->
-> 二分查找
->
-> ```python
-> def binary_search(arr, target):
->     left, right = 0, len(arr) - 1
-> 
->     while left <= right:
->         mid = (left + right) // 2
->         if arr[mid] == target:
->             return mid  # 返回目标元素的索引
->         elif arr[mid] < target:
->             left = mid + 1
->         else:
->             right = mid - 1
-> 
->     return -1  # 如果未找到目标元素，返回 -1
-> 
-> # 示例
-> arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-> target = 8
-> result = binary_search(arr, target)
-> print(f"Target {target} found at index {result}")
-> # Target 8 found at index 7
-> ```
->
-> **详细步骤**
->
-> **线性查找**
->
-> 1. 初始化：
->    - 遍历数据集中的每个元素。
-> 2. 查找过程：
->    - 逐个检查每个元素是否等于目标元素。
->    - 如果找到目标元素，返回其索引。
->    - 如果遍历完所有元素仍未找到目标元素，返回 -1。
->
-> **二分查找**
->
-> 1. 初始化：
->    - 设置左边界 `left` 为 0，右边界 `right` 为数据集的最后一个索引。
-> 2. 查找过程：
->    - 计算中间位置 `mid`。
->    - 如果中间位置的元素等于目标元素，返回其索引。
->    - 如果中间位置的元素小于目标元素，调整左边界 `left` 为 `mid + 1`。
->    - 如果中间位置的元素大于目标元素，调整右边界 `right` 为 `mid - 1`。
->    - 重复上述步骤，直到找到目标元素或左边界超过右边界。
-> 3. 未找到目标元素：
->    - 如果左边界超过右边界，返回 -1。
->
-> 
-
-
-
-参考 bisect 源码的二分查找写法，
-
-https://github.com/python/cpython/blob/main/Lib/bisect.py
-
-> 当然可以！下面是一个基于 `bisect_left` 函数的实现，并提供一个详细的二分查找样例。
->
-> **二分查找实现**
->
-> ```python
-> def bisect_left(a, x, lo=0, hi=None, *, key=None):
->     """Return the index where to insert item x in list a, assuming a is sorted.
-> 
->     The return value i is such that all e in a[:i] have e < x, and all e in
->     a[i:] have e >= x.  So if x already appears in the list, a.insert(i, x) will
->     insert just before the leftmost x already there.
-> 
->     Optional args lo (default 0) and hi (default len(a)) bound the
->     slice of a to be searched.
-> 
->     A custom key function can be supplied to customize the sort order.
->     """
-> 
->     if lo < 0:
->         raise ValueError('lo must be non-negative')
->     if hi is None:
->         hi = len(a)
->     # Note, the comparison uses "<" to match the
->     # __lt__() logic in list.sort() and in heapq.
->     if key is None:
->         while lo < hi:
->             mid = (lo + hi) // 2
->             if a[mid] < x:
->                 lo = mid + 1
->             else:
->                 hi = mid
->     else:
->         while lo < hi:
->             mid = (lo + hi) // 2
->             if key(a[mid]) < x:
->                 lo = mid + 1
->             else:
->                 hi = mid
->     return lo
-> 
-> # 二分查找函数
-> def binary_search(arr, target):
->     index = bisect_left(arr, target)
->     if index != len(arr) and arr[index] == target:
->         return index  # 返回目标值的索引
->     else:
->         return -1  # 如果未找到目标值，返回 -1
-> 
-> # 示例
-> arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-> target = 8
-> result = binary_search(arr, target)
-> print(f"Target {target} found at index {result}")
-> ```
->
-> ### 详细步骤
->
-> 1. **定义 `bisect_left` 函数**：
->    - **参数**：
->      - `a`：已排序的列表。
->      - `x`：要查找的目标值。
->      - `lo`：搜索范围的起始索引，默认为 0。
->      - `hi`：搜索范围的结束索引，默认为 `len(a)`。
->      - `key`：可选的键函数，用于自定义排序顺序。
->    - **逻辑**：
->      - 检查 `lo` 是否非负。
->      - 如果 `hi` 为 `None`，则设置 `hi` 为 `len(a)`。
->      - 使用二分查找算法找到目标值 `x` 应该插入的位置。
->      - 如果 `key` 为 `None`，直接比较 `a[mid]` 和 `x`。
->      - 如果 `key` 不为 `None`，比较 `key(a[mid])` 和 `x`。
->
-> 2. **定义 `binary_search` 函数**：
->    - 使用 `bisect_left` 找到目标值在已排序列表中第一次出现的位置。
->    - 检查目标值是否存在于列表中：
->      - 如果 `index` 不等于列表的长度且 `arr[index]` 等于目标值，返回 `index`。
->      - 否则，返回 -1。
->
-> 
->
-> **自定义键函数示例**
->
-> 假设你有一个包含元组的列表，并且你希望根据元组的第二个元素进行二分查找：
->
-> ```python
-> def binary_search_with_key(arr, target, key):
->     index = bisect_left(arr, target, key=key)
->     if index != len(arr) and key(arr[index]) == target:
->         return index  # 返回目标值的索引
->     else:
->         return -1  # 如果未找到目标值，返回 -1
-> 
-> # 示例
-> arr = [(1, 'a'), (2, 'b'), (3, 'c'), (4, 'd'), (5, 'e')]
-> target = 'c'
-> result = binary_search_with_key(arr, target, key=lambda x: x[1])
-> print(f"Target {target} found at index {result}")
-> ```
->
-> - **输入**：
->   ```python
->   arr = [(1, 'a'), (2, 'b'), (3, 'c'), (4, 'd'), (5, 'e')]
->   target = 'c'
->   ```
-> - **输出**：
->   ```python
->   Target c found at index 2
->   ```
->
-> ### 总结
->
-> 二分查找是一种高效的查找算法，适用于已排序的数据集。你可以使用 `bisect` 模块中的 `bisect_left` 函数来快速实现二分查找，也可以手动实现以学习算法的细节。
-
-
-
-
-
-
-
-# 六、Common 知识点
+# 五、Common 知识点
 
 ## 浅拷贝
 
@@ -2344,7 +2132,7 @@ python开三次方根的误差特别大
 
 
 
-# 七、Optimize and improve算法
+# 六、Optimize and improve算法
 
 Python 是一种高级编程语言，具有丰富的库和简洁的语法。然而，在处理大规模数据或高性能要求的应用时，优化代码是非常重要的。以下是一些常见的 Python 优化的技巧：
 
@@ -2373,7 +2161,7 @@ Python 是一种高级编程语言，具有丰富的库和简洁的语法。然�
 >   # 传统方式
 >   numbers = [1, 2, 3, 4, 5]
 >   squares = list(map(lambda x: x ** 2, numbers))
->       
+>           
 >   # 列表推导式
 >   squares = [x ** 2 for x in numbers]
 >   ```
