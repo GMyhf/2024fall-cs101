@@ -28,7 +28,7 @@ to do
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 | 1024 | 01047: Round and Round We Go      | implementation, math                | - |  http://cs101.openjudge.cn/practice/01047        |
-|            | 1719C: Number Game | binary search, data structure, games, greedy, implementation | 1400  | https://codeforces.com/problemset/problem/1749/C    |
+|            | 1749C: Number Game | binary search, data structure, games, greedy, implementation | 1400  | https://codeforces.com/problemset/problem/1749/C    |
 | 1023 | 01026: Cipher       | implementation                | - |  http://cs101.openjudge.cn/practice/01026        |
 |            | 803A: Maximal Binary Matrix | constructive algorithm   | 1400  | https://codeforces.com/problemset/problem/803/A    |
 | 1022 | 01026: Cipher       | implementation                | - |  http://cs101.openjudge.cn/practice/01026        |
