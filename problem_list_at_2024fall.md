@@ -39,7 +39,7 @@ to do
 |            | 545C: Woodcutters | dp, greedy   | 1500  | https://codeforces.com/problemset/problem/545/C    |
 | 1021 | 01328: Radar Installation       | greedy                | - |  http://cs101.openjudge.cn/practice/01328        |
 |            | 1000B: Light It Up | greedy   | 1500  | https://codeforces.com/problemset/problem/1000/B    |
-| 1020 | 01019: Number Sequence       | implementation                | - |  http://cs101.openjudge.cn/practice/01019        |
+| 1020 | 01019: Number Sequence       | implementation                | - |  http://cs101.openjudge.cn/2024fallroutine/01019        |
 |            | 466C: Number of Ways | two pointers   | 1700  | https://codeforces.com/problemset/problem/466/C    |
 | 1019 | 01008: Maya Calendar       | implementation                | - |  http://cs101.openjudge.cn/2024fallroutine/01008        |
 |            | 1B: Spreadsheets | implementation, math   | 1600  | https://codeforces.com/problemset/problem/1/B    |
