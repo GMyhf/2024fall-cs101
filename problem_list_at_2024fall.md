@@ -27,7 +27,10 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 1026 | 02692: 假币问题      | brute force                | - |  http://cs101.openjudge.cn/practice/02692        |
+|      | 18156: 寻找离⽬标数最近的两数之和      | two pointers                | - |  http://cs101.openjudge.cn/practice/18156        |
 | 1025 | 01047: Round and Round We Go      | implementation, math                | - |  http://cs101.openjudge.cn/practice/01047        |
+|      | 21554: 排队做实验v0.2      | greedy                | - |  http://cs101.openjudge.cn/practice/21554        |
 | 1024 | 02996: 选课      | two pointers                | - |  http://cs101.openjudge.cn/practice/02996        |
 |            | 1749C: Number Game | binary search, data structure, games, greedy, implementation | 1400  | https://codeforces.com/problemset/problem/1749/C    |
 | 1023 | 01833: 排列       | two pointers, cantor expansion   | - |  http://cs101.openjudge.cn/practice/01833        |
