@@ -1,6 +1,6 @@
 # 2024/10/15 Tuesday 贪心和矩阵
 
-Updated 1055 GMT+8 Oct 18, 2023
+Updated 1316 GMT+8 Oct 19, 2023
 
 2024 fall, Complied by Hongfei Yan
 
@@ -602,7 +602,35 @@ print(' '.join(map(str, res)))
 
 贪心算法是用来解决一类最优化问题，并希望由局部最优策略来推得全局最优结果。贪心法适用的问题一定满足最优子结构性质，即一个问题的最优解可以通过其子问题的最优解来构建。
 
-严谨使用贪心法来求解最优问题需要对采取的策略进行证明。一般思路是使用反证法及数学归纳法，即假设策略不能导致最优解，然后通过一系列推导得到矛盾，以此证明策略是最优的，最后用数学归纳法保证全局最优。证明往往比贪心本身更难，因此一般来说，如果想到某个似乎可行的策略，并且自己无法举出反例，那么就编码实现尝试。
+严谨使用贪心法来求解最优问题需要对采取的策略进行证明。证明往往比贪心本身更难，因此一般来说，如果想到某个似乎可行的策略，并且自己无法举出反例，那么就编码实现尝试。
+
+> https://oi-wiki.org/basic/greedy/
+>
+> 贪心算法有两种证明方法：反证法和归纳法。一般情况下，一道题只会用到其中的一种方法来证明。
+>
+> 1. 反证法：如果交换方案中任意两个元素/相邻的两个元素后，答案不会变得更好，那么可以推定目前的解已经是最优解了。
+> 2. 归纳法：先算得出边界情况（例如 `n=1`）的最优解 $F_1$)，然后再证明：对于每个 n，$F_{n+1}$ 都可以 由 $F_{n}$![F_{n}](data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7) 推导出结果。
+>
+> **常见题型**
+>
+> 在提高组难度以下的题目中，最常见的贪心有两种。
+>
+> - 「我们将 XXX 按照某某顺序排序，然后按某种顺序（例如从小到大）选择。」。
+> - 「我们每次都取 XXX 中最大/小的东西，并更新 XXX。」（有时「XXX 中最大/小的东西」可以优化，比如用优先队列维护）
+>
+> 二者的区别在于一种是离线的，先处理后选择；一种是在线的，边处理边选择。
+>
+> **排序解法**
+>
+> 用排序法常见的情况是输入一个包含几个（一般一到两个）权值的数组，通过排序然后遍历模拟计算的方法求出最优值。
+>
+> **后悔解法**
+>
+> 思路是无论当前的选项是否最优都接受，然后进行比较，如果选择之后不是最优了，则反悔，舍弃掉这个选项；否则，正式接受。如此往复。
+>
+> **与动态规划的区别**
+>
+> 贪心算法与动态规划的不同在于它对每个子问题的解决方案都做出选择，不能回退。动态规划则会保存以前的运算结果，并根据以前的结果对当前进行选择，有回退功能。
 
 
 
@@ -967,11 +995,25 @@ https://github.com/python/cpython/blob/main/Lib/bisect.py
 
 在问题求解时，总是做出在当前看来是最好的选择，不从整体最优上考虑。贪心算法没有固定的算法框架，关键是贪心策略的选择，贪心策略使用的前提是局部最优能导致全局最优。
 
-OJ01017：装箱问题 http://cs101.openjudge.cn/practice/01017
 
-CF1000B: Light It Up https://codeforces.com/problemset/problem/1000/B
 
-CF1221A: 2048 Game http://codeforces.com/problemset/problem/1221/A
+### CF1221A. 2048 Game
+
+brute force/greedy/math, 1000, http://codeforces.com/problemset/problem/1221/A
+
+You are playing a variation of game 2048. Initially you have a multiset s of n integers. Every integer in this multiset is a power of two.
+
+You may perform any number (possibly, zero) operations with this multiset.
+
+During each operation you choose two **equal** integers from s, remove them from s and insert the number equal to their sum into s.
+
+For example, if *s*={1,2,1,1,4,2,2}and you choose integers 2 and 2, then the multiset becomes {1,1,1,4,4,2}.
+
+You win if the number 2048 belongs to your multiset. For example, if s={1024,512,512,4}you can win as follows: choose 512 and 512, your multiset turns into {1024,1024,4}. Then choose 1024 and 1024, your multiset turns into {2048,4} and you win.
+
+You have to determine if you can win this game.
+
+You have to answer *q* independent queries.
 
 ### 01017: 装箱问题
 
@@ -1030,7 +1072,7 @@ while True:
 
 ### 12559: 最大最小整数 v0.3
 
-greedy/strings/sortings, http://cs101.openjudge.cn/practice/12559
+greedy, strings, sortings, math http://cs101.openjudge.cn/practice/12559
 
 假设有n个正整数，将它们连成一片，将会组成一个新的大整数。现需要求出，能组成的最大最小整数。
 
@@ -1132,9 +1174,49 @@ print(''.join(lt1),''.join(lt))
 
 
 
-### CF1364A. XXXXX
+### 19948: 因材施教
 
-https://codeforces.com/problemset/problem/1364/A
+greedy, http://cs101.openjudge.cn/practice/19948
+
+有一所魔法高校招入一批学生，为了贯彻因材施教的理念，学校打算根据他们的魔法等级进行分班教育。在确定班级数目的情况下，班级内学生的差异要尽可能的小，也就是各个班级内学生的魔法等级要尽可能的接近。
+例如：现在有(n = 7)位学生，他们的魔法等级分别为(r = [2, 7, 9, 9, 16, 28, 45])，我们要将他们分配到(m = 3)个班级，如果按照([2, 7], [9, 9], [16, 28, 45])的方式分班，则他们的总体差异为(d = (7 - 2) + (9 - 9) + (45 - 16) = 34)。
+
+
+
+### 1000B. Light It Up
+
+greedy, 1500, https://codeforces.com/problemset/problem/1000/B
+
+Recently, you bought a brand new smart lamp with programming features. At first, you set up a schedule to the lamp. Every day it will turn power on at moment 0 and turn power off at moment M. Moreover, the lamp allows you to set a program of switching its state (states are "lights on" and "lights off"). Unfortunately, some program is already installed into the lamp.
+
+The lamp allows only *good* programs. Good program can be represented as a non-empty array a, where 0<a~1~<a~2~<⋯<a~|a|~<M. All a~i~ must be integers. Of course, preinstalled program is a good program.
+
+The lamp follows program a in next manner: at moment 0 turns power and light on. Then at moment a~i~ the lamp flips its state to opposite (if it was lit, it turns off, and vice versa). The state of the lamp flips instantly: for example, if you turn the light off at moment 1 and then do nothing, the total time when the lamp is lit will be 1. Finally, at moment M the lamp is turning its power off regardless of its state.
+
+Since you are not among those people who read instructions, and you don't understand the language it's written in, you realize (after some testing) the only possible way to alter the preinstalled program. You can **insert at most one** element into the program a, so it still should be a *good* program after alteration. Insertion can be done between any pair of consecutive elements of a, or even at the beginning or at the end of a.
+
+Find such a way to alter the program that the total time when the lamp is lit is maximum possible. Maybe you should leave program untouched. If the lamp is lit from x till moment y, then its lit for y−x units of time. Segments of time when the lamp is lit are summed up.
+
+
+
+### 18211: 军备竞赛
+
+greedy/two pointers, http://cs101.openjudge.cn/practice/18211
+
+鸣人是木叶村的村长，最近在跟敌国进行军备竞赛，他手边有N份武器设计图，每张设计图有制作成本（大于等于零）且最多使用一次，可以选择花钱制作或是以同样的价钱卖给敌国，同时任意时刻敌国的武器不能比我国更多，鸣人的目标是在不负债的前提下武器种类比敌国越多越好。
+
+**输入**
+
+第一行为起始整数经费p,并且0≤p。且要求任何时刻p不能小于0.
+第二行为n个整数，以空格分隔，并且0≤每个整数。代表每张设计图的制作成本，同时也是卖价，最多用一次(无法又制作又卖).
+
+**输出**
+
+一个整数，代表武器种类最多比敌国多多少.
+
+
+
+### CF1364A. XXXXX
 
 brute force/data structures/number theory/two pointers, 1200, https://codeforces.com/problemset/problem/1364/A
 
