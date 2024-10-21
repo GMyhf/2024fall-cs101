@@ -35,7 +35,7 @@ to do
 |            | 1749C: Number Game | binary search, data structure, games, greedy, implementation | 1400  | https://codeforces.com/problemset/problem/1749/C    |
 | 1023 | 01833: 排列       | two pointers, cantor expansion   | - |  http://cs101.openjudge.cn/practice/01833        |
 |            | 803A: Maximal Binary Matrix | constructive algorithm   | 1400  | https://codeforces.com/problemset/problem/803/A    |
-| 1022 | 01026: Cipher       | implementation                | - |  http://cs101.openjudge.cn/practice/01026        |
+| 1022 | 01026: Cipher       | implementation                | - |  http://cs101.openjudge.cn/2024fallroutine/01026        |
 |            | 545C: Woodcutters | dp, greedy   | 1500  | https://codeforces.com/problemset/problem/545/C    |
 | 1021 | 01328: Radar Installation       | greedy                | - |  http://cs101.openjudge.cn/2024fallroutine/01328        |
 |            | 1000B: Light It Up | greedy   | 1500  | https://codeforces.com/problemset/problem/1000/B    |
