@@ -989,6 +989,48 @@ https://github.com/python/cpython/blob/main/Lib/bisect.py
 
 
 
+> **进一步优化**
+>
+> 如果你的 `key` 函数比较复杂，可以考虑使用 `functools.cmp_to_key` 来定义一个比较函数。这样可以更灵活地处理复杂的比较逻辑。
+>
+> **使用 `functools.cmp_to_key` 的示例**
+>
+> ```python
+> from bisect import bisect_left
+> from functools import cmp_to_key
+> 
+> def compare_items(x, y):
+>     return (x[1] > y[1]) - (x[1] < y[1])
+> 
+> def binary_search_with_key(arr, target, key):
+>     # 找到目标值应该插入的位置
+>     index = bisect_left(arr, target, key=cmp_to_key(key))
+>     
+>     # 检查是否找到了目标值
+>     if index < len(arr) and key(arr[index], (0, target)) == 0:
+>         return index  # 返回目标值的索引
+>     else:
+>         return -1  # 如果未找到目标值，返回 -1
+> 
+> # 示例
+> arr = [(1, 'a'), (2, 'b'), (3, 'c'), (4, 'd'), (5, 'e')]
+> target = 'c'
+> result = binary_search_with_key(arr, target, key=compare_items)
+> print(f"Target {target} found at index {result}")
+> ```
+>
+> **详细解释**
+>
+> 1. **`compare_items` 函数**：
+>    - 定义一个比较函数 `compare_items`，用于比较两个元组的第二个元素。
+>
+> 2. **`cmp_to_key` 函数**：
+>    - 将 `compare_items` 转换为 `key` 函数，传递给 `bisect_left`。
+>
+> 3. **`if index < len(arr) and key(arr[index], (0, target)) == 0`**：
+>    - 使用 `key` 函数比较 `arr[index]` 和 `(0, target)`，确保它们的第二个元素相等。
+>
+
 
 
 ## 3.3 编程题目
