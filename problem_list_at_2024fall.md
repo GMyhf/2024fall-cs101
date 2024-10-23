@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 1202 GMT+8 Oct 23 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0007 GMT+8 Oct 24 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 0823 每天放2个题目供同学们自愿练习，期中开始，每天放1个题目。争取每20个题目难度提升100。  
@@ -31,7 +31,7 @@ to do
 |      | 18156: 寻找离⽬标数最近的两数之和      | two pointers                | - |  http://cs101.openjudge.cn/practice/18156        |
 | 1025 | 01047: Round and Round We Go      | implementation, math                | - |  http://cs101.openjudge.cn/practice/01047        |
 |      | 21554: 排队做实验v0.2      | greedy                | - |  http://cs101.openjudge.cn/practice/21554        |
-| 1024 | 02996: 选课      | two pointers                | - |  http://cs101.openjudge.cn/practice/02996        |
+| 1024 | 02996: 选课      | two pointers                | - |  http://cs101.openjudge.cn/2024fallroutine/02996        |
 |            | 1749C: Number Game | binary search, data structure, games, greedy, implementation | 1400  | https://codeforces.com/problemset/problem/1749/C    |
 | 1023 | 01833: 排列       | two pointers, cantor expansion   | - |  http://cs101.openjudge.cn/2024fallroutine/01833        |
 |            | 803A: Maximal Binary Matrix | constructive algorithm   | 1400  | https://codeforces.com/problemset/problem/803/A    |
