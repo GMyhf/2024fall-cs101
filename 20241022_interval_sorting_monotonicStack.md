@@ -1,6 +1,6 @@
 # 2024/10/22 区间、排序、单调栈
 
-Updated 1050 GMT+8 Oct 22, 2024
+Updated 1832 GMT+8 Oct 24, 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -8,11 +8,6 @@ Updated 1050 GMT+8 Oct 22, 2024
 
 > Log:
 >
-> 练习网址，https://leetcode.cn 。leetcode只需要完成核心代码就可以，不用写输入输出部分。
->
-> 核心代码已经指定好类名、方法名、参数名，请勿修改或重命名，直接返回值即可。
-
-
 
 # 一、Recap
 
@@ -523,6 +518,12 @@ if __name__ == "__main__":
 # 二、常见区间问题
 
 一文读懂五类常见区间问题，https://zhuanlan.zhihu.com/p/446371757
+
+> 练习网址，https://leetcode.cn 。leetcode只需要完成核心代码就可以，不用写输入输出部分。
+>
+> 核心代码已经指定好类名、方法名、参数名，请勿修改或重命名，直接返回值即可。
+
+
 
 ## 1 区间合并
 
