@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 0007 GMT+8 Oct 24 2024. 2024 fall, Complied by Hongfei Yan
+Updated 1211 GMT+8 Oct 24 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 0823 每天放2个题目供同学们自愿练习，期中开始，每天放1个题目。争取每20个题目难度提升100。  
@@ -27,32 +27,33 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 1027       | 1425A. Arena of Greed | games, greedy | 1400  | https://codeforces.com/problemset/problem/1425/A    |
 | 1026 | 02692: 假币问题      | brute force                | - |  http://cs101.openjudge.cn/practice/02692        |
 |      | 18156: 寻找离⽬标数最近的两数之和      | two pointers                | - |  http://cs101.openjudge.cn/practice/18156        |
 | 1025 | 01047: Round and Round We Go      | implementation, math                | - |  http://cs101.openjudge.cn/practice/01047        |
 |      | 21554: 排队做实验v0.2      | greedy                | - |  http://cs101.openjudge.cn/practice/21554        |
 | 1024 | 02996: 选课      | two pointers                | - |  http://cs101.openjudge.cn/2024fallroutine/02996        |
-|            | 1749C: Number Game | binary search, data structure, games, greedy, implementation | 1400  | https://codeforces.com/problemset/problem/1749/C    |
+|            | 1749C. Number Game | binary search, data structure, games, greedy, implementation | 1400  | https://codeforces.com/problemset/problem/1749/C    |
 | 1023 | 01833: 排列       | two pointers, cantor expansion   | - |  http://cs101.openjudge.cn/2024fallroutine/01833        |
 |            | 803A: Maximal Binary Matrix | constructive algorithm   | 1400  | https://codeforces.com/problemset/problem/803/A    |
 | 1022 | 01026: Cipher       | implementation                | - |  http://cs101.openjudge.cn/2024fallroutine/01026        |
-|            | 545C: Woodcutters | dp, greedy   | 1500  | https://codeforces.com/problemset/problem/545/C    |
+|            | 545C. Woodcutters | dp, greedy   | 1500  | https://codeforces.com/problemset/problem/545/C    |
 | 1021 | 01328: Radar Installation       | greedy                | - |  http://cs101.openjudge.cn/2024fallroutine/01328        |
 |            | 1000B: Light It Up | greedy   | 1500  | https://codeforces.com/problemset/problem/1000/B    |
 | 1020 | 01019: Number Sequence       | implementation                | - |  http://cs101.openjudge.cn/2024fallroutine/01019        |
-|            | 466C: Number of Ways | two pointers   | 1700  | https://codeforces.com/problemset/problem/466/C    |
+|            | 466C. Number of Ways | two pointers   | 1700  | https://codeforces.com/problemset/problem/466/C    |
 | 1019 | 01008: Maya Calendar       | implementation                | - |  http://cs101.openjudge.cn/2024fallroutine/01008        |
-|            | 1B: Spreadsheets | implementation, math   | 1600  | https://codeforces.com/problemset/problem/1/B    |
+|            | 1B. Spreadsheets | implementation, math   | 1600  | https://codeforces.com/problemset/problem/1/B    |
 | 1018 | 04133: 垃圾炸弹       | matirces                | - |  http://cs101.openjudge.cn/2024fallroutine/04133        |
 |            | 1443C: The Delivery Dilemma | binary search, greedy, sortings   | 1400  | https://codeforces.com/problemset/problem/1443/C    |
 | 1017 | 02659: Bomb Game       | matirces                | - |  http://cs101.openjudge.cn/2024fallroutine/02659        |
-|            | 1221A: 2048 Game | brute force, greedy, math   | 1000  | https://codeforces.com/problemset/problem/1221/A    |
+|            | 1221A. 2048 Game | brute force, greedy, math   | 1000  | https://codeforces.com/problemset/problem/1221/A    |
 | 1016 | 12560: 生存游戏       | matirces                | - |  http://cs101.openjudge.cn/2024fallroutine/12560        |
 |            | 1364A: XXXXX | brute force, data structures, number theory, two pointers   | 1200  | https://codeforces.com/problemset/problem/1364/A    |
 | 1015 | 22491: 冲刺GPA的贪心之路       | greedy                | - |  http://cs101.openjudge.cn/2024fallroutine/22491         |
-|            | 706B: Interesting drink | *special problem,greedy,implementation   | 1100  | https://codeforces.com/problemset/problem/706/B    |
+|            | 706B. Interesting drink | *special problem,greedy,implementation   | 1100  | https://codeforces.com/problemset/problem/706/B    |
 | 1014 | 19757: Saruman's Army       | greedy                | - |  http://cs101.openjudge.cn/2024fallroutine/19757         |
-|            | 158B: Taxi | *special problem,greedy,implementation   | 1100  | https://codeforces.com/problemset/problem/158/B    |
+|            | 158B. Taxi | *special problem,greedy,implementation   | 1100  | https://codeforces.com/problemset/problem/158/B    |
 | 1013 | 19948: 因材施教       | greedy                | - |  http://cs101.openjudge.cn/2024fallroutine/19948         |
 |            | sy175: 2-SUM-双指针 | two pointers   | -  | https://sunnywhy.com/sfbj/4/6/175    |
 | 1012 | 18211: 军备竞赛       | greedy, two pointers                | - |  http://cs101.openjudge.cn/2024fallroutine/18211         |
