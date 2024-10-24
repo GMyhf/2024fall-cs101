@@ -101,6 +101,138 @@ solve()
 
 
 
+### 2.2 sys.stdin.read替代try...except
+
+系统的测试文件中数据有很多组，在程序里要写循环读取数据并判断是否读完文件的代码。Python模版这样写：
+
+```python
+while(True):
+	try:
+    ...
+	except EOFError:
+    break
+```
+
+
+
+另外一种输入处理方法：使用 sys.stdin.read() 一次性读取所有输入数据，以提高效率。
+
+
+
+### 示例：01047: Round and Round We Go
+
+http://cs101.openjudge.cn/practice/01047/
+
+A cyclic number is an integer n digits in length which, when multiplied by any integer from 1 to n, yields a"cycle"of the digits of the original number. That is, if you consider the number after the last digit to "wrap around"back to the first digit, the sequence of digits in both numbers will be the same, though they may start at different positions.For example, the number 142857 is cyclic, as illustrated by the following table:
+142857 *1 = 142857
+142857 *2 = 285714
+142857 *3 = 428571
+142857 *4 = 571428
+142857 *5 = 714285
+142857 *6 = 857142
+
+**输入**
+
+Write a program which will determine whether or not numbers are cyclic. The input file is a list of integers from 2 to 60 digits in length. (Note that preceding zeros should not be removed, they are considered part of the number and count in determining n. Thus, "01"is a two-digit number, distinct from "1" which is a one-digit number.)
+
+**输出**
+
+For each input integer, write a line in the output indicating whether or not it is cyclic.
+
+样例输入
+
+```
+142857
+142856
+142858
+01
+0588235294117647
+```
+
+样例输出
+
+```
+142857 is cyclic
+142856 is not cyclic
+142858 is not cyclic
+01 is not cyclic
+0588235294117647 is cyclic
+```
+
+来源：Greater New York 2001
+
+
+
+给一个整数，它的长度为n，从1开始一直到n和该整数相乘，判断每次结果是否和原来的整数是循环的。 
+
+```python
+# 24-物院-彭博
+def generate_rotations(s):
+    return {s[i:] + s[:i] for i in range(len(s))}
+
+
+while True:
+    try:
+        n = input()
+        length, num = len(n), int(n)
+        rotations = generate_rotations(n)
+
+        flag = True
+        for i in range(2, length + 1):
+            n_ = str(num * i)
+            if n_ not in rotations and "0" + n_ not in rotations:
+                flag = False
+                break
+
+        if flag:
+            print(f"{n} is cyclic")
+        else:
+            print(f"{n} is not cyclic")
+
+    except EOFError:
+        break
+
+```
+
+
+
+使用 sys.stdin.read() 一次性读取所有输入数据，以提高效率。
+
+```python
+# 24-物院-彭博
+import sys
+def generate_rotations(s):
+    return {s[i:] + s[:i] for i in range(len(s))}
+
+# 读取所有输入
+input_data = sys.stdin.read().strip()
+lines = input_data.split('\n')
+
+for line in lines:
+    length, num = len(line), int(line)
+    rotations = generate_rotations(line)
+
+    flag = True
+    for i in range(2, length + 1):
+        n_ = str(num * i)
+        if n_ not in rotations and "0" + n_ not in rotations:
+            flag = False
+            break
+
+    if flag:
+        print(f"{line} is cyclic")
+    else:
+        print(f"{line} is not cyclic")
+
+
+```
+
+
+
+
+
+
+
 ## 3 编程题目：
 
 ### 1425A. Arena of Greed
@@ -167,7 +299,9 @@ def recursive_function(n):
         return recursive_function(n - 1) + recursive_function(n - 2)
 ```
 
-## 2 示例：斐波那契数列
+## 2 示例两板斧
+
+### 斐波那契数列
 
 下面是一个具体的示例，展示了如何使用这两板斧来解决斐波那契数列的问题。
 
@@ -239,6 +373,124 @@ print(fibonacci(35))  # 现在会非常快
 - **递归深度**：即使增加了递归深度限制，递归调用仍然有可能导致栈溢出。如果递归层数非常深，考虑使用迭代方法或其他非递归算法。
 
 
+
+### 21760: 递归复习法
+
+http://wjjc.openjudge.cn/2024jgc5/002/
+
+据说，学渣复习期末考试，要用递归复习法，即当他复习知识点A的时候，他发现理解知识点A必须先理解知识点B和知识点C，于是他先去学习知识点B和知识点C，当他复习知识点B的时候，又发现理解知识点B必须先理解知识点D与知识点E，又得先去复习知识点D和知识点E。
+
+现在学渣小明正在通过递归复习法复习知识点n。对任意知识点1 <= k <= n，他复习这个知识点本身需要k小时的时间。但是，小明对这些知识点非常不熟悉，以至于他对任意知识点k， 3 <= k <= n，都必须先复习知识点k - 1和k - 2才能复习知识点k；在复习知识点k - 1的时候，又得先复习知识点k - 2和k - 3才能复习知识点k - 1；以此类推……。注意，即使在复习知识点k - 1的时候他已经复习过了知识点k - 2，在复习知识点k之前他已经忘掉了知识点k - 2，因此他还是会再复习一遍知识点k - 2，并重复上述的递归过程完成新的一轮k - 2的复习后，才会复习知识点k。
+
+现在请问他一共需要多少个小时才能完成知识点n的复习？
+
+输入
+
+第一行是一个整数m，代表数据组数，1 <= m <= 25
+之后m行，每行是一组数据，即一个整数n，1 <= n <= 25
+
+输出
+
+对每组数据，输出小明复习知识点n所需要的时间
+
+样例输入
+
+```
+9
+1
+2
+3
+5
+7
+9
+15
+20
+25
+```
+
+样例输出
+
+```
+1
+2
+6
+23
+71
+200
+3786
+42164
+467833
+```
+
+提示
+
+第一个输入n=1，需要复习一个小时。
+
+第二个输入n=3，此时他需要先复习知识点1和知识点2，再复习知识点3，需要复习1+2+3=6个小时。
+
+第三个输入n=5，此时他为了复习知识点5，必须先复习知识点3与知识点4。之前已知复习知识点3需要6个小时。复习知识点4前需要再复习知识点3与知识点2，加上复习知识点4本身的时间，共需要2+6+4=12个小时。因此，复习知识点5共需要6+12+5=23小时。
+
+来源
+
+何昊高洁
+
+
+
+```python
+def study_time(n, memo):
+    if n == 1 or n == 2:
+        return n
+    if n in memo:
+        return memo[n]
+    memo[n] = n + study_time(n - 1, memo) + study_time(n - 2, memo)
+    return memo[n]
+
+if __name__ == "__main__":
+    import sys
+    input = sys.stdin.read
+    data = input().split()
+
+    m = int(data[0])
+    results = []
+    memo = {}
+
+    for i in range(1, m + 1):
+        n = int(data[i])
+        results.append(study_time(n, memo))
+
+    for result in results:
+        print(result)
+```
+
+
+
+利用 Python 的 functools.lru_cache 装饰器来自动处理缓存。这样可以简化代码，并且避免手动管理 memo 字典。
+
+```python
+from functools import lru_cache
+import sys
+
+@lru_cache(maxsize=None)
+def study_time(n):
+    if n == 1 or n == 2:
+        return n
+    return n + study_time(n - 1) + study_time(n - 2)
+
+if __name__ == "__main__":
+    # 读取所有输入数据
+    input_data = sys.stdin.read().strip()
+    data = input_data.split()
+
+    m = int(data[0])
+    results = []
+
+    for i in range(1, m + 1):
+        n = int(data[i])
+        results.append(study_time(n))
+
+    for result in results:
+        print(result)
+```
 
 
 
@@ -849,6 +1101,112 @@ https://www.zhihu.com/question/54353032
 
 
 ## 6.编程题目
+
+### 28717: 递归比较字符串大小
+
+http://wjjc.openjudge.cn/2024jgc4/002/
+
+程序填空，完成按奇异规则比较字符串大小的递归函数strCmp(a,b)，返回值为True或False，表示a是否小于b
+
+不可使用循环，只能使用递归
+
+字符串按奇异规则比较大小，就是逐个字符比较大小直到分出胜负。两个字符比较大小的规则是哪个字符的编码和字母'k'的编码的差的绝对值小，哪个字符就算小。这样两个不同字符可能也算一样大
+
+字符串很短，不用考虑效率问题
+
+ 
+
+ 
+
+ 
+
+```
+def strCmp(a,b) :
+	if a == "" and b != "":
+		return True
+	elif a != "" and b == "":
+		return False
+	elif a == "" and b == "":
+		return False
+	else :
+		if abs(ord(a[0]) - ord('k')) < abs(ord(b[0]) - ord('k')):#abs是求绝对值的函数
+			return True
+// 在此处补充你的代码
+#填空
+
+
+n = int(input())
+for _ in range(n):
+	s1,s2 = input().split()
+	if strCmp(s1,s2):
+		print("YES")
+	else:
+		print("NO")
+```
+
+输入
+
+第一行是整数n，表示接下来有n对字符串
+接下来有n行，每行有用空格分隔的两个字符串，字符串由小写英文字母组成
+
+输出
+
+对没对字符串，如果第一个小于第二个，输出YES，否则输出NO
+
+样例输入
+
+```
+4
+ebc eab
+ac acd
+kk ki
+abc abc
+```
+
+样例输出
+
+```
+YES
+YES
+YES
+NO
+```
+
+来源
+
+Guo Wei
+
+
+
+```python
+def strCmp(a, b):
+    if a == "" and b != "":
+        return True
+    elif a != "" and b == "":
+        return False
+    elif a == "" and b == "":
+        return False
+    else:
+        if abs(ord(a[0]) - ord('k')) < abs(ord(b[0]) - ord('k')):
+            return True
+        elif abs(ord(a[0]) - ord('k')) > abs(ord(b[0]) - ord('k')):
+            return False
+        else:
+            return strCmp(a[1:], b[1:])
+
+if __name__ == "__main__":
+    n = int(input())
+    for _ in range(n):
+        s1, s2 = input().split()
+        if strCmp(s1, s2):
+            print("YES")
+        else:
+            print("NO")
+```
+
+
+
+
 
 ### 01661: Help Jimmy
 
