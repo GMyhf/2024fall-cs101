@@ -27,6 +27,10 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 1031 | 02806: 公共子序列      | dp                | - |  http://cs101.openjudge.cn/practice/02806        |
+|            | 698A. Vacations | dp | 1400  | https://codeforces.com/problemset/problem/698/A    |
+| 1030 | 23421: 小偷背包      | dp                | - |  http://cs101.openjudge.cn/practice/23421        |
+|            | 368B. Sereja and Suffixes | brute force, dp | 1300  | https://codeforces.com/problemset/problem/368/B    |
 | 1029 | 02533: Longest Ordered Subsequence      | dp                | - |  http://cs101.openjudge.cn/practice/02533        |
 |            | 189A. Cut Ribbon | brute force, dp | 1300  | https://codeforces.com/problemset/problem/189/A    |
 | 1028 | 02760: 数字三角形      | dp, dfs similar                | - |  http://cs101.openjudge.cn/practice/02760        |
