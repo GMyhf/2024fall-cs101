@@ -35,7 +35,7 @@ to do
 |            | 189A. Cut Ribbon | brute force, dp | 1300  | https://codeforces.com/problemset/problem/189/A    |
 | 1028 | 02760: 数字三角形      | dp, dfs similar                | - |  http://cs101.openjudge.cn/practice/02760        |
 |            | 1829D. Gold Rush | brute force, dfs and similar, dp, implementation | 1000  | https://codeforces.com/problemset/problem/1829/D    |
-| 1027 | 02945: 拦截导弹      | dp                | - |  http://cs101.openjudge.cn/practice/02945        |
+| 1027 | 02945: 拦截导弹      | dp                | - |  http://cs101.openjudge.cn/2024fallroutine/02945        |
 |            | 1425A. Arena of Greed | games, greedy | 1400  | https://codeforces.com/problemset/problem/1425/A    |
 | 1026 | 02692: 假币问题      | brute force                | - |  http://cs101.openjudge.cn/2024fallroutine/02692        |
 |      | 18156: 寻找离⽬标数最近的两数之和      | two pointers                | - |  http://cs101.openjudge.cn/2024fallroutine/18156        |
