@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 0017 GMT+8 Oct 26 2024. 2024 fall, Complied by Hongfei Yan
+Updated 2356 GMT+8 Oct 27 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 0823 每天放2个题目供同学们自愿练习，期中开始，每天放1个题目。争取每20个题目难度提升100。  
@@ -37,6 +37,7 @@ to do
 |            | 1829D. Gold Rush | brute force, dfs and similar, dp, implementation | 1000  | https://codeforces.com/problemset/problem/1829/D    |
 | 1027 | 02945: 拦截导弹      | dp                | - |  http://cs101.openjudge.cn/2024fallroutine/02945        |
 |            | 1425A. Arena of Greed | games, greedy | 1400  | https://codeforces.com/problemset/problem/1425/A    |
+|  |           | -                                    | -    | DP era         |
 | 1026 | 02692: 假币问题      | brute force                | - |  http://cs101.openjudge.cn/2024fallroutine/02692        |
 |      | 18156: 寻找离⽬标数最近的两数之和      | two pointers                | - |  http://cs101.openjudge.cn/2024fallroutine/18156        |
 | 1025 | 01047: Round and Round We Go      | implementation, math                | - |  http://cs101.openjudge.cn/2024fallroutine/01047        |
