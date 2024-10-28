@@ -1,6 +1,6 @@
 # 2024/10/29 递归
 
-Updated 1505 GMT+8 Oct 24, 2024
+Updated 0057 GMT+8 Oct 29, 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -20,22 +20,21 @@ Updated 1505 GMT+8 Oct 24, 2024
 
 博弈题目练习greedy挺好，因为双方都要选择局部最优，还有双指针技巧在里面。
 
-博弈题目的确是一个非常锻炼思维的类型，尤其在涉及双方都要在局部选择最优时，Greedy（贪心算法）方法特别适用。双方都尽力为自己做出最优选择，但这并不一定保证全局最优，因此这类题目常常涉及策略和博弈论。
+> 博弈题目的确是一个非常锻炼思维的类型，尤其在涉及双方都要在局部选择最优时，Greedy（贪心算法）方法特别适用。双方都尽力为自己做出最优选择，但这并不一定保证全局最优，因此这类题目常常涉及策略和博弈论。
+>
+> 双指针技巧在处理这类问题时也非常有用，特别是在一些序列类问题中，比如：
+>
+> - **石子游戏**：两名玩家从数组的两端取石子，目标是获取最多的分数。这类问题通常可以通过双指针来模拟双方的选择，配合贪心来决定下一步动作。
+> - **扑克牌问题**：双方轮流从一组牌中选择牌，目标是获得最大点数。这里可以结合贪心策略选择最优牌，但也需要考虑对方的选择。
+>
+> 博弈题目一般会涉及到递归、动态规划等更高级的技巧，因为往往需要记录双方在每一步的最优策略及未来的影响。而贪心往往是处理局部最优解的有效方法，虽然不能保证全局最优，但在特定场景下能简化复杂问题。
+>
 
-双指针技巧在处理这类问题时也非常有用，特别是在一些序列类问题中，比如：
-
-- **石子游戏**：两名玩家从数组的两端取石子，目标是获取最多的分数。这类问题通常可以通过双指针来模拟双方的选择，配合贪心来决定下一步动作。
-- **扑克牌问题**：双方轮流从一组牌中选择牌，目标是获得最大点数。这里可以结合贪心策略选择最优牌，但也需要考虑对方的选择。
-
-博弈题目一般会涉及到递归、动态规划等更高级的技巧，因为往往需要记录双方在每一步的最优策略及未来的影响。而贪心往往是处理局部最优解的有效方法，虽然不能保证全局最优，但在特定场景下能简化复杂问题。
 
 
+## 2 解决输入数据太多
 
-## 2 python常用的三个优化
 
-Python程序常用的优化有三个：sys.setrecursionlimit(1<<30)、lru_cache(maxsize = None)、sys.stdin.read。前两个主要是解决递归程序爆栈和重复计算子问题，后一个解决输入数据太多的问题。可以使用其中的一个或多个来优化程序。
-
-我们先来讲解利用缓存原理的sys.stdin.read，在下一节中讲解递归程序优化两板斧sys.setrecursionlimit(1<<30)、lru_cache(maxsize = None)。
 
 ### 2.1 缓存原理sys.stdin.read
 
@@ -45,59 +44,60 @@ Python程序常用的优化有三个：sys.setrecursionlimit(1<<30)、lru_cache(
 
 
 
-在编程中（例如 Codeforces 上），使用缓冲输入输出（I/O）可以显著提升程序性能，特别是当数据量非常大时。Python 默认情况下使用缓冲 I/O，但通过合理地控制输入输出，可以进一步减少因频繁的 I/O 操作导致的时间开销，避免超时。
-
-**输入优化：**
-
-1. **`sys.stdin.read()`** 代替 `input()`：
-   - `input()` 每次读取一行，而 `sys.stdin.read()` 会一次性读取所有输入，可以在数据量大时显著提升速度。
-   - 例如：
-     ```python
-     import sys
-     input = sys.stdin.read
-     data = input().split()  # 读入所有数据并分割为列表
-     ```
-
-2. **批量读取：** 
-   - 对于较大的输入数据，通过一次性读取并处理比逐行读取更高效。
-
-**输出优化：**
-
-1. **`sys.stdout.write()`** 代替 `print()`：
-   - `print()` 函数默认会在每次调用后刷新输出缓冲区，而 `sys.stdout.write()` 允许在最后一次性输出所有结果。
-   - 例如：
-     ```python
-     import sys
-     sys.stdout.write('\n'.join(map(str, results)) + '\n')
-     ```
-   - 这种方式将所有输出内容一次性写入缓冲区，在最后统一输出，避免了多次刷新。
-
-2. **批量输出：**
-   - 像处理输入一样，通过将所有输出内容收集后一次性输出可以极大地优化程序性能。
-
-**示例：**
-
-假设你要处理多个测试用例，下面是一个优化输入输出的 Python 代码示例：
-
-```python
-import sys
-
-input = sys.stdin.read
-output = sys.stdout.write
-
-def solve():
-    data = input().split()
-    n = int(data[0])
-    results = []
-    for i in range(1, n + 1):
-        # 假设是简单的加法运算
-        results.append(str(int(data[2*i - 1]) + int(data[2*i])))
-    output("\n".join(results) + "\n")
-
-solve()
-```
-
-在这段代码中，我们一次性读取所有数据，并通过 `sys.stdout.write` 批量输出，减少了 I/O 操作的次数，能有效避免超时。
+> 在编程中（例如 Codeforces 上），使用缓冲输入输出（I/O）可以显著提升程序性能，特别是当数据量非常大时。Python 默认情况下使用缓冲 I/O，但通过合理地控制输入输出，可以进一步减少因频繁的 I/O 操作导致的时间开销，避免超时。
+>
+> **输入优化：**
+>
+> 1. **`sys.stdin.read()`** 代替 `input()`：
+>    - `input()` 每次读取一行，而 `sys.stdin.read()` 会一次性读取所有输入，可以在数据量大时显著提升速度。
+>    - 例如：
+>      ```python
+>      import sys
+>      input = sys.stdin.read
+>      data = input().split()  # 读入所有数据并分割为列表
+>      ```
+>
+> 2. **批量读取：** 
+>    - 对于较大的输入数据，通过一次性读取并处理比逐行读取更高效。
+>
+> **输出优化：**
+>
+> 1. **`sys.stdout.write()`** 代替 `print()`：
+>    - `print()` 函数默认会在每次调用后刷新输出缓冲区，而 `sys.stdout.write()` 允许在最后一次性输出所有结果。
+>    - 例如：
+>      ```python
+>      import sys
+>      sys.stdout.write('\n'.join(map(str, results)) + '\n')
+>      ```
+>    - 这种方式将所有输出内容一次性写入缓冲区，在最后统一输出，避免了多次刷新。
+>
+> 2. **批量输出：**
+>    - 像处理输入一样，通过将所有输出内容收集后一次性输出可以极大地优化程序性能。
+>
+> **示例：**
+>
+> 假设你要处理多个测试用例，下面是一个优化输入输出的 Python 代码示例：
+>
+> ```python
+> import sys
+> 
+> input = sys.stdin.read
+> output = sys.stdout.write
+> 
+> def solve():
+>     data = input().split()
+>     n = int(data[0])
+>     results = []
+>     for i in range(1, n + 1):
+>         # 假设是简单的加法运算
+>         results.append(str(int(data[2*i - 1]) + int(data[2*i])))
+>     output("\n".join(results) + "\n")
+> 
+> solve()
+> ```
+>
+> 在这段代码中，我们一次性读取所有数据，并通过 `sys.stdout.write` 批量输出，减少了 I/O 操作的次数，能有效避免超时。
+>
 
 
 
@@ -119,7 +119,124 @@ while(True):
 
 
 
-### 示例：01047: Round and Round We Go
+#### 示例：03248: 最大公约数
+
+math, http://cs101.openjudge.cn/practice/03248
+
+给定两个正整数，求它们的最大公约数。
+
+**输入**
+
+有多组数据，每行为两个正整数，且不超过int可以表示的范围。
+
+**输出**
+
+行对应输出最大公约数。
+
+样例输入
+
+```
+4 8
+8 6
+200 300
+```
+
+样例输出
+
+```
+4
+2
+100
+```
+
+提示
+
+
+
+```python
+# 求两个整数的最大公约数
+def comfac(a, b):
+    n = 1
+    for i in range(1, min(a, b) + 1):
+        if a % i == 0 and b % i == 0:
+            n = i
+    return n
+
+while True:
+    try:
+        a, b = map(int, input().split())
+    except:
+        break
+    print(comfac(a, b))
+```
+
+
+
+用math.gcd
+
+```python
+from math import gcd
+
+while True:
+    try:
+        a, b = input().split()
+        print(gcd(int(a), int(b)))
+    except EOFError:
+        break
+```
+
+
+
+自己实现gcd
+
+```python
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+
+def main():
+    import sys
+    input = sys.stdin.read
+    data = input().strip().split('\n')
+
+    for line in data:
+        a, b = map(int, line.split())
+        print(gcd(a, b))
+
+if __name__ == "__main__":
+    main()
+```
+
+
+
+递归实现gcd
+
+```python
+def gcd(a, b):
+    if b == 0:
+        return a
+    else:
+        return gcd(b, a % b)
+
+def main():
+    import sys
+    input = sys.stdin.read
+    data = input().strip().split('\n')
+
+    for line in data:
+        a, b = map(int, line.split())
+        print(gcd(a, b))
+
+if __name__ == "__main__":
+    main()
+```
+
+
+
+
+
+#### 示例：01047: Round and Round We Go
 
 http://cs101.openjudge.cn/practice/01047/
 
@@ -301,7 +418,7 @@ def recursive_function(n):
 
 ## 2 示例两板斧
 
-### 斐波那契数列
+### 示例：斐波那契数列
 
 下面是一个具体的示例，展示了如何使用这两板斧来解决斐波那契数列的问题。
 
@@ -343,38 +460,39 @@ def fibonacci(n):
 print(fibonacci(35))  # 现在会非常快
 ```
 
-**详细解释**
+> **详细解释**
+>
+> 1. **增加递归深度限制**：
+>    ```python
+>    import sys
+>    sys.setrecursionlimit(1 << 30)
+>    ```
+>    这行代码将递归深度限制设置为 \(2^{30}\)，足够应对大多数递归问题。
+>
+> 2. **使用 `lru_cache` 缓存中间结果**：
+>    ```python
+>    from functools import lru_cache
+>    
+>    @lru_cache(maxsize=None)
+>    def fibonacci(n):
+>        if n == 0:
+>            return 0
+>        elif n == 1:
+>            return 1
+>        else:
+>            return fibonacci(n - 1) + fibonacci(n - 2)
+>    ```
+>    `@lru_cache(maxsize=None)` 装饰器会自动缓存 `fibonacci` 函数的结果，避免重复计算相同的子问题。`maxsize=None` 表示没有缓存大小限制。
+>
+> **注意事项**
+>
+> - **内存使用**：虽然 `lru_cache` 可以显著提高性能，但需要注意它会占用额外的内存来存储缓存结果。对于非常大的输入，可能会导致内存不足。
+> - **递归深度**：即使增加了递归深度限制，递归调用仍然有可能导致栈溢出。如果递归层数非常深，考虑使用迭代方法或其他非递归算法。
+>
 
-1. **增加递归深度限制**：
-   ```python
-   import sys
-   sys.setrecursionlimit(1 << 30)
-   ```
-   这行代码将递归深度限制设置为 \(2^{30}\)，足够应对大多数递归问题。
-
-2. **使用 `lru_cache` 缓存中间结果**：
-   ```python
-   from functools import lru_cache
-   
-   @lru_cache(maxsize=None)
-   def fibonacci(n):
-       if n == 0:
-           return 0
-       elif n == 1:
-           return 1
-       else:
-           return fibonacci(n - 1) + fibonacci(n - 2)
-   ```
-   `@lru_cache(maxsize=None)` 装饰器会自动缓存 `fibonacci` 函数的结果，避免重复计算相同的子问题。`maxsize=None` 表示没有缓存大小限制。
-
-**注意事项**
-
-- **内存使用**：虽然 `lru_cache` 可以显著提高性能，但需要注意它会占用额外的内存来存储缓存结果。对于非常大的输入，可能会导致内存不足。
-- **递归深度**：即使增加了递归深度限制，递归调用仍然有可能导致栈溢出。如果递归层数非常深，考虑使用迭代方法或其他非递归算法。
 
 
-
-### 21760: 递归复习法
+### 示例：21760: 递归复习法
 
 http://wjjc.openjudge.cn/2024jgc5/002/
 
@@ -496,9 +614,13 @@ if __name__ == "__main__":
 
 ## 3 递归可视化
 
+`recviz` 是一个用于 Python 的可视化递归调用的库。它可以帮助初学者更好的理解递归，实际开发中不会用这个库。
+
+`recviz` 需要另外安装。
 
 
-### dfs生成排列
+
+### 示例：dfs生成排列
 
 ```python
 from recviz import recviz
