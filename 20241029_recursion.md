@@ -30,6 +30,35 @@ Updated 0057 GMT+8 Oct 29, 2024
 > 博弈题目一般会涉及到递归、动态规划等更高级的技巧，因为往往需要记录双方在每一步的最优策略及未来的影响。而贪心往往是处理局部最优解的有效方法，虽然不能保证全局最优，但在特定场景下能简化复杂问题。
 >
 
+### 1.1 编程题目
+
+#### 1425A. Arena of Greed
+
+games, greedy, 1400, https://codeforces.com/problemset/problem/1425/A
+
+Lately, Mr. Chanek frequently plays the game **Arena of Greed**. As the name implies, the game's goal is to find the greediest of them all, who will then be crowned king of Compfestnesia.
+
+The game is played by two people taking turns, where Mr. Chanek takes the first turn. Initially, there is a treasure chest containing N gold coins. The game ends if there are no more gold coins in the chest. In each turn, the players can make one of the following moves:
+
+- Take one gold coin from the chest.
+- Take half of the gold coins on the chest. This move is only available if the number of coins in the chest is even.
+
+Both players will try to maximize the number of coins they have. Mr. Chanek asks your help to find the maximum number of coins he can get at the end of the game if both he and the opponent plays optimally.
+
+
+
+#### 1749C. Number Game
+
+binary search, data structure, games, greedy, implementation, 1400, https://codeforces.com/problemset/problem/1749/C
+
+Alice and Bob are playing a game. They have an array of positive integers 𝑎 of size 𝑛.
+
+Before starting the game, Alice chooses an integer 𝑘≥0. The game lasts for 𝑘 stages, the stages are numbered from 1 to 𝑘. During the 𝑖-th stage, Alice must remove an element from the array that is less than or equal to $𝑘−𝑖+1$. After that, if the array is not empty, Bob must add $𝑘−𝑖+1$ to an arbitrary element of the array. Note that both Alice's move and Bob's move are two parts of the same stage of the game. If Alice can't delete an element during some stage, she loses. If the 𝑘-th stage ends and Alice hasn't lost yet, she wins.
+
+Your task is to determine the maximum value of 𝑘 such that Alice can win if both players play optimally. Bob plays against Alice, so he tries to make her lose the game, if it's possible.
+
+
+
 
 
 ## 2 解决输入数据太多
@@ -153,25 +182,6 @@ math, http://cs101.openjudge.cn/practice/03248
 
 
 
-```python
-# 求两个整数的最大公约数
-def comfac(a, b):
-    n = 1
-    for i in range(1, min(a, b) + 1):
-        if a % i == 0 and b % i == 0:
-            n = i
-    return n
-
-while True:
-    try:
-        a, b = map(int, input().split())
-    except:
-        break
-    print(comfac(a, b))
-```
-
-
-
 用math.gcd
 
 ```python
@@ -210,462 +220,13 @@ if __name__ == "__main__":
 
 
 
-递归实现gcd
 
-```python
-def gcd(a, b):
-    if b == 0:
-        return a
-    else:
-        return gcd(b, a % b)
 
-def main():
-    import sys
-    input = sys.stdin.read
-    data = input().strip().split('\n')
+# 二、递归
 
-    for line in data:
-        a, b = map(int, line.split())
-        print(gcd(a, b))
 
-if __name__ == "__main__":
-    main()
-```
 
-
-
-
-
-#### 示例：01047: Round and Round We Go
-
-http://cs101.openjudge.cn/practice/01047/
-
-A cyclic number is an integer n digits in length which, when multiplied by any integer from 1 to n, yields a"cycle"of the digits of the original number. That is, if you consider the number after the last digit to "wrap around"back to the first digit, the sequence of digits in both numbers will be the same, though they may start at different positions.For example, the number 142857 is cyclic, as illustrated by the following table:
-142857 *1 = 142857
-142857 *2 = 285714
-142857 *3 = 428571
-142857 *4 = 571428
-142857 *5 = 714285
-142857 *6 = 857142
-
-**输入**
-
-Write a program which will determine whether or not numbers are cyclic. The input file is a list of integers from 2 to 60 digits in length. (Note that preceding zeros should not be removed, they are considered part of the number and count in determining n. Thus, "01"is a two-digit number, distinct from "1" which is a one-digit number.)
-
-**输出**
-
-For each input integer, write a line in the output indicating whether or not it is cyclic.
-
-样例输入
-
-```
-142857
-142856
-142858
-01
-0588235294117647
-```
-
-样例输出
-
-```
-142857 is cyclic
-142856 is not cyclic
-142858 is not cyclic
-01 is not cyclic
-0588235294117647 is cyclic
-```
-
-来源：Greater New York 2001
-
-
-
-给一个整数，它的长度为n，从1开始一直到n和该整数相乘，判断每次结果是否和原来的整数是循环的。 
-
-```python
-# 24-物院-彭博
-def generate_rotations(s):
-    return {s[i:] + s[:i] for i in range(len(s))}
-
-
-while True:
-    try:
-        n = input()
-        length, num = len(n), int(n)
-        rotations = generate_rotations(n)
-
-        flag = True
-        for i in range(2, length + 1):
-            n_ = str(num * i)
-            if n_ not in rotations and "0" + n_ not in rotations:
-                flag = False
-                break
-
-        if flag:
-            print(f"{n} is cyclic")
-        else:
-            print(f"{n} is not cyclic")
-
-    except EOFError:
-        break
-
-```
-
-
-
-使用 sys.stdin.read() 一次性读取所有输入数据，以提高效率。
-
-```python
-# 24-物院-彭博
-import sys
-def generate_rotations(s):
-    return {s[i:] + s[:i] for i in range(len(s))}
-
-# 读取所有输入
-input_data = sys.stdin.read().strip()
-lines = input_data.split('\n')
-
-for line in lines:
-    length, num = len(line), int(line)
-    rotations = generate_rotations(line)
-
-    flag = True
-    for i in range(2, length + 1):
-        n_ = str(num * i)
-        if n_ not in rotations and "0" + n_ not in rotations:
-            flag = False
-            break
-
-    if flag:
-        print(f"{line} is cyclic")
-    else:
-        print(f"{line} is not cyclic")
-
-
-```
-
-
-
-
-
-
-
-## 3 编程题目：
-
-### 1425A. Arena of Greed
-
-games, greedy, 1400, https://codeforces.com/problemset/problem/1425/A
-
-Lately, Mr. Chanek frequently plays the game **Arena of Greed**. As the name implies, the game's goal is to find the greediest of them all, who will then be crowned king of Compfestnesia.
-
-The game is played by two people taking turns, where Mr. Chanek takes the first turn. Initially, there is a treasure chest containing N gold coins. The game ends if there are no more gold coins in the chest. In each turn, the players can make one of the following moves:
-
-- Take one gold coin from the chest.
-- Take half of the gold coins on the chest. This move is only available if the number of coins in the chest is even.
-
-Both players will try to maximize the number of coins they have. Mr. Chanek asks your help to find the maximum number of coins he can get at the end of the game if both he and the opponent plays optimally.
-
-
-
-### 1749C. Number Game
-
-binary search, data structure, games, greedy, implementation, 1400, https://codeforces.com/problemset/problem/1749/C
-
-Alice and Bob are playing a game. They have an array of positive integers 𝑎 of size 𝑛.
-
-Before starting the game, Alice chooses an integer 𝑘≥0. The game lasts for 𝑘 stages, the stages are numbered from 1 to 𝑘. During the 𝑖-th stage, Alice must remove an element from the array that is less than or equal to $𝑘−𝑖+1$. After that, if the array is not empty, Bob must add $𝑘−𝑖+1$ to an arbitrary element of the array. Note that both Alice's move and Bob's move are two parts of the same stage of the game. If Alice can't delete an element during some stage, she loses. If the 𝑘-th stage ends and Alice hasn't lost yet, she wins.
-
-Your task is to determine the maximum value of 𝑘 such that Alice can win if both players play optimally. Bob plays against Alice, so he tries to make her lose the game, if it's possible.
-
-
-
-# 二、讲在递归之前
-
-## 1 递归程序优化两板斧
-
-递归程序在处理大规模问题时经常会遇到两个主要问题：**递归深度限制** 和 **重复计算子问题**。这两个问题可以通过以下两种方法来解决：
-
-1. **增加递归深度限制**：使用 `sys.setrecursionlimit` 来增加 Python 的递归深度限制。
-2. **缓存中间结果**：使用 `functools.lru_cache` 或其他形式的 memoization（记忆化）来避免重复计算。
-
-**两板斧的具体应用**
-
-### 1.1 增加递归深度限制setrecursionlimit
-
-Python 默认的递归深度限制是 1000，对于某些问题来说可能不够。你可以通过 `sys.setrecursionlimit` 来增加这个限制。
-
-```python
-import sys
-sys.setrecursionlimit(1 << 30)  # 将递归深度限制设置为 2^30
-```
-
-### 1.2 缓存中间结果lru_cache
-
-使用 `functools.lru_cache` 可以缓存函数的返回值，从而避免重复计算相同的子问题。这对于递归算法尤其有用，可以显著提高性能。
-
-```python
-from functools import lru_cache
-
-@lru_cache(maxsize=None)
-def recursive_function(n):
-    if n == 0:
-        return 1
-    elif n == 1:
-        return 1
-    else:
-        return recursive_function(n - 1) + recursive_function(n - 2)
-```
-
-## 2 示例两板斧
-
-### 示例：斐波那契数列
-
-下面是一个具体的示例，展示了如何使用这两板斧来解决斐波那契数列的问题。
-
-**没有优化的递归实现**
-
-```python
-def fibonacci(n):
-    if n == 0:
-        return 0
-    elif n == 1:
-        return 1
-    else:
-        return fibonacci(n - 1) + fibonacci(n - 2)
-
-# 测试
-print(fibonacci(35))  # 这将非常慢，甚至可能导致栈溢出
-```
-
-**使用 `sys.setrecursionlimit` 和 `lru_cache` 优化后的递归实现**
-
-```python
-import sys
-from functools import lru_cache
-
-# 设置递归深度限制
-sys.setrecursionlimit(1 << 30)
-
-# 使用 lru_cache 缓存中间结果
-@lru_cache(maxsize=None)
-def fibonacci(n):
-    if n == 0:
-        return 0
-    elif n == 1:
-        return 1
-    else:
-        return fibonacci(n - 1) + fibonacci(n - 2)
-
-# 测试
-print(fibonacci(35))  # 现在会非常快
-```
-
-> **详细解释**
->
-> 1. **增加递归深度限制**：
->    ```python
->    import sys
->    sys.setrecursionlimit(1 << 30)
->    ```
->    这行代码将递归深度限制设置为 \(2^{30}\)，足够应对大多数递归问题。
->
-> 2. **使用 `lru_cache` 缓存中间结果**：
->    ```python
->    from functools import lru_cache
->    
->    @lru_cache(maxsize=None)
->    def fibonacci(n):
->        if n == 0:
->            return 0
->        elif n == 1:
->            return 1
->        else:
->            return fibonacci(n - 1) + fibonacci(n - 2)
->    ```
->    `@lru_cache(maxsize=None)` 装饰器会自动缓存 `fibonacci` 函数的结果，避免重复计算相同的子问题。`maxsize=None` 表示没有缓存大小限制。
->
-> **注意事项**
->
-> - **内存使用**：虽然 `lru_cache` 可以显著提高性能，但需要注意它会占用额外的内存来存储缓存结果。对于非常大的输入，可能会导致内存不足。
-> - **递归深度**：即使增加了递归深度限制，递归调用仍然有可能导致栈溢出。如果递归层数非常深，考虑使用迭代方法或其他非递归算法。
->
-
-
-
-### 示例：21760: 递归复习法
-
-http://wjjc.openjudge.cn/2024jgc5/002/
-
-据说，学渣复习期末考试，要用递归复习法，即当他复习知识点A的时候，他发现理解知识点A必须先理解知识点B和知识点C，于是他先去学习知识点B和知识点C，当他复习知识点B的时候，又发现理解知识点B必须先理解知识点D与知识点E，又得先去复习知识点D和知识点E。
-
-现在学渣小明正在通过递归复习法复习知识点n。对任意知识点1 <= k <= n，他复习这个知识点本身需要k小时的时间。但是，小明对这些知识点非常不熟悉，以至于他对任意知识点k， 3 <= k <= n，都必须先复习知识点k - 1和k - 2才能复习知识点k；在复习知识点k - 1的时候，又得先复习知识点k - 2和k - 3才能复习知识点k - 1；以此类推……。注意，即使在复习知识点k - 1的时候他已经复习过了知识点k - 2，在复习知识点k之前他已经忘掉了知识点k - 2，因此他还是会再复习一遍知识点k - 2，并重复上述的递归过程完成新的一轮k - 2的复习后，才会复习知识点k。
-
-现在请问他一共需要多少个小时才能完成知识点n的复习？
-
-输入
-
-第一行是一个整数m，代表数据组数，1 <= m <= 25
-之后m行，每行是一组数据，即一个整数n，1 <= n <= 25
-
-输出
-
-对每组数据，输出小明复习知识点n所需要的时间
-
-样例输入
-
-```
-9
-1
-2
-3
-5
-7
-9
-15
-20
-25
-```
-
-样例输出
-
-```
-1
-2
-6
-23
-71
-200
-3786
-42164
-467833
-```
-
-提示
-
-第一个输入n=1，需要复习一个小时。
-
-第二个输入n=3，此时他需要先复习知识点1和知识点2，再复习知识点3，需要复习1+2+3=6个小时。
-
-第三个输入n=5，此时他为了复习知识点5，必须先复习知识点3与知识点4。之前已知复习知识点3需要6个小时。复习知识点4前需要再复习知识点3与知识点2，加上复习知识点4本身的时间，共需要2+6+4=12个小时。因此，复习知识点5共需要6+12+5=23小时。
-
-来源
-
-何昊高洁
-
-
-
-```python
-def study_time(n, memo):
-    if n == 1 or n == 2:
-        return n
-    if n in memo:
-        return memo[n]
-    memo[n] = n + study_time(n - 1, memo) + study_time(n - 2, memo)
-    return memo[n]
-
-if __name__ == "__main__":
-    import sys
-    input = sys.stdin.read
-    data = input().split()
-
-    m = int(data[0])
-    results = []
-    memo = {}
-
-    for i in range(1, m + 1):
-        n = int(data[i])
-        results.append(study_time(n, memo))
-
-    for result in results:
-        print(result)
-```
-
-
-
-利用 Python 的 functools.lru_cache 装饰器来自动处理缓存。这样可以简化代码，并且避免手动管理 memo 字典。
-
-```python
-from functools import lru_cache
-import sys
-
-@lru_cache(maxsize=None)
-def study_time(n):
-    if n == 1 or n == 2:
-        return n
-    return n + study_time(n - 1) + study_time(n - 2)
-
-if __name__ == "__main__":
-    # 读取所有输入数据
-    input_data = sys.stdin.read().strip()
-    data = input_data.split()
-
-    m = int(data[0])
-    results = []
-
-    for i in range(1, m + 1):
-        n = int(data[i])
-        results.append(study_time(n))
-
-    for result in results:
-        print(result)
-```
-
-
-
-## 3 递归可视化
-
-`recviz` 是一个用于 Python 的可视化递归调用的库。它可以帮助初学者更好的理解递归，实际开发中不会用这个库。
-
-`recviz` 需要另外安装。
-
-
-
-### 示例：dfs生成排列
-
-```python
-from recviz import recviz
-
-
-maxn = 11
-hashTable = [False]*maxn  # 当整数i已经在数组 P中时为 true
-
-@recviz
-def increasing_permutaions(n, prefix=[]):
-    if len(prefix) == n:  # 递归边界，已经处理完排列的1~位
-        return [prefix]
-    
-    result = []
-    for i in range(1, n+1):
-        if hashTable[i]:
-            continue
-        
-        hashTable[i] = True  #记i已在prefix中
-        # 把i加入当前排列，处理排列的后续号位
-        result += increasing_permutaions(n, prefix+[i]) 
-        hashTable[i] = False #处理完为i的子问题，还原状态
-        
-    return result
-
-
-n = int(input())
-result = increasing_permutaions(n)
-for r in result:
-    print(r)
-```
-
-
-
-![image-20231128135735294](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231128135735294.png)
-
-
-
-
-
-# 三、递归
-
-
-
-递归是dfs, dp的基础。需要朝向base case进行递归。
+递归是dfs, dp的基础。需要朝向base case进行递归。递归进阶三部曲：斐波那且数列、汉诺塔，全排列。
 
 
 
@@ -697,15 +258,96 @@ for r in result:
 
 
 
+## 1 递归序曲示例：sy115: 斐波拉契数列 简单
+
+https://sunnywhy.com/sfbj/4/3/115
+
+给定正整数n，求斐波那契数列的第n项F(n)。
+
+令表示斐波那契数列的第n项，它的定义是：
+
+当n=1时，F(n)=1；
+
+当n=2时，F(n)=1；
+
+当n>2时，F(n) = F(n-1) + F(n-2)。
+
+大数据版：[斐波拉契数列-大数据版](https://sunnywhy.com/problem/893)
+
+输入描述
+
+一个正整数n（$1 \le n \le 25$）。
+
+输出描述
+
+斐波那契数列的第n项F(n)。
+
+样例1
+
+输入
+
+```
+1
+```
+
+输出
+
+```
+1
+```
+
+样例2
+
+输入
+
+```
+3
+```
+
+输出
+
+```
+2
+```
+
+样例3
+
+输入
+
+```
+5
+```
+
+输出
+
+```
+5
+```
 
 
-https://runestone.academy/ns/books/published/cppds/Recursion/WhatIsRecursion.html
 
-What Is Recursion?
+```python
+def fibonacci(n):
+    if n == 1 or n == 2:
+        return 1
+    else:
+        return fibonacci(n-1) + fibonacci(n-2)
+
+n = int(input())
+print(fibonacci(n))
+```
+
+
+
+
+
+**What Is Recursion?**
+
+https://runestone.academy/ns/books/published/pythonds3/Recursion/WhatIsRecursion.html?mode=browsing
 
 **Recursion** is a method of solving problems that involves breaking a problem down into smaller and smaller subproblems until you get to a small enough problem that it can be solved trivially. Recursion involves a function calling itself. While it may not seem like much on the surface, recursion allows us to write elegant solutions to problems that may otherwise be very difficult to program.
 
-5.3. Calculating the Sum of a Vector of Numbers
+4.3. Calculating the Sum of a Vector of Numbers
 
 We will begin our investigation with a simple problem that you already know how to solve without using recursion. Suppose that you want to calculate the sum of a vector of numbers such as: [1,3,5,7,9]. 
 
@@ -721,7 +363,7 @@ def listsum(numList):
 print(listsum([1, 3, 5, 7, 9]))
 ```
 
-Activity: 5.3.4 Recursion Summation Python (lst_recsumpy)
+Activity: 4.3.2 Recursive Summation
 
 
 
@@ -741,7 +383,7 @@ Figure2: Series of Recursive Returns from Adding a List of Numbers
 
 
 
-## 1. The Three Laws of Recursion
+## 2. The Three Laws of Recursion
 
 Like the robots of Asimov, all recursive algorithms must obey three important laws:
 
@@ -1681,6 +1323,287 @@ for _ in range(int(input())):
 
 
 
+
+# 三、递归优化和可视化
+
+## 1 递归程序优化两板斧
+
+递归程序在处理大规模问题时经常会遇到两个主要问题：**递归深度限制** 和 **重复计算子问题**。这两个问题可以通过以下两种方法来解决：
+
+1. **增加递归深度限制**：使用 `sys.setrecursionlimit` 来增加 Python 的递归深度限制。
+2. **缓存中间结果**：使用 `functools.lru_cache` 或其他形式的 memoization（记忆化）来避免重复计算。
+
+**两板斧的具体应用**
+
+### 1.1 增加递归深度限制setrecursionlimit
+
+Python 默认的递归深度限制是 1000，对于某些问题来说可能不够。你可以通过 `sys.setrecursionlimit` 来增加这个限制。
+
+```python
+import sys
+sys.setrecursionlimit(1 << 30)  # 将递归深度限制设置为 2^30
+```
+
+### 1.2 缓存中间结果lru_cache
+
+使用 `functools.lru_cache` 可以缓存函数的返回值，从而避免重复计算相同的子问题。这对于递归算法尤其有用，可以显著提高性能。
+
+```python
+from functools import lru_cache
+
+@lru_cache(maxsize=None)
+def recursive_function(n):
+    if n == 0:
+        return 1
+    elif n == 1:
+        return 1
+    else:
+        return recursive_function(n - 1) + recursive_function(n - 2)
+```
+
+## 2 示例两板斧
+
+### 示例：斐波那契数列
+
+下面是一个具体的示例，展示了如何使用这两板斧来解决斐波那契数列的问题。
+
+**没有优化的递归实现**
+
+```python
+def fibonacci(n):
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        return fibonacci(n - 1) + fibonacci(n - 2)
+
+# 测试
+print(fibonacci(35))  # 这将非常慢，甚至可能导致栈溢出
+```
+
+**使用 `sys.setrecursionlimit` 和 `lru_cache` 优化后的递归实现**
+
+```python
+import sys
+from functools import lru_cache
+
+# 设置递归深度限制
+sys.setrecursionlimit(1 << 30)
+
+# 使用 lru_cache 缓存中间结果
+@lru_cache(maxsize=None)
+def fibonacci(n):
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        return fibonacci(n - 1) + fibonacci(n - 2)
+
+# 测试
+print(fibonacci(35))  # 现在会非常快
+```
+
+> **详细解释**
+>
+> 1. **增加递归深度限制**：
+>
+>    ```python
+>    import sys
+>    sys.setrecursionlimit(1 << 30)
+>    ```
+>
+>    这行代码将递归深度限制设置为 \(2^{30}\)，足够应对大多数递归问题。
+>
+> 2. **使用 `lru_cache` 缓存中间结果**：
+>
+>    ```python
+>    from functools import lru_cache
+>    
+>    @lru_cache(maxsize=None)
+>    def fibonacci(n):
+>        if n == 0:
+>            return 0
+>        elif n == 1:
+>            return 1
+>        else:
+>            return fibonacci(n - 1) + fibonacci(n - 2)
+>    ```
+>
+>    `@lru_cache(maxsize=None)` 装饰器会自动缓存 `fibonacci` 函数的结果，避免重复计算相同的子问题。`maxsize=None` 表示没有缓存大小限制。
+>
+> **注意事项**
+>
+> - **内存使用**：虽然 `lru_cache` 可以显著提高性能，但需要注意它会占用额外的内存来存储缓存结果。对于非常大的输入，可能会导致内存不足。
+> - **递归深度**：即使增加了递归深度限制，递归调用仍然有可能导致栈溢出。如果递归层数非常深，考虑使用迭代方法或其他非递归算法。
+
+
+
+### 示例：21760: 递归复习法
+
+http://wjjc.openjudge.cn/2024jgc5/002/
+
+据说，学渣复习期末考试，要用递归复习法，即当他复习知识点A的时候，他发现理解知识点A必须先理解知识点B和知识点C，于是他先去学习知识点B和知识点C，当他复习知识点B的时候，又发现理解知识点B必须先理解知识点D与知识点E，又得先去复习知识点D和知识点E。
+
+现在学渣小明正在通过递归复习法复习知识点n。对任意知识点1 <= k <= n，他复习这个知识点本身需要k小时的时间。但是，小明对这些知识点非常不熟悉，以至于他对任意知识点k， 3 <= k <= n，都必须先复习知识点k - 1和k - 2才能复习知识点k；在复习知识点k - 1的时候，又得先复习知识点k - 2和k - 3才能复习知识点k - 1；以此类推……。注意，即使在复习知识点k - 1的时候他已经复习过了知识点k - 2，在复习知识点k之前他已经忘掉了知识点k - 2，因此他还是会再复习一遍知识点k - 2，并重复上述的递归过程完成新的一轮k - 2的复习后，才会复习知识点k。
+
+现在请问他一共需要多少个小时才能完成知识点n的复习？
+
+输入
+
+第一行是一个整数m，代表数据组数，1 <= m <= 25
+之后m行，每行是一组数据，即一个整数n，1 <= n <= 25
+
+输出
+
+对每组数据，输出小明复习知识点n所需要的时间
+
+样例输入
+
+```
+9
+1
+2
+3
+5
+7
+9
+15
+20
+25
+```
+
+样例输出
+
+```
+1
+2
+6
+23
+71
+200
+3786
+42164
+467833
+```
+
+提示
+
+第一个输入n=1，需要复习一个小时。
+
+第二个输入n=3，此时他需要先复习知识点1和知识点2，再复习知识点3，需要复习1+2+3=6个小时。
+
+第三个输入n=5，此时他为了复习知识点5，必须先复习知识点3与知识点4。之前已知复习知识点3需要6个小时。复习知识点4前需要再复习知识点3与知识点2，加上复习知识点4本身的时间，共需要2+6+4=12个小时。因此，复习知识点5共需要6+12+5=23小时。
+
+来源
+
+何昊高洁
+
+
+
+```python
+def study_time(n, memo):
+    if n == 1 or n == 2:
+        return n
+    if n in memo:
+        return memo[n]
+    memo[n] = n + study_time(n - 1, memo) + study_time(n - 2, memo)
+    return memo[n]
+
+if __name__ == "__main__":
+    import sys
+    input = sys.stdin.read
+    data = input().split()
+
+    m = int(data[0])
+    results = []
+    memo = {}
+
+    for i in range(1, m + 1):
+        n = int(data[i])
+        results.append(study_time(n, memo))
+
+    for result in results:
+        print(result)
+```
+
+
+
+利用 Python 的 functools.lru_cache 装饰器来自动处理缓存。这样可以简化代码，并且避免手动管理 memo 字典。
+
+```python
+from functools import lru_cache
+import sys
+
+@lru_cache(maxsize=None)
+def study_time(n):
+    if n == 1 or n == 2:
+        return n
+    return n + study_time(n - 1) + study_time(n - 2)
+
+if __name__ == "__main__":
+    # 读取所有输入数据
+    input_data = sys.stdin.read().strip()
+    data = input_data.split()
+
+    m = int(data[0])
+    results = []
+
+    for i in range(1, m + 1):
+        n = int(data[i])
+        results.append(study_time(n))
+
+    for result in results:
+        print(result)
+```
+
+
+
+## 3 递归可视化
+
+`recviz` 是一个用于 Python 的可视化递归调用的库。它可以帮助初学者更好的理解递归，实际开发中不会用这个库。
+
+`recviz` 需要另外安装。
+
+
+
+### 示例：dfs生成排列
+
+```python
+from recviz import recviz
+
+
+maxn = 11
+hashTable = [False]*maxn  # 当整数i已经在数组 P中时为 true
+
+@recviz
+def increasing_permutaions(n, prefix=[]):
+    if len(prefix) == n:  # 递归边界，已经处理完排列的1~位
+        return [prefix]
+    
+    result = []
+    for i in range(1, n+1):
+        if hashTable[i]:
+            continue
+        
+        hashTable[i] = True  #记i已在prefix中
+        # 把i加入当前排列，处理排列的后续号位
+        result += increasing_permutaions(n, prefix+[i]) 
+        hashTable[i] = False #处理完为i的子问题，还原状态
+        
+    return result
+
+
+n = int(input())
+result = increasing_permutaions(n)
+for r in result:
+    print(r)
+```
+
+
+
+![image-20231128135735294](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231128135735294.png)
 
 
 
