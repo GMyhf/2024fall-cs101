@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 0015 GMT+8 Oct 28 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0002 GMT+8 Oct 29 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 0823 每天放2个题目供同学们自愿练习，期中开始，每天放1个题目。争取每20个题目难度提升100。  
@@ -31,7 +31,7 @@ to do
 |            | 698A. Vacations | dp | 1400  | https://codeforces.com/problemset/problem/698/A    |
 | 1030 | 23421: 小偷背包      | dp                | - |  http://cs101.openjudge.cn/practice/23421        |
 |            | 368B. Sereja and Suffixes | brute force, dp | 1300  | https://codeforces.com/problemset/problem/368/B    |
-| 1029 | 02533: Longest Ordered Subsequence      | dp                | - |  http://cs101.openjudge.cn/practice/02533        |
+| 1029 | 02533: Longest Ordered Subsequence      | dp                | - |  http://cs101.openjudge.cn/2024fallroutine/02533        |
 |            | 189A. Cut Ribbon | brute force, dp | 1300  | https://codeforces.com/problemset/problem/189/A    |
 | 1028 | 02760: 数字三角形      | dp, dfs similar                | - |  http://cs101.openjudge.cn/2024fallroutine/02760        |
 |            | 1829D. Gold Rush | brute force, dfs and similar, dp, implementation | 1000  | https://codeforces.com/problemset/problem/1829/D    |
