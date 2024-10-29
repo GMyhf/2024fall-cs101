@@ -226,7 +226,276 @@ if __name__ == "__main__":
 
 
 
-递归是dfs, dp的基础。需要朝向base case进行递归。递归进阶三部曲：斐波那且数列、汉诺塔，全排列。
+## 1 What Is Recursion?
+
+https://runestone.academy/ns/books/published/pythonds3/Recursion/WhatIsRecursion.html?mode=browsing
+
+**Recursion** is a method of solving problems that involves breaking a problem down into smaller and smaller subproblems until you get to a small enough problem that it can be solved trivially. Recursion involves a function calling itself. While it may not seem like much on the surface, recursion allows us to write elegant solutions to problems that may otherwise be very difficult to program.
+
+> **递归**是一种解决问题的方法，它涉及将一个问题分解成越来越小的子问题，直到得到一个足够小的问题，可以轻易地解决。递归涉及到一个函数调用自身。虽然表面上看起来可能没什么特别之处，但递归使我们能够编写出优雅的解决方案，来解决那些可能非常难以编程的问题。
+
+### 示例：Calculating the Sum of a Vector of Numbers
+
+We will begin our investigation with a simple problem that you already know how to solve without using recursion. Suppose that you want to calculate the sum of a vector of numbers such as: [1,3,5,7,9]. An iterative function that computes the sum is shown in [ActiveCode 4.3.1](https://runestone.academy/ns/books/published/pythonds3/Recursion/CalculatingtheSumofaListofNumbers.html?mode=browsing#lst-itsum). The function uses an accumulator variable (`the_sum`) to compute a running total of all the numbers in the list by starting with and adding each number in the list.
+
+> 我们将从一个简单的、你已经知道如何在不使用递归的情况下解决的问题开始我们的探讨。假设你想计算一个数字向量（如 [1, 3, 5, 7, 9]）的总和。一个使用迭代方法计算总和的函数如 [ActiveCode 4.3.1](https://runestone.academy/ns/books/published/pythonds3/Recursion/CalculatingtheSumofaListofNumbers.html?mode=browsing#lst-itsum) 所示。该函数使用一个累加器变量 (`the_sum`) 通过从初始值开始并加上列表中的每个数字来计算列表中所有数字的运行总和。
+
+```python
+def list_sum(num_list):
+    the_sum = 0
+    for i in num_list:
+        the_sum = the_sum + i
+    return the_sum
+
+print(list_sum([1, 3, 5, 7, 9]))
+```
+
+Activity: 4.3.1 Iterative Summation
+
+
+
+Such an expression looks like this: $((((1 + 3) + 5) + 7) + 9)$
+
+We can also parenthesize the expression the other way around, $(1 + (3 + (5 + (7 + 9))))$
+
+Notice that the innermost set of parentheses, , is a problem that we can solve without a loop or any special constructs. In fact, we can use the following sequence of simplifications to compute a final sum.
+
+   
+
+$total = \  (1 + (3 + (5 + (7 + 9)))) \\
+total = \  (1 + (3 + (5 + 16))) \\
+total = \  (1 + (3 + 21)) \\
+total = \  (1 + 24) \\
+total = \  25$
+
+
+
+How can we take this idea and turn it into a Python program? First, let’s restate the sum problem in terms of Python lists. We might say the sum of the list `num_list` is the sum of the first element of the list (`num_list[0]`) and the sum of the numbers in the rest of the list (`num_list[1:]`). To state it in a functional form:
+
+> 我们如何将这个想法转化为一个 Python 程序呢？首先，让我们用 Python 列表来重新表述求和问题。我们可以这样描述：列表 `num_list` 的总和等于列表的第一个元素 (`num_list[0]`) 与列表剩余部分 (`num_list[1:]`) 中所有数字的总和。以函数形式表示为：
+
+$list\_sum(num\_list) = first(num\_list) + list\_sum(rest(num\_list))
+\label{eqn:list_sum}$
+
+In this equation `first(num_list)`returns the first element of the list and `rest(num_list)`returns a list of everything but the first element. This is easily expressed in Python as shown in [ActiveCode 4.3.2](https://runestone.academy/ns/books/published/pythonds3/Recursion/CalculatingtheSumofaListofNumbers.html?mode=browsing#lst-recsum).
+
+```python
+#Example of summing a list using recurison.
+
+def list_sum(numList):
+    if len(numList) == 1:
+        return numList[0]
+    else:
+        return numList[0] + list_sum(numList[1:]) #function makes a recursive call to itself.
+
+print(list_sum([1, 3, 5, 7, 9]))
+```
+
+Activity: 4.3.2 Recursive Summation
+
+
+
+There are a few key ideas while using vector to look at. First, on line 4 we are checking to see if the vector is one element long. This check is crucial and is our escape clause from the function. The sum of a vector of length 1 is trivial; it is just the number in the vector. Second, on line 7 our function calls itself! This is the reason that we call the `vectsum` algorithm recursive. A recursive function is a function that calls itself.
+
+> 在这段代码中有几个关键点需要注意。首先，在第2行，我们检查列表是否只有一个元素。这个检查是至关重要的，是我们从函数中退出的条件。长度为1的列表的总和是显而易见的；它就是列表中的那个数字。其次，在第5行，我们的函数调用了自身！这就是为什么我们将 `list_sum` 算法称为递归的原因。递归函数是指调用自身的函数。
+
+Figure 1 shows the series of **recursive calls** that are needed to sum the list. You should think of this series of calls as a series of simplifications. Each time we make a recursive call we are solving a smaller problem, until we reach the point where the problem cannot get any smaller.
+
+> 图1展示了求和列表所需的递归调用序列。你可以将这一系列调用视为一系列简化过程。每次进行递归调用时，我们都在解决一个更小的问题，直到问题不能再被简化为止。
+
+![image](https://raw.githubusercontent.com/GMyhf/img/main/img/sumlistIn.png)
+
+Figure 1: Series of Recursive Calls Adding a List of Numbers
+
+When we reach the point where the problem is as simple as it can get, we begin to piece together the solutions of each of the small problems until the initial problem is solved. Figure 2 shows the additions that are performed as `listsum` works its way backward through the series of calls. When `listsum` returns from the topmost problem, we have the solution to the whole problem.
+
+> 当我们到达问题不能再被简化的地步时，我们开始将每个小问题的解逐步组合起来，直到最初的整个问题被解决。图2展示了随着 `listsum` 从最顶层的问题逐步回溯通过一系列调用时所进行的加法运算。当 `listsum` 从最顶层的问题返回时，我们就得到了整个问题的解。
+
+![image](https://raw.githubusercontent.com/GMyhf/img/main/img/sumlistOut.png)
+
+Figure2: Series of Recursive Returns from Adding a List of Numbers
+
+
+
+## 2. Three Laws of Recursion递归三法则
+
+https://runestone.academy/ns/books/published/pythonds3/Recursion/TheThreeLawsofRecursion.html?mode=browsing
+
+Like the robots of Asimov, all recursive algorithms must obey three important laws:
+
+> 1. A recursive algorithm must have a **base case**.递归算法必须有一个**基准情形**。
+> 2. A recursive algorithm must change its state and move toward the base case.递归算法必须改变其状态并朝着基准情形前进。
+> 3. A recursive algorithm must call itself, recursively.递归算法必须调用自身，即进行递归调用。
+
+Let’s look at each one of these laws in more detail and see how it was used in the `vectsum` algorithm. First, a base case is the condition that allows the algorithm to stop recursing. A base case is typically a problem that is small enough to solve directly. In the `vectsum` algorithm the base case is a list of length 1. 
+
+> 基准情形是允许算法停止递归的条件。基准情形通常是一个足够小可以直接解决的问题。在`vectsum`算法中，基准情形是一个长度为1的列表。
+
+To obey the second law, we must arrange for a change of state that moves the algorithm toward the base case. A change of state means that some data that the algorithm is using is modified. Usually the data that represents our problem gets smaller in some way. In the `vectsum` algorithm our primary data structure is a vector, so we must focus our state-changing efforts on the vector. Since the base case is a list of length 1, a natural progression toward the base case is to shorten the vector. 
+
+> 为了遵守第二条法则，我们必须安排状态的变化，使算法朝着基准情形前进。状态变化意味着算法使用的一些数据被修改了。通常代表我们问题的数据会以某种方式变小。在`vectsum`算法中，我们的主要数据结构是一个向量，所以我们必须将状态变化的重点放在向量上。由于基准情形是一个长度为1的列表，因此一个自然的朝向基准情形的进展就是缩短向量。
+
+The final law is that the algorithm must call itself. This is the very definition of recursion. Recursion is a confusing concept to many beginning programmers. As a novice programmer, you have learned that functions are good because you can take a large problem and break it up into smaller problems. The smaller problems can be solved by writing a function to solve each problem. When we talk about recursion it may seem that we are talking ourselves in circles. We have a problem to solve with a function, but that function solves the problem by calling itself! But the logic is not circular at all; the logic of recursion is an elegant expression of solving a problem by breaking it down into smaller and easier problems.
+
+> 最后一条法则是算法必须调用自身。这就是递归的定义。递归对许多初学者来说是一个令人困惑的概念。作为一名新手程序员，你已经了解到函数的好处在于可以将一个大问题分解成更小的问题。这些问题可以通过编写函数来分别解决。当我们谈论递归时，似乎我们在绕圈子说话。我们有一个需要通过函数解决的问题，但该函数通过调用自身来解决问题！但实际上逻辑并不循环；<mark>递归的逻辑是一种优雅的表达方式，它通过将问题分解成更小、更简单的问题来解决问题。</mark>
+
+It is important to note that regardless of whether or not a recursive function implements these three rules, it may still take an unrealistic amount of time to compute (and thus not be particularly useful). 
+
+
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231121110930261.png" alt="image-20231121110930261" style="zoom:50%;" />
+
+
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231121111000626.png" alt="image-20231121111000626" style="zoom:50%;" />
+
+
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231121111024513.png" alt="image-20231121111024513" style="zoom:50%;" />
+
+
+
+### 示例：Converting an Integer to a String in Any Base
+
+Suppose you want to convert an integer to a string in some base between binary and hexadecimal. For example, convert the integer 10 to its string representation in decimal as `"10"`, or to its string representation in binary as `"1010"`. While there are many algorithms to solve this problem, including the algorithm discussed in the stack section, the recursive formulation of the problem is very elegant.
+
+> 假设你想将一个整数转换为二进制到十六进制之间的某个进制的字符串表示。例如，将整数10转换为其十进制字符串表示 "10"，或将其转换为二进制字符串表示 "1010"。虽然有很多算法可以解决这个问题，包括在栈部分讨论的算法，但递归方法的表述非常优雅。
+
+Let’s look at a concrete example using base 10 and the number 769. Suppose we have a sequence of characters corresponding to the first 10 digits, like `convString = "0123456789"`. It is easy to convert a number less than 10 to its string equivalent by looking it up in the sequence. For example, if the number is 9, then the string is `convString[9]` or `"9"`. If we can arrange to break up the number 769 into three single-digit numbers, 7, 6, and 9, then converting it to a string is simple. A number less than 10 sounds like a good base case.
+
+> 让我们来看一个具体的例子，使用十进制和数字769。假设我们有一个对应于前10个数字的字符序列，如 `convert_string = "0123456789"`。通过查找这个序列，很容易将小于10的数字转换为其字符串等价形式。例如，如果数字是9，那么字符串就是 `convert_string[9]` 或 "9"。如果我们能够将数字769分解成三个单个数字7、6和9，那么将其转换为字符串就很简单了。小于10的数字听起来像是一个好的基准情形。
+
+Knowing what our base is suggests that the overall algorithm will involve three components:
+
+1. Reduce the original number to a series of single-digit numbers.将原始数字减少为一系列单个数字。
+2. Convert the single digit-number to a string using a lookup.使用查找表将单个数字转换为字符串。
+3. Concatenate the single-digit strings together to form the final result.将单个数字的字符串连接起来形成最终结果。
+
+The next step is to figure out how to change state and make progress toward the base case. Since we are working with an integer, let’s consider what mathematical operations might reduce a number. The most likely candidates are division and subtraction. While subtraction might work, it is unclear what we should subtract from what. Integer division with remainders gives us a clear direction. Let’s look at what happens if we divide a number by the base we are trying to convert to.
+
+> 下一步是弄清楚如何改变状态并朝着基准情形前进。由于我们在处理一个整数，让我们考虑哪些数学运算可以减少一个数字。最有可能的候选者是除法和减法。虽然减法可能有效，但我们不清楚应该从什么中减去什么。带余数的整数除法则为我们指明了明确的方向。让我们看看当我们试图将一个数字除以目标进制时会发生什么。
+
+Using integer division to divide 769 by 10, we get 76 with a remainder of 9. This gives us two good results. First, the remainder is a number less than our base that can be converted to a string immediately by lookup. Second, we get a number that is smaller than our original and moves us toward the base case of having a single number less than our base. Now our job is to convert 76 to its string representation. Again we will use integer division plus remainder to get results of 7 and 6 respectively. Finally, we have reduced the problem to converting 7, which we can do easily since it satisfies the base case condition of n<base, where base=10. The series of operations we have just performed is illustrated in Figure 3. Notice that the numbers we want to remember are in the remainder boxes along the right side of the diagram.
+
+> 使用整数除法将769除以10，我们得到商76和余数9。这给了我们两个很好的结果。首先，余数是一个小于我们基数的数字，可以通过查找立即转换为字符串。其次，我们得到了一个比原数小的数字，并且它使我们朝着只有一个小于基数的数字的基准情形前进。现在我们的任务是将76转换为其字符串表示。我们再次使用整数除法加上余数，分别得到7和6。最后，我们将问题简化为转换7，这很容易做到，因为它满足基准情形条件。我们刚刚执行的一系列操作如图3所示。注意，我们需要记住的数字在图表右侧的余数框中。
+
+
+
+![image](https://runestone.academy/ns/books/published/pythonds3/_images/toStr.png)
+
+**Figure 3:** Converting an Integer to a String in Base 10
+
+
+
+Activity: 4.5.1 shows the Python code that implements the algorithm outlined above for any base between 2 and 16.
+
+```python
+def to_str(n, base):
+    # 定义用于转换的字符序列
+    convert_string = "0123456789ABCDEF"
+
+    # 基准情形：如果 n 小于基数，则直接返回对应的字符
+    if n < base:
+        return convert_string[n]
+    else:
+        # 递归调用：先处理商，再处理余数
+        # 通过延迟连接操作，确保结果的顺序是正确的
+        return to_str(n // base, base) + convert_string[n % base]
+
+
+# 示例
+print(to_str(10, 2))  # 输出: "1010"
+print(to_str(255, 16))  # 输出: "FF"
+```
+
+Activity: 4.5.1 Recursively Converting from Integer to String
+
+Notice that in line 6 we check for the base case where `n` is less than the base we are converting to. When we detect the base case, we stop recursing and simply return the string from the `convertString` sequence. In line 11 we satisfy both the second and third laws–by making the recursive call and by reducing the problem size–using division.
+
+> 请注意，在第6行我们检查了基准情形，即当 `n` 小于我们要转换的基数时。当我们检测到基准情形时，我们停止递归，并直接从 `convert_string` 序列中返回相应的字符串。在第11行，我们通过进行递归调用并使用除法来减小问题规模，从而满足了第二条和第三条法则。
+
+Let’s trace the algorithm again; this time we will convert the number 10 to its base 2 string representation (`"1010"`).
+
+> 让我们再次跟踪 ActiveCode 4.5.1 中显示的算法；这次我们将把数字10转换为其二进制字符串表示（"1010"）。
+
+![image](https://raw.githubusercontent.com/GMyhf/img/main/img/toStrBase2.png)
+
+Figure 4: Converting the Number 10 to its Base 2 String Representation
+
+[Figure 4](https://runestone.academy/ns/books/published/cppds/Recursion/pythondsConvertinganIntegertoaStringinAnyBase.html#fig-tostr2) shows that we get the results we are looking for, but it looks like the digits are in the wrong order. The algorithm works correctly because we make the recursive call first on line 8, then we add the string representation of the remainder. If we reversed returning the `convertString` lookup and returning the `toStr` call, the resulting string would be backward! But ==by delaying the concatenation operation until after the recursive call has returned, we get the result in the proper order.== This should remind you of our discussion of stacks back in the previous chapter.
+
+> 图4.4显示我们得到了预期的结果，但看起来数字的顺序是反的。算法之所以能正确工作，是因为我们在第6行首先进行了递归调用，然后才添加余数的字符串表示。如果我们先返回 `convert_string` 查找的结果，再返回 `to_str` 调用的结果，最终得到的字符串将会是反向的！但是，通过将连接操作延迟到递归调用返回之后进行，我们得到了正确的顺序。这应该让你想起我们在前一章中关于栈的讨论。
+
+<img src="/Users/hfyan/Library/Application Support/typora-user-images/image-20231121113514094.png" alt="image-20231121113514094" style="zoom:50%;" />
+
+
+
+## 3. Stack Frames: Implementing Recursion
+
+https://runestone.academy/ns/books/published/pythonds3/Recursion/StackFramesImplementingRecursion.html?mode=browsing
+
+Suppose that instead of concatenating the result of the recursive call to `to_str` with the string from `convertString`, we modified our algorithm to push the strings onto a stack instead of making the recursive call. The code for this modified algorithm is shown.
+
+> 假设我们不是将递归调用 `to_str` 的结果与 `convertString` 中的字符串进行连接，而是修改算法，将字符串压入栈中，而不是进行递归调用。这个修改后的算法代码如下所示。
+>
+> - **使用栈替代递归**：通过将字符串压入栈中，我们可以避免递归调用，并在最后从栈中弹出字符串以获得正确的顺序。
+> - **栈的后进先出（LIFO）特性**：这确保了我们在处理完所有子问题后，能够以正确的顺序组合结果。
+
+```python
+rStack = []
+
+def to_str(n,base):
+    convertString = "0123456789ABCDEF"
+    while n > 0:
+        if n < base:
+            rStack.append(convertString[n]) #adds string n to the stack.
+        else:
+            rStack.append(convertString[n % base]) #adds string n modulo base to the stack.
+        n = n // base
+    res = ""
+    while rStack:
+        #combines all the items in the stack to make the full string.
+        res = res + str(rStack.pop())
+    return res
+
+print(to_str(1453,16))
+```
+
+**Activity**: 4.6.1 Converting an Integer to a String Using a Stack
+
+
+
+Each time we make a call to `to_str`, we push a character on the stack. Returning to the previous example we can see that after the fourth call to `toStr` the stack would look like Figure 5. Notice that now we can simply pop the characters off the stack and concatenate them into the final result, `"1010"`.
+
+> 每次我们调用 `to_str` 时，都会将一个字符压入栈中。回到前面的例子，我们可以看到，在第四次调用 `to_str` 后，栈的状态如图4.5所示。注意到现在我们可以简单地从栈中弹出字符并将它们连接成最终结果 "1010"。
+
+![../_images/recstack.png](https://raw.githubusercontent.com/GMyhf/img/main/img/recstack.png)
+
+Figure 5: Strings Placed on the Stack During Conversion
+
+The previous example gives us some insight into how Python implements a recursive function call. When a function is called in Python, a **stack frame** is allocated to handle the local variables of the function. When the function returns, the return value is left on top of the stack for the calling function to access. Figure 6 illustrates the call stack after the return statement on line 4.
+
+> 前面的例子让我们对 Python 如何实现递归函数调用有了一些了解。当在 Python 中调用一个函数时，会分配一个栈帧来处理该函数的局部变量。当函数返回时，返回值会被留在栈顶，供调用函数访问。图6展示了第4行的返回语句后的调用栈。
+
+
+
+
+
+![../_images/callstack.png](https://runestone.academy/ns/books/published/pythonds3/_images/callstack.png)
+
+**Figure 6:** Call Stack Generated from `to_str(10, 2)`
+
+
+
+Notice that the call to `to_tr(2//2,2)` leaves a return value of `"1"` on the stack. This return value is then used in place of the function call (`to_str(1,2)`) in the expression `"1" + convertString[2%2]`, which will leave the string `"10"` on the top of the stack. In this way, the Python call stack takes the place of the stack we used explicitly in [Listing 4](https://runestone.academy/ns/books/published/cppds/Recursion/StackFramesImplementingRecursion.html#lst-recstackcpp). In our list summing example, you can think of the return value on the stack taking the place of an accumulator variable.
+
+> 请注意，在清单4.4中定义的 `to_str(2 // 2, 2)` 调用会在栈上留下返回值 "1"。这个返回值随后在表达式 `"1" + convert_string[2 % 2]` 中代替了函数调用 `to_str(1, 2)`，这将在栈顶留下字符串 "10"。通过这种方式，Python 的调用栈替代了我们在 ActiveCode 4.6.1 中显式使用的栈。在我们的列表求和示例中，你可以认为栈上的返回值替代了一个累加器变量的作用。
+
+The stack frames also provide a scope for the variables used by the function. Even though we are calling the same function over and over, each call creates a new scope for the variables that are local to the function.
+
+> 栈帧还为函数使用的变量提供了作用域。即使我们反复调用同一个函数，每次调用都会<mark>为函数的局部变量创建一个新的作用域</mark>。
+
+
 
 
 
@@ -254,11 +523,14 @@ if __name__ == "__main__":
 > <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231126164549437.png" alt="image-20231126164549437" style="zoom: 50%;" />
 >
 > 因此，使用递归可以很好地实现深度优先搜索。这个说法并不是说深度优先搜索就是递归，只能说递归是深度优先搜索的一种实现方式，因为使用非递归也是可以实现 DFS 的思想的，但是一般情况下会比递归麻烦。不过，使用递归时，系统会调用一个叫系统栈的东西来存放递归中每一层的状态，因此使用递归来实现 DFS 的本质其实还是栈。
->
 
 
 
-## 1 递归序曲示例：sy115: 斐波拉契数列 简单
+## 4 递归进阶三部曲
+
+递归进阶三部曲：斐波那且数列、汉诺塔，全排列。递归是dfs, dp的基础。
+
+### 4.1 递归序曲示例：sy115: 斐波拉契数列 简单
 
 https://sunnywhy.com/sfbj/4/3/115
 
@@ -339,215 +611,21 @@ print(fibonacci(n))
 
 
 
+### 4.2 递归三部曲：汉诺塔
 
-
-**What Is Recursion?**
-
-https://runestone.academy/ns/books/published/pythonds3/Recursion/WhatIsRecursion.html?mode=browsing
-
-**Recursion** is a method of solving problems that involves breaking a problem down into smaller and smaller subproblems until you get to a small enough problem that it can be solved trivially. Recursion involves a function calling itself. While it may not seem like much on the surface, recursion allows us to write elegant solutions to problems that may otherwise be very difficult to program.
-
-4.3. Calculating the Sum of a Vector of Numbers
-
-We will begin our investigation with a simple problem that you already know how to solve without using recursion. Suppose that you want to calculate the sum of a vector of numbers such as: [1,3,5,7,9]. 
-
-```python
-#Example of summing a list using recurison.
-
-def listsum(numList):
-    if len(numList) == 1:
-        return numList[0]
-    else:
-        return numList[0] + listsum(numList[1:]) #function makes a recursive call to itself.
-
-print(listsum([1, 3, 5, 7, 9]))
-```
-
-Activity: 4.3.2 Recursive Summation
-
-
-
-There are a few key ideas while using vector to look at. First, on line 4 we are checking to see if the vector is one element long. This check is crucial and is our escape clause from the function. The sum of a vector of length 1 is trivial; it is just the number in the vector. Second, on line 7 our function calls itself! This is the reason that we call the `vectsum` algorithm recursive. A recursive function is a function that calls itself.
-
-Figure 1 shows the series of **recursive calls** that are needed to sum the vector [1,3,5,7,9]. You should think of this series of calls as a series of simplifications. Each time we make a recursive call we are solving a smaller problem, until we reach the point where the problem cannot get any smaller.
-
-![image](https://raw.githubusercontent.com/GMyhf/img/main/img/sumlistIn.png)
-
-Figure 1: Series of Recursive Calls Adding a List of Numbers
-
-When we reach the point where the problem is as simple as it can get, we begin to piece together the solutions of each of the small problems until the initial problem is solved. Figure 2 shows the additions that are performed as `vectsum` works its way backward through the series of calls. When `vectsum` returns from the topmost problem, we have the solution to the whole problem.
-
-![image](https://raw.githubusercontent.com/GMyhf/img/main/img/sumlistOut.png)
-
-Figure2: Series of Recursive Returns from Adding a List of Numbers
-
-
-
-## 2. The Three Laws of Recursion
-
-Like the robots of Asimov, all recursive algorithms must obey three important laws:
-
-> 1. A recursive algorithm must have a **base case**.
-> 2. A recursive algorithm must change its state and move toward the base case.
-> 3. A recursive algorithm must call itself, recursively.
-
-Let’s look at each one of these laws in more detail and see how it was used in the `vectsum` algorithm. First, a base case is the condition that allows the algorithm to stop recursing. A base case is typically a problem that is small enough to solve directly. In the `vectsum` algorithm the base case is a list of length 1.
-
-To obey the second law, we must arrange for a change of state that moves the algorithm toward the base case. A change of state means that some data that the algorithm is using is modified. Usually the data that represents our problem gets smaller in some way. In the `vectsum` algorithm our primary data structure is a vector, so we must focus our state-changing efforts on the vector. Since the base case is a list of length 1, a natural progression toward the base case is to shorten the vector. 
-
-The final law is that the algorithm must call itself. This is the very definition of recursion. Recursion is a confusing concept to many beginning programmers. As a novice programmer, you have learned that functions are good because you can take a large problem and break it up into smaller problems. The smaller problems can be solved by writing a function to solve each problem. When we talk about recursion it may seem that we are talking ourselves in circles. We have a problem to solve with a function, but that function solves the problem by calling itself! But the logic is not circular at all; the logic of recursion is an elegant expression of solving a problem by breaking it down into smaller and easier problems.
-
-It is important to note that regardless of whether or not a recursive function implements these three rules, it may still take an unrealistic amount of time to compute (and thus not be particularly useful). 
-
-
-
-https://runestone.academy/ns/books/published/cppds/Recursion/TheThreeLawsofRecursion.html
-
-<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231121110930261.png" alt="image-20231121110930261" style="zoom:50%;" />
-
-
-
-<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231121111000626.png" alt="image-20231121111000626" style="zoom:50%;" />
-
-
-
-<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231121111024513.png" alt="image-20231121111024513" style="zoom:50%;" />
-
-
-
-## 2. Converting an Integer to a String in Any Base
-
-Suppose you want to convert an integer to a string in some base between binary and hexadecimal. For example, convert the integer 10 to its string representation in decimal as `"10"`, or to its string representation in binary as `"1010"`. While there are many algorithms to solve this problem, including the algorithm discussed in the stack section, the recursive formulation of the problem is very elegant.
-
-Let’s look at a concrete example using base 10 and the number 769. Suppose we have a sequence of characters corresponding to the first 10 digits, like `convString = "0123456789"`. It is easy to convert a number less than 10 to its string equivalent by looking it up in the sequence. For example, if the number is 9, then the string is `convString[9]` or `"9"`. If we can arrange to break up the number 769 into three single-digit numbers, 7, 6, and 9, then converting it to a string is simple. A number less than 10 sounds like a good base case.
-
-Knowing what our base is suggests that the overall algorithm will involve three components:
-
-> 1. Reduce the original number to a series of single-digit numbers.
-> 2. Convert the single digit-number to a string using a lookup.
-> 3. Concatenate the single-digit strings together to form the final result.
-
-The next step is to figure out how to change state and make progress toward the base case. Since we are working with an integer, let’s consider what mathematical operations might reduce a number. The most likely candidates are division and subtraction. While subtraction might work, it is unclear what we should subtract from what. Integer division with remainders gives us a clear direction. Let’s look at what happens if we divide a number by the base we are trying to convert to.
-
-Using integer division to divide 769 by 10, we get 76 with a remainder of 9. This gives us two good results. First, the remainder is a number less than our base that can be converted to a string immediately by lookup. Second, we get a number that is smaller than our original and moves us toward the base case of having a single number less than our base. Now our job is to convert 76 to its string representation. Again we will use integer division plus remainder to get results of 7 and 6 respectively. Finally, we have reduced the problem to converting 7, which we can do easily since it satisfies the base case condition of n<base, where base=10. The series of operations we have just performed is illustrated in Figure 3. Notice that the numbers we want to remember are in the remainder boxes along the right side of the diagram.
-
-![image](https://raw.githubusercontent.com/GMyhf/img/main/img/toStr.png)
-
-Figure 3: Converting an Integer to a String in Base 10
-
-[ActiveCode 1](https://runestone.academy/ns/books/published/cppds/Recursion/pythondsConvertinganIntegertoaStringinAnyBase.html#lst-rectostrcpp) shows the C++ and Python code that implements the algorithm outlined above for any base between 2 and 16.
-
-```python
-#Recursive example of converting an int to str.
-
-def toStr(n,base):
-   convertString = "0123456789ABCDEF"
-   if n < base:
-      return convertString[n]
-   else:
-      return toStr(n//base,base) + convertString[n%base] #function makes a recursive call to itself.
-
-
-print(toStr(1453,16))
-```
-
-Notice that in line 5 we check for the base case where `n` is less than the base we are converting to. When we detect the base case, we stop recursing and simply return the string from the `convertString` sequence. In line 8 we satisfy both the second and third laws–by making the recursive call and by reducing the problem size–using division.
-
-Let’s trace the algorithm again; this time we will convert the number 10 to its base 2 string representation (`"1010"`).
-
-![image](https://raw.githubusercontent.com/GMyhf/img/main/img/toStrBase2.png)
-
-Figure 4: Converting the Number 10 to its Base 2 String Representation
-
-[Figure 4](https://runestone.academy/ns/books/published/cppds/Recursion/pythondsConvertinganIntegertoaStringinAnyBase.html#fig-tostr2) shows that we get the results we are looking for, but it looks like the digits are in the wrong order. The algorithm works correctly because we make the recursive call first on line 8, then we add the string representation of the remainder. If we reversed returning the `convertString` lookup and returning the `toStr` call, the resulting string would be backward! But ==by delaying the concatenation operation until after the recursive call has returned, we get the result in the proper order.== This should remind you of our discussion of stacks back in the previous chapter.
-
-<img src="/Users/hfyan/Library/Application Support/typora-user-images/image-20231121113514094.png" alt="image-20231121113514094" style="zoom:50%;" />
-
-
-
-## 3. Stack Frames: Implementing Recursion
-
-Suppose that instead of concatenating the result of the recursive call to `toStr` with the string from `convertString`, we modified our algorithm to push the strings onto a stack instead of making the recursive call. The code for this modified algorithm is shown.
-
-```python
-rStack = []
-
-def toStr(n,base):
-    convertString = "0123456789ABCDEF"
-    while n > 0:
-        if n < base:
-            rStack.append(convertString[n]) #adds string n to the stack.
-        else:
-            rStack.append(convertString[n % base]) #adds string n modulo base to the stack.
-        n = n // base
-    res = ""
-    while rStack:
-        #combines all the items in the stack to make the full string.
-        res = res + str(rStack.pop())
-    return res
-
-print(toStr(1453,16))
-```
-
-
-
-Each time we make a call to `toStr`, we push a character on the stack. Returning to the previous example we can see that after the fourth call to `toStr` the stack would look like Figure 5. Notice that now we can simply pop the characters off the stack and concatenate them into the final result, `"1010"`.
-
-![../_images/recstack.png](https://raw.githubusercontent.com/GMyhf/img/main/img/recstack.png)
-
-Figure 5: Strings Placed on the Stack During Conversion
-
-The previous example gives us some insight into how C++ implements a recursive function call. When a function is called in Python, a **stack frame** is allocated to handle the local variables of the function. When the function returns, the return value is left on top of the stack for the calling function to access. Figure 6 illustrates the call stack after the return statement on line 4.
-
-![../_images/newcallstack.png](https://raw.githubusercontent.com/GMyhf/img/main/img/newcallstack.png)
-
-Figure 6: Call Stack Generated from `toStr(10,2)`
-
-Notice that the call to `toStr(2//2,2)` leaves a return value of `"1"` on the stack. This return value is then used in place of the function call (`toStr(1,2)`) in the expression `"1" + convertString[2%2]`, which will leave the string `"10"` on the top of the stack. In this way, the C++ call stack takes the place of the stack we used explicitly in [Listing 4](https://runestone.academy/ns/books/published/cppds/Recursion/StackFramesImplementingRecursion.html#lst-recstackcpp). In our list summing example, you can think of the return value on the stack taking the place of an accumulator variable.
-
-The stack frames also provide a scope for the variables used by the function. Even though we are calling the same function over and over, each call creates a new scope for the variables that are local to the function.
-
-
-
-## 4. 计算机原理：虚拟地址空间
-
-三大计算机原理之一，@Book_my_flight_v0.3.md
-
-​	计算机的基础架构自从 20 世纪 40 年代起就已经形成规范，包括处理器、存储指令和数据的内存、输入和输出设备。它通常叫作冯·诺依曼架构，以约翰·冯·诺依曼（德語：John Von Neumann，1903 年12 月 28 日－1957 年 2 月 8 日）的名字来命名，他在 1946 年发表的论文里描述了这一架构。论文的开头句，用现在的专门术语来说就是，CPU提 供算法和控制，而 RAM 和磁盘则是记忆存储，键盘、鼠标和显示器与操作人员交互。其中需要重点理解的是与存储相关的进程的虚拟地址空间。
-
-​	在《深入理解计算机系统》[8]第一章中讲到了进程的虚拟地址空间。虚拟存储器是一个抽象概念，它为每个进程提供了一个假象，好像每个进程都在独占地使用主存。每个进程看到的存储器都是一致的，称之为虚拟地址空间。如图1-15所示的是 Linux 进程的虚拟地址空间（其他 Unix 系统的设计与此类似）。在 Linux 中，最上面的四分之一的地址空间是预留给操作系统中的代码和数据的，这对所有进程都一样。底部的四分之三的地址空间用来存放用户进程定义的代码和数据。请注意，图中的地址是从下往上增大的。
-
-
-
-![image-20230109195232404](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20230109195232404.png)
-
-图1-15 进程的虚拟地址空间（Process virtual address space）（注：图片来源为 Randal Bryant[8]，2015年3月）
-
-
-
-​	每个进程看到的虚拟地址空间由准确定义的区（area）构成，每个区都有专门的功能。简单看下每一个区，从最低的地址开始，逐步向上研究。
-
-- 程序代码和数据（code and data）。代码是从同一固定地址开始，紧接着的是和全局变量相对应的数据区。代码和数据区是由可执行目标文件直接初始化的，示例中就是可执行文件hello。
-
-- 堆（heap）。紧随代码和数据区之后的是运行时堆（Run-time heap）。代码和数据区是在进程一旦开始运行时就被指定了大小的，与此不同，作为调用像 malloc 和 free 这样的 C 标准库函数的结果，堆可以在运行时动态地扩展和收缩。
-
-- 共享库（shared libraries）。在地址空间的中间附近是一块用来存放像标准库和数学库这样共享库的代码和数据的区域。共享库的概念非常强大。
-
-- 栈（stack）。位于用户虚拟地址空间顶部的是用户栈，编译器用它来实现函数调用。和堆一样，用户栈（User stack）在程序执行期间可以动态地扩展和收缩。特别地，每次我们调用一个函数时，栈就会增长。每次我们从函数返回时，栈就会收缩。
-
-- 内核虚拟存储器（kernal virtal memory）。内核是操作系统总是驻留在存储器中的部分。地址空间顶部是为内核预留的。应用程序不允许读写这个区域的内容或者直接调用内核代码定义的函数。
-
-​	虚拟存储器的运作需要硬件和操作系统软件间的精密复杂的互相合作，包括对处理器生成的每个地址的硬件翻译。基本思想是把一个进程虚拟存储器的内容存储在磁盘上，然后用主存作为磁盘的高速缓存。
-
-
-
-## 5. Tower of Hanoi
+https://runestone.academy/ns/books/published/pythonds3/Recursion/TowerofHanoi.html?mode=browsing
 
 The Tower of Hanoi puzzle was invented by the French mathematician Edouard Lucas in 1883. He was inspired by a legend that tells of a Hindu temple where the puzzle was presented to young priests. At the beginning of time, the priests were given three poles and a stack of 64 gold disks, each disk a little smaller than the one beneath it. Their assignment was to transfer all 64 disks from one of the three poles to another, with two important constraints. They could only move one disk at a time, and they could never place a larger disk on top of a smaller one. The priests worked very efficiently, day and night, moving one disk every second. When they finished their work, the legend said, the temple would crumble into dust and the world would vanish.
 
+> 汉诺塔谜题是由法国数学家埃杜阿德·卢卡斯于1883年发明的。他受到一个传说的启发，这个传说讲述了一个印度寺庙中的年轻祭司被赋予了这个谜题。在时间的开端，祭司们得到了三根柱子和64个金盘，每个盘子都比它下面的一个稍微小一点。他们的任务是将这64个盘子从一根柱子移动到另一根柱子，但有两个重要的限制：每次只能移动一个盘子，并且不能将较大的盘子放在较小的盘子上面。祭司们非常高效地工作，日以继夜，每秒移动一个盘子。根据传说，当他们完成任务时，寺庙会化为尘土，世界也将消失。
+
 Although the legend is interesting, you need not worry about the world ending any time soon. The number of moves required to correctly move a tower of 64 disks is $2^{64}−1=18,446,744,073,709,551,615$. At a rate of one move per second, that is 584,942,417,355 years! Clearly there is more to this puzzle than meets the eye.
 
+> 虽然这个传说是有趣的，但你不必担心世界会在短时间内终结。正确移动64个盘子所需的步数是 　$2^{64}−1$。如果以每秒移动一次的速度来计算，那需要 $5.85×10^{11}$ 年！显然，这个谜题背后有更多的东西值得探索。
+
 Figure 1 shows an example of a configuration of disks in the middle of a move from the first peg to the third. Notice that, as the rules specify, the disks on each peg are stacked so that smaller disks are always on top of the larger disks. If you have not tried to solve this puzzle before, you should try it now. You do not need fancy disks and poles–a pile of books or pieces of paper will work.
+
+> 图1展示了在从第一根柱子移动到第三根柱子的过程中，盘子配置的一个例子。请注意，正如规则所指定的那样，每根柱子上的盘子都是按照较小的盘子始终在较大盘子之上的方式堆叠的。如果你以前没有尝试过解决这个谜题，你现在应该试试。你不需要精美的盘子和柱子——一堆书或几张纸就可以使用。
 
 ![image](https://raw.githubusercontent.com/GMyhf/img/main/img/hanoi-20231121121735301.png)
 
@@ -555,13 +633,23 @@ Figure 1: An Example Arrangement of Disks for the Tower of Hanoi
 
 How do we go about solving this problem recursively? How would you go about solving this problem at all? What is our base case? Let’s think about this problem from the bottom up. Suppose you have a tower of five disks, originally on peg one. If you already knew how to move a tower of four disks to peg two, you could then easily move the bottom disk to peg three, and then move the tower of four from peg two to peg three. But what if you do not know how to move a tower of height four? Suppose that you knew how to move a tower of height three to peg three; then it would be easy to move the fourth disk to peg two and move the three from peg three on top of it. But what if you do not know how to move a tower of three? How about moving a tower of two disks to peg two and then moving the third disk to peg three, and then moving the tower of height two on top of it? But what if you still do not know how to do this? Surely you would agree that moving a single disk to peg three is easy enough, trivial you might even say. This sounds like a base case in the making.
 
+> 我们如何递归地解决这个问题？你将如何着手解决这个问题？我们的基准情形是什么？让我们从底部开始思考这个问题。假设你有一个五层的塔，最初在柱子1上。如果你已经知道如何将四层的塔移动到柱子2上，那么你可以轻松地将最底层的盘子移动到柱子3上，然后再将四层的塔从柱子2移动到柱子3上。但如果你不知道如何移动四层的塔怎么办？假设你知道如何将三层的塔移动到柱子3上；那么很容易将第四层的盘子移动到柱子2上，并将三层的塔移到它上面。但如果你不知道如何移动三层的塔呢？如果将两层的塔移动到柱子2上，然后将第三层的盘子移动到柱子3上，再将两层的塔移到它上面呢？但如果你还是不知道怎么做呢？你肯定会同意，将一个单独的盘子移动到柱子3上是足够简单的，甚至可以说是微不足道的。这听起来像是一个基准情形。
+
 Here is a high-level outline of how to move a tower from the starting pole, to the goal pole, using an intermediate pole:
 
 1. Move a tower of height-1 to an intermediate pole, using the final pole.
 2. Move the remaining disk to the final pole.
 3. Move the tower of height-1 from the intermediate pole to the final pole using the original pole.
 
+> 下面是一个高层次的概述，说明如何使用中间柱子将高度为 n*n* 的塔从起始柱子移动到目标柱子：
+>
+> 1. 通过目标柱子将高度为 n−1*n*−1 的塔从起始柱子移动到中间柱子。
+> 2. 将剩余的一个盘子从起始柱子移动到最终柱子。
+> 3. 通过起始柱子将高度为 n−1*n*−1 的塔从中间柱子移动到目标柱子。
+
 As long as we always obey the rule that the larger disks remain on the bottom of the stack, we can use the three steps above recursively, treating any larger disks as though they were not even there. The only thing missing from the outline above is the identification of a base case. The simplest Tower of Hanoi problem is a tower of one disk. In this case, we need move only a single disk to its final destination. A tower of one disk will be our base case. In addition, the steps outlined above move us toward the base case by reducing the height of the tower in steps 1 and 3. Listing 1 shows the Python code to solve the Tower of Hanoi puzzle.
+
+> 只要我们始终遵守较大的盘子保持在栈底的规则，我们可以使用上述三个步骤进行递归处理，就好像较大的盘子不存在一样。上述概述中唯一缺少的是基准情形的识别。最简单的汉诺塔问题是只有一个盘子的塔。在这种情况下，我们只需要将单个盘子移动到它的最终目的地。一个盘子的塔将作为我们的基准情形。此外，上述步骤通过在第1步和第3步中减少塔的高度，使我们逐步接近基准情形。清单1展示了用Python代码解决汉诺塔谜题的方法。
 
 **Listing 1**
 
@@ -609,7 +697,7 @@ Now that you have seen the code for both `moveTower` and `moveDisk`, you may be 
 
 
 
-### 04147: 汉诺塔问题(Tower of Hanoi)
+#### 示例: 04147汉诺塔问题(Tower of Hanoi)
 
 http://cs101.openjudge.cn/practice/04147
 
@@ -708,7 +796,7 @@ move(int(n), a, b, c)
 
 
 
-### 01958: Strange Towers of Hanoi
+#### 示例: 01958Strange Towers of Hanoi（选做）
 
 http://cs101.openjudge.cn/practice/01958/
 
@@ -864,6 +952,144 @@ https://www.zhihu.com/question/54353032
 
 
 
+### 4.3 递归三部曲：全排列
+
+#### 示例sy132: 全排列I 中等
+
+https://sunnywhy.com/sfbj/4/3/132
+
+给定一个正整数n，假设序列S=[1,2,3,...,n]，求S的全排列。
+
+**输入描述**
+
+一个正整数n（$1 \le n \le 8$）。
+
+**输出描述**
+
+每个全排列一行，输出所有全排列。
+
+输出顺序为：两个全排列A和B，若满足前k-1项对应相同，但有Ak < Bk，那么将全排列Ak优先输出（例如[1,2,3]比[1,3,2]优先输出）。
+
+在输出时，全排列中的每个数之间用一个空格隔开，行末不允许有多余的空格。不允许出现相同的全排列。
+
+样例1
+
+输入
+
+```
+1
+```
+
+输出
+
+```
+1
+```
+
+样例2
+
+输入
+
+```
+2
+```
+
+输出
+
+```
+1 2
+2 1
+```
+
+样例3
+
+输入
+
+```
+3
+```
+
+输出
+
+```
+1 2 3
+1 3 2
+2 1 3
+2 3 1
+3 1 2
+3 2 1
+```
+
+
+
+
+
+```python
+maxn = 11
+hashTable = [False] * maxn  # 当整数i已经在数组 P中时为 true
+
+#@recviz
+def increasing_permutaions(n, prefix=[]):
+    if len(prefix) == n:  # 递归边界，已经处理完排列的1~位
+        return [prefix]
+
+    result = []
+    for i in range(1, n + 1):
+        if hashTable[i]:
+            continue
+
+        hashTable[i] = True  # 记i已在prefix中
+        # 把i加入当前排列，处理排列的后续号位
+        result += increasing_permutaions(n, prefix + [i])
+        hashTable[i] = False  # 处理完为i的子问题，还原状态
+
+    return result
+
+
+n = int(input())
+result = increasing_permutaions(n)
+for r in result:
+    print(' '.join(map(str,r)))
+```
+
+
+
+
+
+## 5. 计算机原理（2/3）：虚拟地址空间
+
+三大计算机原理之一，@Book_my_flight_v0.3.md
+
+​	计算机的基础架构自从 20 世纪 40 年代起就已经形成规范，包括处理器、存储指令和数据的内存、输入和输出设备。它通常叫作冯·诺依曼架构，以约翰·冯·诺依曼（德語：John Von Neumann，1903 年12 月 28 日－1957 年 2 月 8 日）的名字来命名，他在 1946 年发表的论文里描述了这一架构。论文的开头句，用现在的专门术语来说就是，CPU提 供算法和控制，而 RAM 和磁盘则是记忆存储，键盘、鼠标和显示器与操作人员交互。其中需要重点理解的是与存储相关的进程的虚拟地址空间。
+
+​	在《深入理解计算机系统》[8]第一章中讲到了进程的虚拟地址空间。虚拟存储器是一个抽象概念，它为每个进程提供了一个假象，好像每个进程都在独占地使用主存。每个进程看到的存储器都是一致的，称之为虚拟地址空间。如图1-15所示的是 Linux 进程的虚拟地址空间（其他 Unix 系统的设计与此类似）。在 Linux 中，最上面的四分之一的地址空间是预留给操作系统中的代码和数据的，这对所有进程都一样。底部的四分之三的地址空间用来存放用户进程定义的代码和数据。请注意，图中的地址是从下往上增大的。
+
+
+
+![image-20230109195232404](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20230109195232404.png)
+
+图1-15 进程的虚拟地址空间（Process virtual address space）（注：图片来源为 Randal Bryant[8]，2015年3月）
+
+
+
+​	每个进程看到的虚拟地址空间由准确定义的区（area）构成，每个区都有专门的功能。简单看下每一个区，从最低的地址开始，逐步向上研究。
+
+- 程序代码和数据（code and data）。代码是从同一固定地址开始，紧接着的是和全局变量相对应的数据区。代码和数据区是由可执行目标文件直接初始化的，示例中就是可执行文件hello。
+
+- 堆（heap）。紧随代码和数据区之后的是运行时堆（Run-time heap）。代码和数据区是在进程一旦开始运行时就被指定了大小的，与此不同，作为调用像 malloc 和 free 这样的 C 标准库函数的结果，堆可以在运行时动态地扩展和收缩。
+
+- 共享库（shared libraries）。在地址空间的中间附近是一块用来存放像标准库和数学库这样共享库的代码和数据的区域。共享库的概念非常强大。
+
+- 栈（stack）。位于用户虚拟地址空间顶部的是用户栈，编译器用它来实现函数调用。和堆一样，用户栈（User stack）在程序执行期间可以动态地扩展和收缩。特别地，每次我们调用一个函数时，栈就会增长。每次我们从函数返回时，栈就会收缩。
+
+- 内核虚拟存储器（kernal virtal memory）。内核是操作系统总是驻留在存储器中的部分。地址空间顶部是为内核预留的。应用程序不允许读写这个区域的内容或者直接调用内核代码定义的函数。
+
+​	虚拟存储器的运作需要硬件和操作系统软件间的精密复杂的互相合作，包括对处理器生成的每个地址的硬件翻译。基本思想是把一个进程虚拟存储器的内容存储在磁盘上，然后用主存作为磁盘的高速缓存。
+
+
+
+
+
 ## 6.编程题目
 
 ### 28717: 递归比较字符串大小
@@ -972,7 +1198,7 @@ if __name__ == "__main__":
 
 
 
-### 01661: Help Jimmy
+### 01661: Help Jimmy（选做）
 
 dfs/dp, http://cs101.openjudge.cn/practice/01661
 
@@ -1330,12 +1556,11 @@ for _ in range(int(input())):
 
 递归程序在处理大规模问题时经常会遇到两个主要问题：**递归深度限制** 和 **重复计算子问题**。这两个问题可以通过以下两种方法来解决：
 
-1. **增加递归深度限制**：使用 `sys.setrecursionlimit` 来增加 Python 的递归深度限制。
-2. **缓存中间结果**：使用 `functools.lru_cache` 或其他形式的 memoization（记忆化）来避免重复计算。
+**增加递归深度限制**：使用 `sys.setrecursionlimit` 来增加 Python 的递归深度限制。
 
-**两板斧的具体应用**
+**缓存中间结果**：使用 `functools.lru_cache` 或其他形式的 memoization（记忆化）来避免重复计算。
 
-### 1.1 增加递归深度限制setrecursionlimit
+
 
 Python 默认的递归深度限制是 1000，对于某些问题来说可能不够。你可以通过 `sys.setrecursionlimit` 来增加这个限制。
 
@@ -1344,7 +1569,7 @@ import sys
 sys.setrecursionlimit(1 << 30)  # 将递归深度限制设置为 2^30
 ```
 
-### 1.2 缓存中间结果lru_cache
+
 
 使用 `functools.lru_cache` 可以缓存函数的返回值，从而避免重复计算相同的子问题。这对于递归算法尤其有用，可以显著提高性能。
 
@@ -1360,8 +1585,6 @@ def recursive_function(n):
     else:
         return recursive_function(n - 1) + recursive_function(n - 2)
 ```
-
-## 2 示例两板斧
 
 ### 示例：斐波那契数列
 
@@ -1414,13 +1637,13 @@ print(fibonacci(35))  # 现在会非常快
 >    sys.setrecursionlimit(1 << 30)
 >    ```
 >
->    这行代码将递归深度限制设置为 \(2^{30}\)，足够应对大多数递归问题。
+>    这行代码将递归深度限制设置为 $2^{30}$，足够应对大多数递归问题。
 >
 > 2. **使用 `lru_cache` 缓存中间结果**：
 >
 >    ```python
 >    from functools import lru_cache
->    
+>          
 >    @lru_cache(maxsize=None)
 >    def fibonacci(n):
 >        if n == 0:
@@ -1440,7 +1663,7 @@ print(fibonacci(35))  # 现在会非常快
 
 
 
-### 示例：21760: 递归复习法
+### 示例21760: 递归复习法
 
 http://wjjc.openjudge.cn/2024jgc5/002/
 
@@ -1560,7 +1783,7 @@ if __name__ == "__main__":
 
 
 
-## 3 递归可视化
+## 2 递归可视化
 
 `recviz` 是一个用于 Python 的可视化递归调用的库。它可以帮助初学者更好的理解递归，实际开发中不会用这个库。
 
