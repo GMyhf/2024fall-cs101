@@ -663,7 +663,11 @@ def moveTower(height,fromPole, toPole, withPole):
 
 Notice that the code in Listing 1 is almost identical to the English description. The key to the simplicity of the algorithm is that we make two different recursive calls, one on line 3 and a second on line 5. On line 3 we move all but the bottom disk on the initial tower to an intermediate pole. The next line simply moves the bottom disk to its final resting place. Then on line 5 we move the tower from the intermediate pole to the top of the largest disk. The base case is detected when the tower height is 0; in this case there is nothing to do, so the `moveTower` function simply returns. The important thing to remember about handling the base case this way is that simply returning from `moveTower` is what finally allows the `moveDisk` function to be called.
 
+> 请注意，清单1中的代码几乎与英文描述完全相同。算法简单性的关键在于我们进行了两次不同的递归调用，一次在第3行，另一次在第5行。在第3行，我们将初始塔上除了最底层盘子以外的所有盘子移动到中间柱子上。下一行则简单地将最底层的盘子移动到它的最终位置。然后在第5行，我们将中间柱子上的塔移动到最大盘子的顶部。当塔的高度为0时，检测到基准情形；在这种情况下，没有什么需要做的，所以 `moveTower` 函数直接返回。以这种方式处理基准情形的重要之处在于，仅仅是返回 `moveTower` 函数就最终允许了 `moveDisk` 函数被调用。
+
 The function `moveDisk`, shown in Listing 2, is very simple. All it does is print out that it is moving a disk from one pole to another. If you type in and run the `moveTower` program you can see that it gives you a very efficient solution to the puzzle.
+
+> 清单2中显示的 `moveDisk` 函数非常简单。它所做的只是打印出从一根柱子移动一个盘子到另一根柱子的信息。如果你输入并运行 `moveTower` 程序，你会看到它为你提供了谜题的一个非常高效的解决方案。
 
 **Listing 2**
 
@@ -694,6 +698,8 @@ moveTower(3,"A","B","C")
 Activity: 5.10.2 Solving Tower of Hanoi Recursively Python (hanoipy)
 
 Now that you have seen the code for both `moveTower` and `moveDisk`, you may be wondering why we do not have a data structure that explicitly keeps track of what disks are on what poles. Here is a hint: if you were going to explicitly keep track of the disks, you would probably use three `Stack` objects, one for each pole. The answer is that Python provides the stacks that we need implicitly through the call stack.
+
+> 现在你已经看到了 `moveTower` 和 `moveDisk` 的代码，你可能会想知道为什么我们没有一个显式的数据结构来跟踪每个柱子上有哪些盘子。这里有一个提示：如果你打算显式地跟踪这些盘子，你可能会使用三个 `Stack` 对象，每个柱子一个。答案是 Python 通过调用栈隐式地提供了我们需要的栈。
 
 
 
@@ -1103,8 +1109,6 @@ http://wjjc.openjudge.cn/2024jgc4/002/
 字符串按奇异规则比较大小，就是逐个字符比较大小直到分出胜负。两个字符比较大小的规则是哪个字符的编码和字母'k'的编码的差的绝对值小，哪个字符就算小。这样两个不同字符可能也算一样大
 
 字符串很短，不用考虑效率问题
-
- 
 
  
 
