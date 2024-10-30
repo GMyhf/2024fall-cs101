@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 0009 GMT+8 Oct 30 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0043 GMT+8 Oct 31 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 0823 每天放2个题目供同学们自愿练习，期中开始，每天放1个题目。争取每20个题目难度提升100。  
@@ -27,7 +27,7 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
-| 1031 | 02806: 公共子序列      | dp                | - |  http://cs101.openjudge.cn/practice/02806        |
+| 1031 | 02806: 公共子序列      | dp                | - |  http://cs101.openjudge.cn/2024fallroutine/02806        |
 |            | 698A. Vacations | dp | 1400  | https://codeforces.com/problemset/problem/698/A    |
 | 1030 | 23421: 小偷背包      | dp                | - |  http://cs101.openjudge.cn/2024fallroutine/23421        |
 |            | 368B. Sereja and Suffixes | brute force, dp | 1300  | https://codeforces.com/problemset/problem/368/B    |
