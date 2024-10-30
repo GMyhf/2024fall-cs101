@@ -1,6 +1,6 @@
 # 2024/10/29 递归
 
-Updated 0057 GMT+8 Oct 29, 2024
+Updated 1651 GMT+8 Oct 30, 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -297,7 +297,7 @@ Activity: 4.3.2 Recursive Summation
 
 There are a few key ideas while using vector to look at. First, on line 4 we are checking to see if the vector is one element long. This check is crucial and is our escape clause from the function. The sum of a vector of length 1 is trivial; it is just the number in the vector. Second, on line 7 our function calls itself! This is the reason that we call the `vectsum` algorithm recursive. A recursive function is a function that calls itself.
 
-> 在这段代码中有几个关键点需要注意。首先，在第2行，我们检查列表是否只有一个元素。这个检查是至关重要的，是我们从函数中退出的条件。长度为1的列表的总和是显而易见的；它就是列表中的那个数字。其次，在第5行，我们的函数调用了自身！这就是为什么我们将 `list_sum` 算法称为递归的原因。递归函数是指调用自身的函数。
+> 在这段代码中有几个关键点需要注意。首先，在第4行，我们检查列表是否只有一个元素。这个检查是至关重要的，是我们从函数中退出的条件。长度为1的列表的总和是显而易见的；它就是列表中的那个数字。其次，在第7行，我们的函数调用了自身！这就是为什么我们将 `list_sum` 算法称为递归的原因。递归函数是指调用自身的函数。
 
 Figure 1 shows the series of **recursive calls** that are needed to sum the list. You should think of this series of calls as a series of simplifications. Each time we make a recursive call we are solving a smaller problem, until we reach the point where the problem cannot get any smaller.
 
@@ -430,7 +430,9 @@ Figure 4: Converting the Number 10 to its Base 2 String Representation
 
 
 
-## 3. Stack Frames: Implementing Recursion
+## 3. 栈和递归的关系
+
+Stack Frames: Implementing Recursion
 
 https://runestone.academy/ns/books/published/pythonds3/Recursion/StackFramesImplementingRecursion.html?mode=browsing
 
@@ -499,6 +501,12 @@ The stack frames also provide a scope for the variables used by the function. Ev
 
 
 
+## 4 递归进阶三部曲
+
+递归进阶三部曲：斐波那且数列、汉诺塔，全排列。递归是dfs, dp的基础。
+
+
+
 > 《算法笔记》第8章
 >
 > ## 深度优先搜索(DFS)
@@ -525,10 +533,6 @@ The stack frames also provide a scope for the variables used by the function. Ev
 > 因此，使用递归可以很好地实现深度优先搜索。这个说法并不是说深度优先搜索就是递归，只能说递归是深度优先搜索的一种实现方式，因为使用非递归也是可以实现 DFS 的思想的，但是一般情况下会比递归麻烦。不过，使用递归时，系统会调用一个叫系统栈的东西来存放递归中每一层的状态，因此使用递归来实现 DFS 的本质其实还是栈。
 
 
-
-## 4 递归进阶三部曲
-
-递归进阶三部曲：斐波那且数列、汉诺塔，全排列。递归是dfs, dp的基础。
 
 ### 4.1 递归序曲示例：sy115: 斐波拉契数列 简单
 
@@ -1647,7 +1651,7 @@ print(fibonacci(35))  # 现在会非常快
 >
 >    ```python
 >    from functools import lru_cache
->          
+>             
 >    @lru_cache(maxsize=None)
 >    def fibonacci(n):
 >        if n == 0:
