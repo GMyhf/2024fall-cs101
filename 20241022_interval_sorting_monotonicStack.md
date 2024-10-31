@@ -1,6 +1,6 @@
 # 2024/10/22 区间、排序、单调栈
 
-Updated 1832 GMT+8 Oct 24, 2024
+Updated 1715 GMT+8 Oct 31, 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -1050,6 +1050,46 @@ starti,endi在int范围内
 
 
 
+
+
+解法1: 将每个活动的开始时间和结束时间转换为事件
+
+```python
+from typing import List
+
+class Solution:
+    def minmumNumberOfHost(self, n: int, startEnd: List[List[int]]) -> int:
+        # 将每个活动的开始时间和结束时间转换为事件
+        events = []
+        for i in range(n):
+            start, end = startEnd[i]
+            events.append((start, 1))  # 活动开始，+1主持人
+            events.append((end, -1))  # 活动结束，-1主持人
+
+        # 对事件按照时间排序，如果时间相同，先处理结束事件
+        events.sort(key=lambda x: (x[0], x[1]))
+
+        min_hosts = 0
+        current_hosts = 0
+
+        # 遍历所有事件，计算需要的主持人数
+        for time, event in events:
+            current_hosts += event
+            min_hosts = max(min_hosts, current_hosts)
+
+        return min_hosts
+
+# 示例用法
+
+#sol = Solution()
+#print(sol.minimum_number_of_host(3, [[1, 5], [2, 7], [4, 5]]))  # 输出应为 2
+#print(sol.minimum_number_of_host(34,[[547,612],[417,551],[132,132],[168,446],[95,747],[187,908],[115,712],[15,329],[612,900],[3,509],[181,200],[562,787],[136,268],[36,784],[533,573],[165,946],[343,442],[127,725],[557,991],[604,613],[633,721],[287,847],[414,480],[428,698],[437,616],[475,932],[652,886],[19,992],[132,543],[390,869],[754,903],[284,925],[511,951],[272,739]]))
+```
+
+
+
+解法2:
+
 ```python
 from typing import List
 import heapq
@@ -1074,12 +1114,9 @@ class Solution:
 
 
 
-链接：https://www.nowcoder.com/questionTerminal/4edf6e6d01554870a12f218c94e8a299
-来源：牛客网
 
 
-
-解法2:
+解法3:
 
 将活动开始时间写入一个列表starts，进行排序。 
 
