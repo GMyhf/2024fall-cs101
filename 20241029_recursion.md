@@ -1,12 +1,14 @@
 # 2024/10/29 递归
 
-Updated 1651 GMT+8 Oct 30, 2024
+Updated 2132 GMT+8 Nov 1, 2024
 
 2024 fall, Complied by Hongfei Yan
 
 
 
 > Log:
+>
+> 20241101: 增加了 3.2 函数参数是可变、不可变对象
 >
 > 20241024: 晴问 复活了。https://sunnywhy.com 晴问 是零基础同学的福音。算法基础。。。 确实有点难了。
 >
@@ -432,7 +434,7 @@ Figure 4: Converting the Number 10 to its Base 2 String Representation
 
 ## 3. 栈和递归的关系
 
-Stack Frames: Implementing Recursion
+### 3.1 Stack Frames: Implementing Recursion
 
 https://runestone.academy/ns/books/published/pythonds3/Recursion/StackFramesImplementingRecursion.html?mode=browsing
 
@@ -498,6 +500,119 @@ The stack frames also provide a scope for the variables used by the function. Ev
 > 栈帧还为函数使用的变量提供了作用域。即使我们反复调用同一个函数，每次调用都会<mark>为函数的局部变量创建一个新的作用域</mark>。
 
 
+
+### 3.2 函数参数是可变、不可变对象
+
+参数是可变，还是不可变对象，是不一样的，前者在被调用者栈帧中，后者在调用者栈帧中。
+
+> 你提到的关于参数是可变对象还是不可变对象的区别是正确的。在 Python 中，参数传递的方式取决于参数的类型：
+>
+> 1. **不可变对象**（如数字、字符串、元组）：在函数调用时，传递的是值的副本。因此，对不可变对象的修改不会影响调用者。
+> 2. **可变对象**（如列表、字典）：在函数调用时，传递的是对象的引用。因此，对可变对象的修改会影响到调用者。
+>
+> **不可变对象**
+>
+> 对于不可变对象，每次函数调用时传递的是值的副本，因此在被调用者中对参数的修改不会影响调用者。
+>
+> **示例**
+>
+> ```python
+> def modify_value(x):
+>     x = x + 1
+>     print(f"Inside modify_value, x = {x}")
+> 
+> x = 5
+> print(f"Before modify_value, x = {x}")
+> modify_value(x)
+> print(f"After modify_value, x = {x}")
+> ```
+>
+> **输出**
+>
+> ```
+> Before modify_value, x = 5
+> Inside modify_value, x = 6
+> After modify_value, x = 5
+> ```
+>
+> **可变对象**
+>
+> 对于可变对象，每次函数调用时传递的是对象的引用，因此在被调用者中对参数的修改会影响到调用者。
+>
+> **示例**
+>
+> ```python
+> def modify_list(lst):
+>     lst.append(1)
+>     print(f"Inside modify_list, lst = {lst}")
+> 
+> lst = [2, 3]
+> print(f"Before modify_list, lst = {lst}")
+> modify_list(lst)
+> print(f"After modify_list, lst = {lst}")
+> ```
+>
+> **输出**
+>
+> ```
+> Before modify_list, lst = [2, 3]
+> Inside modify_list, lst = [2, 3, 1]
+> After modify_list, lst = [2, 3, 1]
+> ```
+>
+> 
+>
+> **递归调用中的回溯**
+>
+> 在递归调用中，如果传递的参数是一个可变对象（如列表），在被调用者中对这个对象的修改会影响到调用者。为了保持状态的一致性和正确性，通常需要在递归调用返回后恢复这个对象的状态，这就是回溯的过程。
+>
+> **示例**
+>
+> 假设我们有一个递归函数 `dfs`，它接受一个列表 `col_selected` 作为参数，并在调用前对 `col_selected` 进行修改。为了确保每次递归调用返回后 `col_selected` 的状态正确恢复，我们需要在递归调用后进行回溯。
+>
+> ```python
+> def dfs(col_selected, j, n):
+>     col_selected.append(j)  # 选择列 j
+>     print(f"Inside dfs, col_selected = {col_selected}")
+>     
+>     # 递归调用
+>     for next_j in range(j + 1, n):
+>         dfs(col_selected, next_j, n)
+>     
+>     col_selected.pop()  # 回溯，恢复 col_selected 的状态
+> 
+> # 初始调用
+> n = 4
+> dfs([], 0, n)
+> ```
+>
+> **输出**
+>
+> ```
+> Inside dfs, col_selected = [0]
+> Inside dfs, col_selected = [0, 1]
+> Inside dfs, col_selected = [0, 1, 2]
+> Inside dfs, col_selected = [0, 1, 2, 3]
+> Inside dfs, col_selected = [0, 1, 3]
+> Inside dfs, col_selected = [0, 2]
+> Inside dfs, col_selected = [0, 2, 3]
+> Inside dfs, col_selected = [0, 3]
+> ```
+>
+> 总结
+>
+> - **不可变对象**：在函数调用时传递的是值的副本，对参数的修改不会影响调用者。
+> - **可变对象**：在函数调用时传递的是对象的引用，对参数的修改会影响到调用者。为了保持状态的一致性和正确性，通常需要在递归调用返回后恢复这个对象的状态，这就是回溯的过程。
+>
+> 通过在递归调用前进行修改，在递归调用后恢复（即回溯），可以确保每次递归调用返回后，对象的状态是正确的，从而保证算法的正确性。
+
+
+
+传递的参数如果是可变对象（如列表），它在内存中是共享的。虽然每个函数调用都有自己的栈帧，但栈帧中存储的只是指向可变对象的引用，而不是对象本身。因此，对可变对象的修改会影响到所有引用该对象的地方。
+
+示例图式
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202411012122382.png" alt="image-20241101212208890" style="zoom:50%;" />
 
 
 
@@ -1651,7 +1766,7 @@ print(fibonacci(35))  # 现在会非常快
 >
 >    ```python
 >    from functools import lru_cache
->             
+>                
 >    @lru_cache(maxsize=None)
 >    def fibonacci(n):
 >        if n == 0:
