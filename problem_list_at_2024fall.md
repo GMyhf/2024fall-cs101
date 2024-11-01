@@ -28,6 +28,7 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 1102 | 2033D. Kousuke's Assignment | data structures, dp, dsu, greedy, math | 1300  | https://codeforces.com/problemset/problem/2033/D    |
 | 1101 | 1195C. Basketball Exercise | dp | 1400  | https://codeforces.com/problemset/problem/1195/C    |
 | 1031 | 02806: 公共子序列      | dp                | - |  http://cs101.openjudge.cn/2024fallroutine/02806        |
 |            | 698A. Vacations | dp | 1400  | https://codeforces.com/problemset/problem/698/A    |
