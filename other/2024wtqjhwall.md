@@ -2,7 +2,7 @@
 
 # 文科计算机基础实验班
 
-Updated 1125 GMT+8 Nov 3, 2024
+Updated 1229 GMT+8 Nov 3, 2024
 
 2024 fall, Complied by Hongfei Yan
 
