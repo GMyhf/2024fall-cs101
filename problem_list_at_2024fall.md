@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 20:41 GMT+8 Nov 4 2024. 2024 fall, Complied by Hongfei Yan
+Updated 00:07 GMT+8 Nov 5 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 1101 改为每天放1个题目。  
@@ -29,7 +29,7 @@ to do
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 | 1106 | 02766: 最大子矩阵      | -                | - |  http://cs101.openjudge.cn/practice/02766        |
-| 1105 | 01065: Wooden Sticks      | -                | - |  http://cs101.openjudge.cn/practice/01065        |
+| 1105 | 01065: Wooden Sticks      | -                | - |  http://cs101.openjudge.cn/2024fallroutine/01065        |
 | 1104 | 28389: 跳高      | -                | - |  http://cs101.openjudge.cn/2024fallroutine/28389        |
 | 1103 | sy134: 全排列III | backtracking based recursion   | -  | https://sunnywhy.com/sfbj/4/3/134    |
 | 1102 | 2033D. Kousuke's Assignment | data structures, dp, dsu, greedy, math | 1300  | https://codeforces.com/problemset/problem/2033/D    |
