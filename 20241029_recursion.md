@@ -987,7 +987,7 @@ TUD Programming Contest 2002, Darmstadt, Germany
 
 的确是用了 2^3^-1=7 次完成了移动。那么，这次的问题不是基本的汉诺塔，而是把柱子的根数增加1根。如果柱子增加到 4根，原来需要移动 7次完成，现在只需要 5次就可以了。
 
-<img src="/Users/hfyan/Library/Application Support/typora-user-images/image-20231030194009343.png" alt="image-20231030194009343" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231030194009343.png" alt="image-20231030194009343" style="zoom:50%;" />
 
 如果增加圆盘个数，就应该能省下更多的步数，但是这个规则还不是很清楚。题面要求编写程序计算 4根柱子的时候，1~12 个盘子所需的最小移动次数。
 
@@ -1768,7 +1768,7 @@ print(fibonacci(35))  # 现在会非常快
 >
 >    ```python
 >    from functools import lru_cache
->                   
+>                      
 >    @lru_cache(maxsize=None)
 >    def fibonacci(n):
 >        if n == 0:
