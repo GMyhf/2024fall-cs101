@@ -28,7 +28,7 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
-| 1113 | 01958: Strange Towers of Hanoi      | dp               | - |  http://cs101.openjudge.cn/practice/01958        |
+| 1113 | 01958: Strange Towers of Hanoi      | dp, recursion               | - |  http://cs101.openjudge.cn/practice/01958        |
 | 1112 | 02386: Lake Counting      | dfs similar                | - |  http://cs101.openjudge.cn/practice/02386        |
 | 1111 | 04117: 简单的整数划分问题      | recursion, dp                | - |  http://cs101.openjudge.cn/practice/04117        |
 | 1110 | 02694: 波兰表达式      | recursion                | - |  http://cs101.openjudge.cn/practice/02694        |
