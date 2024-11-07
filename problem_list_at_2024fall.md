@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 22:15 GMT+8 Nov 6 2024. 2024 fall, Complied by Hongfei Yan
+Updated 22:15 GMT+8 Nov 7 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 1101 改为每天放1个题目。  
@@ -28,6 +28,8 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 1113 | 01958: Strange Towers of Hanoi      |                 | - |  http://cs101.openjudge.cn/practice/01958        |
+| 1112 | 02386: Lake Counting      | dfs similar                | - |  http://cs101.openjudge.cn/practice/02386        |
 | 1111 | 04117: 简单的整数划分问题      | recursion, dp                | - |  http://cs101.openjudge.cn/practice/04117        |
 | 1110 | 02694: 波兰表达式      | recursion                | - |  http://cs101.openjudge.cn/practice/02694        |
 | 1109 | 21458: 健身房      | dp                | - |  http://cs101.openjudge.cn/practice/21458        |
