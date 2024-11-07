@@ -923,7 +923,7 @@ move(int(n), a, b, c)
 
 
 
-#### 示例: 01958Strange Towers of Hanoi（选做）
+#### 练习: 01958Strange Towers of Hanoi（选做）
 
 http://cs101.openjudge.cn/practice/01958/
 
@@ -1219,7 +1219,7 @@ for r in result:
 
 ## 6.编程题目
 
-### 28717: 递归比较字符串大小
+### 练习28717: 递归比较字符串大小
 
 http://wjjc.openjudge.cn/2024jgc4/002/
 
@@ -1323,7 +1323,7 @@ if __name__ == "__main__":
 
 
 
-### 01661: Help Jimmy（选做）
+### 练习01661: Help Jimmy（选做）
 
 dfs/dp, http://cs101.openjudge.cn/practice/01661
 
@@ -1399,7 +1399,7 @@ for _ in range(int(input())):
 
 
 
-### 02386: Lake Counting
+### 练习02386: Lake Counting
 
 dfs similar, http://cs101.openjudge.cn/practice/02386
 
@@ -1478,7 +1478,7 @@ print(cnt)
 
 
 
-### 05585: 晶矿的个数
+### 练习05585: 晶矿的个数
 
 matrices/dfs similar, http://cs101.openjudge.cn/practice/05585
 
@@ -1553,7 +1553,7 @@ for _ in range(int(input())):
 
 
 
-### 02786: Pell数列
+### 练习02786: Pell数列
 
 dp, http://cs101.openjudge.cn/practice/02786/
 
@@ -1609,7 +1609,7 @@ for _ in range(n):
 
 
 
-### 02754: 八皇后
+### 练习02754: 八皇后
 
 dfs and similar, http://cs101.openjudge.cn/practice/02754
 
