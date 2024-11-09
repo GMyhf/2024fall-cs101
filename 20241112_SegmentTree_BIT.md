@@ -207,9 +207,30 @@ print(ans)
 
 
 
+数据量过小，可以$O(nm)$dp。这个+1，设置的很巧妙。
+
+```python
+# 高景行 24数学科学学院
+n = int(input())
+a = []
+for i in range(n):
+    x, y = map(int, input().split())
+    a.append((x + 1, y + 1))
+a = sorted(a, key = lambda _: _[0])
+dp = [0] * 65
+for i in range(n):
+    for j in range(a[i][1], 62):
+        dp[j] = max(dp[j], dp[a[i][0] - 1] + 1)
+print(dp[61])
+```
+
+
+
 
 
 ## R2. 学习总结和收获
+
+> 焦玮宸 数学科学学院。Assignment #7: Nov Mock Exam立冬
 
 复习了一下 dp 的一些基础算法。
 
