@@ -28,6 +28,7 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 1116 | 02456: Aggressive cows      | binary search      | - |  http://cs101.openjudge.cn/practice/0456        |
 | 1115 | 07622: 求排列的逆序数      |                | - |  http://cs101.openjudge.cn/practice/07622        |
 | 1114 | 04118: 开餐馆      | dp               | - |  http://cs101.openjudge.cn/practice/04118        |
 | 1113 | 01958: Strange Towers of Hanoi      | dp, recursion               | - |  http://cs101.openjudge.cn/practice/01958        |
