@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 2207 GMT+8 Nov 9 2024. 2024 fall, Complied by Hongfei Yan
+Updated 21357 GMT+8 Nov 10 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 1101 改为每天放1个题目。  
@@ -9,13 +9,13 @@ Logs:
 题解在 
 [2020fall_cs101.openjudge.cn_problems.md](https://github.com/GMyhf/2020fall-cs101/blob/main/2020fall_cs101.openjudge.cn_problems.md),
 [2020fall_Codeforces_problems.md](https://github.com/GMyhf/2020fall-cs101/blob/main/2020fall_Codeforces_problems.md),
-[sunnywhy_problems.md](https://github.com/GMyhf/2024spring-cs201/blob/main/sunnywhy_problems.md)
-
+[sunnywhy_problems.md](https://github.com/GMyhf/2024spring-cs201/blob/main/sunnywhy_problems.md),
+[2024fall_LeetCode_problems.md](https://github.com/GMyhf/2024fall-cs101/blob/main/2024fall_LeetCode_problems.md)
 
 <!--
-## Homework
-
 to do
+leetcode.cn
+| 1122 |       |       | - |          |
 -->
 
 
@@ -28,6 +28,12 @@ to do
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 1122 | 135.分发糖果    | greedy       | - | https://leetcode.cn/problems/candy/         |
+| 1121 | 42.接雨水       | 单调栈      | - | https://leetcode.cn/problems/trapping-rain-water/         |
+| 1120 | 376.摆动序列      | greedy, dp      | - | https://leetcode.cn/problems/wiggle-subsequence/         |
+| 1119 | 3.无重复字符的最长子串   | 滑动窗口       | - |  https://leetcode.cn/problems/longest-substring-without-repeating-characters/        |
+| 1118 | 54.螺旋矩阵      |       | - |  https://leetcode.cn/problems/spiral-matrix/        |
+| 1117 | 62.不同路径      | dp      | - |  https://leetcode.cn/problems/unique-paths/        |
 | 1116 | 02456: Aggressive cows      | binary search      | - |  http://cs101.openjudge.cn/practice/0456        |
 | 1115 | 07622: 求排列的逆序数      |                | - |  http://cs101.openjudge.cn/practice/07622        |
 | 1114 | 04118: 开餐馆      | dp               | - |  http://cs101.openjudge.cn/practice/04118        |
