@@ -1,6 +1,6 @@
 # Dilworth's theorem
 
-Updated 1931 GMT+8 Nov 10 2024
+Updated 1936 GMT+8 Nov 10 2024
 
 2020 fall, Complied by Hongfei Yan
 
@@ -161,28 +161,24 @@ dp, http://cs101.openjudge.cn/practice/02945/
 
 
 
-bisect_right 二分查找可以高效地求出最长不降子序列的长度
+bisect_right 二分查找可以高效地求出最长不降子序列的长度。
+
+拦截导弹 求最长不升LNIS，非严格单调允许相等元素，所以用 bisect right。如果求最长上升LIS，用 bisect_left
 
 ```python
-"""
-与这个题目思路相同：
-28389: 跳高，http://cs101.openjudge.cn/practice/28389
-
-拦截导弹 求最长不升LNIS，可以相等所以用 bisect right。如果求最长上升LIS，用 bisect_left
-"""
-
 from bisect import bisect_right
 
-def min_testers_needed(scores):
-    scores.reverse()  # 反转序列以找到最长下降子序列的长度
-    lnis = []  # 用于存储最长上升子序列
+# 求最长不上升子序列，但bisect通常用于升序排列，原序列reverse后相当于求最长不降子序列
+def lnis(scores):	
+    scores.reverse()	
+    lis = []	# 用于存储最长不降子序列，非严格单调，允许相等元素
 
     for score in scores:
         pos = bisect_right(lis, score)
         if pos < len(lis):
-            lnis[pos] = score
+            lis[pos] = score
         else:
-            lnis.append(score)
+            lis.append(score)
 
     return len(lis)
 
@@ -190,7 +186,7 @@ def min_testers_needed(scores):
 N = int(input())
 scores = list(map(int, input().split()))
 
-result = min_testers_needed(scores)
+result = lnis(scores)
 print(result)
 ```
 
@@ -256,7 +252,7 @@ $\text{upd 2022.8.24}$：新增加一组 Hack 数据。
 >
 > > 狄尔沃斯定理亦称偏序集分解定理，该定理断言：对于任意有限偏序集，其最大反链中元素的数目必等于最小链划分中链的数目。此定理的对偶形式亦真，它断言：对于任意有限偏序集，其最长链中元素的数目必等于其最小反链划分中反链的数目。
 >
-> 该定理在该问题上可以理解成：把序列分成不上升子序列的最少个数，等于序列的最长上升子序列长度。把序列分成不降子序列的最少个数，等于序列的最长下降子序列长度。
+> <mark>该定理在该问题上可以理解成：把序列分成不上升子序列的最少个数，等于序列的最长上升子序列长度。把序列分成不降子序列的最少个数，等于序列的最长下降子序列长度。</mark>
 >
 > 则第二问等价于最长上升子序列。
 
@@ -267,12 +263,12 @@ $\text{upd 2022.8.24}$：新增加一组 Hack 数据。
 第二问，Dilworth 定理，偏序取反，bisect_left。
 
 ```python
-
 from bisect import bisect_left, bisect_right
 
-def lnis(scores):
-    scores.reverse()	# 反转序列以找到最长下降子序列的长度
-    lis = []	# 用于存储最长上升子序列
+# 第一问求最长不上升子序列，但bisect通常用于升序排列，原序列reverse后相当于求最长不降子序列
+def lnis(scores):	
+    scores.reverse()	
+    lis = []	# 用于存储最长不降子序列，非严格单调，允许相等元素
 
     for score in scores:
         pos = bisect_right(lis, score)
@@ -283,9 +279,10 @@ def lnis(scores):
 
     return len(lis)
 
+# 第二问等价于最长上升子序列
 def min_testers_needed(scores):
-    scores.reverse()  # 反转序列以找到最长下降子序列的长度
-    lis = []  # 用于存储最长上升子序列
+    scores.reverse()  
+    lis = []  # 用于存储最长上升子序列，严格单调
 
     for score in scores:
         pos = bisect_left(lis, score)
