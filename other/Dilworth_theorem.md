@@ -1,6 +1,6 @@
 # Dilworth's theorem
 
-Updated 2151 GMT+8 Nov 3 2024
+Updated 1931 GMT+8 Nov 10 2024
 
 2020 fall, Complied by Hongfei Yan
 
@@ -246,13 +246,42 @@ $\text{upd 2022.8.24}$：新增加一组 Hack 数据。
 
 
 
+
+
+> 显然，第一问求的是最长不上升子序列。
+>
+> 于是接下来直接抛开第一问不谈，也不考虑优化，直接考虑第二问。待会就知道原因了。
+>
+> 引理：**Dilworth** 定理
+>
+> > 狄尔沃斯定理亦称偏序集分解定理，该定理断言：对于任意有限偏序集，其最大反链中元素的数目必等于最小链划分中链的数目。此定理的对偶形式亦真，它断言：对于任意有限偏序集，其最长链中元素的数目必等于其最小反链划分中反链的数目。
+>
+> 该定理在该问题上可以理解成：把序列分成不上升子序列的最少个数，等于序列的最长上升子序列长度。把序列分成不降子序列的最少个数，等于序列的最长下降子序列长度。
+>
+> 则第二问等价于最长上升子序列。
+
+
+
 第一问，求最长链，偏序取反，bisect_right。
 
 第二问，Dilworth 定理，偏序取反，bisect_left。
 
 ```python
 
-from bisect import bisect_left
+from bisect import bisect_left, bisect_right
+
+def lnis(scores):
+    scores.reverse()	# 反转序列以找到最长下降子序列的长度
+    lis = []	# 用于存储最长上升子序列
+
+    for score in scores:
+        pos = bisect_right(lis, score)
+        if pos < len(lis):
+            lis[pos] = score
+        else:
+            lis.append(score)
+
+    return len(lis)
 
 def min_testers_needed(scores):
     scores.reverse()  # 反转序列以找到最长下降子序列的长度
@@ -268,11 +297,12 @@ def min_testers_needed(scores):
     return len(lis)
 
 
-N = int(input())
+#N = int(input())
 scores = list(map(int, input().split()))
-
-result = min_testers_needed(scores)
-print(result)
+result1 = lnis(scores)
+result2 = min_testers_needed(scores)
+print(result1)
+print(result2)
 ```
 
 
