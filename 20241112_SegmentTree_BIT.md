@@ -1,6 +1,6 @@
 # 20241112-Week10 线段树和树状数组
 
-Updated 0206 GMT+8 Nov 10 2023
+Updated 0018 GMT+8 Nov 12 2023
 
 2024 fall, Complied by Hongfei Yan
 
