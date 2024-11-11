@@ -39,7 +39,7 @@ Updated 0206 GMT+8 Nov 10 2023
 
 # Recap
 
-> 焦玮宸 数学科学学院。Assignment #7: Nov Mock Exam立冬
+
 
 ## R1. 题目
 
@@ -47,25 +47,58 @@ Updated 0206 GMT+8 Nov 10 2023
 
 sorttings, http://cs101.openjudge.cn/practice/07618/
 
+病人登记看病，编写一个程序，将登记的病人按照以下原则排出看病的先后顺序：
+
+1. 老年人（年龄 >= 60岁）比非老年人优先看病。
+2. 老年人按年龄从大到小的顺序看病，年龄相同的按登记的先后顺序排序。
+3. 非老年人按登记的先后顺序看病。
+
+**输入**
+
+第1行，输入一个小于100的正整数，表示病人的个数；
+后面按照病人登记的先后顺序，每行输入一个病人的信息，包括：一个长度小于10的字符串表示病人的ID（每个病人的ID各不相同且只含数字和字母），一个整数表示病人的年龄，中间用单个空格隔开。
+
+**输出**
+
+按排好的看病顺序输出病人的ID，每行一个。
 
 
-代码：
+
+把老人和年轻人用两个列表储存，如果不确定sort是不是稳定的可以自行编入一个数据然后用sort输出看看顺序会不会变。有一个坑点是b要提前转成int，否则后续排序的时候会按照b的字典序而不是大小来排序。
 
 ```python
+# Read the number of patients
 n = int(input())
-elder, younger = [], []
-for i in range(n):
-    ID, age = input().split()
-    if int(age) >= 60:
-        elder.append([-int(age), i, ID])
+
+# Initialize lists for elderly and non-elderly patients
+elderly = []
+non_elderly = []
+
+# Read patient information
+for _ in range(n):
+    patient_id, age = input().split()
+    age = int(age)
+    if age >= 60:
+        elderly.append((patient_id, age))
     else:
-        younger.append(ID)
-for patient in sorted(elder):
-    print(patient[2])
-print("\n".join(younger))
+        non_elderly.append((patient_id, age))
+
+# Sort elderly patients by age in descending order
+elderly.sort(key=lambda x: -x[1])
+
+# Concatenate elderly and non-elderly lists
+sorted_patients = elderly + non_elderly
+
+# Print the sorted patient IDs
+for patient in sorted_patients:
+    print(patient[0])
 ```
 
+Python 自带的 list.sort() 方法和内置的 sorted() 函数都是使用 Timsort 算法实现的。Timsort 是一种混合排序算法，源自归并排序和插入排序，由 Tim Peters 在 2002 年为 Python 编程语言发明。它是一种稳定的排序算法。
 
+稳定性意味着如果两个元素具有相同的值，它们在排序后的列表中的相对位置不会改变。例如，如果有一个列表，其中包含多个具有相同值的元素，稳定排序会确保这些元素在排序后保持原有的顺序。
+
+Merge sort很重要，有的题目就是在考merge sort。例如：07622:求排列的逆序数，http://cs101.openjudge.cn/practice/07622/
 
 
 
@@ -73,11 +106,28 @@ print("\n".join(younger))
 
 implementation, matrices, http://cs101.openjudge.cn/practice/23555/
 
+由于矩阵存储非常耗费空间，一个长度n宽度m的矩阵需要花费n*m的存储，因此我们选择用另一种节省空间的方法表示矩阵。一个矩阵X可以表示为三元组的序列，每个三元组代表（行号，列号，元素值），如果元素值是0则我们不存储这个三元组，这样对于0很多的大型矩阵，我们节省了很多存储空间。现在我们有两个用这种方式表示的矩阵X和Y，我们想要计算这两个矩阵的乘积，并且也用三元组形式表达，该如何完成呢。
+
+如果不知道矩阵如何相乘，可以参考：http://cs101.openjudge.cn/practice/18161
+
+**输入**
+
+输入第一行是三个整数n，m1, m2，两个矩阵X，Y的维度都是n*n，m1是矩阵X中的非0元素数，m2是矩阵Y中的非0元素数。
+之后是m1行，每行是一个三元组（行号，列号，元素值），代表X矩阵的元素值，注意行列编号都从0开始。
+之后是m2行，每行是一个三元组（行号，列号，元素值），代表Y矩阵的元素值，注意行列编号都从0开始。
+
+**输出**
+
+输出是m3行，代表X和Y两个矩阵乘积中的非0元素的数目，按照先行号后列号的方式递增排序。
+每行仍然是前述的三元组形式。
+
+
+
 
 
 > 18161:矩阵运算。http://cs101.openjudge.cn/practice/18161
 >
-> 矩阵乘法运算必须要前一个矩阵的列数与后一个矩阵的行数相同，
+> 矩阵乘法运算必须要前一个<mark>矩阵的列数与后一个矩阵的行数相同</mark>，
 > 如m行n列的矩阵A与n行p列的矩阵B相乘，可以得到m行p列的矩阵C，
 > 矩阵C的每个元素都由A的对应行中的元素与B的对应列中的元素一一相乘并求和得到，
 > 即`C[i][j] = A[i][0]*B[0][j] + A[i][1]*B[1][j] + …… +A[i][n-1]*B[n-1][j]`
@@ -86,9 +136,33 @@ implementation, matrices, http://cs101.openjudge.cn/practice/23555/
 >
 > 即，$c_{ij}=\Sigma a_{ik}b_{kj}$
 
+输入放到矩阵里面就好了，在计算乘法之后一旦有值不是0就可以在遍历中直接把位置和值输出。
+
+```python
+# 汤伟杰，24信息管理系
+n, m1, m2 = map(int, input().split())
+a = [[0] * n for _ in range(n)]
+b = [[0] * n for _ in range(n)]
+for _ in range(m1):
+    x, y, v = map(int, input().split())
+    a[x][y] = v
+for _ in range(m2):
+    x, y, v = map(int, input().split())
+    b[x][y] = v
+c = [[0] * n for _ in range(n)]
+for i in range(n):
+    for j in range(n):
+        c[i][j] = sum(a[i][k] * b[k][j] for k in range(n))
+        if c[i][j] != 0:
+            print(i, j, c[i][j])
+```
+
+
+
 使用字典来存储稀疏矩阵。读取 `m2` 行输入，每行包含三个整数 `i`, `j`, `val`，表示矩阵 `Y` 中第 `i` 行第 `j` 列的元素值为 `val`。注意这里将 `Y` 存储为转置形式，即 `Y[j][i]` 而不是 `Y[i][j]`，这是为了方便后续的矩阵乘法计算。
 
 ```python
+# 焦玮宸 24数学科学学院
 n, m1, m2 = map(int, input().split())
 X, Y = [{} for i in range(n)], [{} for i in range(n)]
 for _ in range(m1):
@@ -115,25 +189,129 @@ for i in range(n):
 
 implementation/sortings/data structures, http://cs101.openjudge.cn/practice/18182/
 
+Q神无聊的时候经常打怪兽。现在有一只怪兽血量是b，Q神在一些时刻可以选择一些技能打怪兽，每次释放技能都会让怪兽掉血。
+现在给出一些技能t~i~,x~i~，代表这个技能可以在ti时刻使用，并且使得怪兽的血量下降x~i~。这个打怪兽游戏有个限制，每一时刻最多可以使用m个技能（一个技能只能用一次）。如果技能使用得当，那么怪兽会在哪一时刻死掉呢？
 
+**输入**
+
+第一行是数据组数nCases, nCases≤ 100
+对于每组数据，第一行是三个整数n,m,b，n代表技能的个数，m代表每一时刻可以使用最多m个技能，b代表怪兽初始的血量。
+1≤ n≤ 1000，1≤ m≤ 1000，1≤ b≤ 10^9^
+接下来n行，每一行一个技能t~i~,x~i~，1≤ t~i~≤ 10^9^，1≤ x~i~≤ 10^9^
+
+**输出**
+
+对于每组数据，输出怪兽在哪一时刻死掉，血量小于等于0就算挂，如果不能杀死怪兽，输出alive
+
+
+
+
+
+用了字典，注意字典本身无序，只能对 keys 或 values 排序。
+
+用defaultdict，就不用判断key是否在字典中了。defaultdict会自动为这个键创建一个默认值。
 
 ```python
-t = int(input())
-for _ in range(t):
+from collections import defaultdict
+
+cases = int(input())
+
+for _ in range(cases):
+    situation = "alive"
     n, m, b = map(int, input().split())
-    count = {}
+    a = defaultdict(list)
+    
+    # Input coordinates
     for _ in range(n):
-        time, x = map(int, input().split())
-        if time in count:
-            count[time].append(x)
+        x, y = map(int, input().split())
+        a[x].append(y)
+        
+    # Process coordinates
+    for x in sorted(a):
+        if m >= len(a[x]):
+            b -= sum(a[x])
         else:
-            count[time] = [x]
-    for i in sorted(count.keys()):
-        b -= sum(sorted(count[i], reverse=True)[:min(m, len(count[i]))])
+            a[x].sort(reverse=True)
+            b -= sum(a[x][:m])
         if b <= 0:
-            print(i); break
-    if b > 0:
-        print("alive")
+            situation = x
+            break
+    
+    print(situation)
+```
+
+
+
+如果 `m` 比较大的话，`heapq.nlargest` 可能会比较慢。可以考虑在收集数据时直接维护一个大小为 `m` 的堆。
+
+```python
+# 韩博文，24城市与环境学院
+from collections import defaultdict
+import heapq
+
+for _ in range(int(input())):
+    n, m, b = map(int, input().split())
+    d = defaultdict(list)
+
+    # Collect all the damage values for each time point
+    for _ in range(n):
+        t, x = map(int, input().split())
+        d[t].append(x)
+
+    # Calculate the total damage for each time point using a heap
+    for t in d:
+        if len(d[t]) > m:
+            d[t] = sum(heapq.nlargest(m, d[t]))
+        else:
+            d[t] = sum(d[t])
+
+    # Sort the time points by their occurrence
+    dp = sorted(d.items())
+
+    # Apply the damage and check if the blood is depleted
+    for t, damage in dp:
+        b -= damage
+        if b <= 0:
+            print(t)
+            break
+    else:
+        print('alive')
+```
+
+在收集数据时直接维护一个大小为 `m` 的堆，这样可以减少后续的计算开销。如果堆的大小已经达到 `m`，则使用 `heapq.heappushpop` 将新值加入堆，并弹出最小值。这样可以确保堆中始终保留最大的 `m` 个值。
+
+```python
+# 韩博文，24城市与环境学院
+from collections import defaultdict
+import heapq
+
+for _ in range(int(input())):
+    n, m, b = map(int, input().split())
+    d = defaultdict(list)
+
+    # Collect all the damage values for each time point and maintain a heap of size m
+    for _ in range(n):
+        t, x = map(int, input().split())
+        if len(d[t]) < m:
+            heapq.heappush(d[t], x)
+        else:
+            heapq.heappushpop(d[t], x)
+
+    # Calculate the total damage for each time point
+    for t in d:
+        d[t] = sum(d[t])
+
+    # Sort the time points by their occurrence
+    dp = sorted(d.items())
+
+    # Apply the damage and check if the blood is depleted
+    for t, damage in dp:
+        b -= damage
+        if b <= 0:
+            print(t)
+            break
+    else:
+        print('alive')
 ```
 
 
@@ -143,6 +321,81 @@ for _ in range(t):
 ### M28780: 零钱兑换3
 
 dp, http://cs101.openjudge.cn/practice/28780/
+
+给定一组n种不同面额的硬币，以及要支付的总金额
+
+计算并返回可以凑成总金额所需的 **最少的硬币个数** 。如果没有任何一种硬币组合能组成总金额，返回 -1。
+
+你可以认为每种硬币的数量是无限的。
+
+输入
+
+输入为两行
+
+第一行为两个整数n（1 ≤ n ≤ 100），m（0 ≤ m ≤ 10^6），其中n表示硬币的种类数，m表示要凑的总金额
+
+第二行为n个整数，表示硬币的面值
+
+输出
+
+可以凑成总金额所需的最少的硬币个数。如果没有任何一种硬币组合能组成总金额，则输出 -1。
+
+样例输入
+
+```
+sample1 input:
+3 11
+1 2 4
+
+sample1 output:
+4
+```
+
+样例输出
+
+```
+sample2 input:
+1 3
+2
+
+sample2 output:
+-1
+```
+
+提示
+
+dp
+
+来源
+
+2024 TA-Lhw
+
+
+
+完全背包，类似于剪彩 189A. Cut Ribbon，https://codeforces.com/problemset/problem/189/A
+
+
+
+时间：16875ms
+
+```python
+n, m = map(int, input().split())
+coins = list(map(int, input().split()))
+dp = [float("inf")] * (m + 1)
+dp[0] = 1
+for i in coins:
+    dp[i] = 1
+for i in range(1, m + 1):
+    for coin in coins:
+        if i - coin >= 0:
+            dp[i] = min(dp[i], dp[i - coin] + 1)
+
+#print(dp)
+if dp[m] == float("inf"):
+    print(-1)
+else:
+    print(dp[m])
+```
 
 
 
@@ -159,15 +412,95 @@ print(dp[m] if dp[m] != inf else -1)
 
 
 
+时间：5210ms
+
+```python
+# 2400010989	韩宇宸 工学院
+import bisect
+
+# 读取输入
+n, m = map(int, input().split())
+face = sorted(map(int, input().split()))  # 直接排序后使用
+coins = [float('inf')] * (m + 1)
+coins[0] = 0  # 初始值
+
+# 动态规划计算最小硬币数
+for i in range(1, m + 1):
+    w = bisect.bisect_right(face, i)
+
+    #for k in range(w):
+    #    coins[i] = min(coins[i], coins[i - face[k]] + 1)
+    if w != 0:
+        coins[i] = min(coins[i - face[k]] for k in range(w)) + 1
+
+# 输出结果
+print(coins[m] if coins[m] != float('inf') else -1)
+```
+
 
 
 ### T12757: 阿尔法星人翻译官
 
 implementation, http://cs101.openjudge.cn/practice/12757
 
+阿尔法星人为了了解地球人，需要将地球上所有的语言转换为他们自己的语言，其中一个小模块是要将地球上英文表达的数字转换为阿尔法星人也理解的阿拉伯数字。 请你为外星人设计这个模块，即给定一个用英文表示的整数，将其转换成用阿拉伯数字表示的整数。这些数的范围从－999,999,999到＋999,999,999。 下列单词是你的程序中将遇到的所有有关数目的英文单词：
 
+negative, zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, thirty, forty, fifty, sixty, seventy, eighty, ninety, hundred, thousand, million
+
+**输入**
+
+输入一行，由几个表示数目的英文单词组成(长度不超多200)。注意：负号将由单词negative表示。
+当数的大小超过千时，并不用完全单词hundred表示。例如1600将被写为"one thousand six hundred", 而不是"sixteen hundred"。
+
+**输出**
+
+输出一行，表示答案。
+
+
+
+这题就恶心在 hundred 可能在千和百万之前，所以要暂时储存出现的一百，等后边出现千或百万的时候就好处理了。
 
 ```python
+tokens = [str(i) for i in input().split()]
+dic={"zero":0, "one":1, "two":2, "three":3, "four":4, "five":5, "six":6, 
+     "seven":7, "eight":8, "nine":9, "ten":10, "eleven":11, "twelve":12, 
+     "thirteen":13, "fourteen":14, "fifteen":15, "sixteen":16, "seventeen":17, 
+     "eighteen":18, "nineteen":19, "twenty":20, "thirty":30, "forty":40, 
+     "fifty":50, "sixty":60, "seventy":70, "eighty":80, "ninety":90, 
+     "hundred":100, "thousand":1000, "million":1000000}
+
+sign = 1
+if tokens[0]=="negative":
+    sign = -1
+    del tokens[0]
+
+total = 0
+tmp = 0
+for i in tokens:
+    if i in ("thousand", "million"):
+        total += tmp*dic[i]
+        tmp = 0
+        continue
+    if i == "hundred":
+        tmp *= dic[i]
+    else:
+        tmp += dic[i]
+        
+print( sign * (total + tmp) )
+```
+
+2021fall-cs101，李佳霖。对上面程序解读：可以把hundred，thousand，million 这些看成是计量单位，而其他的具体的数当作系数。由于这道题不需要考虑如one thousand million 而只存在one hundred million 这样的情况，因此可以把thousand 和million 看成是一类。t 作为累计计数单位，对具体的数字进行加和处理。而遇到hundred 时便进行释放，成100 处理；遇到thousand 和million则需要考虑前面是否存在hundred million 这样的情况，并做对应的加和处理。最终输出带有正负号的数字。
+
+2021fall-cs101，龚靖淞。one thousand million就是one billion来着。
+
+2021fall-cs101，侯勇启。思路：用字典实现即可，易知不会出现thousand million 这样的数据，只会存在hundred million 和hundred thousand 数据，从而每次遍历到thousand、million 都可以结算；用cnt 滚动记录阶段值，结算后清零。
+
+
+
+递归实现
+
+```python
+# 焦玮宸 24数学科学学院
 dictionary = {'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10, 'eleven': 11, 'twelve': 12, 'thirteen': 13, 'fourteen': 14, 'fifteen': 15, 'sixteen': 16, 'seventeen': 17, 'eighteen': 18, 'nineteen': 19, 'twenty': 20, 'thirty': 30, 'forty': 40, 'fifty': 50, 'sixty': 60, 'seventy': 70, 'eighty': 80, 'ninety': 90}
 def convert(words):
     if words[0] == "negative":
@@ -195,7 +528,21 @@ print(convert(list(input().split())))
 
 greedy/dp, cs10117 Final Exam, http://cs101.openjudge.cn/practice/16528/
 
+寒假马上就要到了，龙傲天同学获得了从第0天开始到第60天结束为期61天超长寒假，他想要尽可能丰富自己的寒假生活。
+现提供若干个活动的起止时间，请计算龙同学这个寒假至多可以参加多少个活动？注意所参加的活动不能有任何时间上的重叠，在第x天结束的活动和在第x天开始的活动不可同时选择。
 
+**输入**
+
+第一行为整数n，代表接下来输入的活动个数(n < 10000)
+紧接着的n行，每一行都有两个整数，第一个整数代表活动的开始时间，第二个整数代表全结束时间
+
+**输出**
+
+输出至多参加的活动个数
+
+
+
+区间问题，Greedy。按照结束时间排序，然后看找下一个起始时间不超过结束时间的区间，一直贪心。
 
 ```python
 n = int(input())
