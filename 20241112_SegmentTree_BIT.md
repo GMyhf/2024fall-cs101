@@ -332,10 +332,17 @@ The method goes back to Narayana Pandita in 14th century India, and has been red
 
 The following algorithm generates the next permutation lexicographically after a given permutation. It changes the given permutation in-place. 
 
-1. Find the highest index i such that s[i] < s[i+1]. If no such index exists, the permutation is the last permutation.
-2. Find the highest index j > i such that s[j] > s[i]. Such a j must exist, since i+1 is such an index.
-3. Swap s[i] with s[j].
+1. Find the highest index `i` such that `s[i] < s[i+1]`. If no such index exists, the permutation is the last permutation.
+2. Find the highest index` j > i` such that `s[j] > s[i]`. Such a `j` must exist, since` i+1` is such an index.
+3. Swap `s[i]` with `s[j]`.
 4. Reverse the order of all of the elements after index i till the last element.
+
+> 以下算法生成给定排列的下一个字典序排列。该算法会就地修改给定的排列。
+>
+> 1. 找到最高的索引 `i`，使得 `s[i] < s[i+1]`。如果不存在这样的索引，则该排列已经是最后一个排列。
+> 2. 找到最高的索引 `j > i`，使得 `s[j] > s[i]`。这样的 `j` 必然存在，因为 `i+1` 就是一个这样的索引。
+> 3. 交换 `s[i]` 和 `s[j]`。
+> 4. 反转索引 `i` 之后的所有元素，直到最后一个元素。
 
 即：
 
@@ -398,6 +405,8 @@ for _ in range(m):
 
 
 ### 1.2 思路二：康托展开
+
+康托展开（Cantor Expansion）来解决问题。康托展开是一种将排列映射到唯一整数的方法，可以用来快速找到某个排列的字典序编号，以及根据编号恢复排列。
 
 ```python
 # 2022fall-cs101，陈勃宇
@@ -505,7 +514,6 @@ Sample2 output:
 >
 > 其中：X 为比当前排列小的全排列个数（X+1即为当前排列的次序编号）；n 表示全排列表达式的字符串长度；$a_i$ 表示原排列表达式中的第 i 位（由右往左数），前面（其右侧） i-1 位数有多少个数的值比它小。
 
-
 例如求 5 2 3 4 1 在 {1, 2, 3, 4, 5} 生成的排列中的次序可以按如下步骤计算。
 从右往左数，i 是5时候，其右侧比5小的数有1、2、3、4这4个数，所以有4×4！。
 是2，比2小的数有1一个数，所以有 1×3！。
@@ -605,6 +613,18 @@ int main()
 实现树状数组的核心部分，包括了三个重要的操作：lowbit、修改和求和。
 
 1. lowbit函数：`lowbit(x)` 是用来计算 `x` 的二进制表示中最低位的 `1` 所对应的值。它的运算规则是利用位运算 `(x & -x)` 来获取 `x` 的最低位 `1` 所对应的值。例如，`lowbit(6)` 的结果是 `2`，因为 `6` 的二进制表示为 `110`，最低位的 `1` 所对应的值是 `2`。
+
+   > `-x` 是 `x` 的补码表示。
+   >
+   > 对于正整数 `x`，`-x` 的二进制表示是 `x` 的二进制表示取反后加 1。
+   >
+   > `6` 的二进制表示为 `110`，取反得到 `001`，加 1 得到 `010`。
+   >
+   > `-6` 的二进制表示为 `11111111111111111111111111111010`（假设 32 位整数）。
+   >
+   > `6 & -6` 的结果：
+   >
+   > `110` 与 `11111111111111111111111111111010` 按位与运算，结果为 `010`，即 `2`。
 
 2. update函数：这个函数用于修改树状数组中某个位置的值。参数 `x` 表示要修改的位置，参数 `y` 表示要增加/减少的值。函数使用一个循环将 `x` 的所有对应位置上的值都加上 `y`。具体的操作是首先将 `x` 位置上的值与 `y` 相加，然后通过 `lowbit` 函数找到 `x` 的下一个需要修改的位置，将该位置上的值也加上 `y`，然后继续找下一个位置，直到修改完所有需要修改的位置为止。这样就完成了数组的修改。
 
@@ -749,7 +769,8 @@ https://www.baeldung.com/cs/segment-trees#:~:text=The%20segment%20tree%20is%20a,
 
 The segment tree is a type of data structure from computational geometry. [Bentley](https://en.wikipedia.org/wiki/Bentley–Ottmann_algorithm) proposed this well-known technique in 1977. A segment tree is essentially a binary tree in whose nodes we store the information about the segments of a linear data structure such as an array.
 
-
+> 区间树是一种来自计算几何的数据结构。Bentley 在 1977 年提出了这一著名的技术。区间树本质上是一棵二叉树，在其节点中存储了关于线性数据结构（如数组）的区段信息。
+>
 
 Fenwick tree
 
@@ -758,6 +779,10 @@ https://en.wikipedia.org/wiki/Fenwick_tree#:~:text=A%20Fenwick%20tree%20or%20bin
 A **Fenwick tree** or **binary indexed tree** **(BIT)** is a data structure that can efficiently update values and calculate [prefix sums](https://en.wikipedia.org/wiki/Prefix_sum) in an array of values.
 
 This structure was proposed by Boris Ryabko in 1989 with a further modification published in 1992. It has subsequently become known under the name Fenwick tree after Peter Fenwick, who described this structure in his 1994 article.
+
+> Fenwick 树 或 二叉索引树 (BIT) 是一种数据结构，可以高效地更新数组中的值并计算前缀和。
+>
+> 这种结构由 Boris Ryabko 于 1989 年提出，并在 1992 年进行了进一步的修改。此后，这种结构以其在 1994 年的文章中描述它的 Peter Fenwick 的名字而广为人知，被称为 Fenwick 树。
 
 
 
@@ -768,22 +793,37 @@ https://www.geeksforgeeks.org/segment-tree-efficient-implementation/
 Let us consider the following problem to understand Segment Trees without recursion.
 We have an array $arr[0 . . . n-1]$. We should be able to, 
 
-1. Find the sum of elements from index l to r where $0 \leq l \leq r \leq n-1$
-2. Change the value of a specified element of the array to a new value x. We need to do $arr[i] = x$ where $0 \leq i \leq n-1$. 
+1. Find the sum of elements from index `l` to `r` where $0 \leq l \leq r \leq n-1$
+2. Change the value of a specified element of the array to a new value `x`. We need to do $arr[i] = x$ where $0 \leq i \leq n-1$. 
 
-A **simple solution** is to run a loop from l to r and calculate the sum of elements in the given range. To update a value, simply do $arr[i] = x$. The first operation takes **O(n)** time and the second operation takes **O(1)** time.
+A **simple solution** is to run a loop from `l` to `r` and calculate the sum of elements in the given range. To update a value, simply do $arr[i] = x$. The first operation takes **O(n)** time and the second operation takes **O(1)** time.
 
-**Another solution** is to create another array and store the sum from start to i at the ith index in this array. The sum of a given range can now be calculated in O(1) time, but the update operation takes O(n) time now. This works well if the number of query operations is large and there are very few updates.
-What if the number of queries and updates are equal? Can we perform both the operations in O(log n) time once given the array? We can use a [Segment Tree](https://www.geeksforgeeks.org/segment-tree-set-1-sum-of-given-range/) to do both operations in O(Logn) time. We have discussed the complete implementation of segment trees in our [previous](https://www.geeksforgeeks.org/segment-tree-set-1-sum-of-given-range/) post. In this post, we will discuss the easier and yet efficient implementation of segment trees than in the previous post.
+> **简单解决方案** 是从 `l` 到 `r` 运行一个循环，计算给定范围内的元素之和。要更新一个值，只需执行 `arr[i] = x`。第一个操作（查询）的时间复杂度为 **O(n)**，第二个操作（更新）的时间复杂度为 **O(1)**。
+
+**Another solution** is to create another array and store the sum from start to `i` at the ith index in this array. The sum of a given range can now be calculated in O(1) time, but the update operation takes O(n) time now. This works well if the number of query operations is large and there are very few updates.
+
+> **另一种解决方案** 是创建另一个数组，并在该数组的第 `i` 个索引处存储从起始位置到 `i` 的元素之和。现在可以在 O(1) 时间内计算给定范围的和，但更新操作现在需要 O(n) 时间。如果查询操作的数量很大而更新操作很少，这种方法效果很好。
+
+What if the number of queries and updates are equal? Can we perform both the operations in O(log n) time once given the array? We can use a [Segment Tree](https://www.geeksforgeeks.org/segment-tree-set-1-sum-of-given-range/) to do both operations in O(logn) time. We have discussed the complete implementation of segment trees in our [previous](https://www.geeksforgeeks.org/segment-tree-set-1-sum-of-given-range/) post. In this post, we will discuss the easier and yet efficient implementation of segment trees than in the previous post.
+
+> 但如果查询和更新操作的数量相等呢？我们能否在给定数组的情况下，使两个操作都在 O(log n) 时间内完成？我们可以使用 线段树 来在 O(log n) 时间内完成这两个操作。我们在之前的帖子中详细讨论了线段树的完整实现。在这篇文章中，我们将讨论比之前更简单且高效的线段树实现方法。
+
 Consider the array and segment tree as shown below:  叶子是数组值，非叶是和
 
 ![img](https://media.geeksforgeeks.org/wp-content/uploads/excl.png)
 
 
 
-You can see from the above image that the original array is at the bottom and is 0-indexed with 16 elements. The tree contains a total of 31 nodes where the leaf nodes or the elements of the original array start from node 16. So, we can easily construct a segment tree for this array using a 2*N sized array where N is the number of elements in the original array. The leaf nodes will start from index N in this array and will go up to index (2*N – 1). Therefore, the element at index i in the original array will be at index (i + N) in the segment tree array. Now to calculate the parents, we will start from the index (N – 1) and move upward. 根节点下标从1开始，For index i , the left child will be at (2 * i) and the right child will be at (2*i + 1) index. So the values at nodes at (2 * i) and (2*i + 1) are combined at i-th node to construct the tree. 
-As you can see in the above figure, we can query in this tree in an interval [L,R) with left index(L) included and right (R) excluded.
+You can see from the above image that the original array is at the bottom and is 0-indexed with 16 elements. The tree contains a total of 31 nodes where the leaf nodes or the elements of the original array start from node 16. So, we can easily construct a segment tree for this array using a `2*N` sized array where N is the number of elements in the original array. The leaf nodes will start from index N in this array and will go up to index `(2 * N – 1)`. Therefore, the element at index `i` in the original array will be at index `(i + N)` in the segment tree array. Now to calculate the parents, we will start from the index `(N – 1)` and move upward. For index `i` , the left child will be at `(2 * i)` and the right child will be at `(2*i + 1)` index. So the values at nodes at `(2 * i)` and `(2*i + 1)` are combined at i-th node to construct the tree. 
+
+> 从上图可以看出，原始数组位于底部，是 0 索引的，包含 16 个元素。树总共有 31 个节点，其中叶节点或原始数组的元素从节点 16 开始。因此，我们可以使用一个大小为 2*N 的数组轻松构建这个数组的线段树，其中 N 是原始数组中的元素数量。叶节点将从该数组的索引 N 开始，一直到索引 (2 * N - 1)。因此，原始数组中索引 i 处的元素将在线段树数组中的索引 (i + N) 处。现在，为了计算父节点，我们将从索引 (N - 1) 开始向上移动。对于索引 i，左孩子将位于 (2 * i) 索引处，右孩子将位于 (2 * i + 1) 索引处。因此，节点 (2 * i) 和 (2 * i + 1) 处的值将在 i 索引处组合以构建树。
+
+As you can see in the above figure, we can query in this tree in an interval `[L,R)` with left index (L) included and right (R) excluded.
 We will implement all of these multiplication and addition operations using bitwise operators.
+
+> 如上图所示，我们可以在区间 [L, R) 中查询这棵树，其中左索引 L 包含在内，右索引 R 排除在外。
+> 我们将使用位运算符实现所有的乘法和加法操作。
+
 Let us have a look at the complete implementation: 
 
 ```python
@@ -877,16 +917,22 @@ if __name__ == "__main__" :
 Yes! That is all. The complete implementation of the segment tree includes the query and update functions. Let us now understand how each of the functions works: 
 
 
-1. The picture makes it clear that the leaf nodes are stored at i+n, so we can clearly insert all leaf nodes directly.
+1. The picture makes it clear that the leaf nodes are stored at i+n, so we can clearly insert all leaf nodes directly. 
+
+   > 图片清楚地表明叶节点存储在i+n的位置，因此我们可以直接明确地插入所有叶节点。
+
 2. The next step is to build the tree and it takes O(n) time. The parent always has its less index than its children, so we just process all the nodes in decreasing order, calculating the value of the parent node. If the code inside the build function to calculate parents seems confusing, then you can see this code. It is equivalent to that inside the build function. 
 
-```python
-tree[i] = tree[2*i] + tree[2*i+1]
-```
+   > 下一步是构建树，这需要O(n)的时间。父节点的索引总是小于其子节点的索引，所以我们只需按递减顺序处理所有节点，计算父节点的值。如果构建函数中用于计算父节点的代码看起来令人困惑，那么你可以参考这段代码。它与构建函数内部的代码等效。
+
+   `tree[i] = tree[2*i] + tree[2*i+1]`
 
  
 
-3. Updating a value at any position is also simple and the time taken will be proportional to the height （“高度”这个概念，其实就是从下往上度量，树这种数据结构的高度是从最底层开始计数，并且计数的起点是0） of the tree. We only update values in the parents of the given node which is being changed. So to get the parent, we just go up to the parent node, which is p/2 or p>>1, for node p. p^1 turns (2\*i) to (2\*i + 1) and vice versa to get the second child of p.
+3. Updating a value at any position is also simple and the time taken will be proportional to the height （“高度”这个概念，其实就是从下往上度量，树这种数据结构的高度是从最底层开始计数，并且计数的起点是0） of the tree. We only update values in the parents of the given node which is being changed. So to get the parent, we just go up to the parent node, which is `p/2` or `p>>1`, for node `p`. `p^1` turns `(2*i`) to `(2*i + 1)` and vice versa to get the second child of p.
+
+   > 在任意位置更新一个值也非常简单，所需时间将与树的高度成正比。我们只更新给定节点（即正在更改的节点）的父节点中的值。为了得到父节点，我们只需向上移动到节点p的父节点，该父节点为p/2或p>>1。p^1将`(2*i)`转换为`(2*i + 1)`反之亦然，以获得p的第二个子节点。
+
 4. Computing the sum also works in $O(Logn)$ time. If we work through an interval of [3,11), we need to calculate only for nodes 19,26,12, and 5 in that order.  要演示这个索引上行的求和过程，前面程序数组是12个元素，图示是16个元素，需要稍作修改。增加了print输出，便于调试。
 
 
@@ -899,8 +945,13 @@ The idea behind the query function is whether we should include an element in th
 
 ![img](https://media.geeksforgeeks.org/wp-content/uploads/excl.png)
 
-Consider that L is the left border of an interval and R is the right border of the interval [L,R). It is clear from the image that if L is odd, then it means that it is the right child of its parent and our interval includes only L and not the parent. So we will simply include this node to sum and move to the parent of its next node by doing L = (L+1)/2. Now, if L is even, then it is the left child of its parent and the interval includes its parent also unless the right borders interfere. Similar conditions are applied to the right border also for faster computation. We will stop this iteration once the left and right borders meet.
+Consider that `L` is the left border of an interval and `R` is the right border of the interval `[L,R)`. It is clear from the image that if `L` is odd, then it means that it is the right child of its parent and our interval includes only `L` and not the parent. So we will simply include this node to sum and move to the parent of its next node by doing `L = (L+1)/2`. Now, if L is even, then it is the left child of its parent and the interval includes its parent also unless the right borders interfere. Similar conditions are applied to the right border also for faster computation. We will stop this iteration once the left and right borders meet.
+
+> 假设`L`是一个区间的左边界，而`R`是区间`[L,R)`的右边界。从图中可以明显看出，如果`L`是奇数，这意味着它是其父节点的右孩子，并且我们的区间仅包含`L`而不包括其父节点。因此，我们将简单地把这个节点加到总和中，并通过执行`L = (L+1)/2`移动到下一个节点的父节点。现在，如果`L`是偶数，那么它是其父节点的左孩子，除非右边界干涉，否则区间也包括其父节点。对于右边界也有类似的条件，以便更快地计算。一旦左右边界相遇，我们就会停止这次迭代。
+
 The theoretical time complexities of both previous implementation and this implementation is the same, but practically, it is found to be much more efficient as there are no recursive calls. We simply iterate over the elements that we need. Also, this is very easy to implement.
+
+> 这两种实现的理论时间复杂度是相同的，但在实际应用中，后者被发现要高效得多，因为没有递归调用。我们只是迭代我们需要的元素。此外，这种方法非常容易实现。
 
 **Time Complexities:**
 
