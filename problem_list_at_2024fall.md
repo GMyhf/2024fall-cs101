@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 21357 GMT+8 Nov 10 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0856 GMT+8 Nov 11 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 1101 改为每天放1个题目。  
@@ -39,7 +39,7 @@ leetcode.cn
 | 1114 | 04118: 开餐馆      | dp               | - |  http://cs101.openjudge.cn/practice/04118        |
 | 1113 | 01958: Strange Towers of Hanoi      | dp, recursion               | - |  http://cs101.openjudge.cn/practice/01958        |
 | 1112 | 02386: Lake Counting      | dfs similar                | - |  http://cs101.openjudge.cn/practice/02386        |
-| 1111 | 04117: 简单的整数划分问题      | recursion, dp                | - |  http://cs101.openjudge.cn/practice/04117        |
+| 1111 | 04117: 简单的整数划分问题      | recursion, dp                | - |  http://cs101.openjudge.cn/2024fallroutine/04117        |
 | 1110 | 02694: 波兰表达式      | recursion                | - |  http://cs101.openjudge.cn/2024fallroutine/02694        |
 | 1109 | 21458: 健身房      | dp                | - |  http://cs101.openjudge.cn/2024fallroutine/21458        |
 | 1108 | 01384: Piggy-Bank      | dp                | - |  http://cs101.openjudge.cn/2024fallroutine/01384        |
