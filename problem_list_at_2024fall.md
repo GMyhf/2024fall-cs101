@@ -37,7 +37,7 @@ leetcode.cn
 | 1116 | 02456: Aggressive cows      | binary search      | - |  http://cs101.openjudge.cn/practice/0456        |
 | 1115 | 07622: 求排列的逆序数      | merge sort               | - |  http://cs101.openjudge.cn/practice/07622        |
 | 1114 | 04118: 开餐馆      | dp               | - |  http://cs101.openjudge.cn/practice/04118        |
-| 1113 | 01958: Strange Towers of Hanoi      | dp, recursion               | - |  http://cs101.openjudge.cn/practice/01958        |
+| 1113 | 01958: Strange Towers of Hanoi      | dp, recursion               | - |  http://cs101.openjudge.cn/2024fallroutine/01958        |
 | 1112 | 02386: Lake Counting      | dfs similar                | - |  http://cs101.openjudge.cn/2024fallroutine/02386        |
 | 1111 | 04117: 简单的整数划分问题      | recursion, dp                | - |  http://cs101.openjudge.cn/2024fallroutine/04117        |
 | 1110 | 02694: 波兰表达式      | recursion                | - |  http://cs101.openjudge.cn/2024fallroutine/02694        |
