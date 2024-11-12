@@ -1,4 +1,4 @@
-# 20241112-Week10 线段树和树状数组
+# 20241112-Week10 Nov月考、DFS模版/栈模拟 、NaraPan算法 & 线段树、树状数组
 
 Updated 0018 GMT+8 Nov 12 2023
 
@@ -6,34 +6,11 @@ Updated 0018 GMT+8 Nov 12 2023
 
 
 
-
-
 > Log:
 >
+> 2024/11/12 通常11月份前两周是各科密集期中考试时间，我们讲点拓展知识（线段树、树状数组），月考/作业相应降低难度，便于同学均衡各科学习时间。
+>
 > 2024/11/09 部分内容取自, https://github.com/GMyhf/2023fall-cs101/blob/main/20231031_SegmentTree_BIT.md
-
-
-
-通常11月份前两周是各科密集期中考试时间，我们讲点拓展知识，月考/作业相应降低难度，便于同学均衡各科学习时间。
-
-
-
-**本周主要内容：**
-
-理解时间复杂度 $O(1)$ 和 $O(n)$ 权衡处理方法，有的题目 $O(n^2)$ 算法超时，需要把时间复杂度降到$O(nLogn)$才能AC。
-
-例如：27018:康托展开，http://cs101.openjudge.cn/practice/27018/
-
-假如有一个数组 $arr[0 ... n-1]$，需要：1）计算前 i 个元素的和。2）修改数组 $arr[i] = x$ 中指定元素的值，其中$0 \leq i \leq n-1$。
-一个**简单的解决方案**是运行一个从 0 到 i-1 的循环，并计算元素的和。要更新一个值，只需执行 $arr[i] = x$。前者操作需要 $O(n)$ 时间，后者需要 $O(1)$ 时间。另一个简单的解决方案是创建一个额外的数组，并将前第 i 个元素的和存储在这个新数组的第 i 个索引处。给定范围的求和现在可以在 O(1) 时间内计算，但是更新操作现在需要 $O(n)$ 时间。如果有大量的查询（读）操作，但很少的更新（写）操作，那么这种方法可以很好地工作。
-
-是否可以在 $O(log n)$ 时间内同时执行查询和更新操作? 一个有效的解决方案是使用**线段树 (Segment Tree)** 分别在 $O(Logn)$ 时间内执行这两个操作的。另一种解决方案是**二叉索引树（Fenwick Tree/Binary Indexed Tree）**，它的两种操作时间复杂度也是 $O(Logn)$。与线段树相比，二叉索引树需要更少的空间，更容易实现。
-
-
-
-组合数学是对于计数问题的研究，数论就是对于整除性问题的研究，组合与数论是程序中的常见考点。题目背景知识，数学思维。
-
-因为整数除法具有分配律的性质，单项整除可以等价于各项求和最后整除。
 
 
 
@@ -589,7 +566,399 @@ print(dp[61])
 
 
 
-# 1 Narayana Pandita’s algorithm & Cantor Expansion
+# 1 DFS模版+用栈来模拟递归
+
+
+
+## 示例02386: Lake Counting
+
+dfs similar, http://cs101.openjudge.cn/practice/02386
+
+Due to recent rains, water has pooled in various places in Farmer John's field, which is represented by a rectangle of N x M (1 <= N <= 100; 1 <= M <= 100) squares. Each square contains either water ('W') or dry land ('.'). Farmer John would like to figure out how many ponds have formed in his field. A pond is a connected set of squares with water in them, where a square is considered adjacent to all eight of its neighbors.
+
+Given a diagram of Farmer John's field, determine how many ponds he has.
+
+输入
+
+\* Line 1: Two space-separated integers: N and M
+
+\* Lines 2..N+1: M characters per line representing one row of Farmer John's field. Each character is either 'W' or '.'. The characters do not have spaces between them.
+
+输出
+
+\* Line 1: The number of ponds in Farmer John's field.
+
+样例输入
+
+```
+10 12
+W........WW.
+.WWW.....WWW
+....WW...WW.
+.........WW.
+.........W..
+..W......W..
+.W.W.....WW.
+W.W.W.....W.
+.W.W......W.
+..W.......W.
+```
+
+样例输出
+
+```
+3
+```
+
+提示
+
+OUTPUT DETAILS:
+
+There are three ponds: one in the upper left, one in the lower left,and one along the right side.
+
+来源: USACO 2004 November
+
+
+
+```python
+#1.dfs
+import sys
+
+# input = sys.stdin.read
+sys.setrecursionlimit(20000)
+
+
+def dfs(x, y):
+    # 标记当前位置为已访问
+    field[x][y] = '.'
+    # 遍历8个方向
+    for dx, dy in directions:
+        nx, ny = x + dx, y + dy
+        # 检查新位置是否在地图范围内且未被访问
+        if 0 <= nx < n and 0 <= ny < m and field[nx][ny] == 'W':
+            dfs(nx, ny)
+
+
+# 一次性读取所有输入
+# data = input().split()
+# n, m = map(int, data[:2])
+# field = [list(row) for row in data[2:2+n]]
+n, m = map(int, input().split())
+field = [list(input()) for _ in range(n)]
+# 初始化8个方向
+directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+# 计数器
+cnt = 0
+
+# 遍历地图
+for i in range(n):
+    for j in range(m):
+        if field[i][j] == 'W':
+            dfs(i, j)
+            cnt += 1
+
+print(cnt)
+
+```
+
+
+
+通过使用栈来模拟递归，可以避免因递归过深导致的栈溢出问题。
+
+```python
+def dfs(x, y):
+    stack = [(x, y)]
+    while stack:
+        x, y = stack.pop()
+        if field[x][y] != 'W':
+            continue
+        field[x][y] = '.'  # 标记当前位置为已访问
+        for dx, dy in directions:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < n and 0 <= ny < m and field[nx][ny] == 'W':
+                stack.append((nx, ny))
+
+# 读取输入
+n, m = map(int, input().split())
+field = [list(input()) for _ in range(n)]
+
+# 初始化8个方向
+directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+
+# 计数器
+cnt = 0
+
+# 遍历地图
+for i in range(n):
+    for j in range(m):
+        if field[i][j] == 'W':
+            dfs(i, j)
+            cnt += 1
+
+print(cnt)
+```
+
+
+
+## 示例05585: 晶矿的个数
+
+matrices/dfs similar, http://cs101.openjudge.cn/practice/05585
+
+在某个区域发现了一些晶矿，已经探明这些晶矿总共有分为两类，为红晶矿和黑晶矿。现在要统计该区域内红晶矿和黑晶矿的个数。假设可以用二维地图m[][]来描述该区域，若m[i][j]为#表示该地点是非晶矿地点，若m[i][j]为r表示该地点是红晶矿地点，若m[i][j]为b表示该地点是黑晶矿地点。一个晶矿是由相同类型的并且上下左右相通的晶矿点组成。现在给你该区域的地图，求红晶矿和黑晶矿的个数。
+
+**输入**
+
+第一行为k，表示有k组测试输入。
+每组第一行为n，表示该区域由n*n个地点组成，3 <= n<= 30
+接下来n行，每行n个字符，表示该地点的类型。
+
+**输出**
+
+对每组测试数据输出一行，每行两个数字分别是红晶矿和黑晶矿的个数，一个空格隔开。
+
+样例输入
+
+```
+2
+6
+r##bb#
+###b##
+#r##b#
+#r##b#
+#r####
+######
+4
+####
+#rrb
+#rr#
+##bb
+```
+
+样例输出
+
+```
+2 2
+1 2
+```
+
+
+
+```python
+dire = [[-1,0], [1,0], [0,-1], [0,1]]
+
+def dfs(x, y, c):
+    m[x][y] = '#'
+    for i in range(len(dire)):
+        tx = x + dire[i][0]
+        ty = y + dire[i][1]
+        if m[tx][ty] == c:
+            dfs(tx, ty, c)
+
+for _ in range(int(input())):
+    n = int(input())
+    m = [[0 for _ in range(n+2)] for _ in range(n+2)]
+
+    for i in range(1, n+1):
+        m[i][1:-1] = input()
+
+    r = 0 ; b=0
+    for i in range(1, n+1):
+        for j in range(1, n+1):
+            if m[i][j] == 'r':
+                dfs(i, j, 'r')
+                r += 1
+            if m[i][j] == 'b':
+                dfs(i,j,'b')
+                b += 1
+    print(r, b)
+```
+
+
+
+通过使用栈来模拟递归，可以避免因递归过深导致的栈溢出问题。
+
+```python
+import sys
+
+# 定义方向数组
+dire = [[-1, 0], [1, 0], [0, -1], [0, 1]]
+
+def dfs(x, y, c):
+    stack = [(x, y)]
+    while stack:
+        x, y = stack.pop()
+        if m[x][y] != c:
+            continue
+        m[x][y] = '#'
+        for dx, dy in dire:
+            tx, ty = x + dx, y + dy
+            if m[tx][ty] == c:
+                stack.append((tx, ty))
+
+# 处理多组测试数据
+t = int(input())
+for _ in range(t):
+    n = int(input())
+    
+    # 初始化矩阵并添加边界
+    m = [['.'] * (n + 2) for _ in range(n + 2)]
+    for i in range(1, n + 1):
+        m[i][1:-1] = list(input().strip())
+
+    r = 0
+    b = 0
+
+    # 遍历矩阵
+    for i in range(1, n + 1):
+        for j in range(1, n + 1):
+            if m[i][j] == 'r':
+                dfs(i, j, 'r')
+                r += 1
+            elif m[i][j] == 'b':
+                dfs(i, j, 'b')
+                b += 1
+
+    print(r, b)
+```
+
+
+
+## 示例23937: 逃出迷宫
+
+http://cs101.openjudge.cn/practice/23937/
+
+"Boom!" 小锅一觉醒来发现自己落入了一个N*N(2 <= N <= 20)的迷宫之中，为了逃出这座迷宫，小锅需要从左上角(0, 0)处的入口跑到右下角(N-1, N-1)处的出口逃出迷宫。由于小锅每一步都想缩短和出口之间的距离，所以**他只会向右和向下走**。假设我们知道迷宫的地图（以0代表通路，以1代表障碍），请你编写一个程序，判断小锅能否从入口跑到出口？
+
+例如，对于下图所示的迷宫：
+
+<img src="http://media.openjudge.cn/images/upload/6090/1639660715.png" alt="img" style="zoom:33%;" />
+
+小锅可以如下图红线所示从迷宫左上角的入口抵达迷宫右下角的出口：
+
+<img src="http://media.openjudge.cn/images/upload/2830/1639660728.jpg" alt="img" style="zoom:33%;" />
+
+输入
+
+第一行为一个整数N，代表迷宫的大小
+接下来N行为迷宫地图，迷宫地块之间以空格分隔
+输入保证(0, 0)和(N - 1, N - 1)处可以通过
+
+输出
+
+一行字符串，如果能跑到出口则输出Yes，否则输出No
+
+样例输入
+
+```
+5
+0 0 1 1 0
+0 0 0 0 0
+0 1 1 1 0
+0 1 1 1 0
+0 1 1 1 0
+```
+
+样例输出
+
+```
+Yes
+```
+
+提示
+
+用递归解。设计函数ok(r,c)，返回True或False，表示从位置(r,c)出发能否走到终点。
+从(r,c）出发可以想办法往前走一步，然后看问题变成什么
+
+题目说了只能走到0的格子，不能走到1的格子
+
+
+
+这是模版题目，涉及到 递归/dfs/回溯。一旦出现模版题目，最多是中等难度，要求必须会。
+
+```python
+def dfs(mx, visited, x, y):
+    # 如果到达右下角，返回True
+    if x == n - 1 and y == n - 1:
+        return True
+
+    # 定义向右和向下的移动方向
+    directions = [(0, 1), (1, 0)]
+
+    for dx, dy in directions:
+        nx = x + dx
+        ny = y + dy
+        # 检查新坐标是否在矩阵范围内，是否已经访问过，以及是否可以通过
+        if 0 <= nx < n and 0 <= ny < n and not visited[nx][ny] and mx[nx][ny] == 0:
+            visited[nx][ny] = True
+            if dfs(mx, visited, nx, ny):
+                return True
+            visited[nx][ny] = False
+
+    return False
+
+# 读取输入
+n = int(input())
+mx = [list(map(int, input().split())) for _ in range(n)]
+
+# 初始化访问标记数组
+visited = [[False] * n for _ in range(n)]
+
+# 起始点 (0, 0) 必须是可以通过的
+if mx[0][0] == 1:
+    print('No')
+else:
+    visited[0][0] = True
+    if dfs(mx, visited, 0, 0):
+        print('Yes')
+    else:
+        print('No')
+```
+
+
+
+通过使用栈来模拟递归，可以避免因递归过深导致的栈溢出问题。
+
+```python
+# 读取输入
+n = int(input())
+mx = [list(map(int, input().split())) for _ in range(n)]
+
+# 初始化访问标记数组
+visited = [[False] * n for _ in range(n)]
+
+# 起始点 (0, 0) 必须是可以通过的
+if mx[0][0] == 1:
+    print('No')
+else:
+    # 使用栈来模拟递归
+    stack = [(0, 0)]
+    visited[0][0] = True
+
+    while stack:
+        x, y = stack.pop()
+        
+        # 如果到达右下角，返回True
+        if x == n - 1 and y == n - 1:
+            print('Yes')
+            break
+
+        # 定义向右和向下的移动方向
+        directions = [(0, 1), (1, 0)]
+
+        for dx, dy in directions:
+            nx = x + dx
+            ny = y + dy
+            # 检查新坐标是否在矩阵范围内，是否已经访问过，以及是否可以通过
+            if 0 <= nx < n and 0 <= ny < n and not visited[nx][ny] and mx[nx][ny] == 0:
+                visited[nx][ny] = True
+                stack.append((nx, ny))
+    else:
+        print('No')
+```
+
+
+
+# 2 Narayana Pandita’s algorithm & Cantor Expansion
 
 ## 示例 01833: 排列
 
@@ -810,303 +1179,155 @@ bb = list(OrderedDict.fromkeys(range(1, n+1)))
 
 
 
-## 示例27018: 康托展开
 
-http://cs101.openjudge.cn/practice/27018/
 
-总时间限制: 3000ms 单个测试点时间限制: 2000ms 内存限制: 90112kB
-描述
-求 1∼N 的一个给定全排列在所有 1∼N 全排列中的排名。结果对 998244353取模。
 
-**输入**
-第一行一个正整数 N。
 
-第二行 N 个正整数，表示 1∼N 的一种全排列。
-**输出**
-一行一个非负整数，表示答案对 998244353 取模的值。
-样例输入
 
-```
-Sample1 in:
+
+
+
+## 示例：康托展开逆运算(cantor 2)
+
+给出一个数N，再给出N的全排列的某一个排列的次序数，输出该排列。
+**Input**
+第1行为一个数$N(N≤9)$，第2行为N的全排列的某一个排列的次序数。
+
+**Output**
+
+一行字符串，即该排列。
+Sample in
 3
-2 1 3
-
-Sample1 output:
-3
-```
-
-样例输出
-
-```
-Sample2 in:
-4
-1 2 4 3
-
-Sample2 output:
-2
-```
-
-提示: 对于100%数据，$1≤N≤1000000$。
-来源: https://www.luogu.com.cn/problem/P5367
+1
+Sample out
+123
 
 
 
-思路：容易想到的方法是把所有排列求出来后再进行排序，但事实上有更简单高效的算法来解决这个问题，那就是康托展开。
-
-> **康托展开**是一个全排列到一个自然数的双射，常用于构建特定哈希表时的空间压缩。 康托展开的实质是计算当前排列在所有由小到大全排列中的次序编号，因此是可逆的。即由全排列可得到其次序编号（康托展开），由次序编号可以得到对应的第几个全排列（逆康托展开）。
->
-> 康托展开的**表达式为**：
->
-> $X＝a_n×(n-1)!＋a_{n-1}×(n-2)!＋…＋a_i×(i-1)!＋…＋a_2×1!＋a_1×0!$
->
-> 其中：X 为比当前排列小的全排列个数（X+1即为当前排列的次序编号）；n 表示全排列表达式的字符串长度；$a_i$ 表示原排列表达式中的第 i 位（由右往左数），前面（其右侧） i-1 位数有多少个数的值比它小。
-
-例如求 5 2 3 4 1 在 {1, 2, 3, 4, 5} 生成的排列中的次序可以按如下步骤计算。
-从右往左数，i 是5时候，其右侧比5小的数有1、2、3、4这4个数，所以有4×4！。
-是2，比2小的数有1一个数，所以有 1×3！。
-是3，比3小的数有1一个数，为1×2！。
-是4，比4小的数有1一个数，为1×1！。
-最后一位数右侧没有比它小的数，为 0×0！＝0。
-则 4×4！＋1×3！＋1×2！＋1×1！＝105。
-这个 X 只是这个排列之前的排列数，而题目要求这个排列的位置，即 5 2 3 4 1排在第 106 位。
-
-同理，4 3 5 2 1的排列数：3×4!＋2×3!＋2×2!＋1×1!＝89，即 4 3 5 2 1 排在第90位。
-因为比4小的数有3个：3、2、1；比3小的数有2个：2、1；比5小的数有2个：2、1；比2小的数有1个：1。
-
+思路：可以用康托展开的逆运算来求解。假设已有{1,2,3,4,5}的全排列，并且已经从小到大排序完毕，现要找出第96个数的排列是什么，则康托展开逆运算的具体计算过程如下：
+首先用 96-1 得到 95；
+用 95 去除 4! 得到 3 余 23，商为 3 表示有 3 个数比它小，则该数是 4，所以第 1 位是 4；
+用 23 去除3! 得到 3 余 5，商为 3，表示有 3 个数比它小，即该数是 4，但4前面已经出现过了，所以第2位是5；
+用 5 去除 2! 得到 2 余 1，商为 2，表示有 2 个数比它小，即该数是 3，所以第 3 位是 3；
+用 1 去除 1! 得到 1 余 0，表示有 1 个数比它小，即该数是 2，所以第 4 位是 2；
+最后一个数只能是 1。
+所以这个排列是 4 5 3 2 1。
+又如找出第 16 个数的排列的计算过程如下：
+首先用 16-1 得到 15；
+用 15 去除 4! 得到 0余 15，表示有 0 个数比它小，即该数是 1，第 1 位是 1；
+用 15 去除 3! 得到 2 余 3，表示有 2 个数比它小，即该数是 3，但由于1已经在之前出现过了，所以第 2 位是 4（因为1在之前出现过了，所以实际上比4小的数是2）；
+用 3 去除 2! 得到 1 余 1，表示有 1 个数比它小，即该数是 2，但由于 1 已经在之前出现过了，所以第 3 位是 3（因为 1 在之前出现过了，所以实际上比 3 小的数是1）；
+用 1 去除 1! 得到 1 余 0，表示有 1 个数比它小，即该数是 2，但由于 1、3、4已经在之前出现过了，所以第 4 位是 5（因为1、3、4在之前出现过了，所以实际上比 5 小的数是1）。
+最后一个数只能是 2，所以这个数是 14352。
 参考代码如下。
 
 
 
 ```python
-MOD = 998244353								# Time Limit Exceeded, 内存7140KB, 时间18924ms
-fac = [1]
+import math
 
-def cantor_expand(a, n):
-    ans = 0
-    
-    for i in range(1, n + 1):
-        count = 0
-        for j in range(i + 1, n + 1):
-            if a[j] < a[i]:
-                count += 1				# 计算有几个比他小的数
-        ans = (ans + (count * fac[n - i]) % MOD) % MOD
-    return ans + 1
+def cantor(m, n):
+    fac = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880]   # 预处理求出阶乘的值
+    hash = [0] * 10
 
-a = [0]
-N = int(input())		# 用大写N，因为spyder的debug，执行下一条指令的命令是 n/next。与变量n冲突。
+    num = 0
+    m -= 1
+    for i in range(n - 1, 0, -1):
+        used = 0
+        digit = m // fac[i] + 1                             # 计算有几个数比它小后加1
+        m %= fac[i]                                         # 更新m
+        for j in range(1, used + digit + 1):                # 查找之前有哪些数已被用过
+            if hash[j]:
+                used += 1
+        num += (used + digit) * math.pow(10, i)
+        hash[used + digit] = 1                              # 标记该数被使用过
 
-for i in range(1, N + 1):
-    fac.append((fac[i - 1] * i) % MOD)		# 整数除法具有分配律
+    for i in range(1, n + 1):                               # 取出最后的未被使用的数
+        if hash[i] == 0:
+            return int(num + i)
 
-*perm, = map(int, input().split())
-a.extend(perm)
+    return -1
 
-print(cantor_expand(a, N))
+num, n = map(int, input().split())
+perm = cantor(n, num)
+print(' '.join(str(perm)))
+
 ```
 
 
 
-用C++也是超时
+![image-20231029141904258](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231029141904258.png)
+
+
 
 ```c++
-#include<iostream>							// Time Limit Exceeded, 内存960KB, 时间1986ms
+//康托展开逆运算
+#include <bits/stdc++.h>
 using namespace std;
 
-const long long MOD = 998244353;
-long long fac[1000005]={1};
+int fac[10]= {1,1,2,6,24,120,720,5040,40320,362880};   //预处理求出阶乘的值
+int Hash[10];
 
-int cantor_expand (int a[],int n){
-    int i, j, count;
-    long long ans = 0 ;
+int Cantor(int m,int n)
+{
+  int num=0;
+  int used,digit;
+  m--;
+  for(int i=n-1; i>0; i--)
+  {
+    used=0;
+    digit = m/fac[i] + 1;                           //计算有几个数比它小后加1
+    m %= fac[i];                                    //更新m
+    for(int j=1; j<=used+digit; j++)                //查找之前有哪些数已被用过
+      if(Hash[j])
+        used++;
+    num += (used+digit)*pow(10,i);
+    Hash[used + digit]=1;                           //标记该数被使用过
+  }
+  for(int i=1; i<=n; i++)                           //取出最后的未被使用的数
+    if(Hash[i] == 0)
+      return num+i;
 
-    for(i = 1; i <= n; i ++){
-        count = 0;
-        for(j = i + 1; j <= n; j ++){
-            if(a[j] < a[i]) count ++;						// 计算有几个比它小的数
-        }
-        ans = (ans + (count * fac[n-i]) % MOD ) % MOD;
-    }
-    return ans + 1;
+  return -1;
 }
-
-
-int a[1000005];
 
 int main()
 {
-  int N;
-  //cin >> N;
-  scanf("%d", &N);
-  for (int i=1; i<=N; i++){
-      fac[i] = (fac[i-1]*i)%MOD;
-  }
-
-  for (int i=1; i<=N; i++)
-      //cin >> a[i];
-      scanf("%d",&a[i]);
-  cout << cantor_expand(a,N) << endl;
+  int num,n;
+  cin >> num >> n;
+  printf("%d\n",Cantor(n,num));
   return 0;
 }
 ```
 
 
 
-### 树状数组或线段树来优化
-
-康托展开用 $O(n^2)$ 算法超时，需要把时间复杂度降到$O(nLogn)$。“计算有几个比他小的数”，时间复杂度由 $O(n)$ 降到 $O(Logn)$。
-
-#### 树状数组（Binary Indexed Tree）
-
-实现树状数组的核心部分，包括了三个重要的操作：lowbit、修改和求和。
-
-1. lowbit函数：`lowbit(x)` 是用来计算 `x` 的二进制表示中最低位的 `1` 所对应的值。它的运算规则是利用位运算 `(x & -x)` 来获取 `x` 的最低位 `1` 所对应的值。例如，`lowbit(6)` 的结果是 `2`，因为 `6` 的二进制表示为 `110`，最低位的 `1` 所对应的值是 `2`。
-
-   > `-x` 是 `x` 的补码表示。
-   >
-   > 对于正整数 `x`，`-x` 的二进制表示是 `x` 的二进制表示取反后加 1。
-   >
-   > `6` 的二进制表示为 `110`，取反得到 `001`，加 1 得到 `010`。
-   >
-   > `-6` 的二进制表示为 `11111111111111111111111111111010`（假设 32 位整数）。
-   >
-   > `6 & -6` 的结果：
-   >
-   > `110` 与 `11111111111111111111111111111010` 按位与运算，结果为 `010`，即 `2`。
-
-2. update函数：这个函数用于修改树状数组中某个位置的值。参数 `x` 表示要修改的位置，参数 `y` 表示要增加/减少的值。函数使用一个循环将 `x` 的所有对应位置上的值都加上 `y`。具体的操作是首先将 `x` 位置上的值与 `y` 相加，然后通过 `lowbit` 函数找到 `x` 的下一个需要修改的位置，将该位置上的值也加上 `y`，然后继续找下一个位置，直到修改完所有需要修改的位置为止。这样就完成了数组的修改。
-
-3. getsum函数：这个函数用于求解树状数组中某个范围的前缀和。参数 `x` 表示要求解前缀和的位置。函数使用一个循环将 `x` 的所有对应位置上的值累加起来，然后通过 `lowbit` 函数找到 `x` 的上一个位置（即最后一个需要累加的位置），再将该位置上的值累加起来，然后继续找上一个位置，直到累加完所有需要累加的位置为止。这样就得到了从位置 `1` 到位置 `x` 的前缀和。
-
-这就是树状数组的核心操作，通过使用这三个函数，我们可以实现树状数组的各种功能，如求解区间和、单点修改等。
-
-```python
-n, MOD, ans = int(input()), 998244353, 1						# 内存69832KB, 时间2847ms
-a, fac = list(map(int, input().split())), [1]
-
-tree = [0] * (n + 1)
-
-def lowbit(x):
-    return x & -x
-
-def update(x, y):
-    while x <= n:
-        tree[x] += y
-        x += lowbit(x)
-
-def getsum(x):
-    tot = 0
-    while x:
-        tot += tree[x]
-        x -= lowbit(x)
-    return tot
 
 
-for i in range(1, n):
-    fac.append(fac[i-1] * i % MOD)
 
-for i in range(1, n + 1):
-    cnt = getsum(a[i-1])
-    update(a[i-1], 1)
-    ans = (ans + ((a[i-1] - 1 - cnt) * fac[n - i]) % MOD) % MOD
+
+
+
+
     
-print(ans)
-```
 
 
 
-<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231029152322373.png" alt="image-20231029152322373" style="zoom:67%;" />
+# 附录A 数据结构：线段树和树状数组
+
+理解时间复杂度 $O(1)$ 和 $O(n)$ 权衡处理方法，有的题目 $O(n^2)$ 算法超时，需要把时间复杂度降到$O(nLogn)$才能AC。
+
+例如：27018:康托展开，http://cs101.openjudge.cn/practice/27018/
 
 
 
-#### 线段树（Segment tree）
+线段树（Segment Tree）和树状数组（Binary Indexed Tree）的区别和联系：
 
-线段树 segment tree 来计算第i位右边比该数还要小的数的个数。
+1）时间复杂度相同, 但是树状数组的常数优于线段树。
 
-```python
-n, MOD, ans = int(input()), 998244353, 1					# 内存69900KB, 时间5162ms
-a, fac = list(map(int, input().split())), [1]
+2）树状数组的作用被线段树完全涵盖, 凡是可以使用树状数组解决的问题, 使用线段树一定可以解决, 但是线段树能够解决的问题树状数组未必能够解决。
 
-tree = [0] * (2*n)
-
-
-def build(arr):
-
-    # insert leaf nodes in tree
-    for i in range(n):
-        tree[n + i] = arr[i]
-
-    # build the tree by calculating parents
-    for i in range(n - 1, 0, -1):
-        tree[i] = tree[i << 1] + tree[i << 1 | 1]
-
-
-# function to update a tree node
-def updateTreeNode(p, value):
-
-    # set value at position p
-    tree[p + n] = value
-    p = p + n
-
-    # move upward and update parents
-    i = p
-    while i > 1:
-
-        tree[i >> 1] = tree[i] + tree[i ^ 1]
-        i >>= 1
-
-
-# function to get sum on interval [l, r)
-def query(l, r):
-
-    res = 0
-
-    l += n
-    r += n
-
-    while l < r:
-
-        if (l & 1):
-            res += tree[l]
-            l += 1
-
-        if (r & 1):
-            r -= 1
-            res += tree[r]
-
-        l >>= 1
-        r >>= 1
-
-    return res
-
-
-#build([0]*n)
-
-for i in range(1, n):
-    fac.append(fac[i-1] * i % MOD)
-
-for i in range(1, n + 1):
-    cnt = query(0, a[i-1])
-    updateTreeNode(a[i-1]-1, 1)
-    
-    ans = (ans + (a[i-1] -1 - cnt) * fac[n - i]) % MOD
-    
-print(ans)
-
-```
-
-
-
-<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231029161854925.png" alt="image-20231029161854925" style="zoom: 50%;" />
-
-
-
-
-
-
-
-# 2 数据结构：线段树和树状数组
-
-线段树（Segment Tree）和树状数组（Binary Indexed Tree）的区别和联系：1）时间复杂度相同, 但是树状数组的常数优于线段树。2）树状数组的作用被线段树完全涵盖, 凡是可以使用树状数组解决的问题, 使用线段树一定可以解决, 但是线段树能够解决的问题树状数组未必能够解决。3）树状数组的代码量比线段树小很多。
+3）树状数组的代码量比线段树小很多。
 
 
 
@@ -1117,7 +1338,6 @@ https://www.baeldung.com/cs/segment-trees#:~:text=The%20segment%20tree%20is%20a,
 The segment tree is a type of data structure from computational geometry. [Bentley](https://en.wikipedia.org/wiki/Bentley–Ottmann_algorithm) proposed this well-known technique in 1977. A segment tree is essentially a binary tree in whose nodes we store the information about the segments of a linear data structure such as an array.
 
 > 区间树是一种来自计算几何的数据结构。Bentley 在 1977 年提出了这一著名的技术。区间树本质上是一棵二叉树，在其节点中存储了关于线性数据结构（如数组）的区段信息。
->
 
 Fenwick tree
 
@@ -1133,7 +1353,7 @@ This structure was proposed by Boris Ryabko in 1989 with a further modification 
 
 
 
-### Segment tree | Efficient implementation
+## A.1 Segment tree | Efficient implementation
 
 https://www.geeksforgeeks.org/segment-tree-efficient-implementation/
 
@@ -1310,7 +1530,7 @@ The theoretical time complexities of both previous implementation and this imple
 
 
 
-#### 1364A: A. XXXXX
+### 示例1364A: A. XXXXX
 
 brute force/data structures/number theory/two pointers, 1200, https://codeforces.com/problemset/problem/1364/A
 
@@ -1505,11 +1725,13 @@ print('\n'.join(map(str,ans)))
 
 
 
-#### Benifits of segment tree usage
+### Benifits of segment tree usage
 
 https://www.geeksforgeeks.org/segment-tree-sum-of-given-range/
 
-- **Range Queries:** One of the main use cases of segment trees is to perform range queries on an array in an efficient manner. The query function in the segment tree can return the ==minimum, maximum, sum, or any other aggregation== of elements within a specified range in the array in O(log n) time.
+**Range Queries:** One of the main use cases of segment trees is to perform range queries on an array in an efficient manner. The query function in the segment tree can return the ==minimum, maximum, sum, or any other aggregation== of elements within a specified range in the array in O(log n) time.
+
+> **区间查询：** 线段树的主要用途之一是以高效的方式对数组进行区间查询。线段树中的查询函数可以在O(log n)时间内返回指定区间内元素的**最小值、最大值、和或其他聚合结果**。
 
 <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231031140857139.png" alt="image-20231031140857139" style="zoom:50%;" />
 
@@ -1581,13 +1803,13 @@ if __name__ == '__main__':
 
 
 
-### 树状数组
+## A.2 树状数组（Binary Indexed Tree）
 
 树状数组或二叉索引树（英语：Binary Indexed Tree），又以其发明者命名为Fenwick树，最早由Peter M. Fenwick于1994年以A New Data Structure for Cumulative Frequency Tables为题发表。其初衷是解决数据压缩里的累积频率（Cumulative Frequency）的计算问题，现多用于高效计算数列的前缀和， 区间和。
 
 
 
-#### Binary Indexed Tree or Fenwick Tree
+**Binary Indexed Tree or Fenwick Tree**
 
 https://www.geeksforgeeks.org/binary-indexed-tree-or-fenwick-tree-2/
 
@@ -1599,6 +1821,21 @@ A **simple solution** is to run a loop from 0 to i-1 and calculate the sum of th
 **Could we perform both the query and update operations in O(log n) time?** 
 One efficient solution is to use [Segment Tree](https://www.geeksforgeeks.org/segment-tree-set-1-sum-of-given-range/) that performs both operations in O(Logn) time.
 An alternative solution is Binary Indexed Tree, which also achieves O(Logn) time complexity for both operations. Compared with Segment Tree, Binary Indexed Tree requires less space and is easier to implement.
+
+
+
+> 让我们考虑以下问题来理解二叉索引树（Binary Indexed Tree, BIT）：
+> 我们有一个数组 $arr[0 . . . n-1]$。我们希望实现两个操作：
+> 1. 计算前i个元素的和。
+> 2. 修改数组中指定位置的值，即设置 $arr[i] = x$，其中 $0 \leq i \leq n-1$。
+>
+> 一个简单的解决方案是从0到i-1遍历并计算这些元素的总和。要更新一个值，只需执行 $arr[i] = x$。第一个操作的时间复杂度为O(n)，而第二个操作的时间复杂度为O(1)。另一种简单的解决方案是创建一个额外的数组，并在这个新数组的第i个位置存储前i个元素的总和。这样，给定范围的和可以在O(1)时间内计算出来，但是更新操作现在需要O(n)时间。当查询操作非常多而更新操作非常少时，这种方法表现良好。
+>
+> **我们能否在O(log n)时间内同时完成查询和更新操作呢？**
+> 一种高效的解决方案是使用段树（Segment Tree），它能够在O(log n)时间内完成这两个操作。
+> 另一种解决方案是二叉索引树（Binary Indexed Tree，也称作Fenwick Tree），同样能够以O(log n)的时间复杂度完成查询和更新操作。与段树相比，二叉索引树所需的空间更少，且实现起来更加简单。
+
+
 
 <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231031141452788.png" alt="image-20231031141452788" style="zoom:50%;" />
 
@@ -1613,6 +1850,9 @@ An alternative solution is Binary Indexed Tree, which also achieves O(Logn) time
 **Representation** 
 Binary Indexed Tree is represented as an array. Let the array be BITree[]. Each node of the Binary Indexed Tree stores the sum of some elements of the input array. The size of the Binary Indexed Tree is equal to the size of the input array, denoted as n. In the code below, we use a size of n+1 for ease of implementation.
 
+> **表示方式**
+> 二叉索引树用数组形式表示。设该数组为BITree[]。二叉索引树的每个节点存储了输入数组某些元素的和。二叉索引树的大小等于输入数组的大小，记为n。在下面的代码中，为了便于实现，我们使用n+1的大小。
+
 <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231031141831067.png" alt="image-20231031141831067" style="zoom:50%;" />
 
 
@@ -1621,9 +1861,12 @@ Binary Indexed Tree is represented as an array. Let the array be BITree[]. Each 
 
 
 
-
 **Construction** 
 We initialize all the values in BITree[] as 0. Then we call update() for all the indexes, the update() operation is discussed below.
+
+> **构建**
+> 我们首先将BITree[]中的所有值初始化为0。然后对所有的索引调用update()函数，下面将讨论update()操作的具体内容。
+
 **Operations** 
 
 
@@ -1685,6 +1928,11 @@ BITree[0] is a dummy node.
 BITree[y] is the parent of BITree[x], if and only if y can be obtained by removing the last set bit from the binary representation of x, that is y = x – (x & (-x)).
 The child node BITree[x] of the node BITree[y] stores the sum of the elements between y(inclusive) and x(exclusive): arr[y,…,x). 
 
+> 上图提供了一个getSum()如何工作的例子。这里有一些重要的观察点：
+> - BITree[0]是一个虚拟节点。
+> - 如果仅通过从x的二进制表示中移除最后一个设置位（即最右边的1）可以得到y，则BITree[y]是BITree[x]的父节点，这可以表示为 y = x – (x & (-x))。
+> - 节点BITree[y]的子节点BITree[x]存储了从y（包括y）到x（不包括x）之间元素的和：arr[y,...,x)。
+
 
 > ***update(x, val): Updates the Binary Indexed Tree (BIT) by performing arr[index] += val*** 
 > // Note that the update(x, val) operation will not change arr[]. It only makes changes to BITree[] 
@@ -1710,6 +1958,12 @@ The update function needs to make sure that all the BITree nodes which contain a
 The idea is based on the fact that all positive integers can be represented as the sum of powers of 2. For example 19 can be represented as 16 + 2 + 1. Every node of the BITree stores the sum of n elements where n is a power of 2. For example, in the first diagram above (the diagram for getSum()), the sum of the first 12 elements can be obtained by the sum of the last 4 elements (from 9 to 12) plus the sum of 8 elements (from 1 to 8). The number of set bits in the binary representation of a number n is O(Logn). Therefore, we traverse at-most O(Logn) nodes in both getSum() and update() operations. The time complexity of the construction is O(nLogn) as it calls update() for all n elements. 
 **Implementation:** 
 Following are the implementations of Binary Indexed Tree.
+
+> 更新函数需要确保所有包含arr[i]在其范围内的BITree节点都被更新。我们通过不断向当前索引添加其最后一位设置位对应的十进制数，在BITree中循环遍历这些节点。
+> **二叉索引树是如何工作的？**
+> 这个想法基于所有正整数都可以表示为2的幂的和这一事实。例如，19可以表示为16 + 2 + 1。BITree的每个节点都存储n个元素的和，其中n是2的幂。例如，在上面的第一个图（getSum()的图示）中，前12个元素的和可以通过最后4个元素（从9到12）的和加上前8个元素（从1到8）的和得到。一个数n的二进制表示中设置位的数量是O(Logn)。因此，在getSum()和update()操作中，我们最多遍历O(Logn)个节点。构建的时间复杂度为O(nLogn)，因为它为所有n个元素调用了update()。
+> **实现：**
+> 以下是二叉索引树的实现。
 
 ```python
 # Python implementation of Binary Indexed Tree 
@@ -1810,7 +2064,7 @@ http://community.topcoder.com/tc?module=Static&d1=tutorials&d2=binaryIndexedTree
 
 
 
-#### 307.区域和检索 - 数组可修改
+## 示例LeetCode307.区域和检索 - 数组可修改
 
 https://leetcode.cn/problems/range-sum-query-mutable/
 
@@ -1845,130 +2099,307 @@ numArray.sumRange(0, 2); // 返回 1 + 2 + 5 = 8
 
 
 
-# 3 康托展开逆运算(cantor 2)
+## 示例27018: 康托展开
 
-给出一个数N，再给出N的全排列的某一个排列的次序数，输出该排列。
-**Input**
-第1行为一个数$N(N≤9)$，第2行为N的全排列的某一个排列的次序数。
+http://cs101.openjudge.cn/practice/27018/
 
-**Output**
+总时间限制: 3000ms 单个测试点时间限制: 2000ms 内存限制: 90112kB
+描述
+求 1∼N 的一个给定全排列在所有 1∼N 全排列中的排名。结果对 998244353取模。
 
-一行字符串，即该排列。
-Sample in
+**输入**
+第一行一个正整数 N。
+
+第二行 N 个正整数，表示 1∼N 的一种全排列。
+**输出**
+一行一个非负整数，表示答案对 998244353 取模的值。
+样例输入
+
+```
+Sample1 in:
 3
-1
-Sample out
-123
+2 1 3
+
+Sample1 output:
+3
+```
+
+样例输出
+
+```
+Sample2 in:
+4
+1 2 4 3
+
+Sample2 output:
+2
+```
+
+提示: 对于100%数据，$1≤N≤1000000$。
+来源: https://www.luogu.com.cn/problem/P5367
 
 
 
-思路：可以用康托展开的逆运算来求解。假设已有{1,2,3,4,5}的全排列，并且已经从小到大排序完毕，现要找出第96个数的排列是什么，则康托展开逆运算的具体计算过程如下：
-首先用 96-1 得到 95；
-用 95 去除 4! 得到 3 余 23，商为 3 表示有 3 个数比它小，则该数是 4，所以第 1 位是 4；
-用 23 去除3! 得到 3 余 5，商为 3，表示有 3 个数比它小，即该数是 4，但4前面已经出现过了，所以第2位是5；
-用 5 去除 2! 得到 2 余 1，商为 2，表示有 2 个数比它小，即该数是 3，所以第 3 位是 3；
-用 1 去除 1! 得到 1 余 0，表示有 1 个数比它小，即该数是 2，所以第 4 位是 2；
-最后一个数只能是 1。
-所以这个排列是 4 5 3 2 1。
-又如找出第 16 个数的排列的计算过程如下：
-首先用 16-1 得到 15；
-用 15 去除 4! 得到 0余 15，表示有 0 个数比它小，即该数是 1，第 1 位是 1；
-用 15 去除 3! 得到 2 余 3，表示有 2 个数比它小，即该数是 3，但由于1已经在之前出现过了，所以第 2 位是 4（因为1在之前出现过了，所以实际上比4小的数是2）；
-用 3 去除 2! 得到 1 余 1，表示有 1 个数比它小，即该数是 2，但由于 1 已经在之前出现过了，所以第 3 位是 3（因为 1 在之前出现过了，所以实际上比 3 小的数是1）；
-用 1 去除 1! 得到 1 余 0，表示有 1 个数比它小，即该数是 2，但由于 1、3、4已经在之前出现过了，所以第 4 位是 5（因为1、3、4在之前出现过了，所以实际上比 5 小的数是1）。
-最后一个数只能是 2，所以这个数是 14352。
+思路：容易想到的方法是把所有排列求出来后再进行排序，但事实上有更简单高效的算法来解决这个问题，那就是康托展开。
+
+> **康托展开**是一个全排列到一个自然数的双射，常用于构建特定哈希表时的空间压缩。 康托展开的实质是计算当前排列在所有由小到大全排列中的次序编号，因此是可逆的。即由全排列可得到其次序编号（康托展开），由次序编号可以得到对应的第几个全排列（逆康托展开）。
+>
+> 康托展开的**表达式为**：
+>
+> $X＝a_n×(n-1)!＋a_{n-1}×(n-2)!＋…＋a_i×(i-1)!＋…＋a_2×1!＋a_1×0!$
+>
+> 其中：X 为比当前排列小的全排列个数（X+1即为当前排列的次序编号）；n 表示全排列表达式的字符串长度；$a_i$ 表示原排列表达式中的第 i 位（由右往左数），前面（其右侧） i-1 位数有多少个数的值比它小。
+
+例如求 5 2 3 4 1 在 {1, 2, 3, 4, 5} 生成的排列中的次序可以按如下步骤计算。
+从右往左数，i 是5时候，其右侧比5小的数有1、2、3、4这4个数，所以有4×4！。
+是2，比2小的数有1一个数，所以有 1×3！。
+是3，比3小的数有1一个数，为1×2！。
+是4，比4小的数有1一个数，为1×1！。
+最后一位数右侧没有比它小的数，为 0×0！＝0。
+则 4×4！＋1×3！＋1×2！＋1×1！＝105。
+这个 X 只是这个排列之前的排列数，而题目要求这个排列的位置，即 5 2 3 4 1排在第 106 位。
+
+同理，4 3 5 2 1的排列数：3×4!＋2×3!＋2×2!＋1×1!＝89，即 4 3 5 2 1 排在第90位。
+因为比4小的数有3个：3、2、1；比3小的数有2个：2、1；比5小的数有2个：2、1；比2小的数有1个：1。
+
 参考代码如下。
 
 
 
 ```python
-import math
+MOD = 998244353								# Time Limit Exceeded, 内存7140KB, 时间18924ms
+fac = [1]
 
-def cantor(m, n):
-    fac = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880]   # 预处理求出阶乘的值
-    hash = [0] * 10
+def cantor_expand(a, n):
+    ans = 0
+    
+    for i in range(1, n + 1):
+        count = 0
+        for j in range(i + 1, n + 1):
+            if a[j] < a[i]:
+                count += 1				# 计算有几个比他小的数
+        ans = (ans + (count * fac[n - i]) % MOD) % MOD
+    return ans + 1
 
-    num = 0
-    m -= 1
-    for i in range(n - 1, 0, -1):
-        used = 0
-        digit = m // fac[i] + 1                             # 计算有几个数比它小后加1
-        m %= fac[i]                                         # 更新m
-        for j in range(1, used + digit + 1):                # 查找之前有哪些数已被用过
-            if hash[j]:
-                used += 1
-        num += (used + digit) * math.pow(10, i)
-        hash[used + digit] = 1                              # 标记该数被使用过
+a = [0]
+N = int(input())		# 用大写N，因为spyder的debug，执行下一条指令的命令是 n/next。与变量n冲突。
 
-    for i in range(1, n + 1):                               # 取出最后的未被使用的数
-        if hash[i] == 0:
-            return int(num + i)
+for i in range(1, N + 1):
+    fac.append((fac[i - 1] * i) % MOD)		# 整数除法具有分配律
 
-    return -1
+*perm, = map(int, input().split())
+a.extend(perm)
 
-num, n = map(int, input().split())
-perm = cantor(n, num)
-print(' '.join(str(perm)))
-
+print(cantor_expand(a, N))
 ```
 
 
 
-![image-20231029141904258](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231029141904258.png)
-
-
+用C++也是超时
 
 ```c++
-//康托展开逆运算
-#include <bits/stdc++.h>
+#include<iostream>							// Time Limit Exceeded, 内存960KB, 时间1986ms
 using namespace std;
 
-int fac[10]= {1,1,2,6,24,120,720,5040,40320,362880};   //预处理求出阶乘的值
-int Hash[10];
+const long long MOD = 998244353;
+long long fac[1000005]={1};
 
-int Cantor(int m,int n)
-{
-  int num=0;
-  int used,digit;
-  m--;
-  for(int i=n-1; i>0; i--)
-  {
-    used=0;
-    digit = m/fac[i] + 1;                           //计算有几个数比它小后加1
-    m %= fac[i];                                    //更新m
-    for(int j=1; j<=used+digit; j++)                //查找之前有哪些数已被用过
-      if(Hash[j])
-        used++;
-    num += (used+digit)*pow(10,i);
-    Hash[used + digit]=1;                           //标记该数被使用过
-  }
-  for(int i=1; i<=n; i++)                           //取出最后的未被使用的数
-    if(Hash[i] == 0)
-      return num+i;
+int cantor_expand (int a[],int n){
+    int i, j, count;
+    long long ans = 0 ;
 
-  return -1;
+    for(i = 1; i <= n; i ++){
+        count = 0;
+        for(j = i + 1; j <= n; j ++){
+            if(a[j] < a[i]) count ++;						// 计算有几个比它小的数
+        }
+        ans = (ans + (count * fac[n-i]) % MOD ) % MOD;
+    }
+    return ans + 1;
 }
+
+
+int a[1000005];
 
 int main()
 {
-  int num,n;
-  cin >> num >> n;
-  printf("%d\n",Cantor(n,num));
+  int N;
+  //cin >> N;
+  scanf("%d", &N);
+  for (int i=1; i<=N; i++){
+      fac[i] = (fac[i-1]*i)%MOD;
+  }
+
+  for (int i=1; i<=N; i++)
+      //cin >> a[i];
+      scanf("%d",&a[i]);
+  cout << cantor_expand(a,N) << endl;
   return 0;
 }
 ```
 
 
 
+### 优化
+
+康托展开用 $O(n^2)$ 算法超时，需要把时间复杂度降到$O(nLogn)$。“计算有几个比他小的数”，时间复杂度由 $O(n)$ 降到 $O(Logn)$。
+
+### 树状数组（Binary Indexed Tree）
+
+实现树状数组的核心部分，包括了三个重要的操作：lowbit、修改和求和。
+
+1. lowbit函数：`lowbit(x)` 是用来计算 `x` 的二进制表示中最低位的 `1` 所对应的值。它的运算规则是利用位运算 `(x & -x)` 来获取 `x` 的最低位 `1` 所对应的值。例如，`lowbit(6)` 的结果是 `2`，因为 `6` 的二进制表示为 `110`，最低位的 `1` 所对应的值是 `2`。
+
+   > `-x` 是 `x` 的补码表示。
+   >
+   > 对于正整数 `x`，`-x` 的二进制表示是 `x` 的二进制表示取反后加 1。
+   >
+   > `6` 的二进制表示为 `110`，取反得到 `001`，加 1 得到 `010`。
+   >
+   > `-6` 的二进制表示为 `11111111111111111111111111111010`（假设 32 位整数）。
+   >
+   > `6 & -6` 的结果：
+   >
+   > `110` 与 `11111111111111111111111111111010` 按位与运算，结果为 `010`，即 `2`。
+
+2. update函数：这个函数用于修改树状数组中某个位置的值。参数 `x` 表示要修改的位置，参数 `y` 表示要增加/减少的值。函数使用一个循环将 `x` 的所有对应位置上的值都加上 `y`。具体的操作是首先将 `x` 位置上的值与 `y` 相加，然后通过 `lowbit` 函数找到 `x` 的下一个需要修改的位置，将该位置上的值也加上 `y`，然后继续找下一个位置，直到修改完所有需要修改的位置为止。这样就完成了数组的修改。
+
+3. getsum函数：这个函数用于求解树状数组中某个范围的前缀和。参数 `x` 表示要求解前缀和的位置。函数使用一个循环将 `x` 的所有对应位置上的值累加起来，然后通过 `lowbit` 函数找到 `x` 的上一个位置（即最后一个需要累加的位置），再将该位置上的值累加起来，然后继续找上一个位置，直到累加完所有需要累加的位置为止。这样就得到了从位置 `1` 到位置 `x` 的前缀和。
+
+这就是树状数组的核心操作，通过使用这三个函数，我们可以实现树状数组的各种功能，如求解区间和、单点修改等。
+
+```python
+n, MOD, ans = int(input()), 998244353, 1						# 内存69832KB, 时间2847ms
+a, fac = list(map(int, input().split())), [1]
+
+tree = [0] * (n + 1)
+
+def lowbit(x):
+    return x & -x
+
+def update(x, y):
+    while x <= n:
+        tree[x] += y
+        x += lowbit(x)
+
+def getsum(x):
+    tot = 0
+    while x:
+        tot += tree[x]
+        x -= lowbit(x)
+    return tot
+
+
+for i in range(1, n):
+    fac.append(fac[i-1] * i % MOD)
+
+for i in range(1, n + 1):
+    cnt = getsum(a[i-1])
+    update(a[i-1], 1)
+    ans = (ans + ((a[i-1] - 1 - cnt) * fac[n - i]) % MOD) % MOD
+    
+print(ans)
+```
 
 
 
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231029152322373.png" alt="image-20231029152322373" style="zoom:67%;" />
 
 
 
-# 4 读题 
+### 线段树（Segment tree）
 
-## 545C. Woodcutters
+线段树 segment tree 来计算第i位右边比该数还要小的数的个数。
+
+```python
+n, MOD, ans = int(input()), 998244353, 1					# 内存69900KB, 时间5162ms
+a, fac = list(map(int, input().split())), [1]
+
+tree = [0] * (2*n)
+
+
+def build(arr):
+
+    # insert leaf nodes in tree
+    for i in range(n):
+        tree[n + i] = arr[i]
+
+    # build the tree by calculating parents
+    for i in range(n - 1, 0, -1):
+        tree[i] = tree[i << 1] + tree[i << 1 | 1]
+
+
+# function to update a tree node
+def updateTreeNode(p, value):
+
+    # set value at position p
+    tree[p + n] = value
+    p = p + n
+
+    # move upward and update parents
+    i = p
+    while i > 1:
+
+        tree[i >> 1] = tree[i] + tree[i ^ 1]
+        i >>= 1
+
+
+# function to get sum on interval [l, r)
+def query(l, r):
+
+    res = 0
+
+    l += n
+    r += n
+
+    while l < r:
+
+        if (l & 1):
+            res += tree[l]
+            l += 1
+
+        if (r & 1):
+            r -= 1
+            res += tree[r]
+
+        l >>= 1
+        r >>= 1
+
+    return res
+
+
+#build([0]*n)
+
+for i in range(1, n):
+    fac.append(fac[i-1] * i % MOD)
+
+for i in range(1, n + 1):
+    cnt = query(0, a[i-1])
+    updateTreeNode(a[i-1]-1, 1)
+    
+    ans = (ans + (a[i-1] -1 - cnt) * fac[n - i]) % MOD
+    
+print(ans)
+
+```
+
+
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231029161854925.png" alt="image-20231029161854925" style="zoom: 50%;" />
+
+
+
+# 附录B
+
+组合数学是对于计数问题的研究，数论就是对于整除性问题的研究，组合与数论是程序中的常见考点。题目背景知识，数学思维。
+
+因为整数除法具有分配律的性质，单项整除可以等价于各项求和最后整除。
+
+
+
+## B1 读题 
+
+### 545C. Woodcutters
 
 dp/greedy, 1500, https://codeforces.com/problemset/problem/545/C
 
@@ -2042,7 +2473,7 @@ In the second sample you can also fell 4-th tree to the right, after that it wil
 
 
 
-## 1793C. Dora and Search
+### 1793C. Dora and Search
 
 constructive algorithms, data structures, two pointers, 1200, 
 
@@ -2135,7 +2566,7 @@ https://zhuanlan.zhihu.com/p/528662514?utm_id=0
 
 
 
-## 803A. Maximal Binary Matrix
+### 803A. Maximal Binary Matrix
 
 constructive algorithms, 1400, https://codeforces.com/problemset/problem/803/A
 
@@ -2200,9 +2631,9 @@ output
 
 
 
-# 5 题目都有背景知识
+## B2 题目都有背景知识
 
-## 12560: 生存游戏
+### 12560: 生存游戏
 
 matrices, http://cs101.openjudge.cn/practice/12560/
 
@@ -2273,9 +2704,9 @@ n行，每行m个元素，用空格隔开。
 
 
 
-# 6 语法
+## B3 语法
 
-## 6.1 逻辑删除
+### B3.1 逻辑删除
 
 在Python中，执行删除操作通常建议使用logic删除，而不是physic删除。也就是说，不直接从列表中删除元素，而是标记它已经删除了。删除操作消耗的时间更少。
 
@@ -2325,7 +2756,7 @@ n行，每行m个元素，用空格隔开。
 
  
 
-## 6.2 高效数组，array类
+### B3.2 高效数组，array类
 
 https://baijiahao.baidu.com/s?id=1770291275843443574&wfr=spider&for=pc
 
@@ -2369,271 +2800,51 @@ d 8
 
 
 
+### B3.3 OrderedDict
 
+在Python的标准库`collections`中，`OrderedDict`是一种特殊的字典类型，它保留了键值对的插入顺序。`OrderedDict`在很多情况下提供了与普通字典相似的功能，但在某些特定操作上有所不同，特别是关于顺序的操作。
 
+关于`OrderedDict`删除元素的复杂度，官方文档指出，删除元素的复杂度确实是O(1)。具体来说，删除一个键值对的时间复杂度是O(1)，无论该键值对位于字典的哪个位置。
 
+以下是一个示例，展示了如何使用`OrderedDict`并删除其中的元素：
 
-OrderedDict。但是Python标准库中的OrderedDict删除元素的复杂度是O(1)。
-
+```python
 from collections import OrderedDict
 
-for _ in range(int(input())):
-    n, k = map(int, input().split())
-    cc = list(map(int, input().split()))
-    
+# 创建一个OrderedDict
+od = OrderedDict()
+od['a'] = 1
+od['b'] = 2
+od['c'] = 3
 
+print("初始OrderedDict:", od)
 
+# 删除一个元素
+del od['b']
+print("删除'b'后的OrderedDict:", od)
 
-# 7 DFS模版
+# 删除最后一个元素
+od.popitem()
+print("删除最后一个元素后的OrderedDict:", od)
 
-
-
-## 示例02386: Lake Counting
-
-dfs similar, http://cs101.openjudge.cn/practice/02386
-
-Due to recent rains, water has pooled in various places in Farmer John's field, which is represented by a rectangle of N x M (1 <= N <= 100; 1 <= M <= 100) squares. Each square contains either water ('W') or dry land ('.'). Farmer John would like to figure out how many ponds have formed in his field. A pond is a connected set of squares with water in them, where a square is considered adjacent to all eight of its neighbors.
-
-Given a diagram of Farmer John's field, determine how many ponds he has.
-
-输入
-
-\* Line 1: Two space-separated integers: N and M
-
-\* Lines 2..N+1: M characters per line representing one row of Farmer John's field. Each character is either 'W' or '.'. The characters do not have spaces between them.
-
-输出
-
-\* Line 1: The number of ponds in Farmer John's field.
-
-样例输入
-
-```
-10 12
-W........WW.
-.WWW.....WWW
-....WW...WW.
-.........WW.
-.........W..
-..W......W..
-.W.W.....WW.
-W.W.W.....W.
-.W.W......W.
-..W.......W.
+# 删除第一个元素
+od.popitem(last=False)
+print("删除第一个元素后的OrderedDict:", od)
 ```
 
-样例输出
+**关于删除操作的复杂度：**
 
-```
-3
-```
+- **`del od[key]`**：删除指定键的元素，时间复杂度为O(1)。
+- **`od.pop(key)`**：删除并返回指定键的元素，时间复杂度为O(1)。
+- **`od.popitem(last=True)`**：删除并返回最后一个键值对（默认行为），时间复杂度为O(1)。
+- **`od.popitem(last=False)`**：删除并返回第一个键值对，时间复杂度为O(1)。
 
-提示
+**示例解释：**
 
-OUTPUT DETAILS:
+1. **创建`OrderedDict`**：首先创建一个`OrderedDict`并插入一些键值对。
+2. **删除指定键的元素**：使用`del`关键字删除键为`'b'`的元素。
+3. **删除最后一个元素**：使用`popitem()`方法删除并返回最后一个键值对。
+4. **删除第一个元素**：使用`popitem(last=False)`方法删除并返回第一个键值对。
 
-There are three ponds: one in the upper left, one in the lower left,and one along the right side.
-
-来源: USACO 2004 November
-
-
-
-```python
-#1.dfs
-import sys
-sys.setrecursionlimit(20000)
-def dfs(x,y):
-	#标记，避免再次访问
-    field[x][y]='.'
-    for k in range(8):
-        nx,ny=x+dx[k],y+dy[k]
-        #范围内且未访问的lake
-        if 0<=nx<n and 0<=ny<m\
-                and field[nx][ny]=='W':
-            #继续搜索
-            dfs(nx,ny)
-n,m=map(int,input().split())
-field=[list(input()) for _ in range(n)]
-cnt=0
-dx=[-1,-1,-1,0,0,1,1,1]
-dy=[-1,0,1,-1,1,-1,0,1]
-for i in range(n):
-    for j in range(m):
-        if field[i][j]=='W':
-            dfs(i,j)
-            cnt+=1
-print(cnt)
-```
-
-
-
-## 示例05585: 晶矿的个数
-
-matrices/dfs similar, http://cs101.openjudge.cn/practice/05585
-
-在某个区域发现了一些晶矿，已经探明这些晶矿总共有分为两类，为红晶矿和黑晶矿。现在要统计该区域内红晶矿和黑晶矿的个数。假设可以用二维地图m[][]来描述该区域，若m[i][j]为#表示该地点是非晶矿地点，若m[i][j]为r表示该地点是红晶矿地点，若m[i][j]为b表示该地点是黑晶矿地点。一个晶矿是由相同类型的并且上下左右相通的晶矿点组成。现在给你该区域的地图，求红晶矿和黑晶矿的个数。
-
-**输入**
-
-第一行为k，表示有k组测试输入。
-每组第一行为n，表示该区域由n*n个地点组成，3 <= n<= 30
-接下来n行，每行n个字符，表示该地点的类型。
-
-**输出**
-
-对每组测试数据输出一行，每行两个数字分别是红晶矿和黑晶矿的个数，一个空格隔开。
-
-样例输入
-
-```
-2
-6
-r##bb#
-###b##
-#r##b#
-#r##b#
-#r####
-######
-4
-####
-#rrb
-#rr#
-##bb
-```
-
-样例输出
-
-```
-2 2
-1 2
-```
-
-
-
-```python
-dire = [[-1,0], [1,0], [0,-1], [0,1]]
-
-def dfs(x, y, c):
-    m[x][y] = '#'
-    for i in range(len(dire)):
-        tx = x + dire[i][0]
-        ty = y + dire[i][1]
-        if m[tx][ty] == c:
-            dfs(tx, ty, c)
-
-for _ in range(int(input())):
-    n = int(input())
-    m = [[0 for _ in range(n+2)] for _ in range(n+2)]
-
-    for i in range(1, n+1):
-        m[i][1:-1] = input()
-
-    r = 0 ; b=0
-    for i in range(1, n+1):
-        for j in range(1, n+1):
-            if m[i][j] == 'r':
-                dfs(i, j, 'r')
-                r += 1
-            if m[i][j] == 'b':
-                dfs(i,j,'b')
-                b += 1
-    print(r, b)
-```
-
-
-
-## 示例23937: 逃出迷宫
-
-http://cs101.openjudge.cn/practice/23937/
-
-"Boom!" 小锅一觉醒来发现自己落入了一个N*N(2 <= N <= 20)的迷宫之中，为了逃出这座迷宫，小锅需要从左上角(0, 0)处的入口跑到右下角(N-1, N-1)处的出口逃出迷宫。由于小锅每一步都想缩短和出口之间的距离，所以**他只会向右和向下走**。假设我们知道迷宫的地图（以0代表通路，以1代表障碍），请你编写一个程序，判断小锅能否从入口跑到出口？
-
-例如，对于下图所示的迷宫：
-
-<img src="http://media.openjudge.cn/images/upload/6090/1639660715.png" alt="img" style="zoom:33%;" />
-
-小锅可以如下图红线所示从迷宫左上角的入口抵达迷宫右下角的出口：
-
-<img src="http://media.openjudge.cn/images/upload/2830/1639660728.jpg" alt="img" style="zoom:33%;" />
-
-输入
-
-第一行为一个整数N，代表迷宫的大小
-接下来N行为迷宫地图，迷宫地块之间以空格分隔
-输入保证(0, 0)和(N - 1, N - 1)处可以通过
-
-输出
-
-一行字符串，如果能跑到出口则输出Yes，否则输出No
-
-样例输入
-
-```
-5
-0 0 1 1 0
-0 0 0 0 0
-0 1 1 1 0
-0 1 1 1 0
-0 1 1 1 0
-```
-
-样例输出
-
-```
-Yes
-```
-
-提示
-
-用递归解。设计函数ok(r,c)，返回True或False，表示从位置(r,c)出发能否走到终点。
-从(r,c）出发可以想办法往前走一步，然后看问题变成什么
-
-题目说了只能走到0的格子，不能走到1的格子
-
-
-
-这是模版题目，涉及到 递归/dfs/回溯。一旦出现模版题目，最多是中等难度，要求必须会。
-
-```python
-def dfs(mx, visited, x, y):
-    # 如果到达右下角，返回True
-    if x == n - 1 and y == n - 1:
-        return True
-
-    # 定义向右和向下的移动方向
-    directions = [(0, 1), (1, 0)]
-
-    for dx, dy in directions:
-        nx = x + dx
-        ny = y + dy
-        # 检查新坐标是否在矩阵范围内，是否已经访问过，以及是否可以通过
-        if 0 <= nx < n and 0 <= ny < n and not visited[nx][ny] and mx[nx][ny] == 0:
-            visited[nx][ny] = True
-            if dfs(mx, visited, nx, ny):
-                return True
-            visited[nx][ny] = False
-
-    return False
-
-# 读取输入
-n = int(input())
-mx = [list(map(int, input().split())) for _ in range(n)]
-
-# 初始化访问标记数组
-visited = [[False] * n for _ in range(n)]
-
-# 起始点 (0, 0) 必须是可以通过的
-if mx[0][0] == 1:
-    print('No')
-else:
-    visited[0][0] = True
-    if dfs(mx, visited, 0, 0):
-        print('Yes')
-    else:
-        print('No')
-```
-
-
-
-
+通过这些操作，你可以看到`OrderedDict`在删除元素时的高效性。这使得`OrderedDict`在需要保持插入顺序并且频繁进行插入和删除操作的场景中非常有用。
 
