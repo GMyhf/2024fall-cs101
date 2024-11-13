@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2117 GMT+8 Nov 10 2024
+Updated 2313 GMT+8 Nov 13 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -10,7 +10,7 @@ Updated 2117 GMT+8 Nov 10 2024
 
 ## 1.两数之和
 
-data structure, https://leetcode.cn/problems/two-sum/
+哈希表, https://leetcode.cn/problems/two-sum/
 
 给定一个整数数组 `nums` 和一个整数目标值 `target`，请你在该数组中找出 **和为目标值** *`target`* 的那 **两个** 整数，并返回它们的数组下标。
 
@@ -89,6 +89,8 @@ class Solution:
 
 
 ## 2928.给小朋友们分糖果I
+
+数学，组合数学，枚举，https://leetcode.cn/problems/distribute-candies-among-children-i/
 
 给你两个正整数 `n` 和 `limit` 。
 
@@ -455,11 +457,67 @@ class Solution:
 
 
 
+## 49.字母异位词分组
+
+哈希表，排序，https://leetcode.cn/problems/group-anagrams/
+
+给你一个字符串数组，请你将 **字母异位词** 组合在一起。可以按任意顺序返回结果列表。
+
+**字母异位词** 是由重新排列源单词的所有字母得到的一个新单词。
+
+ 
+
+**示例 1:**
+
+```
+输入: strs = ["eat", "tea", "tan", "ate", "nat", "bat"]
+输出: [["bat"],["nat","tan"],["ate","eat","tea"]]
+```
+
+**示例 2:**
+
+```
+输入: strs = [""]
+输出: [[""]]
+```
+
+**示例 3:**
+
+```
+输入: strs = ["a"]
+输出: [["a"]]
+```
+
+ 
+
+**提示：**
+
+- `1 <= strs.length <= 104`
+- `0 <= strs[i].length <= 100`
+- `strs[i]` 仅包含小写字母
+
+
+
+```python
+class Solution:
+    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+        from collections import defaultdict 
+        d = defaultdict(list)
+        for word in strs:
+            key = ''.join(sorted(list(word)))
+            d[key].append(word)
+        
+        ans = []
+        for _, i in d.items():
+            ans.append(i)
+        return ans
+```
+
 
 
 ## 54.螺旋矩阵
 
-https://leetcode.cn/problems/spiral-matrix/
+矩阵，模拟，https://leetcode.cn/problems/spiral-matrix/
 
 给你一个 `m` 行 `n` 列的矩阵 `matrix` ，请按照 **顺时针螺旋顺序** ，返回矩阵中的所有元素。
 
@@ -530,7 +588,7 @@ class Solution:
 
 ## 56.合并区间
 
-区间覆盖，https://leetcode.cn/problems/merge-intervals/
+区间问题，https://leetcode.cn/problems/merge-intervals/
 
 以数组 `intervals` 表示若干个区间的集合，其中单个区间为 `intervals[i] = [starti, endi]` 。请你合并所有重叠的区间，并返回 *一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间* 。
 
@@ -821,7 +879,7 @@ class Solution:
 
 ## 435.无重叠区间
 
-区间覆盖，https://leetcode.cn/problems/non-overlapping-intervals/
+区间问题，https://leetcode.cn/problems/non-overlapping-intervals/
 
 给定一个区间的集合 `intervals` ，其中 `intervals[i] = [starti, endi]` 。返回 *需要移除区间的最小数量，使剩余区间互不重叠* 。
 
@@ -891,7 +949,7 @@ class Solution:
 
 ## 452. 用最少量的箭引爆气球
 
-区间覆盖，https://leetcode.cn/problems/minimum-number-of-arrows-to-burst-balloons/
+区间问题，https://leetcode.cn/problems/minimum-number-of-arrows-to-burst-balloons/
 
 有一些球形气球贴在一堵用 XY 平面表示的墙面上。墙面上的气球记录在整数数组 `points` ，其中`points[i] = [xstart, xend]` 表示水平直径在 `xstart` 和 `xend`之间的气球。你不知道气球的确切 y 坐标。
 
@@ -964,7 +1022,7 @@ class Solution:
 
 ## 1024. 视频拼接
 
-区间覆盖，https://leetcode.cn/problems/video-stitching/
+区间问题，https://leetcode.cn/problems/video-stitching/
 
 你将会获得一系列视频片段，这些片段来自于一项持续时长为 `time` 秒的体育赛事。这些片段可能有所重叠，也可能长度不一。
 
@@ -1263,7 +1321,7 @@ class Solution:
 
 ## 65.有效数字
 
-https://leetcode.cn/problems/valid-number/
+字符串，https://leetcode.cn/problems/valid-number/
 
 给定一个字符串 `s` ，返回 `s` 是否是一个 **有效数字**。
 
