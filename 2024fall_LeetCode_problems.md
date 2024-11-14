@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2107 GMT+8 Nov 14 2024
+Updated 0157 GMT+8 Nov 15 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -1357,6 +1357,223 @@ if __name__ == '__main__':
     sol = Solution()
     print(sol.numSquares(12))
 ```
+
+
+
+## 139.单词拆分
+
+dp, https://leetcode.cn/problems/word-break/
+
+给你一个字符串 `s` 和一个字符串列表 `wordDict` 作为字典。如果可以利用字典中出现的一个或多个单词拼接出 `s` 则返回 `true`。
+
+**注意：**不要求字典中出现的单词全部都使用，并且字典中的单词可以重复使用。
+
+ 
+
+**示例 1：**
+
+```
+输入: s = "leetcode", wordDict = ["leet", "code"]
+输出: true
+解释: 返回 true 因为 "leetcode" 可以由 "leet" 和 "code" 拼接成。
+```
+
+**示例 2：**
+
+```
+输入: s = "applepenapple", wordDict = ["apple", "pen"]
+输出: true
+解释: 返回 true 因为 "applepenapple" 可以由 "apple" "pen" "apple" 拼接成。
+     注意，你可以重复使用字典中的单词。
+```
+
+**示例 3：**
+
+```
+输入: s = "catsandog", wordDict = ["cats", "dog", "sand", "and", "cat"]
+输出: false
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 300`
+- `1 <= wordDict.length <= 1000`
+- `1 <= wordDict[i].length <= 20`
+- `s` 和 `wordDict[i]` 仅由小写英文字母组成
+- `wordDict` 中的所有字符串 **互不相同**
+
+
+
+```python
+from typing import List
+from functools import cache
+
+class Solution:
+    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+        # 作者：灵茶山艾府
+        # https://leetcode.cn/problems/word-break/solutions/2968135/jiao-ni-yi-bu-bu-si-kao-dpcong-ji-yi-hua-chrs/
+
+        max_len = max(map(len, wordDict))  # 用于限制下面 j 的循环次数
+        words = set(wordDict)  # 便于快速判断 s[j:i] in words
+
+        @cache  # 缓存装饰器，避免重复计算 dfs 的结果（记忆化）
+        def dfs(i: int) -> bool:
+            if i == 0:  # 成功拆分！
+                return True
+            return any(s[j:i] in words and dfs(j)
+                       for j in range(i - 1, max(i - max_len - 1, -1), -1))
+
+        return dfs(len(s))
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.wordBreak("leetcode", ["leet", "code"])) # True
+    print(sol.wordBreak("applepenapple", ["apple", "pen"])) # True
+    print(sol.wordBreak("catsandog", ["cats", "dog", "sand", "and", "cat"])) # False
+    print(sol.wordBreak("cars", ["car", "ca", "rs"])) # True
+
+
+```
+
+
+
+## 152.乘积最大字数组
+
+dp, https://leetcode.cn/problems/maximum-product-subarray/
+
+给你一个整数数组 `nums` ，请你找出数组中乘积最大的非空连续 
+
+子数组
+
+（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
+
+
+
+测试用例的答案是一个 **32-位** 整数。
+
+ 
+
+**示例 1:**
+
+```
+输入: nums = [2,3,-2,4]
+输出: 6
+解释: 子数组 [2,3] 有最大乘积 6。
+```
+
+**示例 2:**
+
+```
+输入: nums = [-2,0,-1]
+输出: 0
+解释: 结果不能为 2, 因为 [-2,-1] 不是子数组。
+```
+
+ 
+
+**提示:**
+
+- `1 <= nums.length <= 2 * 104`
+- `-10 <= nums[i] <= 10`
+- `nums` 的任何子数组的乘积都 **保证** 是一个 **32-位** 整数
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def maxProduct(self, nums: List[int]) -> int:
+        max_product = min_product = result = nums[0]
+        
+        for num in nums[1:]:
+            if num < 0:
+                max_product, min_product = min_product, max_product
+            
+            max_product = max(num, max_product * num)
+            min_product = min(num, min_product * num)
+            
+            result = max(result, max_product)
+        
+        return result
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.maxProduct([2, 3, -2, 4])) # 6
+    print(sol.maxProduct([-2, 0, -1])) # 0
+```
+
+
+
+
+
+## 300.最长递增子序列
+
+dp, https://leetcode.cn/problems/longest-increasing-subsequence/
+
+给你一个整数数组 `nums` ，找到其中最长严格递增子序列的长度。
+
+**子序列** 是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，`[3,6,2,7]` 是数组 `[0,3,1,6,2,2,7]` 的子序列。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [10,9,2,5,3,7,101,18]
+输出：4
+解释：最长递增子序列是 [2,3,7,101]，因此长度为 4 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [0,1,0,3,2,3]
+输出：4
+```
+
+**示例 3：**
+
+```
+输入：nums = [7,7,7,7,7,7,7]
+输出：1
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 2500`
+- `-104 <= nums[i] <= 104`
+
+**进阶：**
+
+- 你能将算法的时间复杂度降低到 `O(n log(n))` 吗?
+
+
+
+```python
+from typing import List
+
+
+class Solution:
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        dp = [1] * len(nums)
+        for i in range(1, len(nums)):
+            for j in range(i):
+                if nums[i] > nums[j]:
+                    dp[i] = max(dp[i], dp[j] + 1)
+
+        return max(dp)
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.lengthOfLIS([10, 9, 2, 5, 3, 7, 101, 18])) # 4
+```
+
+
 
 
 
