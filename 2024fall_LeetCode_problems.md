@@ -10,7 +10,7 @@ Updated 1632 GMT+8 Nov 14 2024
 
 ## 1.两数之和
 
-哈希表, https://leetcode.cn/problems/two-sum/
+Hash Table, https://leetcode.cn/problems/two-sum/
 
 给定一个整数数组 `nums` 和一个整数目标值 `target`，请你在该数组中找出 **和为目标值** *`target`* 的那 **两个** 整数，并返回它们的数组下标。
 
@@ -153,7 +153,7 @@ class Solution:
 
 ## 2928.给小朋友们分糖果I
 
-数学，组合数学，枚举，https://leetcode.cn/problems/distribute-candies-among-children-i/
+math, combinatorics, enumeration, https://leetcode.cn/problems/distribute-candies-among-children-i/
 
 给你两个正整数 `n` 和 `limit` 。
 
@@ -270,7 +270,7 @@ if __name__ == "__main__":
 
 ## 2.两数相加
 
-单链表，https://leetcode.cn/problems/add-two-numbers/
+linked list, https://leetcode.cn/problems/add-two-numbers/
 
 给你两个 **非空** 的链表，表示两个非负的整数。它们每位数字都是按照 **逆序** 的方式存储的，并且每个节点只能存储 **一位** 数字。
 
@@ -399,7 +399,7 @@ class Solution:
 
 ## 3.无重复字符的最长子串
 
-滑动窗口，https://leetcode.cn/problems/longest-substring-without-repeating-characters/
+sliding window, https://leetcode.cn/problems/longest-substring-without-repeating-characters/
 
 给定一个字符串 `s` ，请你找出其中不含有重复字符的 **最长** 
 
@@ -522,7 +522,7 @@ class Solution:
 
 ## 11.盛最多水的容器
 
-https://leetcode.cn/problems/container-with-most-water/
+two pointers, https://leetcode.cn/problems/container-with-most-water/
 
 给定一个长度为 `n` 的整数数组 `height` 。有 `n` 条垂线，第 `i` 条线的两个端点是 `(i, 0)` 和 `(i, height[i])` 。
 
@@ -586,11 +586,87 @@ class Solution:
 
 
 
+## 15.三数之和
+
+two pointers, https://leetcode.cn/problems/3sum/
+
+给你一个整数数组 `nums` ，判断是否存在三元组 `[nums[i], nums[j], nums[k]]` 满足 `i != j`、`i != k` 且 `j != k` ，同时还满足 `nums[i] + nums[j] + nums[k] == 0` 。请你返回所有和为 `0` 且不重复的三元组。
+
+**注意：**答案中不可以包含重复的三元组。
+
+ 
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [-1,0,1,2,-1,-4]
+输出：[[-1,-1,2],[-1,0,1]]
+解释：
+nums[0] + nums[1] + nums[2] = (-1) + 0 + 1 = 0 。
+nums[1] + nums[2] + nums[4] = 0 + 1 + (-1) = 0 。
+nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0 。
+不同的三元组是 [-1,0,1] 和 [-1,-1,2] 。
+注意，输出的顺序和三元组的顺序并不重要。
+```
+
+**示例 2：**
+
+```
+输入：nums = [0,1,1]
+输出：[]
+解释：唯一可能的三元组和不为 0 。
+```
+
+**示例 3：**
+
+```
+输入：nums = [0,0,0]
+输出：[[0,0,0]]
+解释：唯一可能的三元组和为 0 。
+```
+
+ 
+
+**提示：**
+
+- `3 <= nums.length <= 3000`
+- `-105 <= nums[i] <= 105`
+
+
+
+```python
+class Solution:
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        nums.sort(reverse = True)
+
+        ans = set()
+        if nums[0] == 0 and nums[-1] == 0:
+            return [[0,0,0]]
+        for i in range(len(nums)):
+            left = i + 1
+            right = len(nums) - 1
+
+            while left < right:
+                if -nums[i] == nums[left] + nums[right]:
+                    ans.add(tuple([nums[i], nums[left], nums[right]]))
+                    left += 1
+                
+                if -nums[i] < nums[left] + nums[right]:
+                    left += 1
+                    continue
+                if -nums[i] > nums[left] + nums[right]:
+                    right -= 1
+        
+        return list(ans)
+```
+
 
 
 ## 49.字母异位词分组
 
-哈希表，排序，https://leetcode.cn/problems/group-anagrams/
+hash table, sorting, https://leetcode.cn/problems/group-anagrams/
 
 给你一个字符串数组，请你将 **字母异位词** 组合在一起。可以按任意顺序返回结果列表。
 
@@ -648,7 +724,7 @@ class Solution:
 
 ## 54.螺旋矩阵
 
-矩阵，模拟，https://leetcode.cn/problems/spiral-matrix/
+matrix, simulation, https://leetcode.cn/problems/spiral-matrix/
 
 给你一个 `m` 行 `n` 列的矩阵 `matrix` ，请按照 **顺时针螺旋顺序** ，返回矩阵中的所有元素。
 
@@ -719,7 +795,7 @@ class Solution:
 
 ## 56.合并区间
 
-区间问题，https://leetcode.cn/problems/merge-intervals/
+intervals, https://leetcode.cn/problems/merge-intervals/
 
 以数组 `intervals` 表示若干个区间的集合，其中单个区间为 `intervals[i] = [starti, endi]` 。请你合并所有重叠的区间，并返回 *一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间* 。
 
@@ -918,7 +994,7 @@ class Solution:
 
 ## 128.最长连续序列
 
-data struture, https://leetcode.cn/problems/longest-consecutive-sequence/
+hash table, https://leetcode.cn/problems/longest-consecutive-sequence/
 
 给定一个未排序的整数数组 `nums` ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
 
@@ -1066,7 +1142,7 @@ class Solution:
 
 ## 435.无重叠区间
 
-区间问题，https://leetcode.cn/problems/non-overlapping-intervals/
+intervals, https://leetcode.cn/problems/non-overlapping-intervals/
 
 给定一个区间的集合 `intervals` ，其中 `intervals[i] = [starti, endi]` 。返回 *需要移除区间的最小数量，使剩余区间互不重叠* 。
 
@@ -1136,7 +1212,7 @@ class Solution:
 
 ## 452. 用最少量的箭引爆气球
 
-区间问题，https://leetcode.cn/problems/minimum-number-of-arrows-to-burst-balloons/
+intervals, https://leetcode.cn/problems/minimum-number-of-arrows-to-burst-balloons/
 
 有一些球形气球贴在一堵用 XY 平面表示的墙面上。墙面上的气球记录在整数数组 `points` ，其中`points[i] = [xstart, xend]` 表示水平直径在 `xstart` 和 `xend`之间的气球。你不知道气球的确切 y 坐标。
 
@@ -1209,7 +1285,7 @@ class Solution:
 
 ## 1024. 视频拼接
 
-区间问题，https://leetcode.cn/problems/video-stitching/
+intervals, https://leetcode.cn/problems/video-stitching/
 
 你将会获得一系列视频片段，这些片段来自于一项持续时长为 `time` 秒的体育赛事。这些片段可能有所重叠，也可能长度不一。
 
@@ -1408,7 +1484,7 @@ class Solution:
 
 ## 42.接雨水
 
-单调栈, https://leetcode.cn/problems/trapping-rain-water/
+monotonic stack, https://leetcode.cn/problems/trapping-rain-water/
 
 给定 `n` 个非负整数表示每个宽度为 `1` 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。
 
@@ -1526,7 +1602,7 @@ class Solution:
 
 ## 65.有效数字
 
-字符串，https://leetcode.cn/problems/valid-number/
+string, https://leetcode.cn/problems/valid-number/
 
 给定一个字符串 `s` ，返回 `s` 是否是一个 **有效数字**。
 
@@ -1609,7 +1685,7 @@ class Solution:
 
 ## 76.最小覆盖子串
 
-滑动窗口，https://leetcode.cn/problems/minimum-window-substring/description/
+sliding window, https://leetcode.cn/problems/minimum-window-substring/description/
 
 给你一个字符串 `s` 、一个字符串 `t` 。返回 `s` 中涵盖 `t` 所有字符的最小子串。如果 `s` 中不存在涵盖 `t` 所有字符的子串，则返回空字符串 `""` 。
 
