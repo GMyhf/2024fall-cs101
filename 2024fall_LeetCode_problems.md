@@ -1,8 +1,14 @@
 # Problems in leetcode.cn
 
-Updated 1632 GMT+8 Nov 14 2024
+Updated 2107 GMT+8 Nov 14 2024
 
 2024 fall, Complied by Hongfei Yan
+
+
+
+> Logs:
+>
+> 2024/11/14, 尽量先刷 LeetCode热题100， https://leetcode.cn/studyplan/top-100-liked/
 
 
 
@@ -85,6 +91,110 @@ class Solution:
 ```
 
 
+
+## 70.爬楼梯
+
+dp, https://leetcode.cn/problems/climbing-stairs/
+
+假设你正在爬楼梯。需要 `n` 阶你才能到达楼顶。
+
+每次你可以爬 `1` 或 `2` 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+
+ 
+
+**示例 1：**
+
+```
+输入：n = 2
+输出：2
+解释：有两种方法可以爬到楼顶。
+1. 1 阶 + 1 阶
+2. 2 阶
+```
+
+**示例 2：**
+
+```
+输入：n = 3
+输出：3
+解释：有三种方法可以爬到楼顶。
+1. 1 阶 + 1 阶 + 1 阶
+2. 1 阶 + 2 阶
+3. 2 阶 + 1 阶
+```
+
+ 
+
+**提示：**
+
+- `1 <= n <= 45`
+
+
+
+```python
+class Solution:
+    def climbStairs(self, n: int) -> int:
+        if n == 1:
+            return 1
+            
+        dp = [0]*(n+1)
+        dp[1], dp[2]= 1, 2
+        for i in range(3, n+1):
+            dp[i] = dp[i-1] + dp[i-2]
+    
+        return dp[n]
+```
+
+
+
+## 118.杨辉三角
+
+dp, https://leetcode.cn/problems/pascals-triangle/
+
+给定一个非负整数 *`numRows`，*生成「杨辉三角」的前 *`numRows`* 行。
+
+在「杨辉三角」中，每个数是它左上方和右上方的数的和。
+
+![img](https://pic.leetcode-cn.com/1626927345-DZmfxB-PascalTriangleAnimated2.gif)
+
+ 
+
+**示例 1:**
+
+```
+输入: numRows = 5
+输出: [[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]
+```
+
+**示例 2:**
+
+```
+输入: numRows = 1
+输出: [[1]]
+```
+
+ 
+
+**提示:**
+
+- `1 <= numRows <= 30`
+
+
+
+```python
+class Solution:
+    def generate(self, numRows: int) -> List[List[int]]:
+        triangle = []
+        for row_num in range(numRows):
+            row = [None for _ in range(row_num + 1)]
+            row[0], row[-1] = 1, 1
+            for j in range(1, len(row)-1):
+                row[j] = triangle[row_num-1][j-1] + triangle[row_num-1][j]
+            
+            triangle.append(row)
+        
+        return triangle
+```
 
 
 
