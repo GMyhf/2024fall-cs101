@@ -715,25 +715,33 @@ two pointers, https://leetcode.cn/problems/next-permutation/
 
 
 ```python
+from typing import List
+
 class Solution:
     def nextPermutation(self, nums: List[int]) -> None:
         """
         Do not return anything, modify nums in-place instead.
         """
+        # Step 1: Find the first decreasing element from the end
         i = len(nums) - 2
-        while i >=0 and nums[i] >= nums[i+1]:
+        while i >= 0 and nums[i] >= nums[i + 1]:
             i -= 1
         
+        # Step 2: If no such element is found, reverse the entire list
         if i == -1:
             nums.reverse()
             return
-
+        
+        # Step 3: Find the element just larger than nums[i] from the end
         j = len(nums) - 1
         while nums[i] >= nums[j]:
             j -= 1
         
+        # Step 4: Swap the elements at indices i and j
         nums[i], nums[j] = nums[j], nums[i]
-        left = i + 1; right = len(nums) - 1
+        
+        # Step 5: Reverse the sublist after index i to get the next permutation
+        left, right = i + 1, len(nums) - 1
         while left < right:
             nums[left], nums[right] = nums[right], nums[left]
             left += 1
@@ -741,7 +749,13 @@ class Solution:
         
 ```
 
+**具体步骤说明**：
 
+1. **找到第一个下降的元素**：从后向前遍历，找到第一个满足 `nums[i] < nums[i + 1]` 的元素 `i`。
+2. **判断是否需要完全反转**：如果 `i` 为 -1，说明整个数组是非递增的，直接反转即可得到下一个排列。
+3. **找到比 `nums[i]` 大的最小元素**：从后向前遍历，找到第一个大于 `nums[i]` 的元素 `j`。
+4. **交换 `nums[i]` 和 `nums[j]`**：交换这两个元素的位置。
+5. **反转子数组**：反转 `i` 之后的部分，使其变为最小的排列。
 
 
 
