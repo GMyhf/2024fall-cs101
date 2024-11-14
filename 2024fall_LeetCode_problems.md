@@ -182,18 +182,19 @@ dp, https://leetcode.cn/problems/pascals-triangle/
 
 
 ```python
-class Solution:
+ class Solution:
     def generate(self, numRows: int) -> List[List[int]]:
-        triangle = []
-        for row_num in range(numRows):
-            row = [None for _ in range(row_num + 1)]
+        tri = []
+        for i in range(numRows):
+            row = [None for _ in range(i+1)]
             row[0], row[-1] = 1, 1
             for j in range(1, len(row)-1):
-                row[j] = triangle[row_num-1][j-1] + triangle[row_num-1][j]
+                row[j] = tri[i-1][j-1] + tri[i-1][j]
             
-            triangle.append(row)
+            tri.append(row)
         
-        return triangle
+        return tri
+        
 ```
 
 
@@ -1249,6 +1250,112 @@ class Solution:
                 longest_streak = max(longest_streak, current_streak)
 
         return longest_streak
+```
+
+
+
+198.打家劫舍
+
+dp, https://leetcode.cn/problems/house-robber/
+
+你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，**如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警**。
+
+给定一个代表每个房屋存放金额的非负整数数组，计算你 **不触动警报装置的情况下** ，一夜之内能够偷窃到的最高金额。
+
+ 
+
+**示例 1：**
+
+```
+输入：[1,2,3,1]
+输出：4
+解释：偷窃 1 号房屋 (金额 = 1) ，然后偷窃 3 号房屋 (金额 = 3)。
+     偷窃到的最高金额 = 1 + 3 = 4 。
+```
+
+**示例 2：**
+
+```
+输入：[2,7,9,3,1]
+输出：12
+解释：偷窃 1 号房屋 (金额 = 2), 偷窃 3 号房屋 (金额 = 9)，接着偷窃 5 号房屋 (金额 = 1)。
+     偷窃到的最高金额 = 2 + 9 + 1 = 12 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 100`
+- `0 <= nums[i] <= 400`
+
+
+
+```python
+from typing import List
+class Solution:
+    def rob(self, nums: List[int]) -> int:
+        dp = [[0, 0] for _ in range (len(nums) + 1)]
+        for i in range(1, len(nums) + 1):
+            dp[i][0] = max(dp[i-1][0], dp[i - 1][1])
+            dp[i][1] = dp[i - 1][0] + nums[i - 1]
+
+        return (max(dp[-1][0], dp[-1][1]))
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.rob([2, 1, 1, 2])) # 3
+```
+
+
+
+## 279.完全平方数
+
+dp, https://leetcode.cn/problems/perfect-squares
+
+给你一个整数 `n` ，返回 *和为 `n` 的完全平方数的最少数量* 。
+
+**完全平方数** 是一个整数，其值等于另一个整数的平方；换句话说，其值等于一个整数自乘的积。例如，`1`、`4`、`9` 和 `16` 都是完全平方数，而 `3` 和 `11` 不是。
+
+ 
+
+**示例 1：**
+
+```
+输入：n = 12
+输出：3 
+解释：12 = 4 + 4 + 4
+```
+
+**示例 2：**
+
+```
+输入：n = 13
+输出：2
+解释：13 = 4 + 9
+```
+
+ 
+
+**提示：**
+
+- `1 <= n <= 104`
+
+
+
+```python
+class Solution:
+    def numSquares(self, n: int) -> int:
+        coins = [i * i for i in range(1, 101)]
+        dp = [0] + [float('inf')] * n
+        for i in range(1, n + 1):
+            dp[i] = min(dp[i - c] for c in coins if c <= i) + 1
+
+        return dp[n]
+
+if __name__ == '__main__':
+    sol = Solution()
+    print(sol.numSquares(12))
 ```
 
 
