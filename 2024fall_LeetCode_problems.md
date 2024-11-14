@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2359 GMT+8 Nov 13 2024
+Updated 1632 GMT+8 Nov 14 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -82,6 +82,69 @@ class Solution:
             if tmp in d:
                 return(d[tmp], i)
             d[nums[i]] = i
+```
+
+
+
+
+
+## 283.零移动
+
+two pointers, https://leetcode.cn/problems/move-zeroes/
+
+给定一个数组 `nums`，编写一个函数将所有 `0` 移动到数组的末尾，同时保持非零元素的相对顺序。
+
+**请注意** ，必须在不复制数组的情况下原地对数组进行操作。
+
+ 
+
+**示例 1:**
+
+```
+输入: nums = [0,1,0,3,12]
+输出: [1,3,12,0,0]
+```
+
+**示例 2:**
+
+```
+输入: nums = [0]
+输出: [0]
+```
+
+ 
+
+**提示**:
+
+- `1 <= nums.length <= 104`
+- `-231 <= nums[i] <= 231 - 1`
+
+ 
+
+**进阶：**你能尽量减少完成的操作次数吗？
+
+
+
+```python
+class Solution:
+    def moveZeroes(self, nums: List[int]) -> None:
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+        left = 0; right = 0
+        while left < len(nums) and right < len(nums):
+            if not nums[left] and nums[right]:
+                if left > right:
+                    right += 1
+                    continue
+                nums[left], nums[right] = nums[right], nums[left]
+                left += 1
+                right += 1
+                continue
+            if nums[left]:
+                left += 1
+            if not nums[right]:
+                right += 1
 ```
 
 
@@ -454,6 +517,74 @@ class Solution:
 > - 否则：
 >   - `c_dict[c] = i`：更新字典中字符 `c` 的位置为当前索引 `i`。
 >   - `res = max(res, i - k)`：计算当前无重复子串的长度 `i - k`，并更新 `res` 为当前最大值。
+
+
+
+## 11.盛最多水的容器
+
+https://leetcode.cn/problems/container-with-most-water/
+
+给定一个长度为 `n` 的整数数组 `height` 。有 `n` 条垂线，第 `i` 条线的两个端点是 `(i, 0)` 和 `(i, height[i])` 。
+
+找出其中的两条线，使得它们与 `x` 轴共同构成的容器可以容纳最多的水。
+
+返回容器可以储存的最大水量。
+
+**说明：**你不能倾斜容器。
+
+ 
+
+**示例 1：**
+
+![img](https://aliyun-lc-upload.oss-cn-hangzhou.aliyuncs.com/aliyun-lc-upload/uploads/2018/07/25/question_11.jpg)
+
+```
+输入：[1,8,6,2,5,4,8,3,7]
+输出：49 
+解释：图中垂直线代表输入数组 [1,8,6,2,5,4,8,3,7]。在此情况下，容器能够容纳水（表示为蓝色部分）的最大值为 49。
+```
+
+**示例 2：**
+
+```
+输入：height = [1,1]
+输出：1
+```
+
+ 
+
+**提示：**
+
+- `n == height.length`
+- `2 <= n <= 105`
+- `0 <= height[i] <= 104`
+
+
+
+```python
+class Solution:
+    def maxArea(self, height: List[int]) -> int:
+        left = 0;
+        right = len(height) - 1
+        ma = min(height[left], height[right]) * (right - left)
+        while left < right:
+            #print(ma,left,right)
+            if height[left] < height[right]:
+                left += 1
+                ma = max(ma, min(height[left], height[right]) * (right - left))
+                continue
+            if height[right] < height[left]:
+                right -= 1
+                ma = max(ma, min(height[left], height[right]) * (right - left))
+                continue
+
+            ma = max(ma, min(height[left], height[right]) * (right - left))
+            left += 1
+
+        return ma
+```
+
+
 
 
 
