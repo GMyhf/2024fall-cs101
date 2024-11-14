@@ -29,10 +29,10 @@ leetcode.cn
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 | 1122 | 135.分发糖果    | greedy       | - | https://leetcode.cn/problems/candy/         |
-| 1121 | 42.接雨水       | 单调栈      | - | https://leetcode.cn/problems/trapping-rain-water/         |
+| 1121 | 42.接雨水       | monotonic stack      | - | https://leetcode.cn/problems/trapping-rain-water/         |
 | 1120 | 376.摆动序列      | greedy, dp      | - | https://leetcode.cn/problems/wiggle-subsequence/         |
-| 1119 | 3.无重复字符的最长子串   | 滑动窗口       | - |  https://leetcode.cn/problems/longest-substring-without-repeating-characters/        |
-| 1118 | 54.螺旋矩阵      |       | - |  https://leetcode.cn/problems/spiral-matrix/        |
+| 1119 | 3.无重复字符的最长子串   | sliding window       | - |  https://leetcode.cn/problems/longest-substring-without-repeating-characters/        |
+| 1118 | 54.螺旋矩阵      | matrix      | - |  https://leetcode.cn/problems/spiral-matrix/        |
 | 1117 | 62.不同路径      | dp      | - |  https://leetcode.cn/problems/unique-paths/        |
 |  |           | -                                    | -    | LeetCode era         |
 | 1116 | 02456: Aggressive cows      | binary search      | - |  http://cs101.openjudge.cn/practice/02456        |
