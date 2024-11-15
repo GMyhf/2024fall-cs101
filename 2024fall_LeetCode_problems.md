@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0157 GMT+8 Nov 15 2024
+Updated 2354 GMT+8 Nov 15 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -1695,6 +1695,67 @@ greedy, dp, https://leetcode.cn/problems/wiggle-subsequence/
 **进阶：**你能否用 `O(n)` 时间复杂度完成此题?
 
 
+
+某个序列被称为「上升摆动序列」，当且仅当该序列是摆动序列，且最后一个元素呈上升趋势。如序列 [1,3,2,4] 即为「上升摆动序列」。
+
+某个序列被称为「下降摆动序列」，当且仅当该序列是摆动序列，且最后一个元素呈下降趋势。如序列 [4,2,3,1] 即为「下降摆动序列」。
+
+up[i] 表示以前 i 个元素中的某一个为结尾的最长的「上升摆动序列」的长度。
+
+down[i] 表示以前 i 个元素中的某一个为结尾的最长的「下降摆动序列」的长度。
+
+https://leetcode.cn/problems/wiggle-subsequence/solutions/518296/bai-dong-xu-lie-by-leetcode-solution-yh2m/
+
+```python
+class Solution:
+    def wiggleMaxLength(self, nums: List[int]) -> int:
+        n = len(nums)
+        if n < 2:
+            return n
+        
+        up = [1] + [0] * (n - 1)
+        down = [1] + [0] * (n - 1)
+        for i in range(1, n):
+            if nums[i] > nums[i - 1]:
+                up[i] = max(up[i - 1], down[i - 1] + 1)
+                down[i] = down[i - 1]
+            elif nums[i] < nums[i - 1]:
+                up[i] = up[i - 1]
+                down[i] = max(up[i - 1] + 1, down[i - 1])
+            else:
+                up[i] = up[i - 1]
+                down[i] = down[i - 1]
+        
+        return max(up[n - 1], down[n - 1])
+
+```
+
+
+
+利用动态规划分别记录到每个位置的最长摆动序列长度（up 和 down），并且在每一步保持这两个数组的更新。由于在摆动序列中，当前状态只能是“上升”或“下降”，因此这种方法可以保证 up 和 down 之间的差值不会超过 1。
+
+```python
+class Solution:
+    def wiggleMaxLength(self, nums: List[int]) -> int:
+        n = len(nums)
+        if n < 2:
+            return n
+
+        up = [1] + [0] * (n - 1)
+        down = [1] + [0] * (n - 1)
+        for i in range(1, n):
+            if nums[i] > nums[i - 1]:
+                up[i] = down[i - 1] + 1
+                down[i] = down[i - 1]
+            elif nums[i] < nums[i - 1]:
+                up[i] = up[i - 1]
+                down[i] = up[i - 1] + 1
+            else:
+                up[i] = up[i - 1]
+                down[i] = down[i - 1]
+
+        return max(up[n - 1], down[n - 1])
+```
 
 
 
