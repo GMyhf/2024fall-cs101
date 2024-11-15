@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 0009 GMT+8 Nov 15 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0036 GMT+8 Nov 16 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 1101 改为每天放1个题目。  
@@ -35,7 +35,7 @@ leetcode.cn
 | 1118 | 54.螺旋矩阵      | matrix      | - |  https://leetcode.cn/problems/spiral-matrix/        |
 | 1117 | 62.不同路径      | dp      | - |  https://leetcode.cn/problems/unique-paths/        |
 |  |           | -                                    | -    | LeetCode era         |
-| 1116 | 02456: Aggressive cows      | binary search      | - |  http://cs101.openjudge.cn/practice/02456        |
+| 1116 | 02456: Aggressive cows      | binary search      | - |  http://cs101.openjudge.cn/2024fallroutine/02456        |
 | 1115 | 07622: 求排列的逆序数      | merge sort               | - |  http://cs101.openjudge.cn/2024fallroutine/07622        |
 | 1114 | 04118: 开餐馆      | dp               | - |  http://cs101.openjudge.cn/2024fallroutine/04118        |
 | 1113 | 01958: Strange Towers of Hanoi      | dp, recursion               | - |  http://cs101.openjudge.cn/2024fallroutine/01958        |
