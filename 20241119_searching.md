@@ -1,6 +1,6 @@
 # 20241119-Week11 搜索专题
 
-Updated 2100 GMT+8 Nov 13 2024
+Updated 1731 GMT+8 Nov 16 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -132,7 +132,7 @@ Updated 2100 GMT+8 Nov 13 2024
 
 
 
-### 1.1 迷宫可行路径数
+### 示例：迷宫可行路径数
 
 https://sunnywhy.com/sfbj/8/1/313
 
@@ -220,7 +220,6 @@ print(cnt)
 #### 辅助visited空间
 
 ```python
-# gpt translated version of the C++ code
 MAXN = 5
 n, m = map(int, input().split())
 maze = []
