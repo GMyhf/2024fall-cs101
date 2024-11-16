@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2354 GMT+8 Nov 15 2024
+Updated 0216 GMT+8 Nov 17 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -1797,6 +1797,68 @@ class Solution:
 
 
 
+## 416.分割等和子集
+
+dp, https://leetcode.cn/problems/partition-equal-subset-sum
+
+给你一个 **只包含正整数** 的 **非空** 数组 `nums` 。请你判断是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,5,11,5]
+输出：true
+解释：数组可以分割成 [1, 5, 5] 和 [11] 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,2,3,5]
+输出：false
+解释：数组不能分割成两个元素和相等的子集。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 200`
+- `1 <= nums[i] <= 100`
+
+
+
+这个0-1背包，有视频讲解。416. 分割等和子集，https://leetcode.cn/problems/partition-equal-subset-sum
+
+```python
+class Solution:
+    def canPartition(self, nums: List[int]) -> bool:
+        n = len(nums)
+        sum_v = sum(nums)
+        if sum_v & 1:
+            return False
+        
+        target = sum_v // 2
+        dp = [[False]*(target+1) for _ in range(n)]
+        if nums[0] <= target:
+            dp[0][nums[0]] = True
+        for i in range(1, n):
+            for j in range(target + 1):
+                
+                if j > nums[i]:
+                    dp[i][j] = dp[i-1][j] or dp[i-1][j-nums[i]]
+                else:
+                    dp[i][j] = dp[i-1][j]
+            if dp[i][target]:
+                return True
+        
+        return dp[-1][target]
+```
+
+
+
 ## 435.无重叠区间
 
 intervals, https://leetcode.cn/problems/non-overlapping-intervals/
@@ -2138,6 +2200,74 @@ class Solution:
 
 
 # 困难
+
+## 32.最长有效括号
+
+stack, dp, https://leetcode.cn/problems/longest-valid-parentheses/
+
+给你一个只包含 `'('` 和 `')'` 的字符串，找出最长有效（格式正确且连续）括号子串的长度。
+
+**示例 1：**
+
+```
+输入：s = "(()"
+输出：2
+解释：最长有效括号子串是 "()"
+```
+
+**示例 2：**
+
+```
+输入：s = ")()())"
+输出：4
+解释：最长有效括号子串是 "()()"
+```
+
+**示例 3：**
+
+```
+输入：s = ""
+输出：0
+```
+
+ 
+
+**提示：**
+
+- `0 <= s.length <= 3 * 104`
+- `s[i]` 为 `'('` 或 `')'`
+
+
+
+
+
+stack解法
+
+```python
+class Solution:
+    def longestValidParentheses(self, s: str) -> int:
+        stack = [-1]  # 初始化栈，-1表示上一个未匹配右括号的位置
+        max_length = 0  # 记录最长有效括号长度
+        
+        for i, char in enumerate(s):
+            if char == '(':
+                stack.append(i)  # 左括号入栈
+            else:
+                stack.pop()  # 右括号尝试匹配
+                if not stack:
+                    stack.append(i)  # 如果栈为空，更新为当前右括号位置
+                else:
+                    max_length = max(max_length, i - stack[-1])  # 更新最大长度
+        
+        return max_length
+
+if __name__ == "__main__":
+    sol = Solution()
+    s = "()()"
+    print(sol.longestValidParentheses(s))  # 输出应该是 4
+```
+
+
 
 ## 42.接雨水
 
