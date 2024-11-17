@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1105 GMT+8 Nov 17 2024
+Updated 2136 GMT+8 Nov 17 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -1874,6 +1874,34 @@ class Solution:
 
         return max(up, down)
 ```
+
+
+
+这是一个贪心问题，考虑局部最优的情形，我们需要将两个峰值之间的数全部删去，来保证子序列中每个元素都是摆动的。
+但考虑到有非严格递增的情形，如1，2，2，2，1，摆动长度为3。我们可以设置一个trend来表示前一个摆动的趋势，如初始/非严格单调为0，递增为1，递减为-1。
+那么只需要`nums[i] > nums[i-1]` 且`trend ≤ 0` 就能表示出现了一个递增的摆动，递减的摆动同理。最后统计摆动个数即可。
+
+
+```python
+# 徐梓文 24医学预科办
+from typing import List
+
+class Solution:
+    def wiggleMaxLength(self, nums: List[int]) -> int:
+        ans,trend=1,0
+        
+        for i in range(1,len(nums)):
+            if nums[i]>nums[i-1] and trend<=0:
+                ans+=1
+                trend=1
+            if nums[i]<nums[i-1] and trend>=0:
+                ans+=1
+                trend=-1
+                
+        return ans
+```
+
+
 
 
 
