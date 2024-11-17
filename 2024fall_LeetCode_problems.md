@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2136 GMT+8 Nov 17 2024
+Updated 2223 GMT+8 Nov 17 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -628,6 +628,131 @@ class Solution:
 > - 否则：
 >   - `c_dict[c] = i`：更新字典中字符 `c` 的位置为当前索引 `i`。
 >   - `res = max(res, i - k)`：计算当前无重复子串的长度 `i - k`，并更新 `res` 为当前最大值。
+
+
+
+## 5.最长回文子串
+
+dp, two pointers, string, https://leetcode.cn/problems/longest-palindromic-substring/
+
+给你一个字符串 `s`，找到 `s` 中最长的 
+
+回文子串。
+
+**示例 1：**
+
+```
+输入：s = "babad"
+输出："bab"
+解释："aba" 同样是符合题意的答案。
+```
+
+**示例 2：**
+
+```
+输入：s = "cbbd"
+输出："bb"
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 1000`
+- `s` 仅由数字和英文字母组成
+
+
+
+**Plan**
+
+1. Initialize a 2D list `dp` where `dp[i][j]` will be `True` if the substring `s[i:j+1]` is a palindrome.
+2. Iterate through the string in reverse order to fill the `dp` table.
+3. For each character, check if the substring is a palindrome by comparing the characters at the ends and using the previously computed values in `dp`.
+4. Keep track of the start and end indices of the longest palindromic substring found.
+5. Return the substring defined by the start and end indices.
+
+
+
+```python
+class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        n = len(s)
+        if n == 0:
+            return ""
+
+        # Initialize the dp table
+        dp = [[False] * n for _ in range(n)]
+        start, max_length = 0, 1
+
+        # Every single character is a palindrome
+        for i in range(n):
+            dp[i][i] = True
+
+        # Check for palindromes of length 2
+        for i in range(n - 1):
+            if s[i] == s[i + 1]:
+                dp[i][i + 1] = True
+                start = i
+                max_length = 2
+
+        # Check for palindromes of length greater than 2
+        for length in range(3, n + 1):
+            for i in range(n - length + 1):
+                j = i + length - 1
+                if s[i] == s[j] and dp[i + 1][j - 1]:
+                    dp[i][j] = True
+                    start = i
+                    max_length = length
+
+        return s[start:start + max_length]
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.longestPalindrome("babad"))  # Output: "bab" or "aba"
+    print(sol.longestPalindrome("cbbd"))   # Output: "bb"
+```
+
+
+
+**Plan**
+
+1. Initialize variables to store the start and end indices of the longest palindromic substring.
+2. Iterate through each character in the string, treating each character and each pair of consecutive characters as potential centers of palindromes.
+3. For each center, expand outwards while the characters on both sides are equal.
+4. Update the start and end indices if a longer palindrome is found.
+5. Return the substring defined by the start and end indices.
+
+```python
+class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        if not s:
+            return ""
+        
+        start, end = 0, 0
+        
+        for i in range(len(s)):
+            len1 = self.expandAroundCenter(s, i, i)
+            len2 = self.expandAroundCenter(s, i, i + 1)
+            max_len = max(len1, len2)
+            if max_len > end - start:
+                start = i - (max_len - 1) // 2
+                end = i + max_len // 2
+        
+        return s[start:end + 1]
+    
+    def expandAroundCenter(self, s: str, left: int, right: int) -> int:
+        while left >= 0 and right < len(s) and s[left] == s[right]:
+            left -= 1
+            right += 1
+        return right - left - 1
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.longestPalindrome("babad"))  # Output: "bab" or "aba"
+    print(sol.longestPalindrome("cbbd"))   # Output: "bb"
+```
+
+这个双指针是从中间往两边跑。
 
 
 
