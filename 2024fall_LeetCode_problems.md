@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2223 GMT+8 Nov 17 2024
+Updated 1629 GMT+8 Nov 18 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -355,8 +355,58 @@ if __name__ == "__main__":
 
 
 
-```python
 
+
+## 3079.求出加密整数的和
+
+https://leetcode.cn/problems/find-the-sum-of-encrypted-integers/
+
+给你一个整数数组 `nums` ，数组中的元素都是 **正** 整数。定义一个加密函数 `encrypt` ，`encrypt(x)` 将一个整数 `x` 中 **每一个** 数位都用 `x` 中的 **最大** 数位替换。比方说 `encrypt(523) = 555` 且 `encrypt(213) = 333` 。
+
+请你返回数组中所有元素加密后的 **和** 。
+
+**示例 1：**
+
+**输入：**nums = [1,2,3]
+
+**输出：**6
+
+**解释：**加密后的元素位 `[1,2,3]` 。加密元素的和为 `1 + 2 + 3 == 6` 。
+
+**示例 2：**
+
+**输入：**nums = [10,21,31]
+
+**输出：**66
+
+**解释：**加密后的元素为 `[11,22,33]` 。加密元素的和为 `11 + 22 + 33 == 66` 。
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 50`
+- `1 <= nums[i] <= 1000`
+
+
+
+```python
+from typing import List
+class Solution:
+    def sumOfEncryptedInt(self, nums: List[int]) -> int:
+        sumv = 0
+        for i in nums:
+            a = list(str(i))
+            a_len = len(str(i))
+            max_i = max([int(i) for i in a])
+            max_i = str(max_i)* a_len
+            sumv += int(max_i)
+
+        return sumv
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.sumOfEncryptedInt([123, 456, 789])) 
 ```
 
 
@@ -992,6 +1042,114 @@ class Solution:
 3. **找到比 `nums[i]` 大的最小元素**：从后向前遍历，找到第一个大于 `nums[i]` 的元素 `j`。
 4. **交换 `nums[i]` 和 `nums[j]`**：交换这两个元素的位置。
 5. **反转子数组**：反转 `i` 之后的部分，使其变为最小的排列。
+
+
+
+## 46.全排列
+
+dfs, https://leetcode.cn/problems/permutations/
+
+给定一个不含重复数字的数组 `nums` ，返回其 *所有可能的全排列* 。你可以 **按任意顺序** 返回答案。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,2,3]
+输出：[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+```
+
+**示例 2：**
+
+```
+输入：nums = [0,1]
+输出：[[0,1],[1,0]]
+```
+
+**示例 3：**
+
+```
+输入：nums = [1]
+输出：[[1]]
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 6`
+- `-10 <= nums[i] <= 10`
+- `nums` 中的所有整数 **互不相同**
+
+
+
+```python
+from typing import List
+
+
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        n = len(nums)
+        ans = []
+        visited = [False] * n  # 用于标记 nums 中的元素是否被访问过
+
+        def dfs(a):
+            if len(a) == n:
+                ans.append(a[:])  # 收集当前排列
+                return
+            for i in range(n):
+                if visited[i]:  # 跳过已访问的元素
+                    continue
+                visited[i] = True
+                a.append(nums[i])
+                dfs(a)
+                a.pop()  # 回溯
+                visited[i] = False
+
+        dfs([])
+        return ans
+
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.permute([1, 2, 3]))
+
+```
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        n = len(nums)
+        ans = []
+        
+        def dfs(path, remaining):
+            if len(path) == n:
+                ans.append(path)
+                return
+            for i in range(len(remaining)):
+                # 选择当前元素
+                new_path = path + [remaining[i]]
+                new_remaining = remaining[:i] + remaining[i+1:]
+                # 递归调用
+                dfs(new_path, new_remaining)
+        
+        dfs([], nums)
+        return ans
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.permute([1, 2, 3]))
+```
+
+撤销选择：
+由于我们在<mark>每次递归调用时创建了新的路径和剩余元素，所以不需要显式地撤销选择</mark>。递归返回后，自动恢复到之前的状态。
+
+
 
 
 
