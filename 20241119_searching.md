@@ -128,11 +128,11 @@ Updated 1731 GMT+8 Nov 16 2024
 
 <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231126164549437.png" alt="image-20231126164549437" style="zoom: 50%;" />
 
-因此，使用递归可以很好地实现深度优先搜索。这个说法并不是说深度优先搜索就是递归，只能说递归是深度优先搜索的一种实现方式，因为使用非递归也是可以实现 DFS 的思想的，但是一般情况下会比递归麻烦。不过，使用递归时，系统会调用一个叫系统栈的东西来存放递归中每一层的状态，因此使用递归来实现 DFS 的本质其实还是栈。
+因此，使用递归可以很好地实现深度优先搜索。这个说法并不是说深度优先搜索就是递归，只能说递归是深度优先搜索的一种实现方式，因为使用非递归也是可以实现 DFS 的思想的~~，但是一般情况下会比递归麻烦~~。不过，使用递归时，系统会调用一个叫系统栈的东西来存放递归中每一层的状态，因此使用递归来实现 DFS 的本质其实还是栈。
 
 
 
-### 示例：迷宫可行路径数
+### 示例：sy313迷宫可行路径数 简单
 
 https://sunnywhy.com/sfbj/8/1/313
 
@@ -217,6 +217,12 @@ print(cnt)
 
 
 
+> OJ的pylint是静态检查，有时候报的不对。解决方法有两种，如下：
+> 1）第一行加# pylint: skip-file
+> 2）方法二：如果函数内使用全局变量（变量类型是immutable，如int），则需要在程序最开始声明一下。如果是全局变量是list类型，则不受影响。
+
+
+
 #### 辅助visited空间
 
 ```python
@@ -259,7 +265,7 @@ print(counter)
 
 
 
-### 1.2 指定步数的迷宫问题
+### 示例：sy314指定步数的迷宫问题 中等
 
 https://sunnywhy.com/sfbj/8/1/314
 
@@ -369,7 +375,6 @@ print("Yes" if canReach else "No")
 #### 辅助visited空间
 
 ```python
-# gpt translated version of the C++ code
 MAXN = 5
 n, m, k = map(int, input().split())
 maze = []
@@ -412,7 +417,7 @@ print("Yes" if canReach else "No")
 
 
 
-### 1.3 矩阵最大权值
+### 示例：sy315矩阵最大权值 中等
 
 https://sunnywhy.com/sfbj/8/1/315
 
@@ -494,7 +499,6 @@ print(maxValue)
 #### 辅助visited空间
 
 ```python
-# gpt translated version of the C++ code
 MAXN = 5
 INF = float('inf')
 n, m = map(int, input().split())
@@ -535,60 +539,7 @@ print(maxValue)
 
 
 
-#### C++
-
-```c++
-#include <cstdio>
-
-const int MAXN = 5;
-const int INF = 0x3f;
-int n, m, maze[MAXN][MAXN];
-bool visited[MAXN][MAXN] = {false};
-int maxValue = -INF;
-
-const int MAXD = 4;
-int dx[MAXD] = {0, 0, 1, -1};
-int dy[MAXD] = {1, -1, 0, 0};
-
-bool isValid(int x, int y) {
-    return x >= 0 && x < n && y >= 0 && y < m && !visited[x][y];
-}
-
-void DFS(int x, int y, int nowValue) {
-    if (x == n - 1 && y == m - 1) {
-        if (nowValue > maxValue) {
-            maxValue = nowValue;
-        }
-        return;
-    }
-    visited[x][y] = true;
-    for (int i = 0; i < MAXD; i++) {
-        int nextX = x + dx[i];
-        int nextY = y + dy[i];
-        if (isValid(nextX, nextY)) {
-            int nextValue = nowValue + maze[nextX][nextY];
-            DFS(nextX, nextY, nextValue);
-        }
-    }
-    visited[x][y] = false;
-}
-
-int main() {
-    scanf("%d%d", &n, &m);
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            scanf("%d", &maze[i][j]);
-        }
-    }
-    DFS(0, 0, maze[0][0]);
-    printf("%d", maxValue);
-    return 0;
-}
-```
-
-
-
-### 1.4 矩阵最大权值路径
+### 示例：sy316矩阵最大权值路径 中等
 
 https://sunnywhy.com/sfbj/8/1/316
 
@@ -630,10 +581,119 @@ https://sunnywhy.com/sfbj/8/1/316
 
 
 
-#### 辅助visited空间
+样例2
+
+输入
+
+```
+4 5
+59 -62 -71 91 -12
+-36 42 -32 -36 43
+-68 -88 -94 -43 -39
+48 -38 53 31 -92
+```
+
+输出
+
+```
+1 1
+2 1
+2 2
+2 3
+2 4
+1 4
+1 5
+2 5
+3 5
+4 5
+```
+
+
+
+样例3
+
+输入
+
+```
+3 4
+-36 -10 -84 -28
+12 94 95 22
+61 -13 26 29
+```
+
+输出
+
+```
+1 1
+1 2
+2 2
+2 1
+3 1
+3 2
+3 3
+2 3
+2 4
+3 4
+```
+
+
+
+**DFS辅助visited空间**
 
 ```python
-# gpt translated version of the C++ code
+# 读取输入
+n, m = map(int, input().split())
+maze = [list(map(int, input().split())) for _ in range(n)]
+
+# 定义方向
+directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # 右、下、左、上
+visited = [[False] * m for _ in range(n)]  # 标记访问
+max_path = []
+max_sum = -float('inf')  # 最大权值初始化为负无穷
+
+# 深度优先搜索
+def dfs(x, y, current_path, current_sum):
+    global max_path, max_sum
+
+    # 到达终点，更新结果
+    if (x, y) == (n - 1, m - 1):
+        if current_sum > max_sum:
+            max_sum = current_sum
+            max_path = current_path[:]
+        return
+
+    # 遍历四个方向
+    for dx, dy in directions:
+        nx, ny = x + dx, y + dy
+
+        # 检查边界和是否访问过
+        if 0 <= nx < n and 0 <= ny < m and not visited[nx][ny]:
+            # 标记访问
+            visited[nx][ny] = True
+            current_path.append((nx, ny))
+
+            # 递归搜索
+            dfs(nx, ny, current_path, current_sum + maze[nx][ny])
+
+            # 回溯
+            current_path.pop()
+            visited[nx][ny] = False
+
+# 初始化起点
+visited[0][0] = True
+dfs(0, 0, [(0, 0)], maze[0][0])
+
+# 输出结果
+for x, y in max_path:
+    print(x + 1, y + 1)
+
+```
+
+
+
+#### DFS辅助visited空间
+
+```python
 MAXN = 5
 INF = float('inf')
 n, m = map(int, input().split())
@@ -681,7 +741,7 @@ for pos in optPath:
 
 
 
-### 1.5 迷宫最大权值
+### 示例：sy317迷宫最大权值 中等
 
 https://sunnywhy.com/sfbj/8/1/317
 
@@ -815,13 +875,37 @@ print(maxValue)
 
 
 
+### 练习: sy358受到祝福的平方 中等
 
+https://sunnywhy.com/sfbj/8/3/539
+
+在小元的世界里，任何人出生后会被世界分配一个随机`ID`，如果在被切割后，即`ID`满足按照从左至右顺序分割，且分割出来的数字都是某一个`正整数`的平方，分割时可以包括前导`0`，那么他就被这个世界祝福，最后获得快乐的数量和质量都比不满足这样的的人多的多。
+
+令`ID`为`A`，且`A`是一个正整数，取值范围为$1 \le A \le 10^9$，问是否是一个被受到祝福的。
+
+比如`A=8194`时，它是一个被受到祝福的`ID`，因为他可以被分割为$\{81,9,4\}=\{9^2,3^2,2^2\}$；
+
+比如`A=1001`时，它是一个被受到祝福的`ID`，因为他可以被分割为$\{1,001\}=\{1^2,1^2\}$，或者$\{100,1\}=\{10^2,1^2\}$。注意$\{1,00,1\}=\{1^2,0^2,1^2\}$不是一个合法切割，因为分割出来的数字必须为正整数的平方；
+
+比如`A=36`时，`36`已经是一个平方数了，所以它同样满足条件；
+
+比如`A=54`，它不是一个被受到祝福的`ID`，因为他无法被切割为满足条件的集合。
+
+**输入描述**
+
+一个正整数A，无前导0。
+
+其中$1 \le A \le 10^9$
+
+**输出描述**
+
+如果是一个满足题意的数字则输出`Yes`，否则`No`。
 
 
 
 ## 2 广度优先搜索(BFS)
 
-前面介绍了深度优先搜索，可知 DFS 是以深度作为第一关键词的，即当碰到岔道口时总是先选择其中的一条岔路前进,而不管其他岔路,直到碰到死胡同时才返回岔道口并选择其他岔路。接下来将介绍的**广度优先搜索** (Breadth FirstSearch,**BFS**)则是以广度为第一关键词，当碰到岔道口时,总是先依次访问从该岔道口能直接到达的所有结点,然后再按这些结点被访问的顺序去依次访问它们能直接到达的所有结点，以此类推,直到所有结点都被访问为止。这就跟平静的水面中投入一颗小石子一样,水花总是以石子落水处为中心,并以同心圆的方式向外扩散至整个水面(见图 8-2),从这点来看和 DFS 那种沿着一条线前进的思路是完全不同的。
+前面介绍了深度优先搜索，可知 DFS 是以深度作为第一关键词的，即当碰到岔道口时总是先选择其中的一条岔路前进,而不管其他岔路,直到碰到死胡同时才返回岔道口并选择其他岔路。接下来将介绍的**广度优先搜索 (Breadth FirstSearch,BFS)**则是以广度为第一关键词，当碰到岔道口时,总是先依次访问从该岔道口能直接到达的所有结点,然后再按这些结点被访问的顺序去依次访问它们能直接到达的所有结点，以此类推,直到所有结点都被访问为止。这就跟平静的水面中投入一颗小石子一样,水花总是以石子落水处为中心,并以同心圆的方式向外扩散至整个水面(见图 8-2),从这点来看和 DFS 那种沿着一条线前进的思路是完全不同的。
 
 <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202311262216546.png" alt="image-20231126221551540" style="zoom:50%;" />
 
@@ -831,8 +915,8 @@ print(maxValue)
 from collections import deque
   
 def bfs(s, e):
-    vis = set()
-    vis.add(s)
+    inq = set()
+    inq.add(s)
       
     q = deque()
     q.append((0, s))
@@ -842,7 +926,7 @@ def bfs(s, e):
         if top == e:
             return now # 返回需要的结果，如：步长、路径等信息
 
-        # 将 top 的下一层结点中未曾入队的结点全部入队q，并加入集合vis设置为已入队
+        # 将 top 的下一层结点中未曾入队的结点全部入队q，并加入集合inq设置为已入队
   
 ```
 
@@ -853,16 +937,16 @@ def bfs(s, e):
 ① 定义队列 q，并将起点(0, s)入队，0表示步长目前是0。
 ② 写一个 while 循环，循环条件是队列q非空。
 ③ 在 while 循环中，先取出队首元素 top。
-④ 将top 的下一层结点中所有**未曾入队**的结点入队，并标记它们的层号为 now 的层号加1，并加入集合vis设置为已入队。
+④ 将top 的下一层结点中所有**未曾入队**的结点入队，并标记它们的层号为 now 的层号加1，并加入集合inq设置为已入队。
 ⑤ 返回 ② 继续循环。
 
 
 
-再强调一点,在BFS 中设置的 inq 数组的含义是判断结点是否已入过队，而不是**结点是否已被访问**。区别在于:如果设置成是否已被访问，有可能在某个结点正在队列中(但还未访问)时由于其他结点可以到达它而将这个结点再次入队，导致很多结点反复入队，计算量大大增加。因此BFS 中让每个结点只入队一次，故需要设置 inq 数组的含义为**结点是否已入过队**而非结点是否已被访问。
+为了防止走回头路，一般可以设置一个bool类型数组inq（即in queue的简写）来记录每个位置是否在BFS中已入过队。再强调一点，在BFS 中设置的 inq 数组的含义是判断结点是否已入过队，而不是**结点是否已被访问**。区别在于：如果设置成是否已被访问，有可能在某个结点正在队列中（但还未访问）时由于其他结点可以到达它而将这个结点再次入队，导致很多结点反复入队，计算量大大增加。因此BFS 中让每个结点只入队一次，故需要设置 inq 数组的含义为**结点是否已入过队**而非结点是否已被访问。
 
 
 
-### 2.1 数字操作（一维BFS）
+### 示例：sy318数字操作（一维BFS）
 
 https://sunnywhy.com/sfbj/8/2/318
 
@@ -933,8 +1017,8 @@ from collections import deque
 
 def bfs(n):
 
-    vis = set()
-    vis.add(1)
+    inq = set()
+    inq.add(1)
     q = deque()
     q.append((1, 0))
     while q:
@@ -942,11 +1026,11 @@ def bfs(n):
         if front == n:
             return step
 
-        if front * 2 <= n and front * 2 not in vis:
-            vis.add(front *2)
+        if front * 2 <= n and front * 2 not in inq:
+            inq.add(front *2)
             q.append((front * 2, step+1))
-        if front + 1 <= n and front + 1 not in vis:
-            vis.add(front + 1)
+        if front + 1 <= n and front + 1 not in inq:
+            inq.add(front + 1)
             q.append((front + 1, step+1))
 
 
@@ -990,7 +1074,7 @@ if __name__ == "__main__":
 
 
 
-### 2.2 矩阵中的块
+### 示例：sy319矩阵中的块
 
 https://sunnywhy.com/sfbj/8/2/319
 
@@ -1133,7 +1217,7 @@ print(counter)
 
 
 
-### 2.3 迷宫问题
+### 示例：sy320迷宫问题
 
 https://sunnywhy.com/sfbj/8/2/320
 
@@ -1289,7 +1373,7 @@ if __name__ == '__main__':
 
 
 
-### 2.4 迷宫最短路径
+### 示例：sy321迷宫最短路径
 
 https://sunnywhy.com/sfbj/8/2/321
 
@@ -1391,7 +1475,7 @@ printPath((n - 1, m - 1))
 
 
 
-### 2.5 跨步迷宫
+### 示例：sy322跨步迷宫
 
 https://sunnywhy.com/sfbj/8/2/322
 
@@ -1455,8 +1539,12 @@ https://sunnywhy.com/sfbj/8/2/322
 
 
 
+我们使用from collections import deque就满足要求，适用于需要频繁从队列的两端进行操作的场景，如广度优先搜索（BFS）、滑动窗口等问题。
+
+> from queue import Queue适用于多线程编程中，需要在多个线程之间安全地共享和传递数据的场景。提供线程安全的特性，内置锁机制，可以在多线程环境中安全地使用。支持阻塞操作，如 `get` 和 `put` 方法可以设置超时时间，等待队列中有数据可用或空间可用。不支持从队列两端进行操作，只能从一端进行插入和删除。
+
 ```python
-from queue import Queue
+from collections import deque
 
 MAXN = 100
 MAXD = 8
@@ -1467,15 +1555,15 @@ dy = [1, -1, 2, -2, 0, 0, 0, 0]
 def canVisit(x, y):
     return x >= 0 and x < n and y >= 0 and y < m and maze[x][y] == 0 and not inQueue[x][y]
 
-def BFS(x, y):
-    q = Queue()
-    q.put((x, y))
+def bfs(x, y):
+    q = deque()
+    q.append((x, y))
     inQueue[x][y] = True
     step = 0
-    while not q.empty():
-        cnt = q.qsize()
+    while q:
+        cnt = len(q)
         while cnt > 0:
-            front = q.get()
+            front = q.popleft()
             cnt -= 1
             if front[0] == n - 1 and front[1] == m - 1:
                 return step
@@ -1486,7 +1574,7 @@ def BFS(x, y):
                 nextHalfY = front[1] + dy[i] // 2
                 if canVisit(nextX, nextY) and maze[nextHalfX][nextHalfY] == 0:
                     inQueue[nextX][nextY] = True
-                    q.put((nextX, nextY))
+                    q.append((nextX, nextY))
         step += 1
     return -1
 
@@ -1496,13 +1584,13 @@ inQueue = [[False] * m for _ in range(n)]
 for _ in range(n):
     maze.append(list(map(int, input().split())))
 
-step = BFS(0, 0)
+step = bfs(0, 0)
 print(step)
 ```
 
 
 
-### 2.6 字符迷宫
+### 示例：sy323字符迷宫
 
 https://sunnywhy.com/sfbj/8/2/323
 
@@ -1575,7 +1663,7 @@ https://sunnywhy.com/sfbj/8/2/323
 
 
 ```python
-from queue import Queue
+from collections import deque
 
 MAXN = 100
 MAXD = 4
@@ -1584,17 +1672,16 @@ dx = [0, 0, 1, -1]
 dy = [1, -1, 0, 0]
 
 def canVisit(x, y):
-    return x >= 0 and x < n and y >= 0 and y < m and maze[x][y] == 0 and not inQueue[x][y]
+    return 0 <= x < n and 0 <= y < m and maze[x][y] == 0 and not inQueue[x][y]
 
 def BFS(start, target):
-    q = Queue()
-    q.put(start)
+    q = deque([start])
     inQueue[start[0]][start[1]] = True
     step = 0
-    while not q.empty():
-        cnt = q.qsize()
+    while q:
+        cnt = len(q)
         while cnt > 0:
-            front = q.get()
+            front = q.popleft()
             cnt -= 1
             if front == target:
                 return step
@@ -1603,7 +1690,7 @@ def BFS(start, target):
                 nextY = front[1] + dy[i]
                 if canVisit(nextX, nextY):
                     inQueue[nextX][nextY] = True
-                    q.put((nextX, nextY))
+                    q.append((nextX, nextY))
         step += 1
     return -1
 
@@ -1613,7 +1700,7 @@ inQueue = [[False] * m for _ in range(n)]
 start, target = None, None
 
 for i in range(n):
-    row = input()
+    row = input().strip()
     maze_row = []
     for j in range(m):
         if row[j] == '.':
@@ -1628,13 +1715,16 @@ for i in range(n):
             maze_row.append(0)
     maze.append(maze_row)
 
-step = BFS(start, target)
-print(step)
+if start is None or target is None:
+    print(-1)
+else:
+    step = BFS(start, target)
+    print(step)
 ```
 
 
 
-### 2.7 多终点迷宫问题
+### 示例：sy324多终点迷宫问题
 
 https://sunnywhy.com/sfbj/8/2/324
 
@@ -1680,7 +1770,7 @@ https://sunnywhy.com/sfbj/8/2/324
 
 
 ```python
-from queue import Queue
+from collections import deque
 import sys
 
 INF = sys.maxsize
@@ -1691,19 +1781,18 @@ dx = [0, 0, 1, -1]
 dy = [1, -1, 0, 0]
 
 def canVisit(x, y):
-    return x >= 0 and x < n and y >= 0 and y < m and maze[x][y] == 0 and not inQueue[x][y]
+    return 0 <= x < n and 0 <= y < m and maze[x][y] == 0 and not inQueue[x][y]
 
 def BFS(x, y):
     minStep = [[-1] * m for _ in range(n)]
-    q = Queue()
-    q.put((x, y))
+    q = deque([(x, y)])
     inQueue[x][y] = True
     minStep[x][y] = 0
     step = 0
-    while not q.empty():
-        cnt = q.qsize()
+    while q:
+        cnt = len(q)
         while cnt > 0:
-            front = q.get()
+            front = q.popleft()
             cnt -= 1
             for i in range(MAXD):
                 nextX = front[0] + dx[i]
@@ -1711,7 +1800,7 @@ def BFS(x, y):
                 if canVisit(nextX, nextY):
                     inQueue[nextX][nextY] = True
                     minStep[nextX][nextY] = step + 1
-                    q.put((nextX, nextY))
+                    q.append((nextX, nextY))
         step += 1
     return minStep
 
@@ -1724,17 +1813,12 @@ for _ in range(n):
 
 minStep = BFS(0, 0)
 for i in range(n):
-    #for j in range(m):
     print(' '.join(map(str, minStep[i])))
-#        print(minStep[i][j], end='')
-#        if j < m - 1:
-#            print(' ', end='')
-#    print()
 ```
 
 
 
-### 2.8 迷宫问题-传送点
+### 示例：sy325迷宫问题-传送点
 
 https://sunnywhy.com/sfbj/8/2/325
 
@@ -1805,7 +1889,7 @@ https://sunnywhy.com/sfbj/8/2/325
 在 BFS 函数中，当遇到传送门时，通过映射表 transMap 找到传送门的另一侧位置，并将其加入队列，以便继续进行搜索。
 
 ```python
-from queue import Queue
+from collections import deque
 
 MAXN = 100
 MAXD = 4
@@ -1814,17 +1898,16 @@ dx = [0, 0, 1, -1]
 dy = [1, -1, 0, 0]
 
 def canVisit(x, y):
-    return x >= 0 and x < n and y >= 0 and y < m and (maze[x][y] == 0 or maze[x][y] == 2) and not inQueue[x][y]
+    return 0 <= x < n and 0 <= y < m and (maze[x][y] == 0 or maze[x][y] == 2) and not inQueue[x][y]
 
 def BFS(x, y):
-    q = Queue()
-    q.put((x, y))
+    q = deque([(x, y)])
     inQueue[x][y] = True
     step = 0
-    while not q.empty():
-        cnt = q.qsize()
+    while q:
+        cnt = len(q)
         while cnt > 0:
-            front = q.get()
+            front = q.popleft()
             cnt -= 1
             if front[0] == n - 1 and front[1] == m - 1:
                 return step
@@ -1833,11 +1916,11 @@ def BFS(x, y):
                 nextY = front[1] + dy[i]
                 if canVisit(nextX, nextY):
                     inQueue[nextX][nextY] = True
-                    q.put((nextX, nextY))
+                    q.append((nextX, nextY))
                     if maze[nextX][nextY] == 2:
                         transPosition = transMap[(nextX, nextY)]
                         inQueue[transPosition[0]][transPosition[1]] = True
-                        q.put(transPosition)
+                        q.append(transPosition)
         step += 1
     return -1
 
@@ -1846,28 +1929,28 @@ maze = []
 inQueue = [[False] * m for _ in range(n)]
 transMap = {}
 transVector = []
+
 for i in range(n):
     row = list(map(int, input().split()))
     maze.append(row)
 
     if 2 in row:
-        #transVector.append( (i, j) for j, val in enumerate(row) if val == 2)
         for j, val in enumerate(row):
             if val == 2:
-                transVector.append((i,j))
-
+                transVector.append((i, j))
+        
         if len(transVector) == 2:
             transMap[transVector[0]] = transVector[1]
             transMap[transVector[1]] = transVector[0]
+            transVector = []  # 清空 transVector 以便处理下一对传送点
 
-    #print(transMap)
 step = BFS(0, 0)
 print(step)
 ```
 
 
 
-### 2.9 中国象棋-马-无障碍
+### 示例：sy326中国象棋-马-无障碍
 
  https://sunnywhy.com/sfbj/8/2/326
 
@@ -1955,7 +2038,7 @@ for row in minStep:
 
 
 
-### 2.10 中国象棋-马-有障碍
+### 示例：sy327中国象棋-马-有障碍
 
 https://sunnywhy.com/sfbj/8/2/327
 
