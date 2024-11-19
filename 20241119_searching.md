@@ -1,18 +1,14 @@
 # 20241119-Week11 搜索专题
 
-Updated 1731 GMT+8 Nov 16 2024
+Updated 1408 GMT+8 Nov 19 2024
 
 2024 fall, Complied by Hongfei Yan
-
-
 
 
 
 > Log:
 >
 > 2024/11/13 部分内容取自, https://github.com/GMyhf/2023fall-cs101/blob/main/searching_questions.md
-
-
 
 
 
@@ -2090,6 +2086,67 @@ https://sunnywhy.com/sfbj/8/2/327
 
 
 
+
+
+<img src="/Users/hfyan/Library/Application Support/typora-user-images/image-20240525200326139.png" alt="image-20240525200326139" style="zoom: 50%;" />
+
+```python
+from collections import deque
+
+MAXD = 8
+dx = [-2,-2,-1,1,2,2,1,-1]
+dy = [1,-1,-2,-2,-1,1,2,2]
+
+
+def canVisit(x, y):
+    return x >= 0 and x < n and y >= 0 and y < m and not isBlock.get((x, y), False) and not inQueue[x][y]
+
+
+def BFS(x, y):
+    minStep = [[-1] * m for _ in range(n)]
+    queue = deque()
+    queue.append((x, y))
+    inQueue[x][y] = True
+    minStep[x][y] = 0
+    step = 0
+    while queue:
+        cnt = len(queue)
+        for _ in range(cnt):
+            front = queue.popleft()
+            wx, wy = [-1, 0, 1, 0], [0, -1, 0, 1]
+            for i in range(MAXD):
+                nextX = front[0] + dx[i]
+                nextY = front[1] + dy[i]
+                footX, footY = front[0] + wx[i//2], front[1] + wy[i//2]
+
+                if canVisit(nextX, nextY) and not isBlock.get((footX, footY), False):
+                    inQueue[nextX][nextY] = True
+                    minStep[nextX][nextY] = step + 1
+                    queue.append((nextX, nextY))
+
+
+        step += 1
+    return minStep
+
+n, m, x, y = map(int, input().split())
+inQueue = [[False] * m for _ in range(n)]
+isBlock = {}
+
+k = int(input())
+for _ in range(k):
+    blockX, blockY = map(int, input().split())
+    isBlock[(blockX - 1, blockY - 1)] = True
+
+minStep = BFS(x - 1, y - 1)
+
+for row in minStep:
+    print(' '.join(map(str, row)))
+```
+
+
+
+
+
 ```python
 from collections import deque
 
@@ -2151,118 +2208,13 @@ for row in minStep:
 
 
 
-## ~~3 递归可视化（之前课件有讲到）~~
-
-
-
-### dfs生成排列
-
-```python
-from recviz import recviz
-
-
-maxn = 11
-hashTable = [False]*maxn  # 当整数i已经在数组 P中时为 true
-
-@recviz
-def increasing_permutaions(n, prefix=[]):
-    if len(prefix) == n:  # 递归边界，已经处理完排列的1~位
-        return [prefix]
-    
-    result = []
-    for i in range(1, n+1):
-        if hashTable[i]:
-            continue
-        
-        hashTable[i] = True  #记i已在prefix中
-        # 把i加入当前排列，处理排列的后续号位
-        result += increasing_permutaions(n, prefix+[i]) 
-        hashTable[i] = False #处理完为i的子问题，还原状态
-        
-    return result
-
-
-n = int(input())
-result = increasing_permutaions(n)
-for r in result:
-    print(r)
-```
-
-
-
-![image-20231128135735294](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231128135735294.png)
-
-
-
-### 02754: 八皇后
-
-dfs and similar, http://cs101.openjudge.cn/practice/02754
-
-描述：会下国际象棋的人都很清楚：皇后可以在横、竖、斜线上不限步数地吃掉其他棋子。如何将8个皇后放在棋盘上（有8 * 8个方格），使它们谁也不能被吃掉！这就是著名的八皇后问题。
-对于某个满足要求的8皇后的摆放方法，定义一个皇后串a与之对应，即$a=b_1b_2...b_8~$,其中$b_i$为相应摆法中第i行皇后所处的列数。已经知道8皇后问题一共有92组解（即92个不同的皇后串）。
-给出一个数b，要求输出第b个串。串的比较是这样的：皇后串x置于皇后串y之前，当且仅当将x视为整数时比y小。
-
-八皇后是一个古老的经典问题：**如何在一张国际象棋的棋盘上，摆放8个皇后，使其任意两个皇后互相不受攻击。**该问题由一位德国**国际象棋排局家** **Max Bezzel** 于 1848年提出。严格来说，那个年代，还没有“德国”这个国家，彼时称作“普鲁士”。1850年，**Franz Nauck** 给出了第一个解，并将其扩展成了“ **n皇后** ”问题，即**在一张 n** x **n 的棋盘上，如何摆放 n 个皇后，使其两两互不攻击**。历史上，八皇后问题曾惊动过“数学王子”高斯(Gauss)，而且正是 Franz Nauck 写信找高斯请教的。
-
-**输入**
-
-第1行是测试数据的组数n，后面跟着n行输入。每组测试数据占1行，包括一个正整数b(1 ≤  b ≤  92)
-
-**输出**
-
-输出有n行，每行输出对应一个输入。输出应是一个正整数，是对应于b的皇后串。
-
-样例输入
-
-```
-2
-1
-92
-```
-
-样例输出
-
-```
-15863724
-84136275
-```
-
-
-
-这里在记录解的时候，不能直接引用数组，否则最终解集中的解都是重复的，要进行拷贝，另外开辟出一个数组空间用解集记录。
-
-```python
-ans = []
-def queen_dfs(A, cur=0):          #考虑放第cur行的皇后
-    if cur == len(A):             #如果已经放了n个皇后，一组新的解产生了
-        ans.append(''.join([str(x+1) for x in A])) #注意避免浅拷贝
-        return 
-    
-    for col in range(len(A)):     #将当前皇后逐一放置在不同的列，每列对应一组解
-        for row in range(cur):    #逐一判定，与前面的皇后是否冲突
-            #因为预先确定所有皇后一定不在同一行，所以只需要检查是否同列，或者在同一斜线上
-            if A[row] == col or abs(col - A[row]) == cur - row:
-                break
-        else:                     #若都不冲突
-            A[cur] = col          #放置新皇后，在cur行，col列
-            queen_dfs(A, cur+1)	  #对下一个皇后位置进行递归
-            
-queen_dfs([None]*8)   
-for _ in range(int(input())):
-    print(ans[int(input()) - 1])
-```
-
-
-
-![image-20231205002333349](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231205002333349.png)
 
 
 
 
 
 
-
-## 4 相关题目
+## 3 相关题目
 
 ### 02287: Tian Ji -- The Horse Racing
 
@@ -2945,6 +2897,20 @@ thread = threading.Thread(target=main)
 thread.start()
 thread.join()
 ```
+
+
+
+### 02754: 八皇后
+
+dfs and similar, http://cs101.openjudge.cn/practice/02754
+
+描述：会下国际象棋的人都很清楚：皇后可以在横、竖、斜线上不限步数地吃掉其他棋子。如何将8个皇后放在棋盘上（有8 * 8个方格），使它们谁也不能被吃掉！这就是著名的八皇后问题。
+对于某个满足要求的8皇后的摆放方法，定义一个皇后串a与之对应，即$a=b_1b_2...b_8~$,其中$b_i$为相应摆法中第i行皇后所处的列数。已经知道8皇后问题一共有92组解（即92个不同的皇后串）。
+给出一个数b，要求输出第b个串。串的比较是这样的：皇后串x置于皇后串y之前，当且仅当将x视为整数时比y小。
+
+八皇后是一个古老的经典问题：**如何在一张国际象棋的棋盘上，摆放8个皇后，使其任意两个皇后互相不受攻击。**该问题由一位德国**国际象棋排局家** **Max Bezzel** 于 1848年提出。严格来说，那个年代，还没有“德国”这个国家，彼时称作“普鲁士”。1850年，**Franz Nauck** 给出了第一个解，并将其扩展成了“ **n皇后** ”问题，即**在一张 n** x **n 的棋盘上，如何摆放 n 个皇后，使其两两互不攻击**。历史上，八皇后问题曾惊动过“数学王子”高斯(Gauss)，而且正是 Franz Nauck 写信找高斯请教的。
+
+
 
 
 
