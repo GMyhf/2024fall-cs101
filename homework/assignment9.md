@@ -1,6 +1,6 @@
-# Assignment #9: 3dp & 3dfs
+# Assignment #9: dfs, bfs, & dp
 
-Updated 0928 GMT+8 Nov 19, 2024
+Updated 2107 GMT+8 Nov 19, 2024
 
 2024 fall, Complied by <mark>同学的姓名、院系</mark>
 
@@ -18,9 +18,9 @@ Updated 0928 GMT+8 Nov 19, 2024
 
 ## 1. 题目
 
-### 1
+### 18160: 最大连通域面积
 
-m
+dfs similar, http://cs101.openjudge.cn/practice/18160
 
 思路：
 
@@ -40,11 +40,9 @@ m
 
 
 
-## 62.不同路径
+### 19930: 寻宝
 
-dp, https://leetcode.cn/problems/unique-paths/
-
-与OJ这个题目一样的 18106: 螺旋矩阵，http://cs101.openjudge.cn/practice/18106
+bfs, http://cs101.openjudge.cn/practice/19930
 
 思路：
 
@@ -64,33 +62,9 @@ dp, https://leetcode.cn/problems/unique-paths/
 
 
 
-### 0
+### 04123: 马走日
 
-m
-
-思路：
-
-
-
-代码：
-
-```python
-
-```
-
-
-
-代码运行截图 <mark>（至少包含有"Accepted"）</mark>
-
-
-
-
-
-### L
-
-gr
-
-与OJ这个题目一样的，2
+dfs, http://cs101.openjudge.cn/practice/04123
 
 思路：
 
@@ -110,9 +84,9 @@ gr
 
 
 
-### C
+### sy316: 矩阵最大权值路径
 
-d
+dfs, https://sunnywhy.com/sfbj/8/1/316
 
 思路：
 
@@ -132,9 +106,33 @@ d
 
 
 
-### 0
 
-g
+
+### LeetCode62.不同路径
+
+dp, https://leetcode.cn/problems/unique-paths/
+
+思路：
+
+
+
+代码：
+
+```python
+
+```
+
+
+
+代码运行截图 <mark>（至少包含有"Accepted"）</mark>
+
+
+
+
+
+### sy358: 受到祝福的平方
+
+dfs, dp, https://sunnywhy.com/sfbj/8/3/539
 
 思路：
 
