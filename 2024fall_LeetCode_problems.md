@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1211 GMT+8 Nov 19 2024
+Updated 1928 GMT+8 Nov 20 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -1370,7 +1370,7 @@ class Solution:
 
 ## 62.不同路径
 
-dp, https://leetcode.cn/problems/unique-paths/
+dp, math, https://leetcode.cn/problems/unique-paths/
 
 一个机器人位于一个 `m x n` 网格的左上角 （起始点在下图中标记为 “Start” ）。
 
@@ -1490,6 +1490,20 @@ class Solution:
 ```
 
 使用动态规划来计算从左上角到右下角的不同路径数。我们创建了一个 `dp` 数组，其中 `dp[i][j]` 表示到达 `(i, j)` 位置的路径数。初始化时，所有第一行和第一列的值都设为 1，因为从起点到这些位置只有唯一的一条路径。然后，对于其他每个位置 `(i, j)`，其路径数等于从上方和左侧到达该位置的路径数之和。最后返回 `dp[m-1][n-1]` 即为所求的答案。
+
+
+
+math思路
+
+从左上角到右下角的过程中，我们需要移动 m+n−2 次，其中有 m−1 次向下移动，n−1 次向右移动。因此路径的总数，就等于从 m+n−2 次移动中选择 m−1 次向下移动的方案数，即组合数：
+
+```python
+class Solution:
+    def uniquePaths(self, m: int, n: int) -> int:
+        import math   
+        result = math.comb(m+n-2,m-1)
+        return result 
+```
 
 
 
