@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1414 GMT+8 Nov 21 2024
+Updated 1605 GMT+8 Nov 21 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -1698,6 +1698,27 @@ class Solution:
         result = math.comb(m+n-2,m-1)
         return result 
 ```
+
+
+
+思路：选择用Iru_cache的方法加上递归就可以轻松完成（耗时10min)
+
+```python
+# 胡家豪 24元培学院
+class Solution:
+    def uniquePaths(self, m: int, n: int) -> int:
+        from functools import lru_cache
+
+        @lru_cache(maxsize=None)
+        def roads(m,n):
+            if m==1 or n==1:
+                return 1
+            else:
+                return roads(m-1,n)+roads(m,n-1)
+        return roads(m,n)
+```
+
+
 
 
 
