@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1928 GMT+8 Nov 20 2024
+Updated 1414 GMT+8 Nov 21 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -1017,6 +1017,61 @@ if __name__ == "__main__":
 
 
 
+## 22.括号生成
+
+backtracking, https://leetcode.cn/problems/generate-parentheses/
+
+数字 `n` 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 **有效的** 括号组合。
+
+ 
+
+**示例 1：**
+
+```
+输入：n = 3
+输出：["((()))","(()())","(())()","()(())","()()()"]
+```
+
+**示例 2：**
+
+```
+输入：n = 1
+输出：["()"]
+```
+
+ 
+
+**提示：**
+
+- `1 <= n <= 8`
+
+
+
+```python
+from typing import List
+class Solution:
+    def generateParenthesis(self, n: int) -> List[str]:
+        ans = []
+        def backtrack(S = '', left = 0, right = 0):
+            if len(S) == 2 * n:
+                ans.append(S)
+                return
+            if left < n:
+                backtrack(S+'(', left+1, right)
+            if right < left:
+                backtrack(S+')', left, right+1)
+        backtrack()
+        return ans
+
+
+if __name__ == "__main__":
+    sol = Solution()
+    n = 3
+    print(sol.generateParenthesis(n))
+```
+
+
+
 ## 31.下一个排列
 
 two pointers, https://leetcode.cn/problems/next-permutation/
@@ -1112,9 +1167,81 @@ class Solution:
 
 
 
+## 39.组合总和
+
+backtracking, https://leetcode.cn/problems/combination-sum/
+
+给你一个 **无重复元素** 的整数数组 `candidates` 和一个目标整数 `target` ，找出 `candidates` 中可以使数字和为目标数 `target` 的 所有 **不同组合** ，并以列表形式返回。你可以按 **任意顺序** 返回这些组合。
+
+`candidates` 中的 **同一个** 数字可以 **无限制重复被选取** 。如果至少一个数字的被选数量不同，则两种组合是不同的。 
+
+对于给定的输入，保证和为 `target` 的不同组合数少于 `150` 个。
+
+ 
+
+**示例 1：**
+
+```
+输入：candidates = [2,3,6,7], target = 7
+输出：[[2,2,3],[7]]
+解释：
+2 和 3 可以形成一组候选，2 + 2 + 3 = 7 。注意 2 可以使用多次。
+7 也是一个候选， 7 = 7 。
+仅有这两种组合。
+```
+
+**示例 2：**
+
+```
+输入: candidates = [2,3,5], target = 8
+输出: [[2,2,2,2],[2,3,3],[3,5]]
+```
+
+**示例 3：**
+
+```
+输入: candidates = [2], target = 1
+输出: []
+```
+
+ 
+
+**提示：**
+
+- `1 <= candidates.length <= 30`
+- `2 <= candidates[i] <= 40`
+- `candidates` 的所有元素 **互不相同**
+- `1 <= target <= 40`
+
+
+
+```python
+from typing import List
+class Solution:
+    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+        ans = []
+        def backtrack(start, target, path):
+            if target == 0:
+                ans.append(path)
+                return
+            for i in range(start, len(candidates)):
+                if candidates[i] > target:
+                    continue
+                backtrack(i, target-candidates[i], path+[candidates[i]])
+        backtrack(0, target, []) # start with an empty list
+        return ans
+
+if __name__ == "__main__":
+    candidates = [2,3,6,7]
+    target = 7
+    print(Solution().combinationSum(candidates, target))
+```
+
+
+
 ## 46.全排列
 
-dfs, https://leetcode.cn/problems/permutations/
+backtracking, https://leetcode.cn/problems/permutations/
 
 给定一个不含重复数字的数组 `nums` ，返回其 *所有可能的全排列* 。你可以 **按任意顺序** 返回答案。
 
