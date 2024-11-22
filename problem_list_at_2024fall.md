@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 0036 GMT+8 Nov 16 2024. 2024 fall, Complied by Hongfei Yan
+Updated 2338 GMT+8 Nov 22 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 1101 改为每天放1个题目。  
@@ -28,6 +28,8 @@ leetcode.cn
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 1124 | 34.在排序数组中查找元素的第一个和最后一个位置    | binary search       | - | https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/         |
+| 1123 | 74.搜索二维矩阵    | binary search       | - | https://leetcode.cn/problems/search-a-2d-matrix/         |
 | 1122 | 135.分发糖果    | greedy       | - | https://leetcode.cn/problems/candy/         |
 | 1121 | 42.接雨水       | monotonic stack, two pointers      | - | https://leetcode.cn/problems/trapping-rain-water/         |
 | 1120 | 376.摆动序列      | greedy, dp      | - | https://leetcode.cn/problems/wiggle-subsequence/         |
