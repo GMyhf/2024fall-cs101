@@ -34,7 +34,7 @@ leetcode.cn
 | 1123 | 74.搜索二维矩阵    | binary search       | medium | https://leetcode.cn/problems/search-a-2d-matrix/         |
 | 1122 | 135.分发糖果    | greedy       | tough | https://leetcode.cn/problems/candy/         |
 | 1121 | 42.接雨水       | monotonic stack, two pointers      | tough | https://leetcode.cn/problems/trapping-rain-water/         |
-| 1120 | 376.摆动序列      | greedy, dp      | - | https://leetcode.cn/problems/wiggle-subsequence/         |
+| 1120 | 376.摆动序列      | greedy, dp      | medium | https://leetcode.cn/problems/wiggle-subsequence/         |
 | 1119 | 3.无重复字符的最长子串   | sliding window       | medium |  https://leetcode.cn/problems/longest-substring-without-repeating-characters/        |
 | 1118 | 54.螺旋矩阵      | matrix      | medium |  https://leetcode.cn/problems/spiral-matrix/        |
 | 1117 | 62.不同路径      | dp      | medium |  https://leetcode.cn/problems/unique-paths/        |
