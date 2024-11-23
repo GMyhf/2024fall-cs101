@@ -50,8 +50,8 @@ leetcode.cn
 | 1108 | 01384: Piggy-Bank      | dp                | - |  http://cs101.openjudge.cn/2024fallroutine/01384        |
 | 1107 | 455A. Boredom | dp | 1500  | https://codeforces.com/problemset/problem/455/A    |
 | 1106 | 02766: 最大子矩阵      | -                | - |  http://cs101.openjudge.cn/2024fallroutine/02766        |
-| 1105 | 01065: Wooden Sticks      | -                | - |  http://cs101.openjudge.cn/2024fallroutine/01065        |
-| 1104 | 28389: 跳高      | -                | - |  http://cs101.openjudge.cn/2024fallroutine/28389        |
+| 1105 | 01065: Wooden Sticks      | Dilworth's theorem      | - |  http://cs101.openjudge.cn/2024fallroutine/01065        |
+| 1104 | 28389: 跳高      | Dilworth's theorem       | - |  http://cs101.openjudge.cn/2024fallroutine/28389        |
 | 1103 | sy134: 全排列III | backtracking based recursion   | -  | https://sunnywhy.com/sfbj/4/3/134    |
 | 1102 | 2033D. Kousuke's Assignment | data structures, dp, dsu, greedy, math | 1300  | https://codeforces.com/problemset/problem/2033/D    |
 | 1101 | 1195C. Basketball Exercise | dp | 1400  | https://codeforces.com/problemset/problem/1195/C    |
