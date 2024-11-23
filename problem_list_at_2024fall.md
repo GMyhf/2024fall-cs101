@@ -30,14 +30,14 @@ leetcode.cn
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 | 1126 | 09267: 核电站      | dfs, dp      | - |  http://cs101.openjudge.cn/practice/09267        |
 | 1125 | 431C. k-Tree | dp | 1600  | https://codeforces.com/problemset/problem/431/C    |
-| 1124 | 34.在排序数组中查找元素的第一个和最后一个位置    | binary search       | - | https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/         |
-| 1123 | 74.搜索二维矩阵    | binary search       | - | https://leetcode.cn/problems/search-a-2d-matrix/         |
-| 1122 | 135.分发糖果    | greedy       | - | https://leetcode.cn/problems/candy/         |
-| 1121 | 42.接雨水       | monotonic stack, two pointers      | - | https://leetcode.cn/problems/trapping-rain-water/         |
+| 1124 | 34.在排序数组中查找元素的第一个和最后一个位置    | binary search       | medium | https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/         |
+| 1123 | 74.搜索二维矩阵    | binary search       | medium | https://leetcode.cn/problems/search-a-2d-matrix/         |
+| 1122 | 135.分发糖果    | greedy       | tough | https://leetcode.cn/problems/candy/         |
+| 1121 | 42.接雨水       | monotonic stack, two pointers      | tough | https://leetcode.cn/problems/trapping-rain-water/         |
 | 1120 | 376.摆动序列      | greedy, dp      | - | https://leetcode.cn/problems/wiggle-subsequence/         |
-| 1119 | 3.无重复字符的最长子串   | sliding window       | - |  https://leetcode.cn/problems/longest-substring-without-repeating-characters/        |
-| 1118 | 54.螺旋矩阵      | matrix      | - |  https://leetcode.cn/problems/spiral-matrix/        |
-| 1117 | 62.不同路径      | dp      | - |  https://leetcode.cn/problems/unique-paths/        |
+| 1119 | 3.无重复字符的最长子串   | sliding window       | medium |  https://leetcode.cn/problems/longest-substring-without-repeating-characters/        |
+| 1118 | 54.螺旋矩阵      | matrix      | medium |  https://leetcode.cn/problems/spiral-matrix/        |
+| 1117 | 62.不同路径      | dp      | medium |  https://leetcode.cn/problems/unique-paths/        |
 |  |           | -                                    | -    | LeetCode era         |
 | 1116 | 02456: Aggressive cows      | binary search      | - |  http://cs101.openjudge.cn/2024fallroutine/02456        |
 | 1115 | 07622: 求排列的逆序数      | merge sort               | - |  http://cs101.openjudge.cn/2024fallroutine/07622        |
