@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 2258 GMT+8 Nov 23 2024. 2024 fall, Complied by Hongfei Yan
+Updated 1359 GMT+8 Nov 24 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 1101 改为每天放1个题目。  
@@ -28,6 +28,7 @@ leetcode.cn
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 1127 | 474D. Flowers | dp | 1700  | https://codeforces.com/problemset/problem/474/D    |
 | 1126 | 09267: 核电站      | dfs, dp      | - |  http://cs101.openjudge.cn/practice/09267        |
 | 1125 | 431C. k-Tree | dp | 1600  | https://codeforces.com/problemset/problem/431/C    |
 | 1124 | 34.在排序数组中查找元素的第一个和最后一个位置    | binary search       | medium | https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/         |
