@@ -1803,6 +1803,48 @@ if __name__ == "__main__":
 
 
 
+因为纯dfs超时，考虑使用lru_cache。
+
+> 使用 `lru_cache` 时需要注意一些细节，特别是当涉及到类方法和状态共享时。在上面的代码中，`lru_cache` 缓存的是 `dfs` 函数的结果，但是 `dfs` 函数内部修改了类的状态（即 `self.cnt`），这会导致缓存的行为不符合预期。
+>
+> 具体来说，`lru_cache` 会缓存 `dfs` 函数的返回值，而不是函数执行过程中的副作用（如修改 `self.cnt`）。因此，当 `dfs` 函数被多次调用时，`self.cnt` 的值可能不会按预期增加。
+>
+> 为了解决这个问题，可以考虑以下方法：使用 `lru_cache` 但不依赖类状态
+>
+> 通过将 `cnt` 作为返回值传递，避免了类状态的影响，同时利用 `lru_cache` 提高了性能。
+
+```python
+from functools import lru_cache
+
+class Solution:
+    def uniquePaths(self, m: int, n: int) -> int:
+        dx = [0, 1]
+        dy = [1, 0]
+
+        @lru_cache(maxsize=None)
+        def dfs(x, y):
+            if x == m - 1 and y == n - 1:
+                return 1
+            cnt = 0
+            for i in range(2):
+                nx = x + dx[i]
+                ny = y + dy[i]
+                if 0 <= nx < m and 0 <= ny < n:
+                    cnt += dfs(nx, ny)
+            return cnt
+
+        return dfs(0, 0)
+
+# 示例用法
+if __name__ == "__main__":
+    sol = Solution()
+    m = 3
+    n = 7
+    print(sol.uniquePaths(m, n))
+```
+
+
+
 使用深度优先搜索（DFS）来解决这个问题效率不高，特别是当网格很大时。这个问题可以通过动态规划（Dynamic Programming, DP）来更高效地解决。动态规划可以避免重复计算，并且时间复杂度为 O(m*n)。
 
 ```python
