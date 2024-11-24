@@ -28,6 +28,8 @@ leetcode.cn
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 1129 | 04102: 宠物小精灵之收服      | dp      | - |  http://cs101.openjudge.cn/practice/04102        |
+| 1128 | 27401: 最佳凑单      | dp      | - |  http://cs101.openjudge.cn/practice/27401        |
 | 1127 | 474D. Flowers | dp | 1700  | https://codeforces.com/problemset/problem/474/D    |
 | 1126 | 09267: 核电站      | dfs, dp      | - |  http://cs101.openjudge.cn/practice/09267        |
 | 1125 | 431C. k-Tree | dp | 1600  | https://codeforces.com/problemset/problem/431/C    |
