@@ -1,6 +1,6 @@
 # Assignment #10: dp & bfs
 
-Updated 2253 GMT+8 Nov 25, 2024
+Updated 2 GMT+8 Nov 25, 2024
 
 2024 fall, Complied by <mark>同学的姓名、院系</mark>
 
