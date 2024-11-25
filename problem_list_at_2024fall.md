@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 1153 GMT+8 Nov 25 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0002 GMT+8 Nov 26 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 1101 改为每天放1个题目。  
@@ -32,7 +32,7 @@ leetcode.cn
 | 1129 | 27401: 最佳凑单      | dp      | - |  http://cs101.openjudge.cn/practice/27401        |
 | 1128 | 474D. Flowers | dp | 1700  | https://codeforces.com/problemset/problem/474/D    |
 | 1127 | P1255: 数楼梯 | dp, bfs | -  | https://www.luogu.com.cn/problem/P1255    |
-| 1126 | 09267: 核电站      | dfs, dp      | - |  http://cs101.openjudge.cn/practice/09267        |
+| 1126 | 09267: 核电站      | dfs, dp      | - |  http://cs101.openjudge.cn/2024fallroutine/09267        |
 | 1125 | 431C. k-Tree | dp | 1600  | https://codeforces.com/problemset/problem/431/C    |
 | 1124 | 34.在排序数组中查找元素的第一个和最后一个位置    | binary search       | medium | https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/         |
 | 1123 | 74.搜索二维矩阵    | binary search       | medium | https://leetcode.cn/problems/search-a-2d-matrix/         |
