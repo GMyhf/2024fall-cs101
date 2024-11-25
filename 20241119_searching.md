@@ -1,6 +1,6 @@
 # 20241119-Week11 搜索专题
 
-Updated 0129 GMT+8 Nov 20 2024
+Updated 2345 GMT+8 Nov 25 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -215,7 +215,7 @@ print(cnt)
 
 
 
-> OJ的pylint是静态检查，有时候报的不对。解决方法有两种，如下：
+> OJ的pylint是静态检查，有时候报的编译错误Compile Error不对。解决方法有两种，如下：
 > 1）第一行加# pylint: skip-file
 > 2）方法二：如果函数内使用全局变量（变量类型是immutable，如int），则需要在程序最开始声明一下。如果是全局变量是list类型，则不受影响。
 
@@ -638,6 +638,12 @@ https://sunnywhy.com/sfbj/8/1/316
 
 **DFS辅助visited空间**
 
+需要注意的地方是 current_path[:]那里，如果不用切片拷贝的话， max_path 会随着后续 current_path 改变，就会 WA。
+
+max_path也需要global
+
+理解为什么“回溯”这一步要把visited状态重新改回`False`，因为回溯顾名思义，实际上就是用另一种方法重走这一步，看看有没有其他的情况
+
 ```python
 # 读取输入
 n, m = map(int, input().split())
@@ -685,54 +691,6 @@ dfs(0, 0, [(0, 0)], maze[0][0])
 for x, y in max_path:
     print(x + 1, y + 1)
 
-```
-
-
-
-#### DFS辅助visited空间
-
-```python
-MAXN = 5
-INF = float('inf')
-n, m = map(int, input().split())
-maze = []
-for _ in range(n):
-    row = list(map(int, input().split()))
-    maze.append(row)
-
-visited = [[False for _ in range(m)] for _ in range(n)]
-maxValue = -INF
-tempPath, optPath = [], []
-
-MAXD = 4
-dx = [0, 0, 1, -1]
-dy = [1, -1, 0, 0]
-
-def is_valid(x, y):
-    return 0 <= x < n and 0 <= y < m and not visited[x][y]
-
-def DFS(x, y, nowValue):
-    global maxValue, tempPath, optPath
-    if x == n - 1 and y == m - 1:
-        if nowValue > maxValue:
-            maxValue = nowValue
-            optPath = list(tempPath)
-        return
-    visited[x][y] = True
-    for i in range(MAXD):
-        nextX = x + dx[i]
-        nextY = y + dy[i]
-        if is_valid(nextX, nextY):
-            nextValue = nowValue + maze[nextX][nextY]
-            tempPath.append((nextX, nextY))
-            DFS(nextX, nextY, nextValue)
-            tempPath.pop()
-    visited[x][y] = False
-
-tempPath.append((0, 0))
-DFS(0, 0, maze[0][0])
-for pos in optPath:
-    print(pos[0] + 1, pos[1] + 1)
 ```
 
 
@@ -835,7 +793,6 @@ print(maxValue)
 #### 辅助visited空间
 
 ```python
-# gpt translated version of the C++ code
 MAXN = 5
 INF = float('inf')
 n, m = map(int, input().split())
