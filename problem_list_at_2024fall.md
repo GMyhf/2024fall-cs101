@@ -31,7 +31,7 @@ leetcode.cn
 | 1130 | 04102: 宠物小精灵之收服      | dp      | - |  http://cs101.openjudge.cn/practice/04102        |
 | 1129 | 27401: 最佳凑单      | dp      | - |  http://cs101.openjudge.cn/practice/27401        |
 | 1128 | 474D. Flowers | dp | 1700  | https://codeforces.com/problemset/problem/474/D    |
-| 1127 | P1255: 数楼梯 | dp, dfs | -  | https://www.luogu.com.cn/problem/P1255    |
+| 1127 | P1255: 数楼梯 | dp, bfs | -  | https://www.luogu.com.cn/problem/P1255    |
 | 1126 | 09267: 核电站      | dfs, dp      | - |  http://cs101.openjudge.cn/practice/09267        |
 | 1125 | 431C. k-Tree | dp | 1600  | https://codeforces.com/problemset/problem/431/C    |
 | 1124 | 34.在排序数组中查找元素的第一个和最后一个位置    | binary search       | medium | https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/         |
