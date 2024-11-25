@@ -1,6 +1,6 @@
 # Assignment #10: dp & bfs
 
-Updated 1708 GMT+8 Nov 25, 2024
+Updated 2253 GMT+8 Nov 25, 2024
 
 2024 fall, Complied by <mark>同学的姓名、院系</mark>
 
@@ -108,9 +108,9 @@ dp, two pointers, string, https://leetcode.cn/problems/longest-palindromic-subst
 
 
 
-### 02802: 小游戏
+### 12029: 水淹七军
 
-bfs, http://cs101.openjudge.cn/practice/02802/ 
+bfs, dfs, http://cs101.openjudge.cn/practice/12029/
 
 思路：
 
@@ -130,9 +130,9 @@ bfs, http://cs101.openjudge.cn/practice/02802/
 
 
 
-### 04129: 变换的迷宫
+### 02802: 小游戏
 
-bfs, http://cs101.openjudge.cn/practice/04129
+bfs, http://cs101.openjudge.cn/practice/02802/
 
 思路：
 
