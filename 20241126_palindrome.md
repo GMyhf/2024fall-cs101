@@ -716,6 +716,28 @@ class TuringMachine:
 
 ​	如果对上面类图的写法不熟悉，可以直接看下面两个 二进制补、加法的 程序，把TuringMachine理解为提供的图灵机工具。
 
+
+
+> ## Example: Binary Complement function
+>
+> https://python-course.eu/applications-python/turing-machine.php
+>
+> Let's define a Turing machine, which complements a binary input on the tape, i.e. an input "1100111" e.g. will be turned into "0011000".
+> Σ = {0, 1}
+> Q = {init, final}
+> $q_0$ = init
+> $q_f$ = final
+>
+> | Function Definition       | Description                                                  |
+> | ------------------------- | ------------------------------------------------------------ |
+> | δ(init,0) = (init, 1, R)  | If the machine is in state "init" and a 0 is read by the head, a 1 will be written, the state will change to "init" (so actually, it will not change) and the head will be moved one field to the right. |
+> | δ(init,1) = (init, 0, R)  | If the machine is in state "init" and a 1 is read by the head, a 0 will be written, the state will change to "init" (so actually, it will not change) and the head will be moved one field to the right. |
+> | δ(init,b) = (final, b, N) | If a blank ("b"), defining the end of the input string, is read, the TM reaches the final state "final" and halts. |
+>
+>  
+
+
+
 ```python
 # binary_complement.py
 from turing_machine import TuringMachine
