@@ -1,6 +1,6 @@
 # 20241126-Week12 OOP, dp and searching
 
-Updated 0112 GMT+8 Nov 26, 2024
+Updated 1415 GMT+8 Nov 26, 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -346,6 +346,459 @@ if __name__ == "__main__":
 
 
 
+### 示例LeetCode62.不同路径
+
+dp, math, https://leetcode.cn/problems/unique-paths/
+
+一个机器人位于一个 `m x n` 网格的左上角 （起始点在下图中标记为 “Start” ）。
+
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为 “Finish” ）。
+
+问总共有多少条不同的路径？
+
+ 
+
+**示例 1：**
+
+![img](https://pic.leetcode.cn/1697422740-adxmsI-image.png)
+
+```
+输入：m = 3, n = 7
+输出：28
+```
+
+**示例 2：**
+
+```
+输入：m = 3, n = 2
+输出：3
+解释：
+从左上角开始，总共有 3 条路径可以到达右下角。
+1. 向右 -> 向下 -> 向下
+2. 向下 -> 向下 -> 向右
+3. 向下 -> 向右 -> 向下
+```
+
+**示例 3：**
+
+```
+输入：m = 7, n = 3
+输出：28
+```
+
+**示例 4：**
+
+```
+输入：m = 3, n = 3
+输出：6
+```
+
+ 
+
+**提示：**
+
+- `1 <= m, n <= 100`
+- 题目数据保证答案小于等于 `2 * 10^9`
+
+
+
+dfs, dp都可以实现，但是dfs在`m=23,n=12`超时，dp数组初始化需要想明白。
+
+将 cnt 作为类的属性来管理，或者将 cnt 作为参数传递给 dfs 函数。这里我们选择将 cnt 作为类的属性来管理，这样可以保持代码的清晰和简洁。 `self.cnt = 0` 不需要写在 `uniquePaths` 函数的内部，可以在类的初始化方法 `__init__` 中进行初始化。这样做可以确保每次创建新的 `Solution` 实例时，`cnt` 都会被重置为 0。
+
+```python
+# dfs 超时
+class Solution:
+    def __init__(self):
+        self.cnt = 0
+
+    def uniquePaths(self, m: int, n: int) -> int:
+        dx = [0, 1]
+        dy = [1, 0]
+        visited = [[False] * n for _ in range(m)]
+
+        def dfs(x, y):
+            if x == m - 1 and y == n - 1:
+                self.cnt += 1
+                return
+            visited[x][y] = True
+            for i in range(2):
+                nx = x + dx[i]
+                ny = y + dy[i]
+                if 0 <= nx < m and 0 <= ny < n and not visited[nx][ny]:
+                    dfs(nx, ny)
+            visited[x][y] = False
+
+        dfs(0, 0)
+        return self.cnt
+
+# 示例用法
+if __name__ == "__main__":
+    sol = Solution()
+    m = 3
+    n = 7
+    print(sol.uniquePaths(m, n))  
+```
+
+
+
+因为纯dfs超时，考虑使用lru_cache。
+
+> 使用 `lru_cache` 时需要注意一些细节，特别是当涉及到类方法和状态共享时。在上面的代码中，`lru_cache` 缓存的是 `dfs` 函数的结果，但是 `dfs` 函数内部修改了类的状态（即 `self.cnt`），这会导致缓存的行为不符合预期。
+>
+> 具体来说，`lru_cache` 会缓存 `dfs` 函数的返回值，而不是函数执行过程中的副作用（如修改 `self.cnt`）。因此，当 `dfs` 函数被多次调用时，`self.cnt` 的值可能不会按预期增加。
+>
+> 为了解决这个问题，可以考虑以下方法：使用 `lru_cache` 但不依赖类状态
+>
+> 通过将 `cnt` 作为返回值传递，避免了类状态的影响，同时利用 `lru_cache` 提高了性能。
+
+```python
+from functools import lru_cache
+
+class Solution:
+    def uniquePaths(self, m: int, n: int) -> int:
+        dx = [0, 1]
+        dy = [1, 0]
+
+        @lru_cache(maxsize=None)
+        def dfs(x, y):
+            if x == m - 1 and y == n - 1:
+                return 1
+            cnt = 0
+            for i in range(2):
+                nx = x + dx[i]
+                ny = y + dy[i]
+                if 0 <= nx < m and 0 <= ny < n:
+                    cnt += dfs(nx, ny)
+            return cnt
+
+        return dfs(0, 0)
+
+# 示例用法
+if __name__ == "__main__":
+    sol = Solution()
+    m = 3
+    n = 7
+    print(sol.uniquePaths(m, n))
+```
+
+
+
+
+
+### 1.4 图灵机
+
+​	艾伦·麦席森·图灵（Alan Mathison Turing，又译阿兰·图灵，1912 年 6 月 23 日－1954 年 6 月 7 日）。阿兰·图灵在 1937 年首次提出一个通用计算设备的设想。设想所有的计算都可能在一种特殊的机器上执行，这就图灵机（Turning Machine）。他将模型建立在人们进行计算过程的行为上，并将这些行为抽象到用于计算的机器的模型中。图灵机由两部分构成，如图1-13所示。
+
+- 一条存储带（tape）：双向无限延长，上有一个个方格（field），每个方格可以包含一个有限字母的字符。在一个真正的机器中，磁带必须足够大，以包含算法的所有数据。
+
+- 一个控制器：包含一个可以双向移动的读写头（head），可以在所处方格中读写一个字符；图灵机每时每刻都处于某种状态（current state），是有限数量的状态中的一种；可以接受设定好的图灵程序 （program），该程序是一个转换列表，它决定了一个给定的 State 和 head 下字符的新状态，一个必须写入 head 下方格的字符和  head 的运动方向，即左、右或静止不动。
+
+> 看见 状态，想起dp
+>
+> 对于一个子串而言，如果它是回文串（Palindrome string），并且长度大于 2，那么将它首尾的两个字母去除之后，它仍然是个回文串。
+>
+> 状态：`dp[i][j]`表示子串`s[i:j+1]`是否为回文子串
+>
+> 状态转移方程：`dp[i][j] = dp[i+1][j-1] ∧ (S[i] == s[j])`
+>
+> 动态规划中的边界条件，即子串的长度为 1 或 2。对于长度为 1 的子串，它显然是个回文串；对于长度为 2 的子串，只要它的两个字母相同，它就是一个回文串。
+
+
+
+![image-20230109195108814](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20230109195108814.png)
+
+<center>图1-13 由一条存储带和一个控制器构成的图灵机（注：图片来源为 baike.sogou.com，2023年1月)</center>
+
+
+
+​	aturingmachine.com 上面展示了 Mike Davey 建造一台机器，如图1-14所示，体现图灵论文中提出的机器的经典外观和感觉。这台图灵机是由微控制器控制的，但它在运行时的操作只基于从 SD 卡加载的一组状态转换，以及从磁带上写入和读取的内容。虽然看起来磁带只是机器的输入和输出，但事实并非如此！磁带也不仅仅是机器的存储器。在某种程度上，磁带就是计算机。当磁带上的符号被简单的规则所操纵时，计算就发生了。图灵机的核心是读写头，传送磁带，并将磁带上的单元格适当地定位。它可以读取一个单元，确定那里写了什么，如果有的话，是什么符号。这台机器一次只工作在一个单元上，并且知道一个单元的情况。机器中的磁带是一卷1000英尺长的白色35毫米胶片带。字符1和0，是由机器用黑色笔写的。
+
+
+
+![image-20230109195144878](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20230109195144878.png)
+
+<center>图1-14  体现图灵机模型的机器（注：图片来源为aturingmachine.com，2022年5月）</center>
+
+
+
+
+
+​	附录1A 是软件实现图灵机，https://github.com/GMyhf/2019fall-cs101/tree/master/TuringMachine 。参考：https://www.python-course.eu/turing_machine.php ，增加了加法操作，实现下面14分钟视频中的加法。软件实现是用 Python 语言面向对象的编程（Object Orientation Programming，OOP）方式实现的。Python的 OOP 语法，可以参考 https://www.runoob.com/python3/python3-class.html 。
+
+​	图灵机的构成，6分钟视频讲解在 https://www.bilibili.com/video/BV12B4y1X7QV/?spm_id_from=333.788
+
+​	图灵机运作原理及示例，14分钟视频讲解在 https://www.bilibili.com/video/BV13v4y1w7yM/?spm_id_from=333.788
+
+
+
+### 1.5 Python 的命名规范
+
+Python 的命名规范主要遵循 PEP 8 -- Style Guide for Python Code，这是 Python 社区广泛接受的编码风格指南。以下是一些常见的命名约定：
+
+1. **变量名**:
+   - 使用小写字母，多个单词之间用下划线分隔（snake_case），例如 `my_variable`。
+   - 避免使用单个字符作为变量名，除非是在非常简短的作用域内，比如循环索引 `i` 或 `j`。
+
+2. **函数名**:
+   - 同样使用小写字母和下划线（snake_case），例如 `def my_function()`。
+
+3. **类名**:
+   - 使用驼峰式大小写（CamelCase），即每个单词首字母大写，没有下划线，例如 `MyClass`。
+
+4. **常量**:
+   - 使用全大写字母，单词之间用下划线分隔，例如 `MAX_CONNECTIONS`。
+
+5. **模块名**:
+   - 模块文件名应简洁明了，全部使用小写字母，可以包含下划线，例如 `my_module.py`。
+
+6. **包名**:
+   - 包名也应全部使用小写字母，尽量简短，不需要下划线，例如 `mypackage`。
+
+7. **私有成员**:
+   - 类的私有属性和方法前加单个下划线 `_`，表示这是一个内部使用的成员，例如 `_private_method`。
+   - 如果确实需要避免子类覆盖某个属性或方法，可以使用双下划线 `__` 进行名称重整，例如 `__really_private_method`。
+
+8. **特殊方法/属性**:
+   - 特殊方法或属性使用双下划线包围的方法名，如 `__init__` 和 `__str__`。
+
+9. **类型提示**:
+   - 当使用类型提示时，类型名应首字母大写，例如 `List`, `Dict`。
+
+10. **行长度**:
+    - 每行不超过 79 个字符，对于注释和文档字符串，建议每行不超过 72 个字符。
+
+11. **空格**:
+    - 在操作符两边和逗号后面加空格，但在括号内的参数列表中不加。
+    - 函数调用时，实参之间用逗号分隔并各带一个空格。
+
+12. **导入语句**:
+    - 导入语句应该总是放在文件的顶部，在模块注释和文档字符串之后，模块全局变量之前。
+    - 每个导入应该单独一行。
+    - 导入可以按标准库、第三方库、本地应用/库的顺序分组，每个组之间空一行。
+
+遵守这些命名约定可以使你的代码更清晰、更易于维护，并且与其他 Python 开发者的工作保持一致。
+
+
+
+
+
+### 附录1A 软件实现图灵机
+
+​	如图附录1A-1所示，先给出两个类图（类图相当于是 OOP 编程实现前的蓝图设计），Tape 类 和 TuringMachine 类，然后给出 Python 实现代码，下载网址 https://github.com/GMyhf/2019fall-cs101/tree/master/TuringMachine ，参考了  https://www.python-course.eu/turing_machine.php。	
+
+​	图灵机是一个数学模型，是一个简单的计算机模型，但它具有通用计算机的完整计算能力。
+
+​	图灵机定义为 $M = （Q, \Sigma, \Gamma, \delta, b, q_0, q_f）$
+
+​	\- $Q$ 表示控制器有限状态集 (the set of states)
+
+​	- $\Sigma$ 表示输入的字母表 (the input alphabet)
+
+​	\- $\Gamma$ 表示磁带上的字母表 (the tape alphabet)，$\Sigma \subseteq \Gamma$
+
+​	\- $\delta: Q \times \Gamma \rightarrow Q \times \Gamma \times \{L, R, N\}$ 是状态转移函数 (the transition function)，即图程序。L、R、N分别表示左移一格，右移一格或停机
+
+​	\- $b$ 是空白字符 (the blank symbol)，$b \in \Gamma \backslash \Sigma$ 
+
+​	\- $q_0$ 是开始状态，$q_0 \in Q$
+
+​	\- $q_f$ 是接收或终止状态，$q_f \in Q$
+
+
+
+```mermaid
+classDiagram
+
+Tape --* TuringMachine : Composition
+class Tape{
+	+String blank_symbol
+	-Dict __tape
+	-__str__()
+	-__getitem__()
+	-__setitem__()
+}
+class TuringMachine{
+	String tape
+	String blank_symbol
+	String initial_state
+	Set final_states
+	Dict transition_function
+	+get_tape()
+	+step()
+	+final()
+}
+
+```
+
+图附录1A-1 图灵机类图
+
+
+
+​	三个源码：turing_machine.py, binary_complement, TM_adding.py。前两个取自 https://www.python-course.eu/turing_machine.php，实现了二进制补0到1，1到0的代码。我们增加了第三个做加法的代码。
+
+```python
+# ref: https://www.python-course.eu/turing_machine.php
+# turing_machine.py
+class Tape:
+    
+    blank_symbol = " "
+    
+    def __init__(self, tape_string = ""):
+        self.__tape = dict((enumerate(tape_string)))
+        # last line is equivalent to the following three lines:
+        #self.__tape = {}
+        #for i in range(len(tape_string)):
+        #    self.__tape[i] = input[i]
+        
+    def __str__(self):
+        s = ""
+        min_used_index = min(self.__tape.keys()) 
+        max_used_index = max(self.__tape.keys())
+        for i in range(min_used_index, max_used_index):
+            s += self.__tape[i]
+        return s    
+   
+    def __getitem__(self,index):
+        if index in self.__tape:
+            return self.__tape[index]
+        else:
+            return Tape.blank_symbol
+
+    def __setitem__(self, pos, char):
+        self.__tape[pos] = char 
+
+        
+class TuringMachine:
+    
+    def __init__(self, 
+                 tape = "", 
+                 blank_symbol = " ",
+                 initial_state = "",
+                 final_states = None,
+                 transition_function = None):
+        self.__tape = Tape(tape)
+        self.__head_position = 0
+        self.__blank_symbol = blank_symbol
+        self.__current_state = initial_state
+        if transition_function == None:
+            self.__transition_function = {}
+        else:
+            self.__transition_function = transition_function
+        if final_states == None:
+            self.__final_states = set()
+        else:
+            self.__final_states = set(final_states)
+        
+    def get_tape(self): 
+        return str(self.__tape)
+    
+    def step(self):
+        char_under_head = self.__tape[self.__head_position]
+        x = (self.__current_state, char_under_head)
+        if x in self.__transition_function:
+            y = self.__transition_function[x]
+            self.__tape[self.__head_position] = y[1]
+            if y[2] == "R":
+                self.__head_position += 1
+            elif y[2] == "L":
+                self.__head_position -= 1
+            self.__current_state = y[0]
+
+    def final(self):
+        if self.__current_state in self.__final_states:
+            return True
+        else:
+            return False
+```
+
+
+
+​	如果对上面类图的写法不熟悉，可以直接看下面两个 二进制补、加法的 程序，把TuringMachine理解为提供的图灵机工具。
+
+```python
+# binary_complement.py
+from turing_machine import TuringMachine
+
+initial_state = "init",
+accepting_states = ["final"],
+transition_function = {("init","0"):("init", "1", "R"),
+                       ("init","1"):("init", "0", "R"),
+                       ("init"," "):("final"," ", "N"),
+                       }
+final_states = {"final"}
+
+t = TuringMachine(tape = "010011001",
+                  initial_state = "init",
+                  final_states = final_states,
+                  transition_function = transition_function)
+
+print("Input on Tape:\n" + t.get_tape())
+
+while not t.final():
+    t.step()
+
+print("Result of the Turing machine calculation:")
+print(t.get_tape())
+```
+
+​	运行输出
+
+```
+Input on Tape:
+01001100
+Result of the Turing machine calculation:
+101100110
+```
+
+
+
+​	我们实现了“图灵机运作原理及示例” 视频中讲到的加法， https://www.bilibili.com/video/BV13v4y1w7yM/?spm_id_from=333.788。注意该视频讲解，缺少终止状态，会死循环，所以程序中加了终止状态final_states。
+
+
+```python
+# TM_adding.py
+#ref: https://www.python-course.eu/turing_machine.php
+
+from turing_machine import TuringMachine
+
+initial_state = "q1",
+accepting_states = ["q3"],
+transition_function = {("q1","1"):("q1", "1", "R"),
+                       ("q1"," "):("q2", "1", "R"),
+                       ("q2","1"):("q2", "1", "R"),
+                       ("q2"," "):("q3", "b", "L"),
+                       ("q3","1"):("q3", "b", "H"),
+                       ("q3"," "):("q3", "b", "H")
+                       }
+final_states = {"q3"}
+
+t = TuringMachine(tape = "1111 111 ", 
+                  initial_state = "q1",
+                  final_states = final_states,
+                  transition_function = transition_function)
+
+print("Input on Tape:\n" + t.get_tape())
+
+while not t.final():
+    t.step()
+    #print(t.get_tape())
+
+print("Result of the Turing machine calculation:")    
+print(t.get_tape())
+```
+
+​	运行输出
+
+```
+Input on Tape:
+1111 1111
+Result of the Turing machine calculation:
+1111111
+```
+
+
+
 
 
 ## 2 动态规划
@@ -456,7 +909,7 @@ print(count_ways(n))
 
 
 
-### 练习273528: 跳台阶
+#### 练习273528: 跳台阶
 
 dp, http://cs101.openjudge.cn/practice/27528/
 
@@ -472,7 +925,7 @@ dp, http://cs101.openjudge.cn/practice/27528/
 
 
 
-### 练习474D. Flowers
+#### 练习474D. Flowers
 
 dp, *1700, https://codeforces.com/contest/474/problem/D
 
@@ -519,6 +972,256 @@ Note
 - For *K* = 2 and length 2 Marmot can eat (*RR*) and (*WW*).
 - For *K* = 2 and length 3 Marmot can eat (*RRR*), (*RWW*) and (*WWR*).
 - For *K* = 2 and length 4 Marmot can eat, for example, (*WWWW*) or (*RWWR*), but for example he can't eat (*WWWR*).
+
+
+
+### 示例09267: 核电站
+
+dfs, dp, http://cs101.openjudge.cn/practice/09267/
+
+一个核电站有 N 个放核物质的坑，坑排列在一条直线上。如果连续 M 个坑中放入核物质，则会发生爆炸，于是，在某些坑中可能不放核物质。
+
+任务：对于给定的 N 和 M ，求不发生爆炸的放置核物质的方案总数。
+
+输入
+
+只有一行，两个正整数 N，M (1 < N < 50, 2 <= M <= 5)。
+
+输出
+
+一个正整数 S，表示方案总数。
+
+样例输入
+
+```
+4 3
+```
+
+样例输出
+
+```
+13
+```
+
+
+
+```python
+from functools import lru_cache
+
+@lru_cache(maxsize=None)
+def dfs(i, j, n, m):
+    if j == m:
+        return 0  # 如果有连续的m个坑都有物质，此方案不可行
+    if i == n:
+        return 1  # 如果能到n，说明之前没有连续的m个坑都有物质，此方案可行
+    
+    # 不在第i个坑放置物质
+    no_place = dfs(i + 1, 0, n, m)
+    # 在第i个坑放置物质
+    place = dfs(i + 1, j + 1, n, m)
+    
+    # 计算总数
+    return no_place + place
+
+if __name__ == "__main__":
+    n, m = map(int, input().split())
+    result = dfs(0, 0, n, m)
+    print(result)
+```
+
+
+
+参考：https://blog.csdn.net/weixin_50624971/article/details/117337552
+
+这题和放苹果挺类似的，都是要分情况讨论i和m的大小关系
+case1：如果i<m
+这说明在这段区间里怎么放都不会炸，那么状态转移方程就是：a[i]=2\*a[i-1].（乘2是因为每个坑有放和不放两种情况）
+case2：如果i==m
+情况同case1，只是要减去区间全放（会炸）的情况，那么状态转移方程就是：a[i]=2\*a[i-1]-1.
+case3：如果i>m
+这是就要考虑会炸的情况了。我们采用减法的方式——即从总情况里减去会炸的情况。
+如果第i位是不能放的，那么说明i-m这段区间肯定全放了，而且i-m-1这一位一定是0，因为如果该位是1的话就会在之前被处理掉，所以如果i为不能放，那么i-m-1这段区间的所有可能都需要从答案里减掉。那么状态转移方程就是：a[i]=2*a[i-1]-a[i-1-m]
+
+```python
+# 23n1900014516
+n, m = map(int, input().split())
+DP = [0] * 60
+DP[0] = 1 #DP[i]是第i个位置的方案数。
+
+for i in range(1, n + 1):
+    if i < m: #达不到连续放置m个的情况
+        DP[i] = DP[i - 1] * 2  # 从第1个到第m-1个，方案都可以选择放/不放
+    elif i == m: #第m个要小心了
+        DP[i] = DP[i - 1] * 2 - 1
+    else:#i>m
+        DP[i] = DP[i - 1] * 2 - DP[i - m - 1]
+print(DP[n])
+```
+
+
+
+
+
+### 示例431C. k-Tree
+
+dp, implementation, trees, *1600
+
+https://codeforces.com/problemset/problem/431/C
+
+Quite recently a creative student Lesha had a lecture on trees. After the lecture Lesha was inspired and came up with the tree of his own which he called a *k*-tree.
+
+A *k*-tree is an infinite rooted tree where:
+
+- each vertex has exactly *k* children;
+- each edge has some weight;
+- if we look at the edges that goes from some vertex to its children (exactly *k* edges), then their weights will equal 1, 2, 3, ..., *k*.
+
+The picture below shows a part of a 3-tree.
+
+
+
+![img](https://espresso.codeforces.com/61ac5ac17c4d2f220968eff8fb59bb3c8dc77edf.png)
+
+
+
+As soon as Dima, a good friend of Lesha, found out about the tree, he immediately wondered: "How many paths of total weight *n* (the sum of all weights of the edges in the path) are there, starting from the root of a *k*-tree and also containing at least one edge of weight at least *d*?".
+
+Help Dima find an answer to his question. As the number of ways can be rather large, print it modulo 1000000007 (10^9^ + 7).
+
+**Input**
+
+A single line contains three space-separated integers: *n*, *k* and *d* (1 ≤ *n*, *k* ≤ 100; 1 ≤ *d* ≤ *k*).
+
+**Output**
+
+Print a single integer — the answer to the problem modulo 1000000007 (10^9^ + 7).
+
+Examples
+
+input
+
+```
+3 3 2
+```
+
+output
+
+```
+3
+```
+
+input
+
+```
+3 3 3
+```
+
+output
+
+```
+1
+```
+
+input
+
+```
+4 3 2
+```
+
+output
+
+```
+6
+```
+
+input
+
+```
+4 5 2
+```
+
+output
+
+```
+7
+```
+
+
+
+分类讨论，记忆化搜索。
+
+```python
+MOD = 1000000007
+from functools import lru_cache
+ 
+@lru_cache(maxsize=None)
+def dfs(n, b):
+    if n == 0 and b >= d:
+        return 1
+    if n < 0:
+        return 0
+ 
+    ans = 0
+    for i in range(1, k+1):
+        ans = (ans + dfs(n-i, max(i, b))) % MOD
+ 
+    return ans
+ 
+ 
+n, k, d = map(int, input().split())
+print(dfs(n, 0))
+```
+
+
+
+```python
+# 23工学院 蒋子轩
+n,k,d=map(int,input().split())
+mod = 10**9 + 7
+# A[i]：总权重为i的路径数 ； B[i]：总权重为i且所有边权重小于d的路径数
+A = [1] + [0] * n
+B = [1] + [0] * n
+# 路径数本质上就是整数划分问题
+# 本题即求用不大于k的正整数划分i，用小于d的正整数划分i的方法数之差
+for i in range(1, n + 1):
+    for j in range(1, min(i,k)+1):
+        A[i] = (A[i] + A[i - j]) % mod
+    for j in range(1, min(d, i + 1)):
+        B[i] = (B[i] + B[i - j]) % mod
+print((A[n] - B[n]) % mod)
+
+```
+
+
+
+
+
+```python
+# 23数院，胡睿诚
+# 这题其实有点核电站的味道感觉
+# 09267: 核电站
+# http://cs101.openjudge.cn/practice/09267/
+
+m = 10**9+7
+
+def compute(n, k):
+    if k == 0:
+        return 0
+    ans = [1]
+    for i in range(k):
+        ans.append((1 << i) % m)
+
+    for i in range(k+1, n+1):
+        ans.append((2*ans[i-1]-ans[i-k-1]) % m)
+
+    return ans[n]
+
+
+n, k, d = map(int, input().split())
+print((compute(n, min(n, k))-compute(n, d-1)) % m)
+```
+
+
 
 
 
@@ -586,7 +1289,7 @@ while True:
 
 
 
-### 练习LeetCode5.最长回文子串
+#### 练习LeetCode5.最长回文子串
 
 dp, two pointers, string, https://leetcode.cn/problems/longest-palindromic-substring/
 
@@ -626,7 +1329,13 @@ dp, two pointers, string, https://leetcode.cn/problems/longest-palindromic-subst
 4. Keep track of the start and end indices of the longest palindromic substring found.
 5. Return the substring defined by the start and end indices.
 
+对于一个子串而言，如果它是回文串，并且长度大于 2，那么将它首尾的两个字母去除之后，它仍然是个回文串。
 
+状态：`dp[i][j]`表示子串`s[i:j+1]`是否为回文子串
+
+状态转移方程：`dp[i][j] = dp[i+1][j-1] ∧ (S[i] == s[j])`
+
+动态规划中的边界条件，即子串的长度为 1 或 2。对于长度为 1 的子串，它显然是个回文串；对于长度为 2 的子串，只要它的两个字母相同，它就是一个回文串。
 
 ```python
 class Solution:
@@ -713,7 +1422,7 @@ if __name__ == "__main__":
 
 
 
-### 练习25815: 回文字符串
+#### 练习25815: 回文字符串
 
 http://cs101.openjudge.cn/practice/25815/
 
@@ -758,11 +1467,27 @@ hihoCoder
 
 
 
+### 练习01384: Piggy-Bank
+
+http://cs101.openjudge.cn/practice/01384/
+
+
+
+### 练习27401: 最佳凑单
+
+dp, sparse bucket, http://cs101.openjudge.cn/practice/27401/
+
+
+
+### 练习04102: 宠物小精灵之收服
+
+dp, http://cs101.openjudge.cn/practice/04102/
+
 
 
 ## 3 dfs 注意事项
 
-### 编译错误Compile Error
+### 3.1 编译错误Compile Error
 
 
 
@@ -855,7 +1580,81 @@ for _ in range(int(input())):
 
 
 
-### 浅拷贝和深拷贝
+### 3.2 浅拷贝和深拷贝
+
+
+
+#### 3.2.1 基本数据类型
+
+​	在编程语言中，变量（variable）用于存储信息，以便被引用或操作。在 Python 中，每个变量都是一个对象（ object），基于变量的数据类型（data type，也称为 类 class），解释器会为变量分配内存。变量可以通过变量名访问， 变量命名规定，必须是大小写英文，数字和下划线的组合，并且不能用数字开头。
+
+​	Python 的基本数据类型如表所示。如果一个类的每个对象在实例化时有一个固定的值（immutable），并且随后不能被改变，那么这个类就是不可变的。例如，float 类是不可变的。
+
+
+
+表 Python语言基本数据类型
+
+| Class     | Description                        | Immutable |
+| --------- | ---------------------------------- | --------- |
+| bool      | Boolean value                      | &check;   |
+| int       | integer (arbitrary magnitude)      | &check;   |
+| float     | floating-point number              | &check;   |
+| list      | mutable sequence of objects        |           |
+| tuple     | immutable sequence of objects      | &check;   |
+| str       | character string                   | &check;   |
+| set       | unordered set of distinct objects  |           |
+| frozenset | immutable form of set class        | &check;   |
+| dict      | Associate mapping (aka dictionary) |           |
+
+​	把基本数据类型结构化表示出来，如图所示。
+
+```mermaid
+graph TD
+  DT(数据类型<br>Data Type) --- Element(元素型数据)
+  DT --- Container(容器型数据)
+  
+  Element --流程控制--- Bool((布尔<br>bool))
+  Element --- Numeric(数值型<br>Numeric)
+  Element --初始化值--- None((空值<br>NoneType))
+  
+  Container --- Sequence(序列型<br>Sequence)
+  Container--大括号包住--- Set((集合<br>set))
+  Container --- Map(映射型<br>Map)
+
+  Numeric --复数运算--- Complex((复数<br>complex))
+  Numeric --整数运算--- Int((整数<br>int))
+  Numeric --实数运算--- Float((浮点<br>float))
+
+  Sequence --引号包住--- Str((字符串<br>str))
+  Sequence --圆括号包住--- Tuple((元组<br>tuple))
+  Sequence --方括号包住--- List((列表<br>list))
+
+  Map --大括号包住--- Dict((字典<br>dict))
+
+classDef green fill:#9f6,stroke:#333,stroke-width:0px;
+classDef orange fill:#f96,stroke:#333,stroke-width:1px;
+class DT,Element,Numeric,Container,Sequence,Map green
+class Bool,Int,Float,Str,Tuple,Set,List,Dict orange
+  
+```
+
+图 Python语言基本数据类型
+
+
+
+可变属数据类型问题。在 Python 中，将一个可变对象（如列表）传递给函数时，为了提高效率，不会完整复制，而是传递了该对象的引用，这意味着在函数内部对这个对象的任何修改都会反映到原始对象上。一维列表的切片操作[:]，相当于创建一个新的列表副本。 shallow and deep copy在下面书的101-102页有讲到。
+
+
+
+2013-book-DataStructuresAndAlgorithmsInPython.pdf
+
+![image-20241126143454158](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20241126143454158.png)
+
+
+
+
+
+![image-20241126143510255](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20241126143510255.png)
 
 
 
@@ -1019,6 +1818,121 @@ for x, y in max_path:
 
 
 
+### 3.3 递归边界
+
+递归的边界问题，有时候需要写出来，有时候是隐式的，但是不能少。
+
+#### 示例18160: 最大连通域面积
+
+matrix/dfs similar, http://cs101.openjudge.cn/practice/18160
+
+![image-20241126143220551](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20241126143220551.png)
+
+
+
+#### 示例sy538: 受到祝福的平方 中等
+
+https://sunnywhy.com/sfbj/8/3/539
+
+在小元的世界里，任何人出生后会被世界分配一个随机`ID`，如果在被切割后，即`ID`满足按照从左至右顺序分割，且分割出来的数字都是某一个`正整数`的平方，分割时可以包括前导`0`，那么他就被这个世界祝福，最后获得快乐的数量和质量都比不满足这样的的人多的多。
+
+令`ID`为`A`，且`A`是一个正整数，取值范围为$1 \le A \le 10^9$，问是否是一个被受到祝福的。
+
+比如`A=8194`时，它是一个被受到祝福的`ID`，因为他可以被分割为$\{81,9,4\}=\{9^2,3^2,2^2\}$；
+
+比如`A=1001`时，它是一个被受到祝福的`ID`，因为他可以被分割为$\{1,001\}=\{1^2,1^2\}$，或者$\{100,1\}=\{10^2,1^2\}$。注意$\{1,00,1\}=\{1^2,0^2,1^2\}$不是一个合法切割，因为分割出来的数字必须为正整数的平方；
+
+比如`A=36`时，`36`已经是一个平方数了，所以它同样满足条件；
+
+比如`A=54`，它不是一个被受到祝福的`ID`，因为他无法被切割为满足条件的集合。
+
+**输入描述**
+
+一个正整数A，无前导0。
+
+其中$1 \le A \le 10^9$
+
+**输出描述**
+
+如果是一个满足题意的数字则输出`Yes`，否则`No`。
+
+样例1
+
+输入
+
+```
+8194
+```
+
+输出
+
+```
+Yes
+```
+
+样例2
+
+输入
+
+```
+3
+```
+
+输出
+
+```
+No
+```
+
+样例3
+
+输入
+
+```
+10
+```
+
+输出
+
+```
+No
+```
+
+
+
+dfs，先定义一个集合，存储所有小$10^9$的平方数。然后将数据按照位数生成列表，便于提取数据。定义dfs函数，将数字列表从高位开始分割，对于每次分割，检查前面的数字是否为平方数，以及后面的数字是否可以继续分割为平方数，如果可以，返回True，不可以，返回False。
+
+是一道典型的dfs问题，先初始化变量，然后再把所有平方数生成列表，再套用dfs模版（最终状态，即idx=len(each_number)），中间状态（巧妙之处就在于它很好表示了拆分后再将数字给组合起来），再写出dfs从哪里开始（0）。
+
+```python
+# 李天笑，24物理学院
+squares = set()
+i = 1
+while i ** 2 < 10 ** 9:
+    squares.add(i ** 2)
+    i += 1
+def dfs(idx):
+    if idx == len(digits):
+        return True
+
+    num = 0
+    for i in range(idx, len(digits)):
+        num = num * 10 + digits[i]
+        if num in squares:
+            if dfs(i + 1):
+                return True
+    return False
+
+A = int(input())
+digits = list(map(int, str(A)))
+if dfs(0):
+    print('Yes')
+else:
+    print('No')
+```
+
+
+
 
 
 ## 4 bfs/dfs 模版题目变形
@@ -1038,6 +1952,10 @@ bfs, dfs, http://cs101.openjudge.cn/practice/12029/
 bfs, http://cs101.openjudge.cn/practice/02802/
 
 
+
+### 练习04129: 变换的迷宫
+
+bfs, http://cs101.openjudge.cn/practice/04129
 
 
 
@@ -1197,4 +2115,6 @@ class Solution:
 > - **双指针** 则更适合理解为按照列来计算雨水量，因为它直接计算每个柱子上方能接住的雨水量，而不需要显式地找出每个凹陷处。
 >
 > 两种方法虽然计算方式不同，但是都能有效地解决问题，并且时间复杂度都是 O(n)，其中 n 是高度数组的长度。空间复杂度方面，单调栈方法需要额外的空间来存储栈，而双指针方法只需要常数级别的额外空间。
+
+
 
