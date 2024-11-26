@@ -1,6 +1,6 @@
 # 20241126-Week12 OOP, dp and searching
 
-Updated 1415 GMT+8 Nov 26, 2024
+Updated 2214 GMT+8 Nov 26, 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -655,7 +655,7 @@ class Tape:
         s = ""
         min_used_index = min(self.__tape.keys()) 
         max_used_index = max(self.__tape.keys())
-        for i in range(min_used_index, max_used_index):
+        for i in range(min_used_index, max_used_index + 1):
             s += self.__tape[i]
         return s    
    
@@ -746,7 +746,7 @@ print(t.get_tape())
 
 ```
 Input on Tape:
-01001100
+010011001
 Result of the Turing machine calculation:
 101100110
 ```
@@ -792,9 +792,9 @@ print(t.get_tape())
 
 ```
 Input on Tape:
-1111 1111
+1111 111
 Result of the Turing machine calculation:
-1111111
+1111111b
 ```
 
 
