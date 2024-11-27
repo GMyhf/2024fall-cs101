@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1605 GMT+8 Nov 21 2024
+Updated 1408 GMT+8 Nov 27 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -785,7 +785,13 @@ dp, two pointers, string, https://leetcode.cn/problems/longest-palindromic-subst
 4. Keep track of the start and end indices of the longest palindromic substring found.
 5. Return the substring defined by the start and end indices.
 
+对于一个子串而言，如果它是回文串，并且长度大于 2，那么将它首尾的两个字母去除之后，它仍然是个回文串。
 
+状态：`dp[i][j]`表示子串`s[i:j+1]`是否为回文子串
+
+状态转移方程：`dp[i][j] = dp[i+1][j-1] ∧ (S[i] == s[j])`
+
+动态规划中的边界条件，即子串的长度为 1 或 2。对于长度为 1 的子串，它显然是个回文串；对于长度为 2 的子串，只要它的两个字母相同，它就是一个回文串。
 
 ```python
 class Solution:
@@ -845,9 +851,9 @@ class Solution:
         start, end = 0, 0
         
         for i in range(len(s)):
-            len1 = self.expandAroundCenter(s, i, i)
-            len2 = self.expandAroundCenter(s, i, i + 1)
-            max_len = max(len1, len2)
+            odd_len = self.expandAroundCenter(s, i, i)
+            even_len = self.expandAroundCenter(s, i, i + 1)
+            max_len = max(odd_len, even_len)
             if max_len > end - start:
                 start = i - (max_len - 1) // 2
                 end = i + max_len // 2
@@ -866,7 +872,59 @@ if __name__ == "__main__":
     print(sol.longestPalindrome("cbbd"))   # Output: "bb"
 ```
 
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20241125155859557.png" alt="image-20241125155859557" style="zoom:50%;" />
+
 这个双指针是从中间往两边跑。
+
+
+
+思路：马拉车算法（Manacher）
+
+首先一个比较基础的想法是研究以某一个位置为中心的回文串，但考虑到可能存在`aba`和`aa`这样不同奇偶性的回文串，将其补齐成类似`#a#b#a#`的形式，这样所有的回文串都是奇数。
+然后，考虑某一个位置为中心的回文串，朴素的算法就是一步一步地扩大半径，直到不再回文，即这一部分代码
+
+```python
+while 0 <= i - k and i + k < n and ns[i - k] == ns[i + k]:
+    k += 1
+```
+
+而马拉车算法在这一部分朴素的算法之外，进一步考虑到在我找到这个位置最长的回文串的时候，我在后面的寻找过程中可以利用这个信息。
+
+我们维护一个最右边的回文串的边界`l, r`，如果`i`已经超出了这一部分，那么就只能直接调用后面的朴素算法；否则，我们可以利用之前的信息，考察在目前的`l, r`下对称的那个点`l+r-i`的最长回文串，将其设为我们朴素算法的起始半径来进行循环。
+
+特别地，如果对称过来的半径太长，超出了`r`的部分事实上我们目前还没进行研究，所以最大值只能到`r-i-1`。
+
+每次求解之后更新最右的`r`以及对应的`l`。
+
+朴素算法，时间复杂度O(n²); Manacher，时间复杂度O(n)。（while循环每进一次r至少变大1）
+
+```python
+# 曹以楷 24物理学院
+class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        ns = f"#{'#'.join(s)}#"
+        n = len(ns)
+        # Manacher start
+        d = [0]*n
+        l, r = 0, -1
+        for i in range(n):
+            k = 1 if i > r else min(d[l + r - i], r - i + 1)
+            while 0 <= i - k and i + k < n and ns[i - k] == ns[i + k]:
+                k += 1
+            d[i] = k
+            k -= 1
+            if i + k > r:
+                l = i - k
+                r = i + k
+        # Manacher end
+        cnt = max(d)
+        idx = d.index(cnt)
+
+        return ns[idx-cnt+1:idx+cnt].replace("#", "")
+
+```
+
+
 
 
 
