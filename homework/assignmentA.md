@@ -1,4 +1,4 @@
-# Assignment #10: dp & bfs
+# Assignment #A: dp & bfs
 
 Updated 2 GMT+8 Nov 25, 2024
 
