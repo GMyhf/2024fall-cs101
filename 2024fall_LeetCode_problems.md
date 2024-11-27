@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1408 GMT+8 Nov 27 2024
+Updated 0143 GMT+8 Nov 28 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -875,6 +875,91 @@ if __name__ == "__main__":
 <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20241125155859557.png" alt="image-20241125155859557" style="zoom:50%;" />
 
 这个双指针是从中间往两边跑。
+
+
+
+Manacher算法
+
+https://leetcode.cn/problems/longest-palindromic-substring/solutions/255195/zui-chang-hui-wen-zi-chuan-by-leetcode-solution/
+
+```python
+class Solution:
+    def expand(self, s, left, right):
+        while left >= 0 and right < len(s) and s[left] == s[right]:
+            left -= 1
+            right += 1
+        return (right - left - 2) // 2
+
+    def longestPalindrome(self, s: str) -> str:
+        end, start = -1, 0
+        s = '#' + '#'.join(list(s)) + '#'
+        arm_len = []
+        right = -1
+        j = -1
+        for i in range(len(s)):
+            if right >= i:
+                i_sym = 2 * j - i
+                min_arm_len = min(arm_len[i_sym], right - i)
+                cur_arm_len = self.expand(s, i - min_arm_len, i + min_arm_len)
+            else:
+                cur_arm_len = self.expand(s, i, i)
+            arm_len.append(cur_arm_len)
+            if i + cur_arm_len > right:
+                j = i
+                right = i + cur_arm_len
+            if 2 * cur_arm_len + 1 > end - start:
+                start = i - cur_arm_len
+                end = i + cur_arm_len
+        return s[start+1:end+1:2]
+
+```
+
+
+
+> 这段代码是用于解决“最长回文子串”问题的一个Python实现。它使用了Manacher算法的变种，通过在每个字符间插入特殊字符（这里是`#`）来处理奇数和偶数长度的回文字符串。让我们逐段解析这个解决方案：
+>
+> 扩展函数 `expand`
+>
+> - 此函数尝试从给定的中心点向两边扩展，以找到以该中心点为中心的最大回文半径。
+> - 如果左右指针指向的字符相等且都在字符串范围内，则继续向外扩展。
+> - 返回值为最大回文半径，即`(right - left - 2) // 2`。
+>
+> 主函数 `longestPalindrome`
+>
+> - 首先，将原始字符串`s`转换成一个新字符串，其中每个字符之间都插入了一个`#`，这样可以确保所有可能的回文子串都是奇数长度，便于处理。
+> - `end` 和 `start` 变量用于记录最长回文子串的边界。
+> - `arm_len` 列表存储每个位置的回文臂长。
+> - `right` 和 `j` 分别表示当前已知最右端的回文子串的右边界及其对应的中心点。
+> - 在遍历新字符串时，如果当前索引`i`位于`right`内，那么利用对称性，计算出`i`关于`j`的对称点`i_sym`，并确定最小臂长。
+> - 使用`expand`函数计算当前位置的实际臂长，并更新`arm_len`列表。
+> - 如果当前臂长加上`i`超过了`right`，则更新`right`和`j`。
+> - 如果当前找到的回文子串比之前记录的更长，则更新`start`和`end`。
+> - 最后，返回原始字符串中对应最长回文子串的部分，注意去掉添加的`#`符号。
+>
+> 整个算法的核心思想是利用已经计算过的回文信息来减少重复计算，从而提高效率。这种方法的时间复杂度接近O(n)，空间复杂度为O(n)。
+
+
+
+min_arm_len = min(arm_len[i_sym], right - i)	 如何理解？
+
+> `min_arm_len = min(arm_len[i_sym], right - i)` 这一行代码是用来确定从当前位置 `i` 开始进行中心扩展时，可以跳过的最小臂长。这里有两个关键点需要理解：
+>
+> 1. **`arm_len[i_sym]`**:
+>    - `i_sym` 是位置 `i` 关于当前已知最右边回文子串中心 `j` 的对称点，计算方式为 `2 * j - i`。
+>    - `arm_len[i_sym]` 表示的是对称点 `i_sym` 处的回文臂长。如果 `i_sym` 位置的回文臂长足够大，那么根据对称性，我们可以在 `i` 位置直接获得至少相同的臂长，因为这两个位置关于 `j` 对称。
+>
+> 2. **`right - i`**:
+>    - `right` 是当前已知最右端回文子串的边界。
+>    - `right - i` 表示从位置 `i` 到当前已知最右端的距离。由于我们已经知道在 `right` 之前的字符都是回文的一部分，因此在 `i` 位置进行扩展时，我们至少可以达到 `right` 位置，而不需要重新验证这些字符。
+>
+> 综合以上两点，`min_arm_len` 取两者中的较小值，确保了以下几点：
+>
+> - 如果 `i_sym` 位置的臂长小于或等于 `right - i`，我们可以直接使用 `i_sym` 位置的臂长，因为它不会超出已知的回文区域。
+> - 如果 `i_sym` 位置的臂长大于 `right - i`，则我们只能保证到 `right` 位置是回文，所以取 `right - i` 作为最小臂长。
+>
+> 这样做的目的是为了减少不必要的重复计算，通过利用之前计算的结果（即 `arm_len` 中的信息）来加速找到当前位置的最长回文臂长的过程。这实际上是Manacher算法中的一种优化手段，它允许我们在某些情况下快速跳过已经确认的部分，从而提高算法的整体效率。
+
+
 
 
 
