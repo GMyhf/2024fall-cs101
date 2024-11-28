@@ -1,6 +1,6 @@
-# 202412026-Week13 计概知识图谱
+# 20241202-Week13 计概知识图谱
 
-Updated 1735 GMT+8 Nov 28, 2024
+Updated 0744 GMT+8 Nov 29, 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -20,14 +20,13 @@ mindmap
     		Queue
     	Non-Linear Structures
     		Heap
-    		Tree
-    			Segment Tree(线段树)
-    			Binary Indexed Tree(树状数组)
+    		Segment Tree(*线段树)
+    		Binary Indexed Tree(*树状数组)
+    		Disjoint Set Union (DSU)
     	
     Algorithms{{**ALGORITHMS**}}
     	Greedy Algorithm
     		Intervals
-    		Other Greedy Problems
     	Dynamic Programming (DP)
     		Knapsack Problems
     			0-1 Knapsack
@@ -36,15 +35,12 @@ mindmap
     			Longest Common Subsequence
     			Longest Increasing Subsequence
     			Longest Palindromic Substring
-    		Grid Problems
-    			Matrix Path Problem
-    	Graph Algorithms
-    		Shortest Path
-    			Dijkstra's Algorithm
+    	Graph Algorithms			
     		DFS (Depth-First Search)
     			Backtracking
     		BFS (Breadth-First Search)
-
+    			Shortest Path
+    			Dijkstra's Algorithm
     	Sorting Algorithms
     		Basic
     			Bubble Sort
@@ -55,19 +51,19 @@ mindmap
     			Quick Sort
     			Heap Sort
     Techniques and Methods{{**TECHNIQUEWS<br>&METHODS**}}
-      Divide and Conquer
+      *Divide and Conquer
       Recursion
       Binary Search
       Two Pointers
       Sliding Window(滑动窗口)
       Permutation and Combination
-      Bit Manipulation (位运算)
+      Bit Manipulation (*位运算)
     Special Methods{{**SPECIAL METHODS**}}
-      Kadane's Algorithm
-      Manacher's Algorithm
+      *Kadane's Algorithm
+      *Manacher's Algorithm
       Narayana Pandita’s Algorithm
-      Cantor Expansion
-      Dilworth's theorem
+      *Cantor Expansion
+      *Dilworth's theorem
 
       
 
@@ -247,3 +243,37 @@ print(two_sum(nums, target))  # 输出: [1, 3]
 - **深度优先搜索（DFS）**：是回溯中常用的具体搜索策略，用于系统地探索解空间。
 
 因此，回溯可以同时归类到递归和搜索中的深度优先搜索。具体归类取决于你关注的是它的实现方式（递归）还是它的搜索策略（DFS）。在实际应用中，这两种视角都是正确的，而且它们是相辅相成的。
+
+
+
+# 并查集
+
+并查集（Disjoint Set Union, DSU），也被称为Union-Find结构，是一种用于处理一些不相交集合的合并及查询问题的数据结构。它支持两种主要操作：查找（Find）和合并（Union）。这种数据结构在解决图论中的连通性问题时非常有用，比如判断两个节点是否属于同一个连通块、将两个连通块合并成一个等。
+
+### 基本概念
+
+- **集合**：并查集中的每个元素都属于某个集合。
+- **代表元**：每个集合都有一个代表元素，用来唯一标识这个集合。
+- **路径压缩**：一种优化手段，通过让查找路径上的所有节点直接指向根节点来减少树的高度，从而加速后续的查找操作。
+- **按秩合并**：另一种优化手段，在合并两个集合时总是把较小深度的树挂到较大深度的树上，以保持树的平衡。
+
+### 主要操作
+
+1. **初始化**：为每个元素创建一个单独的集合，此时每个元素都是自己所在集合的代表。
+2. **查找** (Find)：确定某元素所属的集合，并返回该集合的代表元素。在此过程中可以实施路径压缩。
+3. **合并** (Union)：将两个元素所在的集合合并成一个新的集合。如果两个元素已经在同一个集合中，则无需执行任何操作。此过程可利用按秩合并进行优化。
+
+### 实现细节
+
+- 使用数组或者哈希表来存储每个元素的父节点指针以及集合的大小或秩信息。
+- 初始化时，每个元素的父节点设置为其自身。
+- 查找操作通常会递归地向上寻找直到找到根节点，并且可能更新路径上的每个节点使其直接指向根节点（路径压缩）。
+- 合并操作先找到两者的根节点，然后根据一定的策略（如按秩合并）连接这两个根节点。
+
+### 应用场景
+- 网络连接问题：判断网络中任意两点之间是否存在路径。
+- 图像处理：在某些图像分割算法中应用。
+- 编译器优化：检测循环依赖关系。
+- 游戏开发：实现游戏世界中的区域划分等功能。
+
+并查集因其高效性和简洁性，在许多领域都有广泛的应用。希望以上信息对你有所帮助！如果你有更具体的问题或需要进一步的例子，请告诉我。
