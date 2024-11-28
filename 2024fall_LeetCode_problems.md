@@ -2130,6 +2130,92 @@ if __name__ == "__main__":
 
 
 
+## 72.编辑距离
+
+dp, https://leetcode.cn/problems/edit-distance/
+
+给你两个单词 `word1` 和 `word2`， *请返回将 `word1` 转换成 `word2` 所使用的最少操作数* 。
+
+你可以对一个单词进行如下三种操作：
+
+- 插入一个字符
+- 删除一个字符
+- 替换一个字符
+
+ 
+
+**示例 1：**
+
+```
+输入：word1 = "horse", word2 = "ros"
+输出：3
+解释：
+horse -> rorse (将 'h' 替换为 'r')
+rorse -> rose (删除 'r')
+rose -> ros (删除 'e')
+```
+
+**示例 2：**
+
+```
+输入：word1 = "intention", word2 = "execution"
+输出：5
+解释：
+intention -> inention (删除 't')
+inention -> enention (将 'i' 替换为 'e')
+enention -> exention (将 'n' 替换为 'x')
+exention -> exection (将 'n' 替换为 'c')
+exection -> execution (插入 'u')
+```
+
+ 
+
+**提示：**
+
+- `0 <= word1.length, word2.length <= 500`
+- `word1` 和 `word2` 由小写英文字母组成
+
+
+
+```python
+class Solution:
+    def minDistance(self, word1: str, word2: str) -> int:
+        m, n = len(word1), len(word2)
+
+        # 创建一个 (m+1) x (n+1) 的 dp 数组，并初始化为0
+        dp = [[0] * (n + 1) for _ in range(m + 1)]
+
+        # 初始化边界条件
+        for i in range(m + 1):
+            dp[i][0] = i  # 将 word1 变为空串需要 i 次删除操作
+        for j in range(n + 1):
+            dp[0][j] = j  # 将空串变成 word2 需要 j 次插入操作
+
+        # 填充 dp 数组
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                if word1[i - 1] == word2[j - 1]:
+                    # 如果当前字符相同，则不需要操作
+                    dp[i][j] = dp[i - 1][j - 1]
+                else:
+                    # 如果不同，取三种可能操作中的最小值
+                    dp[i][j] = min(
+                        dp[i - 1][j] + 1,  # 删除
+                        dp[i][j - 1] + 1,  # 插入
+                        dp[i - 1][j - 1] + 1  # 替换
+                    )
+
+        # 返回 dp[m][n]，即整个字符串的最小编辑距离
+        return dp[m][n]
+
+if __name__ == "__main__":
+    minDistance = Solution().minDistance
+    print(minDistance("horse", "ros"))  # 输出：3
+    print(minDistance("intention", "execution"))  # 输出：5
+```
+
+
+
 ## 74.搜索二维矩阵
 
 binary search, https://leetcode.cn/problems/search-a-2d-matrix/
@@ -3188,7 +3274,7 @@ class Solution:
 
 ## 1143.最长公共子序列
 
-https://leetcode.cn/problems/longest-common-subsequence/
+dp, https://leetcode.cn/problems/longest-common-subsequence/
 
 给定两个字符串 `text1` 和 `text2`，返回这两个字符串的最长 **公共子序列** 的长度。如果不存在 **公共子序列** ，返回 `0` 。
 
