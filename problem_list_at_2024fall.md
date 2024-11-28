@@ -28,9 +28,9 @@ leetcode.cn
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
-| 1208 | 04129: 变换的迷宫      | bfs      | - |  http://cs101.openjudge.cn/practice/04129/        |
-| 1207 | 02802: 小游戏      | bfs      | - |  http://cs101.openjudge.cn/practice/02802/        |
-| 1206 | 12029: 水淹七军      | bfs, dfs      | - |  http://cs101.openjudge.cn/practice/12029/        |
+| 1208 | 04129: 变换的迷宫      | bfs      | tough |  http://cs101.openjudge.cn/practice/04129/        |
+| 1207 | 02802: 小游戏      | bfs      | tough |  http://cs101.openjudge.cn/practice/02802/        |
+| 1206 | 12029: 水淹七军      | bfs, dfs      | medium |  http://cs101.openjudge.cn/practice/12029/        |
 | 1205 | 20106: 走山路      | Dijkstra      | - |  http://cs101.openjudge.cn/practice/20106/        |
 | 1204 | 22067: 快速堆猪      | 辅助栈      | - |  http://cs101.openjudge.cn/practice/22067/        |
 | 1203 | 72.编辑距离    | dp       | medium | https://leetcode.cn/problems/edit-distance/         |
@@ -39,7 +39,7 @@ leetcode.cn
 | 1130 | 04102: 宠物小精灵之收服      | dp      | - |  http://cs101.openjudge.cn/practice/04102        |
 | 1129 | 27401: 最佳凑单      | dp      | - |  http://cs101.openjudge.cn/practice/27401        |
 | 1128 | 474D. Flowers | dp | 1700  | https://codeforces.com/problemset/problem/474/D    |
-| 1127 | P1255: 数楼梯 | dp, bfs | -  | https://www.luogu.com.cn/problem/P1255    |
+| 1127 | P1255: 数楼梯 | dp, bfs | easy  | https://www.luogu.com.cn/problem/P1255    |
 | 1126 | 09267: 核电站      | dfs, dp      | - |  http://cs101.openjudge.cn/2024fallroutine/09267        |
 | 1125 | 431C. k-Tree | dp | 1600  | https://codeforces.com/problemset/problem/431/C    |
 | 1124 | 34.在排序数组中查找元素的第一个和最后一个位置    | binary search       | medium | https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/         |
