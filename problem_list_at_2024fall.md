@@ -28,6 +28,10 @@ leetcode.cn
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 1208 | 04129: 变换的迷宫      | bfs      | - |  http://cs101.openjudge.cn/practice/04129/        |
+| 1207 | 02802: 小游戏      | bfs      | - |  http://cs101.openjudge.cn/practice/02802/        |
+| 1206 | 12029: 水淹七军      | bfs, dfs      | - |  http://cs101.openjudge.cn/practice/12029/        |
+| 1205 | 20106: 走山路      | Dijkstra      | - |  http://cs101.openjudge.cn/practice/20106/        |
 | 1204 | 22067: 快速堆猪      | 辅助栈      | - |  http://cs101.openjudge.cn/practice/22067/        |
 | 1203 | 72.编辑距离    | dp       | medium | https://leetcode.cn/problems/edit-distance/         |
 | 1202 | 1143.最长公共子序列    | dp       | medium | https://leetcode.cn/problems/longest-common-subsequence/         |
