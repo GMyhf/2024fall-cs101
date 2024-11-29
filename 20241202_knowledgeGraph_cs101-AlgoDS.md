@@ -1,6 +1,6 @@
 # 20241202-Week13 计概知识图谱
 
-Updated 0744 GMT+8 Nov 29, 2024
+Updated 1000 GMT+8 Nov 29, 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -22,7 +22,7 @@ mindmap
     		Heap
     		Segment Tree(*线段树)
     		Binary Indexed Tree(*树状数组)
-    		Disjoint Set Union (DSU)
+    		*Disjoint Set Union (DSU)
     	
     Algorithms{{**ALGORITHMS**}}
     	Greedy Algorithm
@@ -64,7 +64,12 @@ mindmap
       Narayana Pandita’s Algorithm
       *Cantor Expansion
       *Dilworth's theorem
-
+      
+    Principles{{**PRINCIPLES**}}
+      ASCII
+      Virtual Memory
+      Turing Machine
+			
       
 
 ```
