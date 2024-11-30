@@ -50,7 +50,7 @@ mindmap
     			Merge Sort
     			Quick Sort
     			Heap Sort
-    Techniques and Methods{{**TECHNIQUEWS<br>&METHODS**}}
+    Techniques & Methods{{**TECHNIQUEWS<br>&METHODS**}}
       *Divide and Conquer
       Recursion
       Binary Search
