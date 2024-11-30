@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 2350 GMT+8 Nov 30 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0006 GMT+8 Dec 01 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 1101 改为每天放1个题目。  
@@ -35,7 +35,7 @@ leetcode.cn
 | 1204 | 22067: 快速堆猪      | 辅助栈      | - |  http://cs101.openjudge.cn/practice/22067/        |
 | 1203 | 72.编辑距离    | dp       | medium | https://leetcode.cn/problems/edit-distance/         |
 | 1202 | 1143.最长公共子序列    | dp       | medium | https://leetcode.cn/problems/longest-common-subsequence/         |
-| 1201 | 01664: 放苹果      | dp, dfs      | - |  http://cs101.openjudge.cn/practice/01664        |
+| 1201 | 01664: 放苹果      | dp, dfs      | - |  http://cs101.openjudge.cn/2024fallroutine/01664        |
 | 1130 | 04102: 宠物小精灵之收服      | dp      | - |  http://cs101.openjudge.cn/2024fallroutine/04102        |
 | 1129 | 27401: 最佳凑单      | dp      | - |  http://cs101.openjudge.cn/2024fallroutine/27401        |
 | 1128 | 474D. Flowers | dp | 1700  | https://codeforces.com/problemset/problem/474/D    |
