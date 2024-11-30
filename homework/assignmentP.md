@@ -1,6 +1,6 @@
 # Assignment #P: 课程大作业
 
-Updated 0126 GMT+8 Sep 10, 2024
+Updated 1818 GMT+8 Nov 30, 2024
 
 2024 fall, Complied by ==同学的姓名、院系==
 
@@ -33,11 +33,13 @@ Updated 0126 GMT+8 Sep 10, 2024
 
 
 
-## 1. 要求
+## 1. 三个示例
 
 同学开自己的GitHub，自己学习方法、做的题目、考试时候要带的记录纸（cheat_sheet）等放在上面。方便大家关注，当你有新的更新时，我们也可以及时获得最新的内容。
 
-例子1：https://github.com/forxhunter/libpku 这样的项目可以作为一个数算课程的项目，同时也是同学们整理资料的一个好方式，可以实现一举多得的效果。
+### 示例：北京大学课程资料整理
+
+https://github.com/forxhunter/libpku 这样的项目可以作为一个数算课程的项目，同时也是同学们整理资料的一个好方式，可以实现一举多得的效果。
 
 
 
@@ -45,11 +47,19 @@ Updated 0126 GMT+8 Sep 10, 2024
 
 
 
+### 示例：清华计算机系课程攻略
 
-
-例子2: https://github.com/PKUanonym/REKCARC-TSC-UHT
+https://github.com/PKUanonym/REKCARC-TSC-UHT
 
 ![image-20240219114436829](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20240219114436829.png)
+
+
+
+### 示例：csdiy
+
+https://csdiy.wiki/#cs61a
+
+![image-20241130180228986](https://raw.githubusercontent.com/GMyhf/img/main/img/202411301802111.png)
 
 
 
