@@ -1,6 +1,6 @@
 # 20241202-Week13 计概知识图谱
 
-Updated 0217 GMT+8 Dec 01, 2024
+Updated 0251 GMT+8 Dec 01, 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -27,6 +27,8 @@ mindmap
     Algorithms{{**ALGORITHMS**}}
     	Greedy Algorithm
     		Intervals
+    		取最大最小并更新
+    		后悔解法
     	Dynamic Programming (DP)
     		Knapsack Problems
     			0-1 Knapsack
