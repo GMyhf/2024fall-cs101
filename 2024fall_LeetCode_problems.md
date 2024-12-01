@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1834 GMT+8 Dec 01 2024
+Updated 1908 GMT+8 Dec 01 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -2788,6 +2788,38 @@ class Solution:
                     break
         
         return dp[n]
+```
+
+
+
+```python
+from typing import List
+from functools import lru_cache
+
+class Solution:
+    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+        @lru_cache(None)
+        def dfs(x):
+            if len(x) == 0:
+                return True
+            for i in range(1, len(x)+1):
+                if x[0:i] in wordDict and dfs(x[i:]):
+                    return True
+            return False
+
+        return dfs(s)
+if __name__ == "__main__":
+    s = "leetcode"
+    wordDict = ["leet", "code"]
+    print(Solution().wordBreak(s, wordDict)) # True
+
+    # s = "applepenapple"
+    # wordDict = ["apple", "pen"]
+    # print(Solution().wordBreak(s, wordDict)) # True
+    #
+    # s = "catsandog"
+    # wordDict = ["cats", "dog", "sand", "and", "cat"]
+    # print(Solution().wordBreak(s, wordDict)) # False
 ```
 
 
