@@ -1,6 +1,6 @@
 # 20241202-Week13 计概知识图谱
 
-Updated 0251 GMT+8 Dec 01, 2024
+Updated 2250 GMT+8 Dec 01, 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -60,6 +60,7 @@ mindmap
       Sliding Window(滑动窗口)
       Permutation and Combination
       Bit Manipulation (*位运算)
+      前缀和、取模、字典、集合、二分
     Special Methods{{**SPECIAL METHODS**}}
       *Kadane's Algorithm
       *Manacher's Algorithm
