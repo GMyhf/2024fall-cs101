@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1908 GMT+8 Dec 01 2024
+Updated 2158 GMT+8 Dec 01 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -20,7 +20,7 @@ Hash Table, https://leetcode.cn/problems/two-sum/
 
 给定一个整数数组 `nums` 和一个整数目标值 `target`，请你在该数组中找出 **和为目标值** *`target`* 的那 **两个** 整数，并返回它们的数组下标。
 
-你可以假设每种输入只会对应一个答案，并且你不能使用两次相同的元素。
+ 你可以假设每种输入只会对应一个答案，并且你不能使用两次相同的元素。
 
 你可以按任意顺序返回答案。
 
@@ -1077,6 +1077,39 @@ class Solution:
 
         return ns[idx-cnt+1:idx+cnt].replace("#", "")
 
+```
+
+
+
+思路：
+
+- 最开始我没看到题目要求子串必须连续！我想了很久，想到了可能要把原字符串逆序但不知道逆序之后干什么，然后一个同学告诉我直接求最长公共子序列就好，感觉瞬间明白了
+- 然后发现子串要求连续，在原来程序的基础上，取出所有的公共子序列，再找其中既是回文的又是最长的那个，也算是过了
+
+```python
+# 颜鼎堃 24工学院
+class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        t = "".join(reversed(s))
+        n = len(s)
+        strings = [["" for i in range(n + 2)] for j in range(n + 2)]
+        for i in range(n):
+            for j in range(n):
+                if s[i] == t[j]:
+                    strings[i + 1][j + 1] = strings[i][j] + s[i]
+        pos_pal = set()
+        max_par = s[0]
+        for i in map(set, strings):
+            pos_pal |= i
+        for i in pos_pal:
+            if i and i == i[::-1]:
+                max_par = max(max_par, i, key=len)
+        return max_par
+
+
+if __name__ == '__main__':
+    sol = Solution()
+    print(sol.longestPalindrome(input()))
 ```
 
 
@@ -3445,7 +3478,7 @@ class Solution:
 
 
 
-## 452. 用最少量的箭引爆气球
+## 452.用最少量的箭引爆气球
 
 intervals, https://leetcode.cn/problems/minimum-number-of-arrows-to-burst-balloons/
 
