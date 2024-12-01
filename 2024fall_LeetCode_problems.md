@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2055 GMT+8 Nov 28 2024
+Updated 1051 GMT+8 Dec 01 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -88,6 +88,76 @@ class Solution:
             if tmp in d:
                 return(d[tmp], i)
             d[nums[i]] = i
+```
+
+
+
+## 20.有效的括号
+
+stack, https://leetcode.cn/problems/valid-parentheses/
+
+给定一个只包括 `'('`，`')'`，`'{'`，`'}'`，`'['`，`']'` 的字符串 `s` ，判断字符串是否有效。
+
+有效字符串需满足：
+
+1. 左括号必须用相同类型的右括号闭合。
+2. 左括号必须以正确的顺序闭合。
+3. 每个右括号都有一个对应的相同类型的左括号。
+
+ 
+
+**示例 1：**
+
+**输入：**s = "()"
+
+**输出：**true
+
+**示例 2：**
+
+**输入：**s = "()[]{}"
+
+**输出：**true
+
+**示例 3：**
+
+**输入：**s = "(]"
+
+**输出：**false
+
+**示例 4：**
+
+**输入：**s = "([])"
+
+**输出：**true
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 104`
+- `s` 仅由括号 `'()[]{}'` 组成
+
+
+
+```python
+from typing import List
+class Solution:
+    def isValid(self, s: str) -> bool:
+        stack = []
+        for c in s:
+            if c == '(' or c == '[' or c == '{':
+                stack.append(c)
+            else:
+                if not stack:
+                    return False
+                if c == ')' and stack[-1] != '(':
+                    return False
+                if c == ']' and stack[-1] != '[':
+                    return False
+                if c == '}' and stack[-1] != '{':
+                    return False
+                stack.pop()
+        return not stack
 ```
 
 
@@ -1693,6 +1763,82 @@ class Solution:
 
 
 
+## 53.最大子数组和
+
+greedy, dp, https://leetcode.cn/problems/maximum-subarray/
+
+给你一个整数数组 `nums` ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+
+
+
+**子数组** 
+
+是数组中的一个连续部分。
+
+
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
+输出：6
+解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1]
+输出：1
+```
+
+**示例 3：**
+
+```
+输入：nums = [5,4,-1,7,8]
+输出：23
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 105`
+- `-104 <= nums[i] <= 104`
+
+ 
+
+**进阶：**如果你已经实现复杂度为 `O(n)` 的解法，尝试使用更为精妙的 **分治法** 求解。
+
+
+
+```python
+from typing import List
+class Solution:
+    def maxSubArray(self, nums: List[int]) -> int:
+        n = len(nums)
+        max_v = nums[0]
+        pre_sum = nums[0]
+        for i in range(1, n):
+            if pre_sum <= 0:
+                pre_sum = nums[i]
+            else:
+                pre_sum += nums[i]
+            max_v = max(max_v, pre_sum)
+
+        return max_v
+
+if __name__ == "__main__":
+    sol = Solution()
+    #print(sol.maxSubArray([-2,1,-3,4,-1,2,1,-5,4]))  # 6
+    #print(sol.maxSubArray([1]))  # 1
+    print(sol.maxSubArray([5,4,-1,7,8]))  # 23
+```
+
+
+
 ## 54.螺旋矩阵
 
 matrix, simulation, https://leetcode.cn/problems/spiral-matrix/
@@ -2456,6 +2602,81 @@ if __name__ == "__main__":
 
 
 
+## 200.岛屿数量
+
+dfs, https://leetcode.cn/problems/number-of-islands/ 
+
+给你一个由 `'1'`（陆地）和 `'0'`（水）组成的的二维网格，请你计算网格中岛屿的数量。
+
+岛屿总是被水包围，并且每座岛屿只能由水平方向和/或竖直方向上相邻的陆地连接形成。
+
+此外，你可以假设该网格的四条边均被水包围。
+
+ 
+
+**示例 1：**
+
+```
+输入：grid = [
+  ["1","1","1","1","0"],
+  ["1","1","0","1","0"],
+  ["1","1","0","0","0"],
+  ["0","0","0","0","0"]
+]
+输出：1
+```
+
+**示例 2：**
+
+```
+输入：grid = [
+  ["1","1","0","0","0"],
+  ["1","1","0","0","0"],
+  ["0","0","1","0","0"],
+  ["0","0","0","1","1"]
+]
+输出：3
+```
+
+ 
+
+**提示：**
+
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 300`
+- `grid[i][j]` 的值为 `'0'` 或 `'1'`
+
+
+
+```python
+from typing import List
+
+
+class Solution:
+    def numIslands(self, grid: List[List[str]]) -> int:
+        def dfs(i, j):
+            if i < 0 or j < 0 or i >= len(grid) or j >= len(grid[0]) or grid[i][j] == '0':
+                return
+            grid[i][j] = '0'
+            dfs(i + 1, j)
+            dfs(i - 1, j)
+            dfs(i, j + 1)
+            dfs(i, j - 1)
+        
+        if not grid:
+            return 0
+        count = 0
+        for i in range(len(grid)):
+            for j in range(len(grid[0])):
+                if grid[i][j] == '1':
+                    count += 1
+                    dfs(i, j)
+        return count
+```
+
+
+
 ## 279.完全平方数
 
 dp, https://leetcode.cn/problems/perfect-squares
@@ -2653,6 +2874,76 @@ if __name__ == "__main__":
 ```
 
 
+
+## 189.轮转数组
+
+two pointers, https://leetcode.cn/problems/rotate-array/
+
+给定一个整数数组 `nums`，将数组中的元素向右轮转 `k` 个位置，其中 `k` 是非负数。
+
+ 
+
+**示例 1:**
+
+```
+输入: nums = [1,2,3,4,5,6,7], k = 3
+输出: [5,6,7,1,2,3,4]
+解释:
+向右轮转 1 步: [7,1,2,3,4,5,6]
+向右轮转 2 步: [6,7,1,2,3,4,5]
+向右轮转 3 步: [5,6,7,1,2,3,4]
+```
+
+**示例 2:**
+
+```
+输入：nums = [-1,-100,3,99], k = 2
+输出：[3,99,-1,-100]
+解释: 
+向右轮转 1 步: [99,-1,-100,3]
+向右轮转 2 步: [3,99,-1,-100]
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 105`
+- `-231 <= nums[i] <= 231 - 1`
+- `0 <= k <= 105`
+
+ 
+
+**进阶：**
+
+- 尽可能想出更多的解决方案，至少有 **三种** 不同的方法可以解决这个问题。
+- 你可以使用空间复杂度为 `O(1)` 的 **原地** 算法解决这个问题吗？
+
+
+
+```python
+class Solution:
+    def rotate(self, nums: List[int], k: int) -> None:
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+        k = k % len(nums)
+        l, r = 0, len(nums) - 1
+
+        while l < r:
+            nums[l], nums[r] = nums[r], nums[l]
+            l, r = l + 1, r - 1
+
+        l, r = 0, k - 1
+        while l < r:
+            nums[l], nums[r] = nums[r], nums[l]
+            l, r = l + 1, r - 1
+
+        l, r = k, len(nums) - 1
+        while l < r:
+            nums[l], nums[r] = nums[r], nums[l]
+            l, r = l + 1, r - 1
+```
 
 
 
@@ -3174,6 +3465,94 @@ class Solution:
 ```
 
 
+
+## 994.腐烂的橘子
+
+bfs, https://leetcode.cn/problems/rotting-oranges/
+
+在给定的 `m x n` 网格 `grid` 中，每个单元格可以有以下三个值之一：
+
+- 值 `0` 代表空单元格；
+- 值 `1` 代表新鲜橘子；
+- 值 `2` 代表腐烂的橘子。
+
+每分钟，腐烂的橘子 **周围 4 个方向上相邻** 的新鲜橘子都会腐烂。
+
+返回 *直到单元格中没有新鲜橘子为止所必须经过的最小分钟数。如果不可能，返回 `-1`* 。
+
+ 
+
+**示例 1：**
+
+**![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2019/02/16/oranges.png)**
+
+```
+输入：grid = [[2,1,1],[1,1,0],[0,1,1]]
+输出：4
+```
+
+**示例 2：**
+
+```
+输入：grid = [[2,1,1],[0,1,1],[1,0,1]]
+输出：-1
+解释：左下角的橘子（第 2 行， 第 0 列）永远不会腐烂，因为腐烂只会发生在 4 个方向上。
+```
+
+**示例 3：**
+
+```
+输入：grid = [[0,2]]
+输出：0
+解释：因为 0 分钟时已经没有新鲜橘子了，所以答案就是 0 。
+```
+
+ 
+
+**提示：**
+
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 10`
+- `grid[i][j]` 仅为 `0`、`1` 或 `2`
+
+
+
+```python
+from typing import List
+from collections import deque
+
+class Solution:
+    def orangesRotting(self, grid: List[List[int]]) -> int:
+        rows, cols = len(grid), len(grid[0])
+        queue = deque()
+        fresh_oranges = 0
+
+        # 初始化队列和统计新鲜橘子
+        for r in range(rows):
+            for c in range(cols):
+                if grid[r][c] == 2:
+                    queue.append((r, c, 0))  # (row, col, minutes)
+                elif grid[r][c] == 1:
+                    fresh_oranges += 1
+
+        # 定义4个方向
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+        minutes = 0
+
+        # 开始BFS
+        while queue:
+            r, c, minutes = queue.popleft()
+            for dr, dc in directions:
+                nr, nc = r + dr, c + dc
+                if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == 1:
+                    grid[nr][nc] = 2  # 腐烂新鲜橘子
+                    fresh_oranges -= 1
+                    queue.append((nr, nc, minutes + 1))
+
+        # 如果还有新鲜橘子，返回-1；否则返回分钟数
+        return -1 if fresh_oranges > 0 else minutes
+```
 
 
 
