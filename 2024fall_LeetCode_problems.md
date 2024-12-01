@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1051 GMT+8 Dec 01 2024
+Updated 1834 GMT+8 Dec 01 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -2771,6 +2771,24 @@ dp, https://leetcode.cn/problems/word-break/
 - `1 <= wordDict[i].length <= 20`
 - `s` 和 `wordDict[i]` 仅由小写英文字母组成
 - `wordDict` 中的所有字符串 **互不相同**
+
+
+
+```python
+class Solution:
+    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+        n = len(s)
+        dp = [False] * (n + 1)
+        dp[0] = True  # 空字符串可以被表示
+        
+        for i in range(1, n + 1):
+            for j in range(i):
+                if dp[j] and s[j:i] in wordDict:
+                    dp[i] = True
+                    break
+        
+        return dp[n]
+```
 
 
 
