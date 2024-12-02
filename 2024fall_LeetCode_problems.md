@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2158 GMT+8 Dec 01 2024
+Updated 0828 GMT+8 Dec 02 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -3545,6 +3545,78 @@ class Solution:
                 ed = v[1]
 
         return res
+```
+
+
+
+## 560.和为K的子数组
+
+https://leetcode.cn/problems/subarray-sum-equals-k/
+
+给你一个整数数组 `nums` 和一个整数 `k` ，请你统计并返回 *该数组中和为 `k` 的子数组的个数* 。
+
+子数组是数组中元素的连续非空序列。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,1,1], k = 2
+输出：2
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,2,3], k = 3
+输出：2
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 2 * 104`
+- `-1000 <= nums[i] <= 1000`
+- `-107 <= k <= 107`
+
+
+
+```python
+from typing import List
+
+
+class Solution:
+    def subarraySum(self, nums: List[int], k: int) -> int:
+        from collections import defaultdict
+
+        # 哈希表用于存储每个前缀和出现的次数
+        prefix_sum_count = defaultdict(int)
+        # 初始化前缀和为0的情况出现一次，为了处理整个子数组和恰好为k的情况
+        prefix_sum_count[0] = 1
+
+        current_sum = 0
+        count = 0
+
+        for num in nums:
+            current_sum += num
+            # 查找当前前缀和减去目标值k的前缀和数量，并添加到结果计数器
+            if (current_sum - k) in prefix_sum_count:
+                count += prefix_sum_count[current_sum - k]
+            # 更新当前前缀和的数量
+            prefix_sum_count[current_sum] += 1
+
+        return count
+
+
+# test code
+if __name__ == "__main__":
+    sol = Solution()
+    nums = [1, 1, 1]
+    k = 2
+    print(sol.subarraySum(nums, k))  # expect 2
+
 ```
 
 
