@@ -1,10 +1,16 @@
 # 20241202-Week13 计概知识图谱
 
-Updated 2250 GMT+8 Dec 01, 2024
+Updated 2230 GMT+8 Dec 02, 2024
 
 2024 fall, Complied by Hongfei Yan
 
 
+
+Logs:
+
+> 查看：https://github.com/GMyhf/2023fall-cs101/blob/main/cheatsheet/review_and_thoughts-202312-HURuicheng.md  
+> https://github.com/GMyhf/2023fall-cs101/blob/main/cheatsheet/cheatsheet-20231226-JIANGZixuan.md  
+> https://github.com/GMyhf/2023fall-cs101/blob/main/cheatsheet/DailyOption-202312-DENGJinwen.md
 
 
 
@@ -78,6 +84,624 @@ mindmap
 ```
 
 <center>Knowledge Graph of 2024fall-cs101: Algo DS</center>
+
+
+
+# Recap
+
+
+
+## 作业示例474D. Flowers
+
+dp, *1700, https://codeforces.com/contest/474/problem/D
+
+We saw the little game Marmot made for Mole's lunch. Now it's Marmot's dinner time and, as we all know, Marmot eats flowers. At every dinner he eats some red and white flowers. Therefore a dinner can be represented as a sequence of several flowers, some of them white and some of them red.
+
+But, for a dinner to be tasty, there is a rule: Marmot wants to eat white flowers only in groups of size *k*.
+
+Now Marmot wonders in how many ways he can eat between *a* and *b* flowers. As the number of ways could be very large, print it modulo $1000000007 (10^9 + 7)$.
+
+**Input**
+
+Input contains several test cases.
+
+The first line contains two integers *t* and *k* ($1 ≤ t, k ≤ 10^5$), where *t* represents the number of test cases.
+
+The next *t* lines contain two integers $a_i$ and $b_i$ ($1 ≤ a_i ≤ b_i ≤ 10^5$), describing the *i*-th test.
+
+**Output**
+
+Print *t* lines to the standard output. The *i*-th line should contain the number of ways in which Marmot can eat between $a_i$ and $b_i$ flowers at dinner modulo $1000000007 (10^9 + 7)$.
+
+Examples
+
+Input
+
+```
+3 2
+1 3
+2 3
+4 4
+```
+
+Output
+
+```
+6
+5
+5
+```
+
+Note
+
+- For *K* = 2 and length 1 Marmot can eat (*R*).
+- For *K* = 2 and length 2 Marmot can eat (*RR*) and (*WW*).
+- For *K* = 2 and length 3 Marmot can eat (*RRR*), (*RWW*) and (*WWR*).
+- For *K* = 2 and length 4 Marmot can eat, for example, (*WWWW*) or (*RWWR*), but for example he can't eat (*WWWR*).
+
+
+
+思路：题目本身就是一个普通的“上楼梯”，但是这里不用前缀和来查询会超时
+
+```python
+MAX = 1000000007
+t, k = map(int, input().split())
+MOD = int(1e9+7)
+MAXN = 100001
+dp = [0]*MAXN
+s = [0]*MAXN
+dp[0] = 1
+s[0] = 1
+for i in range(1, MAXN):
+    if i >= k:
+        dp[i] = (dp[i-1]+dp[i-k]) % MOD
+    else:
+        dp[i] = dp[i-1] % MOD
+    s[i] = (s[i-1]+dp[i]) % MOD
+
+for _ in range(t):
+    a, b = map(int, input().split())
+    print((s[b]-s[a-1]+MOD) % MOD)
+
+```
+
+
+
+## 作业示例12029: 水淹七军
+
+bfs, dfs, http://cs101.openjudge.cn/practice/12029/
+
+随着最后通牒的递出，C国的总攻也开始了，由于C国在地形上的优势，C国总司令下令采用水攻，剿灭A国最后的有生力量。 
+地形图是一个M*N的矩阵，矩阵上每一个点都对应着当前点的高度。C国总司令将选择若干个点进行放水。根据水往低处流的特性，水可以往四个方向的流动，被淹的地方的水面高度便和放水点的高度一样。然而，A国不是一马平川的，所以总会有地方是淹没不到的。你的任务很简单，判断一下A国司令部会不会被淹没掉。 
+我们将给你完整的地形图，然后给出A国司令部所在位置，给出C国将在哪几个点进行放水操作。你所需要的，就是给出A国司令部会不会被水淹。
+
+**输入**
+
+第一行：一个整数K，代表数据组数。 
+对于每一组数据： 
+第1行：符合题目描述的两个整数，M(0 < M <= 200)、N(0 < N <= 200)。 
+第2行至M+1行：每行N个数，以空格分开，代表这个矩阵上的各点的高度值H(0 <= H <= 1000)。 
+第M+2行：两个整数I(0 < I <= M)、J(0 < J <= N)，代表司令部所在位置。 
+第M+3行：一个整数P(0 < P <= M * N)，代表放水点个数。 
+第M+4行至M+P+4行：每行两个整数X(0 < X <= M)、Y(0 < Y <= N)，代表放水点。
+
+**输出**
+
+对于每组数据，输出一行，如果被淹则输出Yes，没有则输出No。
+
+样例输入
+
+```
+1
+5 5
+1 1 1 1 1
+1 0 0 0 1
+1 0 1 0 1
+1 0 0 0 1
+1 1 1 1 1
+3 3
+2
+1 1
+2 2
+```
+
+样例输出
+
+```
+No
+```
+
+提示
+
+样例中左上角的位置是(1, 1),右上角的位置是(1, 5), 右下角的位置是(5, 5)
+
+
+
+根据样例，可以这样理解：如果司令部与周围水等高，不算淹没。
+
+不用visited的原因，有的点在某些情况下也需要重新遍历。比如之前淹没的高度为h，之后放水的高度H>h，此时就需要重新淹没。即可以不用visited，直接用water_height矩阵（每次洪泛更新），只要扩展点的高度小于当前water_height_value。
+
+
+
+bfs实现
+
+```python
+from collections import deque
+import sys
+input = sys.stdin.read
+
+# 判断坐标是否有效
+def is_valid(x, y, m, n):
+    return 0 <= x < m and 0 <= y < n
+
+# 广度优先搜索模拟水流
+def bfs(start_x, start_y, start_height, m, n, h, water_height):
+    dx = [-1, 1, 0, 0]
+    dy = [0, 0, -1, 1]
+    q = deque([(start_x, start_y, start_height)])
+    water_height[start_x][start_y] = start_height
+
+    while q:
+        x, y, height = q.popleft()
+        for i in range(4):
+            nx, ny = x + dx[i], y + dy[i]
+            if is_valid(nx, ny, m, n) and h[nx][ny] < height:
+                if water_height[nx][ny] < height:
+                    water_height[nx][ny] = height
+                    q.append((nx, ny, height))
+
+# 主函数
+def main():
+    data = input().split()  # 快速读取所有输入数据
+    idx = 0
+    k = int(data[idx])
+    idx += 1
+    results = []
+
+    for _ in range(k):
+        m, n = map(int, data[idx:idx + 2])
+        idx += 2
+        h = []
+        for i in range(m):
+            h.append(list(map(int, data[idx:idx + n])))
+            idx += n
+        water_height = [[0] * n for _ in range(m)]
+
+        i, j = map(int, data[idx:idx + 2])
+        idx += 2
+        i, j = i - 1, j - 1
+
+        p = int(data[idx])
+        idx += 1
+
+        for _ in range(p):
+            x, y = map(int, data[idx:idx + 2])
+            idx += 2
+            x, y = x - 1, y - 1
+            if h[x][y] <= h[i][j]:
+                continue
+            bfs(x, y, h[x][y], m, n, h, water_height)
+
+        results.append("Yes" if water_height[i][j] > 0 else "No")
+
+    sys.stdout.write("\n".join(results) + "\n")
+
+if __name__ == "__main__":
+    main()
+```
+
+
+
+## 作业示例5.最长回文子串
+
+dp, two pointers, string, https://leetcode.cn/problems/longest-palindromic-substring/
+
+给你一个字符串 `s`，找到 `s` 中最长的 
+
+回文子串。
+
+**示例 1：**
+
+```
+输入：s = "babad"
+输出："bab"
+解释："aba" 同样是符合题意的答案。
+```
+
+**示例 2：**
+
+```
+输入：s = "cbbd"
+输出："bb"
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 1000`
+- `s` 仅由数字和英文字母组成
+
+
+
+**Plan**
+
+1. Initialize a 2D list `dp` where `dp[i][j]` will be `True` if the substring `s[i:j+1]` is a palindrome.
+2. Iterate through the string in reverse order to fill the `dp` table.
+3. For each character, check if the substring is a palindrome by comparing the characters at the ends and using the previously computed values in `dp`.
+4. Keep track of the start and end indices of the longest palindromic substring found.
+5. Return the substring defined by the start and end indices.
+
+对于一个子串而言，如果它是回文串，并且长度大于 2，那么将它首尾的两个字母去除之后，它仍然是个回文串。
+
+状态：`dp[i][j]`表示子串`s[i:j+1]`是否为回文子串
+
+状态转移方程：`dp[i][j] = dp[i+1][j-1] ∧ (S[i] == s[j])`
+
+动态规划中的边界条件，即子串的长度为 1 或 2。对于长度为 1 的子串，它显然是个回文串；对于长度为 2 的子串，只要它的两个字母相同，它就是一个回文串。
+
+```python
+class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        n = len(s)
+        if n == 0:
+            return ""
+
+        # Initialize the dp table
+        dp = [[False] * n for _ in range(n)]
+        start, max_length = 0, 1
+
+        # Every single character is a palindrome
+        for i in range(n):
+            dp[i][i] = True
+
+        # Check for palindromes of length 2
+        for i in range(n - 1):
+            if s[i] == s[i + 1]:
+                dp[i][i + 1] = True
+                start = i
+                max_length = 2
+
+        # Check for palindromes of length greater than 2
+        for length in range(3, n + 1):
+            for i in range(n - length + 1):
+                j = i + length - 1
+                if s[i] == s[j] and dp[i + 1][j - 1]:
+                    dp[i][j] = True
+                    start = i
+                    max_length = length
+
+        return s[start:start + max_length]
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.longestPalindrome("babad"))  # Output: "bab" or "aba"
+    print(sol.longestPalindrome("cbbd"))   # Output: "bb"
+```
+
+
+
+**Plan**
+
+1. Initialize variables to store the start and end indices of the longest palindromic substring.
+2. Iterate through each character in the string, treating each character and each pair of consecutive characters as potential centers of palindromes.
+3. For each center, expand outwards while the characters on both sides are equal.
+4. Update the start and end indices if a longer palindrome is found.
+5. Return the substring defined by the start and end indices.
+
+```python
+class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        if not s:
+            return ""
+        
+        start, end = 0, 0
+        
+        for i in range(len(s)):
+            odd_len = self.expandAroundCenter(s, i, i)
+            even_len = self.expandAroundCenter(s, i, i + 1)
+            max_len = max(odd_len, even_len)
+            if max_len > end - start:
+                start = i - (max_len - 1) // 2
+                end = i + max_len // 2
+        
+        return s[start:end + 1]
+    
+    def expandAroundCenter(self, s: str, left: int, right: int) -> int:
+        while left >= 0 and right < len(s) and s[left] == s[right]:
+            left -= 1
+            right += 1
+        return right - left - 1
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.longestPalindrome("babad"))  # Output: "bab" or "aba"
+    print(sol.longestPalindrome("cbbd"))   # Output: "bb"
+```
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20241125155859557.png" alt="image-20241125155859557" style="zoom:50%;" />
+
+这个双指针是从中间往两边跑。
+
+
+
+Manacher算法
+
+https://leetcode.cn/problems/longest-palindromic-substring/solutions/255195/zui-chang-hui-wen-zi-chuan-by-leetcode-solution/
+
+```python
+class Solution:
+    def expand(self, s, left, right):
+        while left >= 0 and right < len(s) and s[left] == s[right]:
+            left -= 1
+            right += 1
+        return (right - left - 2) // 2
+
+    def longestPalindrome(self, s: str) -> str:
+        end, start = -1, 0
+        s = '#' + '#'.join(list(s)) + '#'
+        arm_len = []
+        right = -1
+        j = -1
+        for i in range(len(s)):
+            if right >= i:
+                i_sym = 2 * j - i
+                min_arm_len = min(arm_len[i_sym], right - i)
+                cur_arm_len = self.expand(s, i - min_arm_len, i + min_arm_len)
+            else:
+                cur_arm_len = self.expand(s, i, i)
+            arm_len.append(cur_arm_len)
+            if i + cur_arm_len > right:
+                j = i
+                right = i + cur_arm_len
+            if 2 * cur_arm_len + 1 > end - start:
+                start = i - cur_arm_len
+                end = i + cur_arm_len
+        return s[start+1:end+1:2]
+
+```
+
+
+
+> 这段代码是用于解决“最长回文子串”问题的一个Python实现。它使用了Manacher算法的变种，通过在每个字符间插入特殊字符（这里是`#`）来处理奇数和偶数长度的回文字符串。让我们逐段解析这个解决方案：
+>
+> 扩展函数 `expand`
+>
+> - 此函数尝试从给定的中心点向两边扩展，以找到以该中心点为中心的最大回文半径。
+> - 如果左右指针指向的字符相等且都在字符串范围内，则继续向外扩展。
+> - 返回值为最大回文半径，即`(right - left - 2) // 2`。
+>
+> 主函数 `longestPalindrome`
+>
+> - 首先，将原始字符串`s`转换成一个新字符串，其中每个字符之间都插入了一个`#`，这样可以确保所有可能的回文子串都是奇数长度，便于处理。
+> - `end` 和 `start` 变量用于记录最长回文子串的边界。
+> - `arm_len` 列表存储每个位置的回文臂长。
+> - `right` 和 `j` 分别表示当前已知最右端的回文子串的右边界及其对应的中心点。
+> - 在遍历新字符串时，如果当前索引`i`位于`right`内，那么利用对称性，计算出`i`关于`j`的对称点`i_sym`，并确定最小臂长。
+> - 使用`expand`函数计算当前位置的实际臂长，并更新`arm_len`列表。
+> - 如果当前臂长加上`i`超过了`right`，则更新`right`和`j`。
+> - 如果当前找到的回文子串比之前记录的更长，则更新`start`和`end`。
+> - 最后，返回原始字符串中对应最长回文子串的部分，注意去掉添加的`#`符号。
+>
+> 整个算法的核心思想是利用已经计算过的回文信息来减少重复计算，从而提高效率。这种方法的时间复杂度接近O(n)，空间复杂度为O(n)。
+
+
+
+min_arm_len = min(arm_len[i_sym], right - i)	 如何理解？
+
+> `min_arm_len = min(arm_len[i_sym], right - i)` 这一行代码是用来确定从当前位置 `i` 开始进行中心扩展时，可以跳过的最小臂长。这里有两个关键点需要理解：
+>
+> 1. **`arm_len[i_sym]`**:
+>    - `i_sym` 是位置 `i` 关于当前已知最右边回文子串中心 `j` 的对称点，计算方式为 `2 * j - i`。
+>    - `arm_len[i_sym]` 表示的是对称点 `i_sym` 处的回文臂长。如果 `i_sym` 位置的回文臂长足够大，那么根据对称性，我们可以在 `i` 位置直接获得至少相同的臂长，因为这两个位置关于 `j` 对称。
+>
+> 2. **`right - i`**:
+>    - `right` 是当前已知最右端回文子串的边界。
+>    - `right - i` 表示从位置 `i` 到当前已知最右端的距离。由于我们已经知道在 `right` 之前的字符都是回文的一部分，因此在 `i` 位置进行扩展时，我们至少可以达到 `right` 位置，而不需要重新验证这些字符。
+>
+> 综合以上两点，`min_arm_len` 取两者中的较小值，确保了以下几点：
+>
+> - 如果 `i_sym` 位置的臂长小于或等于 `right - i`，我们可以直接使用 `i_sym` 位置的臂长，因为它不会超出已知的回文区域。
+> - 如果 `i_sym` 位置的臂长大于 `right - i`，则我们只能保证到 `right` 位置是回文，所以取 `right - i` 作为最小臂长。
+>
+> 这样做的目的是为了减少不必要的重复计算，通过利用之前计算的结果（即 `arm_len` 中的信息）来加速找到当前位置的最长回文臂长的过程。这实际上是Manacher算法中的一种优化手段，它允许我们在某些情况下快速跳过已经确认的部分，从而提高算法的整体效率。
+
+
+
+
+
+## 作业示例02802: 小游戏
+
+bfs, http://cs101.openjudge.cn/practice/02802/ 
+
+一天早上，你起床的时候想：“我编程序这么牛，为什么不能靠这个赚点小钱呢？”因此你决定编写一个小游戏。
+
+游戏在一个分割成w * h个正方格子的矩形板上进行。如图所示，每个正方格子上可以有一张游戏卡片，当然也可以没有。
+
+当下面的情况满足时，我们认为两个游戏卡片之间有一条路径相连：
+
+路径只包含水平或者竖直的直线段。路径不能穿过别的游戏卡片。但是允许路径临时的离开矩形板。下面是一个例子： 
+
+![img](https://raw.githubusercontent.com/GMyhf/img/main/img/1101_1.jpg)
+
+这里在 (1, 3)和 (4, 4)处的游戏卡片是可以相连的。而在 (2, 3) 和 (3, 4) 处的游戏卡是不相连的，因为连接他们的每条路径都必须要穿过别的游戏卡片。
+
+你现在要在小游戏里面判断是否存在一条满足题意的路径能连接给定的两个游戏卡片。
+
+**输入**
+
+输入包括多组数据。一个矩形板对应一组数据。每组数据包括的第一行包括两个整数w和h (1 <= w, h <= 75)，分别表示矩形板的宽度和长度。下面的h行，每行包括w个字符，表示矩形板上的游戏卡片分布情况。使用‘X’表示这个地方有一个游戏卡片；使用空格表示这个地方没有游戏卡片。
+
+之后的若干行上每行上包括4个整数x1, y1, x2, y2 (1 <= x1, x2 <= w, 1 <= y1, y2 <= h)。给出两个卡片在矩形板上的位置（注意：矩形板左上角的坐标是(1, 1)）。输入保证这两个游戏卡片所处的位置是不相同的。如果一行上有4个0，表示这组测试数据的结束。
+
+如果一行上给出w = h = 0，那么表示所有的输入结束了。
+
+**输出**
+
+对每一个矩形板，输出一行“Board #n:”，这里n是输入数据的编号。然后对每一组需要测试的游戏卡片输出一行。这一行的开头是“Pair m: ”，这里m是测试卡片的编号（对每个矩形板，编号都从1开始）。接下来，如果可以相连，找到连接这两个卡片的所有路径中包括线段数最少的路径，输出“k segments.”，这里k是找到的最优路径中包括的线段的数目；如果不能相连，输出“impossible.”。
+
+每组数据之后输出一个空行。
+
+样例输入
+
+```
+5 4
+XXXXX
+X   X
+XXX X
+ XXX 
+2 3 5 3
+1 3 4 4
+2 3 3 4
+0 0 0 0
+0 0
+```
+
+样例输出
+
+```
+Board #1:
+Pair 1: 4 segments.
+Pair 2: 3 segments.
+Pair 3: impossible.
+```
+
+来源：翻译自Mid-Central European Regional Contest 1999的试题
+
+
+
+bfs
+
+这个题目比较麻烦，因为外圈还可以走，需要在输入矩阵包一圈。另外，就是行列与我们平时练习行列刚好反着。
+
+因为没有走到end之前的线段最短，不能保证总的线段最短。需要穷举队列，找到的最短都append到ans列表，最后min(ans)。
+
+```python
+from collections import deque
+
+
+def bfs(start, end, grid, h, w):
+    queue = deque([start])
+    in_queue = set()
+    dirs = [(0, -1), (-1, 0), (0, 1), (1, 0)]
+
+    ans = []
+    while queue:
+        x, y, d_i_r, seg = queue.popleft()
+        # print(x,y,end)
+        if (x, y) == end:
+            # return seg
+            ans.append(seg)
+            break
+
+        for i, (dx, dy) in enumerate(dirs):
+            nx, ny = x + dx, y + dy
+
+            if 0 <= nx < h + 2 and 0 <= ny < w + 2 and ((nx, ny, i) not in in_queue):
+                new_dir = i
+                new_seg = seg if new_dir == d_i_r else seg + 1
+                if (nx, ny) == end:
+                    # return new_seg
+                    ans.append(new_seg)
+                    continue
+
+                if grid[nx][ny] != 'X':
+                    in_queue.add((nx, ny, i))
+                    queue.append((nx, ny, new_dir, new_seg))
+
+    if len(ans) == 0:
+        return -1
+    else:
+        return min(ans)
+
+
+board_num = 1
+while True:
+    w, h = map(int, input().split())
+    if w == h == 0:
+        break
+
+    # grid = [[' '] * (w + 2)] + \
+    # [[' '] + list(input()) + [' '] for _ in range(h)] + \
+    # [[' '] * (w + 2)]
+    grid = [' ' * (w + 2)] + [' ' + input() + ' ' for _ in range(h)] + [' ' * (w + 2)]
+    print(f"Board #{board_num}:")
+    pair_num = 1
+    while True:
+        y1, x1, y2, x2 = map(int, input().split())
+        if x1 == y1 == x2 == y2 == 0:
+            break
+
+        start = (x1, y1, -1, 0)
+        end = (x2, y2)
+
+        seg = bfs(start, end, grid, h, w)
+        if seg == -1:
+            print(f"Pair {pair_num}: impossible.")
+        else:
+            print(f"Pair {pair_num}: {seg} segments.")
+        pair_num += 1
+
+    print()
+    board_num += 1
+```
+
+
+
+《算法基础。。》上面讲到4.3例题：小游戏，书上给出的是dfs。但是经过同学和助教调试，发现dfs与先沿着哪个邻居出发有关，导致剪枝可能失效。因为可能拿不到一个相对较好的结果，便于比较剪枝。所以最好用bfs完成。
+
+
+
+其实所有求最短、最长的问题都能用heapq实现，在图搜索中搭配bfs尤其好用。
+
+> 利用heap优先队列的做法，因为每次都取当前队列中线段最小值前进，可以保证最后总的线段最短。这个实际上是Dijkstra。
+
+```python
+# 23 工学院 苏王捷
+import heapq
+
+num1 = 1
+while True:
+    w, h = map(int, input().split())
+    if w == 0 and h == 0:
+        break
+    print(f"Board #{num1}:")
+    martix = [[" "] * (w + 2)] + [[" "] + list(input()) + [" "] for _ in range(h)] + [[" "] * (w + 2)]
+    dir = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+    num2 = 1
+    while True:
+        x1, y1, x2, y2 = map(int, input().split())
+        if x1 == 0 and x2 == 0 and y1 == 0 and y2 == 0:
+            break
+        queue, flag = [], False
+        in_queue = set()
+        heapq.heappush(queue, (0, x1, y1, -1))
+        martix[y2][x2] = " "
+        in_queue.add((-1, x1, y1))
+        while queue:
+            step, x, y, dirs = heapq.heappop(queue)
+            if x == x2 and y == y2:
+                flag = True
+                break
+            for i, (dx, dy) in enumerate(dir):
+                px, py = x + dx, y + dy
+                if 0 <= px <= w + 1 and 0 <= py <= h + 1 and (i, px, py) not in in_queue and martix[py][px] != "X":
+                    in_queue.add((i, px, py))
+                    heapq.heappush(queue, (step + (dirs != i), px, py, i))
+        if flag:
+            print(f"Pair {num2}: {step} segments.")
+        else:
+            print(f"Pair {num2}: impossible.")
+        martix[y2][x2] = "X"
+        num2 += 1
+    print()
+    num1 += 1
+
+```
+
+
+
+
 
 
 
