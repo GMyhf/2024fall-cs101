@@ -1,6 +1,6 @@
 # 20241202-Week13 计概知识图谱
 
-Updated 0223 GMT+8 Dec 03, 2024
+Updated 1446 GMT+8 Dec 03, 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -23,6 +23,7 @@ mindmap
     	Linear Structures
     		Stack
     			Monotonic Stack (单调栈)
+    			辅助栈
     		Queue
     	Non-Linear Structures
     		Heap
@@ -67,6 +68,7 @@ mindmap
       Permutation and Combination
       Bit Manipulation (*位运算)
       前缀和、取模、字典、集合、二分
+      懒删除
     Special Methods{{**SPECIAL METHODS**}}
       *Kadane's Algorithm
       *Manacher's Algorithm
@@ -701,7 +703,223 @@ while True:
 
 
 
-# 最短路径Dijkstra
+# 1 能申请到$10^{18}$内存吗？
+
+我的机器是macOS Sonoma 14.6.1，最大可以申请到 276.00 GB（即接近于$2^{38}$）。计算方法如下所述。
+
+
+
+## $10^{18}$有多大
+
+要将 $10^{18}$ 字节转换为更常见的存储单位，如GB（吉字节）或TB（太字节），我们需要了解这些单位之间的换算关系。在二进制表示中，这些单位是基于2的幂来定义的，但在十进制表示中，它们通常基于10的幂来定义。
+
+- 1 GB (Gigabyte, 吉字节) = $10^9$ 字节
+- 1 TB (Terabyte, 太字节) = $10^{12}$ 字节
+
+因此，$10^{18}$ 字节可以被直接转换为：
+
+- $10^{18} \div 10^9 = 10^9$ GB
+- $10^{18} \div 10^{12} = 10^6$ TB
+
+这表示 $10^{18}$ 字节等于 10亿 GB 或者 1百万 TB。
+
+
+
+## 判断使用的Python解释器是否64位
+
+要判断你正在使用的Python解释器是32位还是64位，可以通过几种方法来完成。这里我将展示一种简单的方法，即使用Python内置的`platform`模块或`sys`模块来获取相关信息。
+
+**方法 1: 使用 `platform` 模块**
+
+`platform` 模块提供了很多关于平台的信息，包括体系结构（architecture），可以用来区分32位和64位版本。
+
+```python
+import platform
+
+print(platform.architecture())
+```
+
+这个函数会返回一个元组，其中第一个元素表示Python解释器的位数（例如 '32bit' 或 '64bit'）。
+
+**方法 2: 使用 `sys` 模块**
+
+`sys` 模块中的 `maxsize` 属性也可以用来间接判断Python解释器的位数。对于32位Python，`sys.maxsize` 的值通常为 2^31 - 1 (即 2147483647)，而对于64位Python，这个值通常为 2^63 - 1 (即 9223372036854775807)。
+
+```python
+import sys
+
+if sys.maxsize > 2**32:
+    print("64-bit Python")
+else:
+    print("32-bit Python")
+```
+
+下面我将执行一段代码来演示如何使用这两种方法之一来确定当前Python环境的位数。
+
+```python
+import platform
+print(platform.architecture()[0])
+```
+
+或者使用 `sys` 模块的方法：
+
+```python
+import sys
+if sys.maxsize > 2**32:
+    print("64-bit Python")
+else:
+    print("32-bit Python")
+```
+
+
+
+## 测试Python程序可以申请的最大内存量
+
+
+
+**python能够申请到的最大内存**
+
+> Python程序能够申请到的最大内存量主要取决于几个因素，包括操作系统、硬件配置以及Python解释器本身的限制。下面是一些关键点：
+>
+> 1. **操作系统限制**：
+>    - 不同的操作系统对进程可以使用的最大内存有不同的默认限制。例如，在Linux上，可以通过`ulimit -a`命令查看当前用户的资源限制，其中包括了最大虚拟内存大小（`virtual memory`）。
+>    - 在Windows上，理论上一个32位进程最多可以访问4GB的地址空间，而64位进程则可以访问更大的地址空间。
+>
+> 2. **硬件限制**：
+>    - 物理内存（RAM）的数量直接限制了程序可用的实际物理内存。即使操作系统允许更大的虚拟内存，实际能使用的内存仍然受限于物理内存加上交换空间（swap space）的总量。
+>    - 交换空间可以在一定程度上扩展可用内存，但使用大量交换空间会导致性能显著下降。
+>
+> 3. **Python解释器限制**：
+>    - Python本身并没有设置一个固定的内存上限，但它会受到上述因素的影响。
+>    - 在32位Python版本中，由于地址空间的限制，通常最大可分配内存为2-4GB左右。
+>    - 64位Python版本理论上可以访问更多内存，但是实际可用量依然受限于操作系统的限制和可用的物理及虚拟内存。
+>
+> 4. **Python内部机制**：
+>    - Python对象的内存管理由Python解释器负责，它使用垃圾回收机制来自动释放不再使用的内存。
+>    - 对于非常大的数据集，可能需要考虑使用更高效的数据结构或第三方库（如NumPy, Pandas等），这些库针对大数据处理进行了优化，并且支持在内存之外存储数据（例如，使用磁盘上的文件作为后端）。
+>
+> 5. **增加内存限制的方法**：
+>    - 在Linux上，可以通过修改`/etc/security/limits.conf`文件或使用`ulimit`命令来提高单个进程的内存限制。
+>    - 对于需要处理特别大数据集的情况，可以考虑使用分布式计算框架（如Apache Spark）、数据库或者其他专门设计用于处理大规模数据的技术。
+>
+> 总之，Python程序能够申请到的最大内存量不是一个固定值，而是依赖于运行环境的具体条件。
+
+
+
+> % ulimit -a
+>
+> -t: cpu time (seconds)       unlimited
+> -f: file size (blocks)       unlimited
+> -d: data seg size (kbytes)     unlimited
+> -s: stack size (kbytes)       8176
+> -c: core file size (blocks)     0
+> -v: address space (kbytes)     unlimited
+> -l: locked-in-memory size (kbytes) unlimited
+> -u: processes            10666
+> -n: file descriptors        2560
+
+
+
+**虚拟地址空间（计算机原理2/3）**
+
+> 三大计算机原理之一，@Book_my_flight_v0.3.md
+>
+> ​	计算机的基础架构自从 20 世纪 40 年代起就已经形成规范，包括处理器、存储指令和数据的内存、输入和输出设备。它通常叫作冯·诺依曼架构，以约翰·冯·诺依曼（德語：John Von Neumann，1903 年12 月 28 日－1957 年 2 月 8 日）的名字来命名，他在 1946 年发表的论文里描述了这一架构。论文的开头句，用现在的专门术语来说就是，CPU提供算法和控制，而 RAM 和磁盘则是记忆存储，键盘、鼠标和显示器与操作人员交互。其中需要重点理解的是与存储相关的进程的虚拟地址空间。
+>
+> 虚拟存储器是一个抽象概念，它为每个进程提供了一个假象，好像每个进程都在独占地使用主存。每个进程看到的存储器都是一致的，称之为虚拟地址空间。如图1-15所示的是 Linux 进程的虚拟地址空间（其他 Unix 系统的设计与此类似）。在 Linux 中，最上面的四分之一的地址空间是预留给操作系统中的代码和数据的，这对所有进程都一样。底部的四分之三的地址空间用来存放用户进程定义的代码和数据。请注意，图中的地址是从下往上增大的。
+>
+> 
+>
+> ![image-20230109195232404](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20230109195232404.png)
+>
+> 图1-15 进程的虚拟地址空间（Process virtual address space）（注：图片来源为 Randal Bryant[8]，2015年3月）
+>
+> 
+>
+> ​	每个进程看到的虚拟地址空间由准确定义的区（area）构成，每个区都有专门的功能。简单看下每一个区，从最低的地址开始，逐步向上研究。
+>
+> - 程序代码和数据（code and data）。代码是从同一固定地址开始，紧接着的是和全局变量相对应的数据区。代码和数据区是由可执行目标文件直接初始化的，示例中就是可执行文件hello。
+>
+> - 堆（heap）。紧随代码和数据区之后的是运行时堆（Run-time heap）。代码和数据区是在进程一旦开始运行时就被指定了大小的，与此不同，作为调用像 malloc 和 free 这样的 C 标准库函数的结果，堆可以在运行时动态地扩展和收缩。
+>
+> - 共享库（shared libraries）。在地址空间的中间附近是一块用来存放像标准库和数学库这样共享库的代码和数据的区域。共享库的概念非常强大。
+>
+> - 栈（stack）。位于用户虚拟地址空间顶部的是用户栈，编译器用它来实现函数调用。和堆一样，用户栈（User stack）在程序执行期间可以动态地扩展和收缩。特别地，每次我们调用一个函数时，栈就会增长。每次我们从函数返回时，栈就会收缩。
+>
+> - 内核虚拟存储器（kernal virtal memory）。内核是操作系统总是驻留在存储器中的部分。地址空间顶部是为内核预留的。应用程序不允许读写这个区域的内容或者直接调用内核代码定义的函数。
+>
+> ​	虚拟存储器的运作需要硬件和操作系统软件间的精密复杂的互相合作，包括对处理器生成的每个地址的硬件翻译。基本思想是把一个进程虚拟存储器的内容存储在磁盘上，然后用主存作为磁盘的高速缓存。
+
+
+
+
+
+要测试Python程序可以申请的最大内存量，你可以编写一个简单的脚本，该脚本会尝试分配越来越多的内存，直到达到系统限制或Python解释器本身的限制。这个过程通常涉及到创建一个越来越大的列表（或其他数据结构），并填充它，直到内存不足。
+
+请注意，这样的测试可能会导致你的系统变得非常慢，甚至可能崩溃，因为它会消耗大量的RAM。因此，在进行这种测试之前，请确保你了解风险，并且最好在受控环境中执行此操作，例如虚拟机或有足够空闲资源的机器上。
+
+```python
+import os
+import sys
+import gc  # 垃圾回收模块
+
+
+def allocate_memory(chunk_size=1024 * 1024 * 1024, max_attempts=1000):
+    """
+    尝试分配内存，每次增加chunk_size字节，直到无法分配更多。
+
+    :param chunk_size: 每次尝试分配的内存大小（以字节为单位）
+    :param max_attempts: 最大尝试次数
+    """
+    data = []
+    total_allocated = 0
+    for i in range(max_attempts):
+        try:
+            # 尝试分配额外的内存
+            data.append(' ' * chunk_size)
+            total_allocated += chunk_size
+            print(f"Allocated {total_allocated / (1024 * 1024 * 1024):.2f} GB")
+        except MemoryError:
+            print("Memory allocation failed.")
+            break
+        finally:
+            # 强制垃圾回收
+            gc.collect()
+
+    print(f"Total memory allocated: {total_allocated / (1024 * 1024 * 1024):.2f} GB")
+
+
+# 运行测试
+allocate_memory()
+```
+
+
+
+> 运行结果，mac机器
+>
+> Allocated 274.00 GB
+> Allocated 275.00 GB
+> Allocated 276.00 GB
+>
+> Process finished with exit code 137 (interrupted by signal 9:SIGKILL)
+
+
+
+要找出276GB是2的多少次幂，首先需要将276GB转换为字节，因为通常在计算中使用的是二进制单位。1GB等于2^30字节（在二进制表示中）。因此，276GB可以表示为 276 * 2^30 字节。
+
+接下来，我们需要找到一个指数x，使得 2^x 等于 276 * 2^30。这可以通过对数运算来解决：
+
+$ x = \log_2(276 \times 2^{30}) $
+
+$ \log_2(276 \times 2^{30}) = \log_2(276) + \log_2(2^{30}) $
+
+$ \log_2(276) + 30 \approx 8.1073 + 30 = 38.1073 $
+
+这意味着276GB大约等于 $2^{38.1073}$ 字节。由于幂次通常是一个整数，我们可以认为276GB最接近于 $2^{38}$ 字节，但略大于这个值。如果你需要更精确的结果，可以使用科学计算器来获得更准确的对数值。
+
+
+
+# 2 最短路径Dijkstra
 
 ## 示例sy386: 最短距离 简单
 
@@ -1022,7 +1240,7 @@ Dijkstra 算法的正确性证明基于以下核心逻辑：**每次将一个顶
 
 
 
-# 滑动窗口
+# 3 滑动窗口
 
 ## 示例3.无重复字符的最长子串
 
@@ -1143,7 +1361,1079 @@ class Solution:
 
 
 
-# 概念关联理解
+# 4 并查集（Disjoint Set）
+
+
+
+Disjoint Set (Union-Find Algorithm)
+
+https://www.geeksforgeeks.org/introduction-to-disjoint-set-data-structure-or-union-find-algorithm/
+
+**What is a Disjoint set data structure?**
+
+> Two sets are called **disjoint sets** if they don’t have any element in common, the intersection of sets is a null set.
+
+A data structure that stores non overlapping or disjoint subset of elements is called disjoint set data structure. The disjoint set data structure supports following operations:
+
+- Adding new sets to the disjoint set.
+- Merging disjoint sets to a single disjoint set using **Union** operation.
+- Finding representative of a disjoint set using **Find** operation.
+- Check if two sets are disjoint or not. 
+
+Consider a situation with a number of persons and the following tasks to be performed on them:
+
+- Add a **new friendship relation**, i.e. a person x becomes the friend of another person y i.e adding new element to a set.
+- Find whether individual **x is a friend of individual y** (direct or indirect friend)
+
+**Examples:** 
+
+> We are given 10 individuals say, a, b, c, d, e, f, g, h, i, j
+>
+> Following are relationships to be added:
+> a <-> b  
+> b <-> d
+> c <-> f
+> c <-> i
+> j <-> e
+> g <-> j
+>
+> Given queries like whether a is a friend of d or not. We basically need to create following 4 groups and maintain a quickly accessible connection among group items:
+> G1 = {a, b, d}
+> G2 = {c, f, i}
+> G3 = {e, g, j}
+> G4 = {h}
+
+
+
+**Find whether x and y belong to the same group or not, i.e. to find if x and y are direct/indirect friends.**
+
+Partitioning the individuals into different sets according to the groups in which they fall. This method is known as a **Disjoint set Union** which maintains a collection of **Disjoint sets** and each set is represented by one of its members.
+
+**To answer the above question two key points to be considered are:**
+
+- **How to Resolve sets?** Initially, all elements belong to different sets. After working on the given relations, we select a member as a **representative**. There can be many ways to select a representative, a simple one is to select with the biggest index.
+- **Check if 2 persons are in the same group?** If representatives of two individuals are the same, then they’ll become friends.
+
+
+
+**Data Structures used are:** 
+
+**Array:** An array of integers is called **Parent[]**. If we are dealing with **N** items, i’th element of the array represents the i’th item. More precisely, the i’th element of the Parent[] array is the parent of the i’th item. These relationships create one or more virtual trees.
+
+**Tree:** It is a **Disjoint set**. If two elements are in the same tree, then they are in the same **Disjoint set**. The root node (or the topmost node) of each tree is called the **representative** of the set. There is always a single **unique representative** of each set. A simple rule to identify a representative is if ‘i’ is the representative of a set, then **Parent[i] = i**. If i is not the representative of his set, then it can be found by traveling up the tree until we find the representative.
+
+
+
+### 4.1 Operations on Disjoint Set
+
+操作包括 Find 和 Union。
+
+#### 4.1.1 Find
+
+Can be implemented by recursively traversing the parent array until we hit a node that is the parent of itself.
+
+
+
+```python
+# Finds the representative of the set
+# that i is an element of
+
+def find(i):
+
+	# If i is the parent of itself
+	if (parent[i] == i):
+
+		# Then i is the representative of
+		# this set
+		return i
+	else:
+
+		# Else if i is not the parent of
+		# itself, then i is not the
+		# representative of his set. So we
+		# recursively call Find on its parent
+		return find(parent[i])
+
+# The code is contributed by Nidhi goel
+
+```
+
+
+
+**Time complexity**: This approach is inefficient and can take O(n) time in worst case.
+
+
+
+#### 7.1.2 Union 
+
+It takes **two elements** as input and finds the representatives of their sets using the **Find** operation, and finally puts either one of the trees (representing the set) under the root node of the other tree.
+
+```python
+# Unites the set that includes i
+# and the set that includes j
+
+def union(parent, rank, i, j):
+	# Find the representatives
+	# (or the root nodes) for the set
+	# that includes i
+	irep = find(parent, i)
+	
+	# And do the same for the set
+	# that includes j
+	jrep = find(parent, j)
+	
+	# Make the parent of i’s representative
+	# be j’s representative effectively
+	# moving all of i’s set into j’s set)
+	
+	parent[irep] = jrep
+
+```
+
+**Time complexity**: This approach is inefficient and could lead to tree of length O(n) in worst case.
+
+
+
+### 4.2 Optimizations (Union by Rank/Size and Path Compression)
+
+The efficiency depends heavily on which tree get attached to the other. There are 2 ways in which it can be done. First is Union by Rank, which considers height of the tree as the factor and Second is Union by Size, which considers size of the tree as the factor while attaching one tree to the other . This method along with Path Compression gives complexity of nearly constant time.
+
+
+
+#### 4.2.1 Path Compression
+
+Modifications to Find()):
+
+It speeds up the data structure by **compressing the height** of the trees. It can be achieved by inserting a small caching mechanism into the **Find** operation. Take a look at the code for more details:
+
+```python
+# Finds the representative of the set that i
+# is an element of.
+
+
+def find(i):
+
+	# If i is the parent of itself
+	if Parent[i] == i:
+
+		# Then i is the representative 
+		return i
+	else:
+
+		# Recursively find the representative.
+		result = find(Parent[i])
+
+		# We cache the result by moving i’s node 
+		# directly under the representative of this
+		# set
+		Parent[i] = result
+	
+		# And then we return the result
+		return result
+
+# The code is contributed by Arushi Jindal. 
+
+```
+
+
+
+**Time Complexity**: O(log n) on average per call.
+
+
+
+#### 4.2.2 Union by Rank
+
+First of all, we need a new array of integers called **rank[]**. The size of this array is the same as the parent array **Parent[]**. If i is a representative of a set, **rank[i]** is the height of the tree representing the set. 
+Now recall that in the Union operation, it doesn’t matter which of the two trees is moved under the other. Now what we want to do is minimize the height of the resulting tree. If we are uniting two trees (or sets), let’s call them left and right, then it all depends on the **rank of left** and the **rank of right**. 
+
+- If the rank of **left** is less than the rank of **right**, then it’s best to move **left under right**, because that won’t change the rank of right (while moving right under left would increase the height). In the same way, if the rank of right is less than the rank of left, then we should move right under left.
+- If the ranks are equal, it doesn’t matter which tree goes under the other, but the rank of the result will always be one greater than the rank of the trees.
+
+
+
+#### 4.2.3 Path compression and union by rank
+
+Below is the complete implementation of disjoint set with path compression and union by rank.
+
+```python
+class DisjSet:
+	def __init__(self, n):
+		# Constructor to create and initialize sets of n items
+		self.rank = [1] * n
+		self.parent = [i for i in range(n)]
+
+
+	# Finds set of given item x
+	def find(self, x):
+		
+		# Finds the representative of the set that x is an element of
+		if (self.parent[x] != x):
+			
+			# if x is not the parent of itself
+			# Then x is not the representative of its set
+			self.parent[x] = self.find(self.parent[x])
+			
+			# so we recursively call Find on its parent
+			# and move i's node directly under the
+			# representative of this set
+
+		return self.parent[x]
+
+
+	# Do union of two sets represented by x and y.
+	def Union(self, x, y):
+		
+		# Find current sets of x and y
+		xset = self.find(x)
+		yset = self.find(y)
+
+		# If they are already in same set
+		if xset == yset:
+			return
+
+		# Put smaller ranked item under
+		# bigger ranked item if ranks are different
+		if self.rank[xset] < self.rank[yset]:
+			self.parent[xset] = yset
+
+		elif self.rank[xset] > self.rank[yset]:
+			self.parent[yset] = xset
+
+		# If ranks are same, then move y under x (doesn't matter
+    # which one goes where) and increment rank of x's tree
+		else:
+			self.parent[yset] = xset
+			self.rank[xset] = self.rank[xset] + 1
+
+# Driver code
+obj = DisjSet(5)
+obj.Union(0, 2)
+obj.Union(4, 2)
+obj.Union(3, 1)
+if obj.find(4) == obj.find(0):
+	print('Yes')
+else:
+	print('No')
+if obj.find(1) == obj.find(0):
+	print('Yes')
+else:
+	print('No')
+
+
+"""
+Yes
+No
+"""
+```
+
+
+
+**Time complexity**: O(n) for creating n single item sets . The two techniques -path compression with the union by rank/size, the time complexity will reach nearly constant time. It turns out, that the final[ amortized time complexity](https://www.geeksforgeeks.org/introduction-to-amortized-analysis/) is O(α(n)), where α(n) is the inverse Ackermann function, which grows very steadily (it does not even exceed for $n<10^{600}$  approximately).
+
+**Space complexity:** O(n) because we need to store n elements in the Disjoint Set Data Structure.
+
+
+
+#### 4.2.4 Union by Size
+
+Again, we need a new array of integers called **size[]**. The size of this array is the same as the parent array **Parent[]**. If i is a representative of a set, **size[i]** is the number of the elements in the tree representing the set. 
+Now we are uniting two trees (or sets), let’s call them left and right, then in this case it all depends on the **size of left** and the **size of right** tree (or set).
+
+- If the size of **left** is less than the size of **right**, then it’s best to move **left under right** and increase size of right by size of left. In the same way, if the size of right is less than the size of left, then we should move right under left. and increase size of left by size of right.
+- If the sizes are equal, it doesn’t matter which tree goes under the other.
+
+```python
+class UnionFind:
+	def __init__(self, n):
+		self.Parent = list(range(n))
+		self.Size = [1] * n
+
+	# Function to find the representative (or the root node) for the set that includes i
+	def find(self, i):
+		if self.Parent[i] != i:
+			# Path compression: Make the parent of i the root of the set
+			self.Parent[i] = self.find(self.Parent[i])
+		return self.Parent[i]
+
+	# Unites the set that includes i and the set that includes j by size
+	def unionBySize(self, i, j):
+		# Find the representatives (or the root nodes) for the set that includes i
+		irep = self.find(i)
+
+		# And do the same for the set that includes j
+		jrep = self.find(j)
+
+		# Elements are in the same set, no need to unite anything.
+		if irep == jrep:
+			return
+
+		# Get the size of i’s tree
+		isize = self.Size[irep]
+
+		# Get the size of j’s tree
+		jsize = self.Size[jrep]
+
+		# If i’s size is less than j’s size
+		if isize < jsize:
+			# Then move i under j
+			self.Parent[irep] = jrep
+
+			# Increment j's size by i's size
+			self.Size[jrep] += self.Size[irep]
+		# Else if j’s size is less than i’s size
+		else:
+			# Then move j under i
+			self.Parent[jrep] = irep
+
+			# Increment i's size by j's size
+			self.Size[irep] += self.Size[jrep]
+
+# Example usage
+n = 5
+unionFind = UnionFind(n)
+
+# Perform union operations
+unionFind.unionBySize(0, 1)
+unionFind.unionBySize(2, 3)
+unionFind.unionBySize(0, 4)
+
+# Print the representative of each element after unions
+for i in range(n):
+	print("Element {}: Representative = {}".format(i, unionFind.find(i)))
+
+# This code is contributed by Susobhan Akhuli
+
+"""
+Element 0: Representative = 0
+Element 1: Representative = 0
+Element 2: Representative = 2
+Element 3: Representative = 2
+Element 4: Representative = 0
+"""
+```
+
+
+
+**Time complexity**: O(log n) without Path Compression.
+
+
+
+
+
+### 4.3 编程题目
+
+#### 示例晴问9.6.1 学校的班级个数（1）
+
+https://sunnywhy.com/sfbj/9/6/360
+
+现有一个学校，学校中有若干个班级，每个班级中有若干个学生，每个学生只会存在于一个班级中。如果学生`A`和学生`B`处于一个班级，学生`B`和学生`C`处于一个班级，那么我们称学生`A`和学生`C`也处于一个班级。
+
+现已知学校中共 n 个学生（编号为从`1`到`n`），并给出 m 组学生关系（指定两个学生处于一个班级），问总共有多少个班级。
+
+**输入**
+
+第一行两个整数 $m、n (1 \le n \le 100, 1 \le m \le 100)$，分别表示学生个数、学生关系个数；
+
+接下来 m 行，每行两个整数 a 和 b $ (1 \le a \le n, 1 \le b \le n, a \ne b)$，表示编号为`a`的学生和编号为`b`的学生处于一个班级。
+
+**输出**
+
+输出一个整数，表示班级个数。
+
+样例1
+
+输入
+
+```
+5 3
+4 2
+1 3
+2 5
+```
+
+输出
+
+```
+2
+```
+
+解释
+
+编号`2`、`4`、`5`的学生在同一个班级，编号`1`、`3`的学生在同一个班级，因此共有两个班级。
+
+
+
+To solve this problem, you can use the concept of disjoint sets (also known as union-find). Each student is initially in their own set (or class). When a relationship between two students is given, you unite their sets. The number of disjoint sets at the end will be the number of classes.
+
+Here is a step-by-step plan:
+
+1. Initialize an array `parent` of size `n+1` where `parent[i]` is initially `i`. This means each student is in their own class.
+2. For each student relationship, unite their sets using the union operation.
+3. Count the number of unique parents. This will be the number of classes.
+
+Here is the Python code that implements this plan:
+
+```python
+def find(x):
+    if parent[x] != x: # 如果不是根结点，继续循环
+        parent[x] = find(parent[x])
+    return parent[x]
+
+def union(x, y):
+    parent[find(x)] = find(y)
+
+n, m = map(int, input().split())
+parent = list(range(n + 1))	# parent[i] == i，则说明元素i是该集合的根结点
+
+for _ in range(m):
+    a, b = map(int, input().split())
+    union(a, b)
+
+classes = set(find(x) for x in range(1, n + 1))
+print(len(classes))
+```
+
+This code reads the number of students and relationships from the input, initializes each student to be in their own class, unites the classes of each pair of students that have a relationship, and then counts and prints the number of unique classes.
+
+
+
+
+
+#### 示例晴问9.6.2 学校的班级人数（2）
+
+https://sunnywhy.com/sfbj/9/6/361
+
+现有一个学校，学校中有若干个班级，每个班级中有若干个学生，每个学生只会存在于一个班级中。如果学生`A`和学生`B`处于一个班级，学生`B`和学生`C`处于一个班级，那么我们称学生`A`和学生`C`也处于一个班级。
+
+现已知学校中共 n 个学生（编号为从`1`到`n`），并给出 m 组学生关系（指定两个学生处于一个班级），问总共有多少个班级，并按降序给出每个班级的人数。
+
+输入
+
+第一行两个整数 $m、n (1 \le n \le 100, 1 \le m \le 100)$，分别表示学生个数、学生关系个数；
+
+接下来 m 行，每行两个整数 a 和 b $ (1 \le a \le n, 1 \le b \le n, a \ne b)$，表示编号为`a`的学生和编号为`b`的学生处于一个班级。
+
+输出
+
+第一行输出一个整数，表示班级个数；
+
+第二行若干个整数，按降序给出每个班级的人数。整数之间用空格隔开，行末不允许有多余的空格。
+
+样例1
+
+输入
+
+```
+5 3
+4 2
+1 3
+2 5
+```
+
+输出
+
+```
+2
+3 2
+```
+
+解释
+
+编号`2`、`4`、`5`的学生在同一个班级，编号`1`、`3`的学生在同一个班级，因此共有两个班级，人数分别是`3`和`2`。
+
+
+
+
+
+To solve this problem, you can use the concept of disjoint sets (also known as union-find). Each student is initially in their own set (or class). When a relationship between two students is given, you unite their sets. The number of disjoint sets at the end will be the number of classes. You can also maintain a count of the number of students in each class.
+
+Here is a step-by-step plan:
+
+1. Initialize an array `parent` of size `n+1` where `parent[i]` is initially `i`. This means each student is in their own class.
+2. Initialize an array `size` of size `n+1` where `size[i]` is initially `1`. This means each class initially has one student.
+3. For each student relationship, unite their sets using the union operation and update the size of the new set.
+4. Count the number of unique parents. This will be the number of classes.
+5. Print the sizes of the classes in descending order.
+
+Here is the Python code that implements this plan:
+
+```python
+def find(x):
+    if parent[x] != x:
+        parent[x] = find(parent[x])
+    return parent[x]
+
+def union(x, y):
+    root_x = find(x)
+    root_y = find(y)
+    if root_x != root_y:
+        parent[root_x] = root_y
+        size[root_y] += size[root_x]
+
+n, m = map(int, input().split())
+parent = list(range(n + 1))
+size = [1] * (n + 1)
+
+for _ in range(m):
+    a, b = map(int, input().split())
+    union(a, b)
+
+#classes = [size[find(x)] for x in range(1, n + 1) if x == parent[x]]
+classes = [size[x] for x in range(1, n + 1) if x == parent[x]]
+print(len(classes))
+print(' '.join(map(str, sorted(classes, reverse=True))))
+```
+
+This code reads the number of students and relationships from the input, initializes each student to be in their own class, unites the classes of each pair of students that have a relationship, counts and prints the number of unique classes, and prints the sizes of the classes in descending order.
+
+
+
+
+
+#### 示例晴问9.6.3 是否相同班级
+
+https://sunnywhy.com/sfbj/9/6/362
+
+现有一个学校，学校中有若干个班级，每个班级中有若干个学生，每个学生只会存在于一个班级中。如果学生`A`和学生`B`处于一个班级，学生`B`和学生`C`处于一个班级，那么我们称学生`A`和学生`C`也处于一个班级。
+
+现已知学校中共 n 个学生（编号为从`1`到`n`），并给出 m 组学生关系（指定两个学生处于一个班级）。然后给出 k 个查询，每个查询询问两个学生是否在同一个班级。
+
+**输入**
+
+第一行两个整数 $n、m (1 \le n \le 10^5, 1 \le m \le 10^5)$，分别表示学生个数、学生关系个数；
+
+接下来 m 行，每行两个整数 a 和 b $ (1 \le a \le n, 1 \le b \le n, a \ne b)$，表示编号为`a`的学生和编号为`b`的学生处于一个班级。
+
+然后一个整数 $k (1 \le k \le 10^3)$，表示查询个数；
+
+接下来 k 行，每行两个整数 a 和 b $ (1 \le a \le n, 1 \le b \le n)$，表示询问编号为`a`的学生和编号为`b`的学生是否在同一个班级。
+
+**输出**
+
+每个查询输出一行，如果在同一个班级，那么输出`Yes`，否则输出`No`。
+
+样例1
+
+输入
+
+```
+5 3
+4 2
+1 3
+2 5
+2
+4 5
+1 2
+```
+
+输出
+
+```
+Yes
+No
+```
+
+解释
+
+编号`2`、`4`、`5`的学生在同一个班级，编号`1`、`3`的学生在同一个班级，因此编号`4`和`5`的学生在同一个班级，编号`1`和`2`的学生不在同一个班级。
+
+
+
+
+
+To solve this problem, you can use the concept of disjoint sets (also known as union-find). Each student is initially in their own set (or class). When a relationship between two students is given, you unite their sets. For each query, you check if the two students are in the same set.
+
+Here is a step-by-step plan:
+
+1. Initialize an array `parent` of size `n+1` where `parent[i]` is initially `i`. This means each student is in their own class.
+2. For each student relationship, unite their sets using the union operation.
+3. For each query, check if the two students are in the same set using the find operation.
+
+Here is the Python code that implements this plan:
+
+```python
+def find(x):
+    if parent[x] != x:
+        parent[x] = find(parent[x])
+    return parent[x]
+
+def union(x, y):
+    parent[find(x)] = find(y)
+
+n, m = map(int, input().split())
+parent = list(range(n + 1))
+
+for _ in range(m):
+    a, b = map(int, input().split())
+    union(a, b)
+
+k = int(input())
+for _ in range(k):
+    a, b = map(int, input().split())
+    if find(a) == find(b):
+        print('Yes')
+    else:
+        print('No')
+```
+
+This code reads the number of students and relationships from the input, initializes each student to be in their own class, unites the classes of each pair of students that have a relationship, and then for each query, checks and prints whether the two students are in the same class.
+
+
+
+#### 示例晴问9.6.4 迷宫连通性
+
+https://sunnywhy.com/sfbj/9/6/363
+
+现有一个迷宫，迷宫中有 n 个房间（编号为从`1`到`n`），房间与房间之间可能连通。如果房间`A`和房间`B`连通，房间`B`和房间`C`连通，那么我们称房间`A`和房间`C`也连通。给定 m 组连通关系（指定两个房间连通），问迷宫中的所有房间是否连通。
+
+**输入**
+
+第一行两个整数$n、m (1 \le n \le 100, 1 \le m \le 100)$，分别表示房间个数、连通关系个数；
+
+接下来行，每行两个整数 a 和 b $ (1 \le a \le n, 1 \le b \le n)$，表示编号为`a`的房间和编号为`b`的房间是连通的。
+
+**输出**
+
+如果所有房间连通，那么输出`Yes`，否则输出`No`。
+
+样例1
+
+输入
+
+```
+5 4
+4 2
+1 3
+2 5
+1 5
+```
+
+输出
+
+```
+Yes
+```
+
+解释
+
+所有房间都连通，因此输出`Yes`。
+
+样例2
+
+输入
+
+```
+5 3
+4 2
+1 3
+2 5
+```
+
+输出
+
+```
+No
+```
+
+解释
+
+编号`2`、`4`、`5`的房间互相连通，编号`1`、`3`的房间互相连通，因此没有全部互相连通，输出`No`。
+
+
+
+To solve this problem, you can use the concept of disjoint sets (also known as union-find). Each room is initially in its own set. When a connection between two rooms is given, you unite their sets. If at the end there is only one set, then all rooms are connected.
+
+Here is a step-by-step plan:
+
+1. Initialize an array `parent` of size `n+1` where `parent[i]` is initially `i`. This means each room is in its own set.
+2. For each connection, unite their sets using the union operation.
+3. Check if all rooms are in the same set.
+
+Here is the Python code that implements this plan:
+
+```python
+def find(x):
+    if parent[x] != x:
+        parent[x] = find(parent[x])
+    return parent[x]
+
+def union(x, y):
+    parent[find(x)] = find(y)
+
+n, m = map(int, input().split())
+parent = list(range(n + 1))
+
+for _ in range(m):
+    a, b = map(int, input().split())
+    union(a, b)
+
+sets = set(find(x) for x in range(1, n + 1))
+if len(sets) == 1:
+    print('Yes')
+else:
+    print('No')
+```
+
+This code reads the number of rooms and connections from the input, initializes each room to be in its own set, unites the sets of each pair of rooms that have a connection, and then checks and prints whether all rooms are in the same set.
+
+
+
+# 5 辅助栈、懒删除
+
+## 示例22067: 快速堆猪
+
+辅助栈, http://cs101.openjudge.cn/practice/22067/
+
+小明有很多猪，他喜欢玩叠猪游戏，就是将猪一头头叠起来。猪叠上去后，还可以把顶上的猪拿下来。小明知道每头猪的重量，而且他还随时想知道叠在那里的猪最轻的是多少斤。
+
+输入
+
+有三种输入
+
+1) push n
+   n是整数(0<=0 <=20000)，表示叠上一头重量是n斤的新猪
+2) pop
+   表示将猪堆顶的猪赶走。如果猪堆没猪，就啥也不干
+3) min
+   表示问现在猪堆里最轻的猪多重。如果猪堆没猪，就啥也不干
+
+输入总数不超过100000条
+
+输出
+
+对每个min输入，输出答案。如果猪堆没猪，就啥也不干
+
+样例输入
+
+```
+pop
+min
+push 5
+push 2
+push 3
+min
+push 4
+min
+```
+
+样例输出
+
+```
+2
+2
+```
+
+来源: Guo wei
+
+
+
+用辅助栈：用一个单调栈维护最小值，再用另外一个栈维护其余的值。
+
+每次push时，在辅助栈中加入当前最轻的猪的体重，pop时也同步pop，这样栈顶始终是当前猪堆中最轻的体重，查询时直接输出即可
+
+```python
+a = []
+m = []
+
+while True:
+    try:
+        s = input().split()
+    
+        if s[0] == "pop":
+            if a:
+                a.pop()
+                if m:
+                    m.pop()
+        elif s[0] == "min":
+            if m:
+                print(m[-1])
+        else:
+            h = int(s[1])
+            a.append(h)
+            if not m:
+                m.append(h)
+            else:
+                k = m[-1]
+                m.append(min(k, h))
+    except EOFError:
+        break
+```
+
+ 
+
+```python
+pig, pigmin = [], []
+while True:
+    try:
+        *line, = input().split()
+        if "pop" in line:
+            if len(pig) == 0:
+                continue
+
+            val = pig.pop()
+            if len(pigmin) > 0 and val == pigmin[-1]:
+                pigmin.pop()
+        elif "push" in line:
+            val = int(line[1])
+            pig.append(val)
+            if len(pigmin) == 0 or val <= pigmin[-1]:
+                pigmin.append(val)
+        elif "min" in line:
+            if len(pig) == 0:
+                continue
+            else:
+                print(pigmin[-1])
+    except EOFError:
+        break
+```
+
+
+
+字典标记，懒删除
+
+```python
+import heapq
+from collections import defaultdict
+
+out = defaultdict(int)
+pigs_heap = []
+pigs_stack = []
+
+while True:
+    try:
+        s = input()
+    except EOFError:
+        break
+
+    if s == "pop":
+        if pigs_stack:
+            out[pigs_stack.pop()] += 1
+    elif s == "min":
+        if pigs_stack:
+            while True:
+                x = heapq.heappop(pigs_heap)
+                if not out[x]:
+                    heapq.heappush(pigs_heap, x)
+                    print(x)
+                    break
+                out[x] -= 1
+    else:
+        y = int(s.split()[1])
+        pigs_stack.append(y)
+        heapq.heappush(pigs_heap, y)
+```
+
+
+
+集合标记，懒删除。如果有重复项就麻烦了，可能刚好赶上题目数据友好。
+
+```python
+import heapq
+
+class PigStack:
+    def __init__(self):
+        self.stack = []
+        self.min_heap = []
+        self.popped = set()
+
+    def push(self, weight):
+        self.stack.append(weight)
+        heapq.heappush(self.min_heap, weight)
+
+    def pop(self):
+        if self.stack:
+            weight = self.stack.pop()
+            self.popped.add(weight)
+
+    def min(self):
+        while self.min_heap and self.min_heap[0] in self.popped:
+            self.popped.remove(heapq.heappop(self.min_heap))
+        if self.min_heap:
+            return self.min_heap[0]
+        else:
+            return None
+
+pig_stack = PigStack()
+
+while True:
+    try:
+        command = input().split()
+        if command[0] == 'push':
+            pig_stack.push(int(command[1]))
+        elif command[0] == 'pop':
+            pig_stack.pop()
+        elif command[0] == 'min':
+            min_weight = pig_stack.min()
+            if min_weight is not None:
+                print(min_weight)
+    except EOFError:
+        break
+```
+
+
+
+# 6 单调栈
+
+## 示例42.接雨水
+
+monotonic stack, https://leetcode.cn/problems/trapping-rain-water/
+
+给定 `n` 个非负整数表示每个宽度为 `1` 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/10/22/rainwatertrap.png)
+
+```
+输入：height = [0,1,0,2,1,0,1,3,2,1,2,1]
+输出：6
+解释：上面是由数组 [0,1,0,2,1,0,1,3,2,1,2,1] 表示的高度图，在这种情况下，可以接 6 个单位的雨水（蓝色部分表示雨水）。 
+```
+
+**示例 2：**
+
+```
+输入：height = [4,2,0,3,2,5]
+输出：9
+```
+
+ 
+
+**提示：**
+
+- `n == height.length`
+- `1 <= n <= 2 * 10^4`
+- `0 <= height[i] <= 10^5`
+
+
+
+**单调栈其实就是在栈的基础上，维持一个栈内元素单调。**
+
+> https://github.com/SharingSource/LogicStack-LeetCode
+>
+> 在这道题，由于需要找某个位置两侧比其高的柱子（只有两侧有比当前位置高的柱子，当前位置才能接下雨水），我们可以维持栈内元素的单调递减。
+>
+> **PS.找某侧最近一个比其大的值，使用单调栈维持栈内元素递减；找某侧最近一个比其小的值使用单调栈维持栈内元素递增 ….**
+>
+> 当某个位置的元素弹出栈时，例如位置 a ，我们自然可以得到 a 位置两侧比 a 高的柱子：
+>
+> - 一个是导致 a位置元素弹出的柱子( a右侧比 a高的柱子)
+> - 一个是 a弹栈后的栈顶元素(a 左侧比 a 高的柱子)
+>
+> 当有了 a 左右两侧比 a 高的柱子后，便可计算 a 位置可接下的雨水量。
+
+
+
+```python
+class Solution:
+    def trap(self, height: List[int]) -> int:
+        stack = []
+        water = 0
+        for i in range(len(height)):
+            while stack and height[i] > height[stack[-1]]:
+                top = stack.pop()
+                if not stack:
+                    break
+                distance = i - stack[-1] - 1
+                bounded_height = min(height[i], height[stack[-1]]) - height[top]
+                water += distance * bounded_height
+            stack.append(i)
+        return water
+```
+
+
+
+> 这段代码实现了一个算法，用于计算给定高度数组 `height` 中可以 trapping 的雨水总量。这个算法使用了栈来高效地解决这个问题。
+>
+> **代码解读**
+>
+> **处理栈中的元素**
+>
+> ```python
+>      while stack and height[i] > height[stack[-1]]:
+> ```
+>
+> - 当栈不为空且当前高度 `height[i]` 大于栈顶元素对应的高度 `height[stack[-1]]` 时，进入循环。
+>
+> **弹出栈顶元素**
+>
+> ```python
+>             top = stack.pop()
+> ```
+>
+> - 弹出栈顶元素 `top`，`top` 是当前高度较低的柱子的索引。
+>
+> **检查栈是否为空**
+>
+> ```python
+>             if not stack:
+>                 break
+> ```
+>
+> - 如果栈为空，说明没有更高的柱子可以形成积水区域，跳出循环。
+>
+> **计算积水区域**
+>
+> ```python
+>             distance = i - stack[-1] - 1
+>             bounded_height = min(height[i], height[stack[-1]]) - height[top]
+>             water += distance * bounded_height
+> ```
+>
+> - `distance`：计算当前柱子 `i` 和栈顶柱子 `stack[-1]` 之间的距离，减去 1 是因为不包括两端的柱子。
+> - `bounded_height`：计算当前柱子 `i` 和栈顶柱子 `stack[-1]` 之间的最小高度，减去弹出的柱子 `top` 的高度，得到积水的高度。
+> - `water += distance * bounded_height`：计算当前积水区域的水量，并累加到 `water` 中。
+
+
+
+双指针
+
+```python
+class Solution:
+    def trap(self, height: List[int]) -> int:
+        ans = left = pre_max = suf_max = 0
+        right = len(height) - 1
+        while left < right:
+            pre_max = max(pre_max, height[left])
+            suf_max = max(suf_max, height[right])
+            if pre_max < suf_max:
+                ans += pre_max - height[left]
+                left += 1
+            else:
+                ans += suf_max - height[right]
+                right -= 1
+        return ans
+
+```
+
+
+
+> 单调栈相当于按行接雨水，双指针相当于按列接雨水？
+>
+> 确实，单调栈和双指针方法在处理“接雨水”问题时采用了不同的思路，但最终都能正确计算出能够接住的雨水总量。下面简要分析这两种方法的工作原理：
+>
+> **单调栈（按行接雨水）**
+>
+> 单调栈方法通过维护一个递减栈来找到每个位置左侧和右侧的第一个更高柱子，进而计算该位置上方能接住的雨水量。这种方法可以看作是逐行计算雨水量，因为每次从栈中弹出一个元素时，实际上是在计算该元素上方的水平层（即一行）的雨水量。具体来说，当遇到一个比栈顶元素高的柱子时，就找到了一个可以蓄水的区域，然后根据左右边界的高度差和距离计算出该行的雨水量。
+>
+> **双指针（按列接雨水）**
+>
+> 双指针方法则是通过两个指针从数组的两端向中间移动，同时记录左右两边的最大高度。在每一步中，选择较短的一边进行处理，因为水位总是由较短的一边决定的。如果左边高度小于右边高度，那么左边当前柱子上方能接住的雨水量就是左边最大高度减去当前高度；反之亦然。这种方法可以看作是逐列计算雨水量，因为每次移动指针时，实际上是在计算当前指针所指向柱子上方的雨水量。
+>
+> **比较**
+>
+> - **单调栈** 更适合理解为按照行来计算雨水量，因为它关注的是每个局部凹陷处（即两根较高柱子之间的一根或几根较低柱子）的雨水量，这些凹陷处可以想象成一个个水平的水层。
+> - **双指针** 则更适合理解为按照列来计算雨水量，因为它直接计算每个柱子上方能接住的雨水量，而不需要显式地找出每个凹陷处。
+>
+> 两种方法虽然计算方式不同，但是都能有效地解决问题，并且时间复杂度都是 O(n)，其中 n 是高度数组的长度。空间复杂度方面，单调栈方法需要额外的空间来存储栈，而双指针方法只需要常数级别的额外空间。
+
+
+
+
+
+# 7 概念关联理解
 
 ## 马拉车算法
 
