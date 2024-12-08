@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1342 GMT+8 Dec 02 2024
+Updated 1003 GMT+8 Dec 08 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -333,9 +333,7 @@ dp, https://leetcode.cn/problems/pascals-triangle/
 
 
 
-## 283.零移动
-
-two pointers, https://leetcode.cn/problems/move-zeroes/
+​	
 
 给定一个数组 `nums`，编写一个函数将所有 `0` 移动到数组的末尾，同时保持非零元素的相对顺序。
 
@@ -367,6 +365,31 @@ two pointers, https://leetcode.cn/problems/move-zeroes/
  
 
 **进阶：**你能尽量减少完成的操作次数吗？
+
+
+
+维护最左边的空位的位置（下标）。
+
+从左到右遍历 `nums[i]`。同时维护另一个下标 $i_0$（初始值为 0），并保证下标区间 $[i_0,i−1]$ 都是空位，且 $i_0$指向最左边的空位。
+
+每次遇到 nums[i]≠0 的情况，就把 nums[i] 移动到最左边的空位上，也就是交换 nums[i] 和 $nums[i_0]$。交换后把 $i_0$和 i 都加一，从而使【[$i_0$ ,i−1] 都是空位】这一性质仍然成立。
+
+如果 nums[i]=0，无需交换，只把 i 加一。
+
+https://leetcode.cn/problems/move-zeroes/solutions/2969353/kuai-man-zhi-zhen-wei-shi-yao-ke-yi-ba-s-1h8x/
+
+```python
+class Solution:
+    def moveZeroes(self, nums: List[int]) -> None:
+        i0 = 0
+        for i in range(len(nums)):
+            if nums[i]:
+                nums[i], nums[i0] = nums[i0], nums[i]
+                i0 += 1
+
+```
+
+
 
 
 
