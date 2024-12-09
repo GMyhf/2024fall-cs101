@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 2222 GMT+8 Dec 09 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0004 GMT+8 Dec 10 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 1101 改为每天放1个题目。  
@@ -29,7 +29,7 @@ leetcode.cn
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 | 1211 | 1115. 取石子游戏 | dfs      |  |  https://www.acwing.com/problem/content/description/1117/        |
-| 1210 | 25570: 洋葱      | matrices      |  |  http://cs101.openjudge.cn/practice/25570/        |
+| 1210 | 25570: 洋葱      | matrices      |  |  http://cs101.openjudge.cn/2024fallroutine/25570/        |
 | 1209 | 1526C1. Potions(Easy Version)   | greedy, dp, data structures, brute force | 1500  | https://codeforces.com/problemset/problem/1526/C1    |
 | 1208 | 04129: 变换的迷宫      | bfs      | tough |  http://cs101.openjudge.cn/2024fallroutine/04129/        |
 | 1207 | 02802: 小游戏      | bfs similar, Dijkstra      | tough |  http://cs101.openjudge.cn/2024fallroutine/02802/        |
