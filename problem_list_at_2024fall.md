@@ -28,7 +28,7 @@ leetcode.cn
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
-| 1211 | 1115. 取石子游戏 |       |  |  https://www.acwing.com/problem/content/description/1117/        |
+| 1211 | 1115. 取石子游戏 | dfs      |  |  https://www.acwing.com/problem/content/description/1117/        |
 | 1210 | 25570: 洋葱      | matrices      |  |  http://cs101.openjudge.cn/practice/25570/        |
 | 1209 | 1526C1. Potions(Easy Version)   | greedy, dp, data structures, brute force | 1500  | https://codeforces.com/problemset/problem/1526/C1    |
 | 1208 | 04129: 变换的迷宫      | bfs      | tough |  http://cs101.openjudge.cn/2024fallroutine/04129/        |
