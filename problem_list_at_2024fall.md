@@ -29,9 +29,9 @@ leetcode.cn
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 | 1225 | 07810: 19岁生日礼物      |      | - |  http://cs101.openjudge.cn/practice/07810/        |
-| 1224 | 271411: 完美的爱      |      | - |  http://cs101.openjudge.cn/practice/27141/        |
+| 1224 | 27141: 完美的爱      |      | - |  http://cs101.openjudge.cn/practice/27141/        |
 | 1223 | 1883D. In Love   | data structure, greedy | 1500  | https://codeforces.com/problemset/problem/1883/D    |
-| 1222 |      |     | - |          |
+| 1222 | 03468: 电池的寿命      |      | - |  http://cs101.openjudge.cn/practice/03468/        |
 | 1221 | 27384: 候选人追踪      | 懒更新     | - |  http://cs101.openjudge.cn/practice/27384/        |
 | 1220 | 02811: 熄灯问题      | brute force     | - |  http://cs101.openjudge.cn/practice/02811/        |
 | 1219 | 02995: 登山      | dps     | - |  http://cs101.openjudge.cn/practice/02995/        |
