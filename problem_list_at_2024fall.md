@@ -28,6 +28,8 @@ leetcode.cn
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 1225 | 271411: 完美的爱      |      | - |  http://cs101.openjudge.cn/practice/27141/        |
+| 1221 | 27384: 候选人追踪      | 懒更新     | - |  http://cs101.openjudge.cn/practice/027384/        |
 | 1220 | 02811: 熄灯问题      | brute force     | - |  http://cs101.openjudge.cn/practice/02811/        |
 | 1219 | 02995: 登山      | dps     | - |  http://cs101.openjudge.cn/practice/02995/        |
 | 1218 | 16531: 上机考试      | matrices     | - |  http://cs101.openjudge.cn/practice/16531/        |
