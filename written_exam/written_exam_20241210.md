@@ -1,6 +1,6 @@
 # 20240521 计算概论B笔试资料
 
-Updated 0056 GMT+8 Dec 11, 2024
+Updated 1103 GMT+8 Dec 11, 2024
 
 2024 spring, Complied by Hongfei Yan
 
@@ -1886,6 +1886,16 @@ count_numbers_greater_than_m()
    >    - 最后我们将5加上1，得到最终结果6。
    >
    > 综上所述，表达式的值是`6`，类型是`int`（整数）。
+
+   > ```python
+   > print((((ord('A')+1)<50) or (5*(ord('a')>90)))+1)   # 6
+   > print((ord('A')+1)<50)  # False
+   > print((ord('a')>90))    # True
+   > print((5*(ord('a')>90)))    # 5
+   > print(False or 5)   # 5
+   > print(1 or 5)   # 1 or先判断前面的，短路原因，前面为真，后面不再判断
+   > print(5 or 1)   # 5
+   > ```
 
 3. 在登录 12306 网站购票时，除了要求输入用户名、密码之外，还需要购票者按要求点击网页上的图片，这实际上就是要用户输入验证码，它的作用是比较好的解决了对<mark>用户密码</mark>的暴力破解问题。
 
