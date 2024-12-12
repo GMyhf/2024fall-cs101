@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 2154 GMT+8 Dec 11 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0020 GMT+8 Dec 13 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 1101 改为每天放1个题目。截止1225，刚好200个题目。  
@@ -40,8 +40,8 @@ leetcode.cn
 | 1216 | 27104: 世界杯只因      | greedy, dp     | - |  http://cs101.openjudge.cn/practice/27104/        |
 | 1215 | 26646: 建筑修建      | greedy     | - |  http://cs101.openjudge.cn/practice/26646/        |
 | 1214 | 26971: 分发糖果      | greedy     | - |  http://cs101.openjudge.cn/practice/26971/        |
-| 1213 | 26978: 滑动窗口最大值      | greedy     | - |  http://cs101.openjudge.cn/practice/26978/        |
-| 1212 | 27103: 最短的愉悦旋律长度      | greedy     | tough |  http://cs101.openjudge.cn/practice/27103/        |
+| 1213 | 26978: 滑动窗口最大值      | greedy     | - |  http://cs101.openjudge.cn/2024fallroutine/26978/        |
+| 1212 | 27103: 最短的愉悦旋律长度      | greedy     | tough |  http://cs101.openjudge.cn/2024fallroutine/27103/        |
 | 1211 | 1115. 取石子游戏 | dfs      |  |  https://www.acwing.com/problem/content/description/1117/        |
 | 1210 | 25570: 洋葱      | matrices      |  |  http://cs101.openjudge.cn/2024fallroutine/25570/        |
 | 1209 | 1526C1. Potions(Easy Version)   | greedy, dp, data structures, brute force | 1500  | https://codeforces.com/problemset/problem/1526/C1    |
