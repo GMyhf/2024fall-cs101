@@ -40,7 +40,7 @@ leetcode.cn
 | 1216 | 27104: 世界杯只因      | greedy, dp     | - |  http://cs101.openjudge.cn/practice/27104/        |
 | 1215 | 26646: 建筑修建      | greedy     | - |  http://cs101.openjudge.cn/practice/26646/        |
 | 1214 | 26971: 分发糖果      | greedy     | - |  http://cs101.openjudge.cn/practice/26971/        |
-| 1213 | 26978: 滑动窗口最大值      | 队列, 滑动窗口, 单调队列     | - |  http://cs101.openjudge.cn/2024fallroutine/26978/        |
+| 1213 | 26978: 滑动窗口最大值      | 队列, 滑动窗口, 单调队列     | tough |  http://cs101.openjudge.cn/2024fallroutine/26978/        |
 | 1212 | 27103: 最短的愉悦旋律长度      | greedy     | tough |  http://cs101.openjudge.cn/2024fallroutine/27103/        |
 | 1211 | 1115. 取石子游戏 | dfs      |  |  https://www.acwing.com/problem/content/description/1117/        |
 | 1210 | 25570: 洋葱      | matrices      |  |  http://cs101.openjudge.cn/2024fallroutine/25570/        |
