@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1003 GMT+8 Dec 08 2024
+Updated 1649 GMT+8 Dec 12 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -4477,6 +4477,104 @@ class Solution:
 
         return sum(candies)
 ```
+
+
+
+## 239.滑动窗口最大值
+
+队列, 滑动窗口, 单调队列, https://leetcode.cn/problems/sliding-window-maximum/
+
+给你一个整数数组 `nums`，有一个大小为 `k` 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 `k` 个数字。滑动窗口每次只向右移动一位。
+
+返回 *滑动窗口中的最大值* 。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,3,-1,-3,5,3,6,7], k = 3
+输出：[3,3,5,5,6,7]
+解释：
+滑动窗口的位置                最大值
+---------------               -----
+[1  3  -1] -3  5  3  6  7       3
+ 1 [3  -1  -3] 5  3  6  7       3
+ 1  3 [-1  -3  5] 3  6  7       5
+ 1  3  -1 [-3  5  3] 6  7       5
+ 1  3  -1  -3 [5  3  6] 7       6
+ 1  3  -1  -3  5 [3  6  7]      7
+```
+
+**示例 2：**
+
+```
+输入：nums = [1], k = 1
+输出：[1]
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 105`
+- `-104 <= nums[i] <= 104`
+- `1 <= k <= nums.length`
+
+
+
+```python
+from collections import deque
+from typing import List
+
+class Solution:
+    def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
+        if not nums or k == 0:
+            return []
+
+        n = len(nums)
+        if k == 1:
+            return nums
+
+        deque_index = deque()  # 存储索引，保持双端队列中的值递减
+        res = []
+
+        for i in range(n):
+            # 移除滑出窗口的元素（队首元素）
+            if deque_index and deque_index[0] < i - k + 1:
+                deque_index.popleft()
+
+            # 移除所有小于当前元素的队尾元素
+            while deque_index and nums[deque_index[-1]] < nums[i]:
+                deque_index.pop()
+
+            # 将当前元素的索引加入队列
+            deque_index.append(i)
+
+            # 从第 k 个元素开始记录结果，队首始终是窗口的最大值
+            if i >= k - 1:
+                res.append(nums[deque_index[0]])
+
+        return res
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.maxSlidingWindow([1,3,-1,-3,5,3,6,7], 3)) # [3,3,5,5,6,7]
+
+```
+
+> **单调队列的维护**：
+>
+> - 队列中存储的是元素的索引，并且始终保持从队首到队尾对应的元素值是递减的。
+> - 每次滑动窗口时，移除不在窗口范围内的元素（队首检查）和小于当前元素的值（队尾检查）。
+>
+> **高效计算最大值**：
+>
+> - 队首元素的索引始终对应当前窗口的最大值，直接添加到结果中，避免了调用 `max` 的重复计算。
+>
+> **时间复杂度优化**：
+>
+> - 每个元素最多被加入和移出队列一次，因此总时间复杂度为 O(n)O(n)O(n)。
 
 
 
