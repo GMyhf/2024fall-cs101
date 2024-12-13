@@ -36,7 +36,7 @@ leetcode.cn
 | 1220 | 02811: 熄灯问题      | brute force     | - |  http://cs101.openjudge.cn/practice/02811/        |
 | 1219 | 02995: 登山      | dp     | - |  http://cs101.openjudge.cn/practice/02995/        |
 | 1218 | 16531: 上机考试      | matrices     | - |  http://cs101.openjudge.cn/practice/16531/        |
-| 1217 | 18164: 剪绳子      | greedy, huffman     | - |  http://cs101.openjudge.cn/practice/18146/        |
+| 1217 | 18164: 剪绳子      | greedy, huffman     | - |  http://cs101.openjudge.cn/practice/18164/        |
 | 1216 | 27104: 世界杯只因      | greedy, dp     | - |  http://cs101.openjudge.cn/practice/27104/        |
 | 1215 | 26646: 建筑修建      | greedy     | - |  http://cs101.openjudge.cn/practice/26646/        |
 | 1214 | 26971: 分发糖果      | greedy     | - |  http://cs101.openjudge.cn/practice/26971/        |
