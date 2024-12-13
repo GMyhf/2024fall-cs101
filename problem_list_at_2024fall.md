@@ -1,9 +1,9 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 0020 GMT+8 Dec 13 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0020 GMT+8 Dec 14 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
-1101 改为每天放1个题目。截止1225，刚好200个题目。  
+1101 改为每天放1个题目。截止1225，刚好<mark>200</mark>个题目。  
 0823 每天放2个题目供同学们自愿练习，期中开始，每天放1个题目。争取每20个题目难度提升100。  
 
 题解在 
