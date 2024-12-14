@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2215 GMT+8 Dec 14 2024
+Updated 2257 GMT+8 Dec 14 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -467,6 +467,134 @@ class Solution:
                 maxProfit = max(p - minv, maxProfit)
         
         return maxProfit
+```
+
+
+
+## 136.只出现一次的数字
+
+https://leetcode.cn/problems/single-number/
+
+给你一个 **非空** 整数数组 `nums` ，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
+
+你必须设计并实现线性时间复杂度的算法来解决此问题，且该算法只使用常量额外空间。
+
+ 
+
+**示例 1 ：**
+
+```
+输入：nums = [2,2,1]
+输出：1
+```
+
+**示例 2 ：**
+
+```
+输入：nums = [4,1,2,1,2]
+输出：4
+```
+
+**示例 3 ：**
+
+```
+输入：nums = [1]
+输出：1
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 3 * 104`
+- `-3 * 104 <= nums[i] <= 3 * 104`
+- 除了某个元素只出现一次以外，其余每个元素均出现两次。
+
+
+
+
+
+```python
+from typing import List
+
+
+class Solution:
+    def singleNumber(self, nums: List[int]) -> int:
+        s = set()
+        for i in nums:
+            if i in s:
+                s.remove(i)
+            else:
+                s.add(i)
+
+        return s.pop()
+```
+
+
+
+## 169.多数元素
+
+https://leetcode.cn/problems/majority-element/
+
+给定一个大小为 `n` 的数组 `nums` ，返回其中的多数元素。多数元素是指在数组中出现次数 **大于** `⌊ n/2 ⌋` 的元素。
+
+你可以假设数组是非空的，并且给定的数组总是存在多数元素。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [3,2,3]
+输出：3
+```
+
+**示例 2：**
+
+```
+输入：nums = [2,2,1,1,1,2,2]
+输出：2
+```
+
+ 
+
+**提示：**
+
+- `n == nums.length`
+- `1 <= n <= 5 * 104`
+- `-109 <= nums[i] <= 109`
+
+ 
+
+**进阶：**尝试设计时间复杂度为 O(n)、空间复杂度为 O(1) 的算法解决此问题。
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def majorityElement(self, nums: List[int]) -> int:
+        n = len(nums)
+        if n == 1:
+            return nums[0]
+        nums.sort()
+        cur = nums[0]
+        count = 1
+        ans = []
+        for i in range(1, len(nums)):
+            if nums[i] == cur:
+                count += 1
+                if i == n - 1 and count > n // 2:
+                    ans.append(cur)
+            else:
+                if count > n // 2:
+                    ans.append(cur)
+                cur = nums[i]
+                count = 1
+
+        return ans[0]
+
 ```
 
 
