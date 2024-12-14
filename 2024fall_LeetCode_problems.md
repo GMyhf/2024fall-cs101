@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1649 GMT+8 Dec 12 2024
+Updated 1252 GMT+8 Dec 14 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -4850,12 +4850,128 @@ if __name__ == "__main__":
 
 
 
+# 其他编程网站
 
+
+
+## 1115. 取石子游戏
+
+dfs, https://www.acwing.com/problem/content/description/1117/
+
+有两堆石子，两个人轮流去取，每次取的时候，只能从较多的那堆石子里取，并且取的数目必须是较少的那堆石子数目的整数倍（不能不取）。
+
+最后谁能够把一堆石子取空谁就算赢。
+
+比如初始的时候两堆石子的数目是25和7
+
+| 25 7 | →       | 11 7 | →       | 4 7  | →       | 4 3  | →       | 1 3  | →       | 1 0  |
+| :--- | :------ | :--- | :------ | :--- | :------ | :--- | :------ | :--- | :------ | :--- |
+|      | 选手1取 |      | 选手2取 |      | 选手1取 |      | 选手2取 |      | 选手1取 |      |
+
+最后选手1（先取的）获胜，在取的过程中选手2都只有唯一的一种取法。
+
+给定初始时石子的数目，如果两个人都采取最优策略，请问先手能否获胜。
+
+**输入格式**
+
+输入包含多数数据。每组数据一行，包含两个正整数 a 和 b，表示初始时石子的数目。
+
+输入以两个0表示结束。
+
+**输出格式**
+
+如果先手胜，输出”win”，否则输出”lose”。
+
+数据范围：1≤a,b≤10^9
+
+输入样例：
+
+```
+34 12
+15 24
+0 0
+```
+
+输出样例：
+
+```
+win
+lose
+```
+
+提示
+
+假设石子数目为 (a,b) 且 a≥b，如果 [a/b]≥2 则先手必胜,如果 [a/b]<2，那么先手只有唯一的一种取法。
+
+[a/b] 表示 a 除以 b 取整后的值。
+
+
+
+思路：遍历先手取完后所有可能的结果，如果后手有必赢策略则lose，反之win
+
+```python
+# 彭凌越 24光华管理学院
+dic = {}
+def dfs(a,b):
+    if (a,b) in dic:
+        return dic[(a,b)]
+    if a==0 or b==0:
+        dic[(a,b)]=True
+        return True
+    if a<b:
+        a,b = b,a
+    if a%b==0:
+        dic[(a,b)]=True
+        return True
+    for i in range(1,a//b+1):
+            if not dfs(a-i*b,b):
+                dic[(a,b)]=True
+                return True
+    dic[(a,b)]=False
+    return False
+while True:
+    a, b = map(int, input().split())
+    if a == 0 and b == 0:
+        break
+    if dfs(a,b):
+        print('win')
+    else:
+        print('lose')
+```
 
 
 
 ```python
+from functools import lru_cache
+import sys
+sys.setrecursionlimit(1<<30)
 
+@lru_cache(maxsize=None)
+def can_win(a, b):
+    if a == 0 or b == 0:
+        return False  # 如果有一堆石子为空，则先手输
+    if a > b:
+        for i in range(1, a // b + 1):
+            if not can_win(a - b * i, b):
+                return True
+    else:
+        for i in range(1, b // a + 1):
+            if not can_win(a, b - a * i):
+                return True
+    return False
+
+def main():
+    while True:
+        a, b = map(int, input().split())
+        if a == 0 and b == 0:
+            break
+        if can_win(max(a, b), min(a, b)):
+            print("win")
+        else:
+            print("lose")
+
+if __name__ == "__main__":
+    main()
 ```
 
 
