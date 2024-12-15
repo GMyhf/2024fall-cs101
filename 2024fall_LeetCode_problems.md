@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2055 GMT+8 Dec 15 2024
+Updated 2356 GMT+8 Dec 15 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -5490,6 +5490,33 @@ lose
 假设石子数目为 (a,b) 且 a≥b，如果 [a/b]≥2 则先手必胜,如果 [a/b]<2，那么先手只有唯一的一种取法。
 
 [a/b] 表示 a 除以 b 取整后的值。
+
+
+
+按题目提示递归，函数返回值为布尔变量，取一次石子先后手交换，返回相反的结果。注意边界条件，如果有两堆一样的则“当前先手”胜。
+
+```python
+# 徐至晟 24光华管院
+def f(x,y):
+    if x<y:
+        return f(y,x)
+    if x>=y*2:
+        return True
+    elif x==y:
+        return True
+    else:
+        return not f(x-y,y)
+
+a,b=map(int,input().split())
+while a:
+    if f(a,b):
+        print("win")
+    else:
+        print("lose")
+    a,b=map(int,input().split())
+```
+
+
 
 
 
