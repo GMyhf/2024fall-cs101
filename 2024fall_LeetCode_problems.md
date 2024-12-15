@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0851 GMT+8 Dec 15 2024
+Updated 1141 GMT+8 Dec 15 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -3967,6 +3967,100 @@ if __name__ == "__main__":
     print(sol.subarraySum(nums, k))  # expect 2
 
 ```
+
+
+
+
+
+## 698.划分为k个相等的子集
+
+dfs, https://leetcode.cn/problems/partition-to-k-equal-sum-subsets/
+
+给定一个整数数组 `nums` 和一个正整数 `k`，找出是否有可能把这个数组分成 `k` 个非空子集，其总和都相等。
+
+ 
+
+**示例 1：**
+
+```
+输入： nums = [4, 3, 2, 3, 5, 2, 1], k = 4
+输出： True
+说明： 有可能将其分成 4 个子集（5），（1,4），（2,3），（2,3）等于总和。
+```
+
+**示例 2:**
+
+```
+输入: nums = [1,2,3,4], k = 3
+输出: false
+```
+
+ 
+
+**提示：**
+
+- `1 <= k <= len(nums) <= 16`
+- `0 < nums[i] < 10000`
+- 每个元素的频率在 `[1,4]` 范围内
+
+
+
+
+
+```python
+from functools import lru_cache
+from typing import List
+
+class Solution:
+    def canPartitionKSubsets(self, nums: List[int], k: int) -> bool:
+        total = sum(nums)
+        if total % k != 0:
+            return False
+        
+        target = total // k
+        nums.sort(reverse=True)
+        
+        # Early exit if the largest number is greater than the target
+        if nums[0] > target:
+            return False
+        
+        # The 'su' array keeps track of the sum of each subset
+        su = [0] * k
+        
+        @lru_cache(maxsize=None)
+        def recursion(nums_tuple, su_tuple):
+            nums = list(nums_tuple)
+            su = list(su_tuple)
+            
+            if not nums:
+                return all(s == target for s in su)
+            
+            current_num = nums[0]
+            for i in range(k):
+                if su[i] + current_num <= target:
+                    su[i] += current_num
+                    if recursion(tuple(nums[1:]), tuple(su)):
+                        return True
+                    su[i] -= current_num
+                    
+                # If the current subset is empty and adding the number doesn't work, break
+                if su[i] == 0:
+                    break
+            
+            return False
+        
+        return recursion(tuple(nums), tuple(su))
+```
+
+Explanation of Changes:
+
+1. **Tuple for `nums` and `su`**: We maintain the inputs to the recursive function as tuples, which are hashable and can be used in `lru_cache`. This ensures that the recursion doesn’t recompute already visited states.
+2. **Early exit**: The condition `if nums[0] > target` ensures that if the largest number is greater than the target sum, we immediately return `False` (this avoids unnecessary computation).
+3. **Optimized backtracking**: We exit the loop early if `su[i] == 0` to avoid repeating attempts to place the same number in already empty positions in `su`.
+
+
+
+
 
 
 
