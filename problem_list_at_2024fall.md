@@ -37,7 +37,7 @@ leetcode.cn
 | 1219 | 02995: 登山      | dp     | - |  http://cs101.openjudge.cn/practice/02995/        |
 | 1218 | 16531: 上机考试      | matrices     | - |  http://cs101.openjudge.cn/practice/16531/        |
 | 1217 | 18164: 剪绳子      | greedy, huffman     | - |  http://cs101.openjudge.cn/practice/18164/        |
-| <mark>1216 | 27104: 世界杯只因      | greedy, dp     | - |  http://cs101.openjudge.cn/2024fallroutine/27104/        </mark>|
+| 1216 | 27104: 世界杯只因      | greedy, dp     | - |  http://cs101.openjudge.cn/2024fallroutine/27104/  |
 | 1215 | 26646: 建筑修建      | greedy     | - |  http://cs101.openjudge.cn/2024fallroutine/26646/        |
 | 1214 | 26971: 分发糖果      | greedy     | - |  http://cs101.openjudge.cn/2024fallroutine/26971/        |
 | 1213 | 26978: 滑动窗口最大值      | 队列, 滑动窗口, 单调队列     | tough |  http://cs101.openjudge.cn/2024fallroutine/26978/        |
