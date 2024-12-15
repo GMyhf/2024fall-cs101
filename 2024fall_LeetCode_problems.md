@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2257 GMT+8 Dec 14 2024
+Updated 0851 GMT+8 Dec 15 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -2594,6 +2594,80 @@ if __name__ == "__main__":
     minDistance = Solution().minDistance
     print(minDistance("horse", "ros"))  # 输出：3
     print(minDistance("intention", "execution"))  # 输出：5
+```
+
+
+
+## 73.矩阵置零
+
+https://leetcode.cn/problems/set-matrix-zeroes/
+
+给定一个 `*m* x *n*` 的矩阵，如果一个元素为 **0** ，则将其所在行和列的所有元素都设为 **0** 。请使用 **[原地](http://baike.baidu.com/item/原地算法)** 算法**。**
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2020/08/17/mat1.jpg)
+
+```
+输入：matrix = [[1,1,1],[1,0,1],[1,1,1]]
+输出：[[1,0,1],[0,0,0],[1,0,1]]
+```
+
+**示例 2：**
+
+![img](https://assets.leetcode.com/uploads/2020/08/17/mat2.jpg)
+
+```
+输入：matrix = [[0,1,2,0],[3,4,5,2],[1,3,1,5]]
+输出：[[0,0,0,0],[0,4,5,0],[0,3,1,0]]
+```
+
+ 
+
+**提示：**
+
+- `m == matrix.length`
+- `n == matrix[0].length`
+- `1 <= m, n <= 200`
+- `-231 <= matrix[i][j] <= 231 - 1`
+
+ 
+
+**进阶：**
+
+- 一个直观的解决方案是使用  `O(*m**n*)` 的额外空间，但这并不是一个好的解决方案。
+- 一个简单的改进方案是使用 `O(*m* + *n*)` 的额外空间，但这仍然不是最好的解决方案。
+- 你能想出一个仅使用常量空间的解决方案吗？
+
+
+
+```python
+class Solution:
+    def setZeroes(self, matrix: List[List[int]]) -> None:
+        """
+        Do not return anything, modify matrix in-place instead.
+        """
+        m = len(matrix); n = len(matrix[0])
+        visited = set()
+        for i in range(m):
+            for j in range(n):
+                if (i,j) not in visited and matrix[i][j] == 0:
+                    for r in range(m):
+                        if matrix[r][j] == 0:
+                            continue
+                        matrix[r][j] = 0
+                        visited.add((r,j))
+                    for c in range(n):
+                        if matrix[i][c] == 0:
+                            continue
+                        matrix[i][c] = 0
+                        visited.add((i,c))
+                    visited.add((i,j))
+        
+        return matrix
+        
 ```
 
 
