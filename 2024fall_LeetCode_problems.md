@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1828 GMT+8 Dec 15 2024
+Updated 2055 GMT+8 Dec 15 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -5160,7 +5160,7 @@ if __name__ == "__main__":
 >
 > **时间复杂度优化**：
 >
-> - 每个元素最多被加入和移出队列一次，因此总时间复杂度为 O(n)O(n)O(n)。
+> - 每个元素最多被加入和移出队列一次，因此总时间复杂度为 O(n)。
 
 
 
