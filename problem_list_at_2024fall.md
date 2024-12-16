@@ -1,6 +1,6 @@
 # cs101计概（计算机基础1）编程题目
 
-Updated 0027 GMT+8 Dec 16 2024. 2024 fall, Complied by Hongfei Yan
+Updated 0007 GMT+8 Dec 17 2024. 2024 fall, Complied by Hongfei Yan
 
 Logs:  
 1101 改为每天放1个题目。截止1225，刚好<mark>200</mark>个题目。  
@@ -36,7 +36,7 @@ leetcode.cn
 | 1220 | 02811: 熄灯问题      | brute force     | - |  http://cs101.openjudge.cn/practice/02811/        |
 | 1219 | 02995: 登山      | dp     | - |  http://cs101.openjudge.cn/practice/02995/        |
 | 1218 | 16531: 上机考试      | matrices     | - |  http://cs101.openjudge.cn/practice/16531/        |
-| 1217 | 18164: 剪绳子      | greedy, huffman     | - |  http://cs101.openjudge.cn/practice/18164/        |
+| 1217 | 18164: 剪绳子      | greedy, huffman     | - |  http://cs101.openjudge.cn/2024fallroutine/18164/        |
 | 1216 | 27104: 世界杯只因      | greedy, dp     | - |  http://cs101.openjudge.cn/2024fallroutine/27104/  |
 | 1215 | 26646: 建筑修建      | greedy     | - |  http://cs101.openjudge.cn/2024fallroutine/26646/        |
 | 1214 | 26971: 分发糖果      | greedy     | - |  http://cs101.openjudge.cn/2024fallroutine/26971/        |
