@@ -1,6 +1,6 @@
 # 20241203-Week13 计概知识图谱
 
-Updated 2332 GMT+8 Dec 13, 2024
+Updated 1121 GMT+8 Dec 17, 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -584,43 +584,97 @@ bfs
 
 因为没有走到end之前的线段最短，不能保证总的线段最短。需要穷举队列，找到的最短都append到ans列表，最后min(ans)。
 
+刘思昊 24工学院。提供了hack数据，会导致很多之前AC的程序WA。
+
+原因应该是左下那条路先到达终点下面的那个点并且抢占了inq位置，导致后来的左上路线没法进入queue。
+
+使用defaultdict记录seg，以相同方向到达同一个点是如果seg>=原来的则不值得讨论无需入列，否则还需进一步讨论
+
+> sample2 input:
+>
+> ```
+> 8 8
+> XXXXXXXX
+> XX     X
+> X XXXX X
+> X  XXX X
+> XX   X X
+> XXXX X X
+> XXXX   X
+> XXXXXXXX
+> 2 2 5 4
+> 0 0 0 0
+> 0 0
+> ```
+>
+> Sample2 output:
+>
+> ```
+> Board #1:
+> Pair 1: 4 segments.
+> ```
+>
+> 
+>
+> Sample3 input:
+>
+> ```
+> 8 9
+> XXXXXXXX
+> XX     X
+> X XXXX X
+> X XXXX X
+> X  X X X
+> XX   X X
+> XXXX X X
+> XXXX   X
+> XXXXXXXX
+> 2 2 5 4
+> 0 0 0 0
+> 0 0
+> ```
+>
+> Sample3 output:
+>
+> ```
+> Board #1:
+> Pair 1: 4 segments.
+> ```
+
+
+
+bfs
+
+这个题目比较麻烦，因为外圈还可以走，需要在输入矩阵包一圈。另外，就是行列与我们平时练习行列刚好反着。
+
+因为没有走到end之前的线段最短，不能保证总的线段最短。需要穷举队列，找到的最短都append到ans列表，最后min(ans)。
+
 ```python
 from collections import deque
-
+from collections import defaultdict
 
 def bfs(start, end, grid, h, w):
     queue = deque([start])
-    in_queue = set()
+    in_queue = defaultdict(lambda: float('inf'))
     dirs = [(0, -1), (-1, 0), (0, 1), (1, 0)]
-
-    ans = []
+    min_x = float('inf')
     while queue:
-        x, y, d_i_r, seg = queue.popleft()
-        # print(x,y,end)
-        if (x, y) == end:
-            # return seg
-            ans.append(seg)
-            break
+        x, y, d, seg = queue.popleft()
 
         for i, (dx, dy) in enumerate(dirs):
             nx, ny = x + dx, y + dy
 
-            if 0 <= nx < h + 2 and 0 <= ny < w + 2 and ((nx, ny, i) not in in_queue):
-                new_dir = i
-                new_seg = seg if new_dir == d_i_r else seg + 1
-                if (nx, ny) == end:
-                    # return new_seg
-                    ans.append(new_seg)
-                    continue
+            new_seg = seg if i == d else seg + 1
+            if (nx, ny) == end:
+                min_x = min(min_x, new_seg)
+                continue
 
-                if grid[nx][ny] != 'X':
-                    in_queue.add((nx, ny, i))
-                    queue.append((nx, ny, new_dir, new_seg))
+            if (0 <= nx < h + 2 and 0 <= ny < w + 2 and new_seg<in_queue[(nx,ny,i)]
+                    and grid[nx][ny] != 'X'):
+                    in_queue[(nx, ny, i)] = new_seg
+                    queue.append((nx, ny, i, new_seg))
 
-    if len(ans) == 0:
-        return -1
-    else:
-        return min(ans)
+    return min_x
 
 
 board_num = 1
@@ -629,9 +683,6 @@ while True:
     if w == h == 0:
         break
 
-    # grid = [[' '] * (w + 2)] + \
-    # [[' '] + list(input()) + [' '] for _ in range(h)] + \
-    # [[' '] * (w + 2)]
     grid = [' ' * (w + 2)] + [' ' + input() + ' ' for _ in range(h)] + [' ' * (w + 2)]
     print(f"Board #{board_num}:")
     pair_num = 1
@@ -644,7 +695,7 @@ while True:
         end = (x2, y2)
 
         seg = bfs(start, end, grid, h, w)
-        if seg == -1:
+        if seg == float('inf'):
             print(f"Pair {pair_num}: impossible.")
         else:
             print(f"Pair {pair_num}: {seg} segments.")
@@ -656,10 +707,6 @@ while True:
 
 
 
-《算法基础。。》上面讲到4.3例题：小游戏，书上给出的是dfs。但是经过同学和助教调试，发现dfs与先沿着哪个邻居出发有关，导致剪枝可能失效。因为可能拿不到一个相对较好的结果，便于比较剪枝。所以最好用bfs完成。
-
-
-
 其实所有求最短、最长的问题都能用heapq实现，在图搜索中搭配bfs尤其好用。
 
 > 利用heap优先队列的做法，因为每次都取当前队列中线段最小值前进，可以保证最后总的线段最短。这个实际上是Dijkstra。
@@ -667,6 +714,7 @@ while True:
 ```python
 # 23 工学院 苏王捷
 import heapq
+from collections import defaultdict
 
 num1 = 1
 while True:
@@ -682,10 +730,10 @@ while True:
         if x1 == 0 and x2 == 0 and y1 == 0 and y2 == 0:
             break
         queue, flag = [], False
-        in_queue = set()
+        in_queue = defaultdict(lambda: float("inf"))
         heapq.heappush(queue, (0, x1, y1, -1))
         martix[y2][x2] = " "
-        in_queue.add((-1, x1, y1))
+        in_queue[(-1, x1, y1)] = 0
         while queue:
             step, x, y, dirs = heapq.heappop(queue)
             if x == x2 and y == y2:
@@ -693,9 +741,10 @@ while True:
                 break
             for i, (dx, dy) in enumerate(dir):
                 px, py = x + dx, y + dy
-                if 0 <= px <= w + 1 and 0 <= py <= h + 1 and (i, px, py) not in in_queue and martix[py][px] != "X":
-                    in_queue.add((i, px, py))
-                    heapq.heappush(queue, (step + (dirs != i), px, py, i))
+                new_step = step + (dirs != i)
+                if 0 <= px <= w + 1 and 0 <= py <= h + 1 and new_step < in_queue[(i, px, py)] and martix[py][px] != "X":
+                    in_queue[(i, px, py)] = new_step
+                    heapq.heappush(queue, (new_step, px, py, i))
         if flag:
             print(f"Pair {num2}: {step} segments.")
         else:
@@ -706,6 +755,312 @@ while True:
     num1 += 1
 
 ```
+
+
+
+
+
+《算法基础。。》上面讲到4.3例题：小游戏，书上给出的是dfs。但是经过同学和助教调试，发现dfs与先沿着哪个邻居出发有关，导致剪枝可能失效。因为可能拿不到一个相对较好的结果，便于比较剪枝。所以最好用bfs完成。
+
+
+
+## 示例构造数据：04129变换的迷宫
+
+bfs, http://cs101.openjudge.cn/practice/04129
+
+
+
+起点、终点可以当空地。用三维数组。
+
+关键是要注意到每间隔周期到达同一个地方是等价的，只需要将到达这个地方余数为0-T-1的路径加入队列，也可以建三元的集合来判断。注意time的关系细节，⚠️#注意如果漏了可以=‘S’的情况会报错，可以回到起点再出发！！！
+
+```python
+# 黄鹤鸣、24光华管理学院
+# 我的题解，反思此处用集合set（）更完美？
+from collections import deque
+
+
+def bfs(matrix, n, m, k, start, end):
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    queue = deque([(start[0], start[1], 0)])
+    visited = [[[-1] * k for _ in range(m)] for _ in range(n)]
+    visited[start[0]][start[1]][0] = 0
+    while queue:
+        x, y, time = queue.popleft()
+        if (x, y) == end:
+            return time
+        for dx, dy in directions:
+            cx, cy = x + dx, y + dy
+            if 0 <= cx < n and 0 <= cy < m and visited[cx][cy][(time + 1) % k] == -1:
+                if (time + 1) % k == 0:  # 注意⚠️这里是time+1
+                    visited[cx][cy][(time + 1) % k] = 0
+                    queue.append((cx, cy, time + 1))
+                else:
+                    # 注意⚠️此处如果漏了可以=‘S’的情况会报错
+                    if matrix[cx][cy] != '#':
+                        visited[cx][cy][(time + 1) % k] = 0
+                        queue.append((cx, cy, time + 1))
+    return 'Oop!'
+
+
+for _ in range(int(input())):
+    R, C, K = map(int, input().split())
+    board = [input() for _ in range(R)]
+    start = None
+    end = None
+    for i in range(R):
+        for j in range(C):
+            if board[i][j] == 'S':
+                start = (i, j)
+            if board[i][j] == 'E':
+                end = (i, j)
+    print(bfs(board, R, C, K, start, end))
+```
+
+
+
+
+
+【姜歆宇 24元培】
+
+首先易得：对于由正方形网格上的点组成的闭合环路周长必定为偶数个正方形边长
+推论：对于地图上任意一点，不存在两条长度奇偶性不同的路径；即到达某点的所有路径奇偶性相同
+又：对于第t步，只要其周围存在点不是墙，就可以在两点中反复横跳在该点达到第t+2n步
+故：若存在n，使得t+2n+1 = mK，则该点可进入该墙 @1
+我们将上述过程抽象为一步考虑进 一个点可到达的点 则不过是在传统Dijkstra中加入一些路径而已
+所以本法与其它方法不同，只需2维Visited即可，也不会重复遍历某点，时间与空间上均较优（地图较大时尤为显著）
+94ms 3916kB
+注意：在实现@1的判断时注意一些边界条件，否则容易犯逻辑错误
+
+```python
+# 姜歆宇 元培
+import heapq
+from math import inf
+directions = [(1,0),(0,1),(-1,0),(0,-1)]
+def check(x,y,s):
+    if M[x][y] == 1: #本来就在墙上当然不能再进入其它墙
+        return False
+    if k == 2 and s != 0: #这样不会被四面围堵（除非在原点）
+        return True
+    for dx,dy in directions: #被四面围堵就不能反复横跳了
+        if 0 <= (nx:=x+dx) < a and 0 <= (ny:=y+dy) < b and M[nx][ny] == 0:
+            return True
+    return False
+
+def best_way(points): 
+    while points:
+        s,x,y = heapq.heappop(points)
+        if x == ex and y == ey:
+            return s
+        for dx,dy in directions:
+            if 0 <= (nx:=x+dx) < a and 0 <= (ny:=y+dy) < b: 
+                if M[nx][ny] == 1 and check(x,y,s):
+                    if S[nx][ny] > (ns:=(1+s//k)*k) and s%2 != ns%2: #奇偶性不同故可以穿             
+                        S[nx][ny] = ns
+                        if not C[nx][ny]: 
+                            heapq.heappush(points,(ns,nx,ny))
+                            C[nx][ny] = True
+                    elif S[nx][ny] > (ns:=ns+k) and s%2 != ns%2: #注意k为奇数时k与2k奇偶性不同
+                        S[nx][ny] = ns
+                        if not C[nx][ny]: 
+                            heapq.heappush(points,(ns,nx,ny))
+                            C[nx][ny] = True
+                elif M[nx][ny] == 0 and S[nx][ny] > (ns:=s+1): 
+                    S[nx][ny] = ns
+                    if not C[nx][ny]:
+                        heapq.heappush(points,(ns,nx,ny))
+                        C[nx][ny] = True
+    return "Oop!"
+                    
+Ans = []
+T = int(input())
+for t in range(T):
+    a,b,k = map(int,input().split())
+    M = [[0]*b for _ in range(a)]
+    for i in range(a):
+        l = input()
+        for j in range(b):
+            if l[j] == 'S':
+                sx,sy = i,j
+            elif l[j] == 'E':
+                ex,ey = i,j
+            elif l[j] == '#':
+                M[i][j] = 1
+
+    S = [[inf]*b for _ in range(a)]
+    S[sx][sy] = 0
+    C = [[False]*b for _ in range(a)]
+    C[sx][sy] = True
+    Ans.append(best_way([(0,sx,sy)]))
+
+for ans in Ans:
+    print(ans)
+```
+
+
+
+难得有一次想写代码的思路了，毕竟难得想出与众不同的优性能算法，希望会加入题解里
+但是用时还是太长了，有想法但思路不严谨debug困难是这样的
+希望期末不会死在debug上（还是要吐槽OJ没有测试数据，这次变换的迷宫是自己写的随机生成器刷了几十条数据才找出bug
+
+```python
+import random
+T = random.randint(4,6)
+print(T)
+for t in range(T):
+ R = random.randint(2,100)
+ C = random.randint(2,100)
+ K = random.randint(2,20)
+ print(f'{R} {C} {K}')
+ l = ['.','#','.','.','#']
+ M = [[0]*C for _ in range(R)]
+ for i in range(R):
+     for j in range(C):
+         M[i][j] = random.choice(l)
+M[0][0] = 'S'
+M[-1][-1] = 'E'
+
+for i in range(R):
+    print(''.join(M[i]))
+```
+
+1
+59 75 2
+S.#.....#.#..##......#.###.##.#...#.###..#.##.##.##...#...#.....##..###....
+.#####...#.#.......#..#.###.#.....#.#.##.#....#..##.###........#.#..#...#.#
+.####.#.###...#.....#..#.###..###.#..#####.#.#..##.###..##.#.#.....#.#.#...
+.#....#.##..##..#..#....#.###.#.##..#......#..#.#.....#....##...####.....#.
+..##.#...#.#.#....#....#.###.#.##....#..#.###..#.#....#.####.....#.##.###..
+#.#...###..##....#..#......#..#.#.##..##..#.##...#.....#......#.#####...#.#
+.####..#..##..###.###...##.#....#.##.##...###....#..#.#...##..#.#.#.#.#.#..
+....#..#.............###...#####..#..#..###.......####..#..##...####.....#.
+.#...##..#.##.#.#.#..###..#..##.###....###....#.......##.##.#.##...###...#.
+.##.....##.#.#..#.#.#.......##..#.#.####..#...#........#....#...#.#.....#..
+##..#.##.##.....#.#.##.##......##..#.#.##...#.#..###...#......##..#....#.##
+#..#..##..#..####...##.##....#.#..#...######...#.#.#........##.#..#...#.#.#
+.##.#....#..#.#.#..#.####..##..##...#....###.#.#.#.###....##....#...##.#.#.
+.#.###....#....#....#....##..#.###.#...#....#.###.#..#.#.....##.####..#.#..
+..###....#.##..###.#..#..#...#.#.....##.#.#..#.#..#.##.##.#.######....#....
+......#........##.###..#.#..#..#.#.##.#.......###...##..#.##...####....#...
+#.#..#...######..###.##...#.#..###......#.#.#.#.##.######..#..#.....#....#.
+.#..####.#...#....#...#.#.....#.#####...#...#.....#..##.....#.........##...
+.###.##.######.#........#.##...#.##.###...#.##..##...#.##..#....#...#.#..#.
+#.#.#.#.##..#...##....#.#.....#...#.........#.#.#...#.##..#..#..........#.#
+###..####....#..##....#.#.#.######...###..#.##.#.#..............##...#..#..
+##.####.####.##.#.##............#.#.......#....##..#.###..#...#...##..##.#.
+####.......##...##..#..........###.#..##..###.#...##...#........#....#.#..#
+......#....##..###...##..##.#...#.#.##......###...#.######.#.#.#..#..###...
+......##.#####...#.####.###....#.##.#.#......#..#..#........####..##.#.....
+.##..##..#.##...#...#..##..#..###.#..##.##..#....#...#.#..#..#.####.#.#.###
+.#..#.#..#.##....##..#...#..##....####...###.#..##.....#......#..#..###.#..
+.#.....##..##..#.##.#.##...##.##...##..#.######.##...#.#..#......#.#...##..
+..##..#...####..###..#..#.#.#..#.##.#..##..####.#...###..##..#.##.....#.#..
+..######...#..###..######.###..####..#......###.#.....#.###..######.#.#....
+....##.####.##..##..##..##...#.......#.#....#..##.#..#.#.#..#.##.##..##.#..
+#.##....#..##.##.#...#.##..###......#....####...####....#..#.....##..#..###
+##.#...#....#..#..#.#.#####......###...#.#..#..#..##.#.#..#...#..#..#......
+.###.#.##......##.#.####.##..#.#..##.##.#..#.#..#.....###.#...#..#.#..#....
+......#.###..#.#..#.#.#..#..#.##..#..##.......####......#........#......#.#
+...#.....##...#.#....#..##.#........#..##....#..#....#....###....#.#.#....#
+....#.#..###.#####.######.#...##.####....##.#.###.#..#.#..#..##..##.......#
+.....##..#..##.#.....##...#..#.##.....####..####.#.#..#..........#.....#.##
+##.....#.##.#..#..###.#....##..###...##....###.....#.#.#..###..#.#...#...#.
+..#.#.#..##.......#.##.#..#.##.#....##...###.###.#..#......#.....#...##...#
+..#.....##.###.##.#...#...#..#.#.......#...#..#######..#..#...##.###.##.##.
+#.###.#.....#..###..#...##.#.#...##.#..#.##..#...#.####....#.#..#####......
+##.....#.#.##.........#.##.#.#.#.#...#..#.#...#..#.#.....#.##.##...#..#.##.
+#.#..#.#..#...###.#.###.#.####.#.###.#.#####..##...##..#.##..#.#..#.#..#.#.
+.#.#.#.###..........#..#..###......####..####.##..#...##.#.##...####...##.#
+.##...#...#......##...#.##.##.#..##...###..#########.##..##.####...#.#.##..
+##.##...........#..#..#.##...#..#.##..#..#.#......###.#.#####.#...#...#.#..
+#.##.##.#..#...###...#.#.#.##....###...#.#.#.#.#.##..#..#####.#.#.........#
+#.##...#####...#...###..##.##..#.#.#..####.#.##.#..##.####.......#..#...#..
+.###.######.....######.##.#.#.#..#......##.#...#.#.....#.....######...##..#
+......#.#.#.#####..###.###....##.#.#....#......##.......#.##...#..####....#
+#.#...#......###..#......#..###.#..#..#..#.#.....#......#..#.#..##...##....
+.#.#.#......#..##.#..#.##.#.#.#.....#......#.#.##.....#....#..#.#.#.....#.#
+#.#..#..#.#.##..##.#..##..#...###..#.####...#.#.....####......####......#.#
+#...#.....#.#.......##...##.###.#..#.##...#######.##...#....#...##........#
+.#.##...##...#...#.#.#....##...##.#..#...#....#..#.#...#......#.##.####.##.
+....#..#...#....#.###..#.#.#.##.###...#...#.#..#.##.#...###.###..##...##.#.
+..#..#...#...#...#....#..#...#.#..###....####..#...#.#.#.###.........#...#.
+....#.#..#.##..#.#..##.......#..#.#.#...#.....#..#...####..#..#.#....#....E
+这组数据才发现是k=2导致bug
+
+
+
+【昂奕, 24化学与分子工程学院】
+
+思路：Dijkstra,但是有一些问题:
+
+探路探到石头的时候，如果由最短路径走到一块可能未消失的石头上的时间(w+1)通过若干次加二可以得到k的整数倍，就说明可以在石头旁边徘徊来等到它消失然后走上去。
+如果可以走上去，就入队并更新相应的时间，如果不行，就不入队
+走上去的条件可以证明为`not (w%2==0 and k%2==0)`
+但是如果某个'.'或者四面被石头包围，就不能这样徘徊，得单独考虑。
+对于一般的'.',不能入队的条件是k>2 and 四面包围
+对于S，不能入队(也就是开场就死)的条件是四面包围
+对于E，它即使被包围也得入队,不然就走不到了，入队了也没关系,反正走到它就返回了
+
+特别鸣谢:元培 姜歆宇,没有他的编测试数据的程序,我这题通宵都AC不了(哭)。
+
+```python
+import heapq
+MAXN=float('inf')
+
+def dead(x0,y0):
+    return mat[x0-1][y0]==mat[x0][y0-1]==mat[x0+1][y0]==mat[x0][y0+1]=='#' and mat[x0][y0]=='.' and k>2
+
+def dij(s,mat):
+    global k
+    weight=[[MAXN]*len(mat[0]) for __ in range(len(mat))]
+    q=[s]
+    weight[s[1]][s[2]]=0
+    d=[(-1,0),(1,0),(0,-1),(0,1)]
+
+    while q:
+        w,x,y=heapq.heappop(q)
+        #print((w,x,y))
+        if mat[x][y]=='E':
+            return w
+        for dx,dy in d:
+            nx,ny=x+dx,y+dy
+            if 1<=nx<len(mat)-1 and 1<=ny<len(mat[0])-1 :
+                if mat[nx][ny] in {'.','E','S'} and weight[nx][ny]>w+1 and not dead(nx,ny):
+                    weight[nx][ny]=w+1
+                    heapq.heappush(q,(w+1,nx,ny))
+                elif mat[nx][ny]=='#' and not(w%2==0 and k%2==0) and mat[x][y]!='#':
+
+                    tmp=w+1#找到到这个#的最短路径长
+                    while tmp%k!=0:
+                        tmp+=2
+
+                    if weight[nx][ny]>tmp:#更新最短路径,入队
+                        weight[nx][ny]=tmp
+                        heapq.heappush(q,(tmp,nx,ny))
+    return 'Oop!'
+
+t=int(input())
+for _ in range(t):
+    n,m,k=map(int,input().split())
+    mat=['#'*(m+2)]
+    s,x0,y0=(),0,0
+    for i in range(n):
+        mat.append(['#']+list(input())+['#'])
+        if 'S' in mat[i]:
+            x0,y0=i,mat[i].index('S')
+            s=(0,x0,y0)
+    mat.append(['#']*(m+2))
+    #for _ in mat:
+    #    print(*_)
+    if mat[x0-1][y0]==mat[x0][y0-1]==mat[x0+1][y0]==mat[x0][y0+1]=='#':
+        print('Oop!')
+    else:
+        print(dij(s,mat))
+```
+
+
+
+
 
 
 
@@ -817,7 +1172,7 @@ else:
 > -t: cpu time (seconds)       unlimited
 > -f: file size (blocks)       unlimited
 > -d: data seg size (kbytes)     unlimited
-> -s: stack size (kbytes)       8176
+> -s: stack size (kbytes)       <mark>8176</mark>
 > -c: core file size (blocks)     0
 > -v: address space (kbytes)     unlimited
 > -l: locked-in-memory size (kbytes) unlimited
@@ -857,6 +1212,8 @@ else:
 > ​	虚拟存储器的运作需要硬件和操作系统软件间的精密复杂的互相合作，包括对处理器生成的每个地址的硬件翻译。基本思想是把一个进程虚拟存储器的内容存储在磁盘上，然后用主存作为磁盘的高速缓存。
 
 
+
+> 全局变量和静态变量通常是在数据段（data segment）中分配的，而常量可能会放置在只读数据段（read-only data segment）。栈内存确实用于存储局部变量，但“动态内存分配”通常是与堆相关联的术语。栈上的分配是静态且自动化的，而堆上的分配是动态的，由程序员控制。
 
 
 
@@ -1115,6 +1472,191 @@ print(min_distance)
 
 
 
+## 示例20106: 走山路
+
+bfs + heap, Dijkstra, http://cs101.openjudge.cn/practice/20106/
+
+某同学在一处山地里，地面起伏很大，他想从一个地方走到另一个地方，并且希望能尽量走平路。
+现有一个m*n的地形图，图上是数字代表该位置的高度，"#"代表该位置不可以经过。
+该同学每一次只能向上下左右移动，每次移动消耗的体力为移动前后该同学所处高度的差的绝对值。现在给出该同学出发的地点和目的地，需要你求出他最少要消耗多少体力。
+
+**输入**
+
+第一行是m,n,p，m是行数，n是列数，p是测试数据组数
+接下来m行是地形图
+再接下来n行每行前两个数是出发点坐标（前面是行，后面是列），后面两个数是目的地坐标（前面是行，后面是列）（出发点、目的地可以是任何地方，出发点和目的地如果有一个或两个在"#"处，则将被认为是无法达到目的地）
+
+**输出**
+
+n行，每一行为对应的所需最小体力，若无法达到，则输出"NO"
+
+样例输入
+
+```
+4 5 3
+0 0 0 0 0
+0 1 1 2 3
+# 1 0 0 0
+0 # 0 0 0
+0 0 3 4
+1 0 1 4
+3 4 3 0
+```
+
+样例输出
+
+```
+2
+3
+NO
+
+解释：
+第一组：从左上角到右下角，要上1再下来，所需体力为2
+第二组：一直往右走，高度从0变为1，再变为2，再变为3，消耗体力为3
+第三组：左下角周围都是"#"，不可以经过，因此到不了
+```
+
+来源: cs101-2019 张翔宇
+
+
+
+Dijkstra 算法的本质是贪心策略，每次扩展的是当前路径代价最小的节点，要维护该贪心性。
+
+```python
+import heapq		#260ms
+
+def find_min_cost_path(n, m, mat, queries):
+    directions = [(1, 0), (0, 1), (0, -1), (-1, 0)]
+    results = []
+
+    for x, y, xx, yy in queries:
+        if mat[x][y] == '#' or mat[xx][yy] == '#':
+            results.append("NO")
+            continue
+
+        dist = {(x, y): 0}  # Distance dictionary to keep track of minimum cost to each node
+        heap = [(0, x, y)]  # Priority queue: (cost, row, col)
+        found = False
+
+        while heap:
+            cost, i, j = heapq.heappop(heap)
+
+            # If the target is reached, record the result and exit the loop
+            if (i, j) == (xx, yy):
+                results.append(cost)
+                found = True
+                break
+
+            # Explore all possible moves
+            for di, dj in directions:
+                ni, nj = i + di, j + dj
+
+                if 0 <= ni < n and 0 <= nj < m and mat[ni][nj] != '#':
+                    new_cost = cost + abs(int(mat[ni][nj]) - int(mat[i][j]))
+
+                    # Update the cost if it's lower than any previously recorded cost
+                    if (ni, nj) not in dist or new_cost < dist[(ni, nj)]:
+                        dist[(ni, nj)] = new_cost
+                        heapq.heappush(heap, (new_cost, ni, nj))
+
+        if not found:
+            results.append("NO")
+
+    return results
+
+# Input processing
+n, m, p = map(int, input().split())
+mat = [input().split() for _ in range(n)]
+queries = [tuple(map(int, input().split())) for _ in range(p)]
+
+# Solve the problem and output results
+answers = find_min_cost_path(n, m, mat, queries)
+print("\n".join(map(str, answers)))
+
+```
+
+
+
+
+
+这里学会了如何优化进行剪枝，heapq是最小堆，只要是非负权值的最短路径问题，就可以使用Dijkstra算法，不断用全局中最小的进行更新，把含权值的最短路径问题给推出来。**贪心思想**：Dijkstra 的核心是贪心扩展——每次优先访问当前代价最小的节点，并通过该节点更新其他节点的代价，从而保证扩展的节点顺序是代价从小到大的。**剪枝的具体实现**
+
+**1. 劣路径的剪枝**：剪枝可以避免无效的路径计算，从而显著减少搜索空间。
+
+```python
+if effort > min_effort[x][y]:
+    continue
+```
+
+​	•	如果当前路径的累计代价 effort 已经大于记录的最优代价 `min_effort[x][y]`，则说明这条路径已经不是最优的，继续扩展它是没有意义的，直接跳过（剪枝）。**剪枝原理**：节点的最优代价是按贪心原则逐步更新的。一旦 `effort > min_effort[x][y]`，说明当前路径已被更优的路径取代。
+
+**2. 路径更新的剪枝**：
+
+```python
+if total_effort < min_effort[nx][ny]:
+    min_effort[nx][ny] = total_effort
+    heapq.heappush(pq, (total_effort, nx, ny))
+```
+
+​	•	只有当新路径的累计代价 total_effort 小于已知的代价 min_effort[nx] [ny] 时，才更新邻居节点的代价并加入堆中。
+​	•	如果新路径的代价不优于当前最优代价，则直接忽略，避免对无意义的路径进行扩展。
+
+**3. 起点或终点为阻碍的剪枝**：如果起点或终点是不可通行的（#），直接输出 NO，不再进行路径搜索。
+
+```python
+if terrain[sx][sy] == '#' or terrain[ex][ey] == '#':
+    results.append('NO')
+```
+
+使用 heapq 最小堆管理优先级队列，使得插入和取出操作的时间复杂度为 O(log n) ，保证算法整体高效。
+
+```python
+import heapq
+
+def min_effort_dijkstra(terrain, m, n, start, end):
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    pq = [(0, start[0], start[1])]
+    min_effort = [[float('inf')] * n for _ in range(m)]
+    min_effort[start[0]][start[1]] = 0
+
+    while pq:
+        effort, x, y = heapq.heappop(pq)
+        if (x, y) == end:
+            return effort
+        if effort > min_effort[x][y]:
+            continue
+        for dx, dy in directions:
+            nx, ny = x + dx, y + dy
+
+            if 0 <= nx < m and 0 <= ny < n and terrain[nx][ny] != '#':
+                next_effort = abs(int(terrain[nx][ny]) - int(terrain[x][y]))
+                total_effort = effort + next_effort
+
+                if total_effort < min_effort[nx][ny]:
+                    min_effort[nx][ny] = total_effort
+                    heapq.heappush(pq, (total_effort, nx, ny))
+    return 'NO'
+
+m, n, p = map(int, input().split())
+terrain = [input().strip().split() for _ in range(m)]
+
+results = []
+for _ in range(p):
+    sx, sy, ex, ey = map(int, input().split())
+    if terrain[sx][sy] == '#' or terrain[ex][ey] == '#':
+        results.append('NO')
+    else:
+        results.append(min_effort_dijkstra(terrain, m, n, (sx, sy), (ex, ey)))
+
+print("\n".join(map(str, results)))
+```
+
+
+
+
+
+
+
 ## Dijkstra正确性证明 
 
 Proof of Dijkstra's Correctness
@@ -1161,7 +1703,7 @@ Dijkstra算法在每一步中总是选择当前已知最短路径的顶点，并
 
 5. **Dijkstra正确性证明，如何理解？**：
 
-   - 假设在某一步骤中，我们选择了 `u` 加入  `S` ，并且 $ u \neq s $。
+   - 假设在某一步骤中，我们选择了 `u` 加入  `S` ，并且 $ u \neq s $。`s`是起点。
 
    - 由于 `u`  是  `V-S`  中  `d`  值最小的顶点，因此 $ d[u] \leq d[v] $ 对于所有 $ v \in V-S $ 成立。
 
@@ -1304,7 +1846,7 @@ sliding window, https://leetcode.cn/problems/longest-substring-without-repeating
 
 1. **初始化**：
    - 维护一个窗口 `[start + 1, i]`，表示当前的无重复子串。
-   - 使用一个字典 `char_index` 来记录每个字符最近一次出现的位置。
+   - 使用一个字典 `char_index` 来记录<mark>每个字符最近一次出现的位置</mark>。
 
 2. **扩展窗口**：
    - 遍历字符串，逐个字符地扩展窗口的右边界 `i`。
@@ -1367,7 +1909,7 @@ class Solution:
 
 
 
-# 4 并查集（Disjoint Set）
+# 4 并查集（Union-Find/Disjoint Set）
 
 
 
@@ -1377,7 +1919,9 @@ https://www.geeksforgeeks.org/introduction-to-disjoint-set-data-structure-or-uni
 
 **What is a Disjoint set data structure?**
 
-> Two sets are called **disjoint sets** if they don’t have any element in common, the intersection of sets is a null set.
+> Two sets are called **disjoint sets** if they don’t have any element in common, the intersection of sets is a null set. 
+>
+> 如果两个集合没有任何共同的元素，则称它们为不相交集合（disjoint sets），即集合的交集是一个空集。
 
 A data structure that stores non overlapping or disjoint subset of elements is called disjoint set data structure. The disjoint set data structure supports following operations:
 
@@ -1386,10 +1930,24 @@ A data structure that stores non overlapping or disjoint subset of elements is c
 - Finding representative of a disjoint set using **Find** operation.
 - Check if two sets are disjoint or not. 
 
+> 用于存储非重叠或不相交子集元素的数据结构被称为不相交集合数据结构（disjoint set data structure）。不相交集合数据结构支持以下操作：
+>
+> - 向不相交集合中添加新的集合。
+> - 使用**并（Union）**操作将不相交集合合并为一个单一的不相交集合。
+> - 使用**查找（Find）**操作找到不相交集合的代表元素。
+> - 检查两个集合是否不相交。
+
 Consider a situation with a number of persons and the following tasks to be performed on them:
 
 - Add a **new friendship relation**, i.e. a person x becomes the friend of another person y i.e adding new element to a set.
 - Find whether individual **x is a friend of individual y** (direct or indirect friend)
+
+> 考虑一个有多个人的情况，并需要执行以下任务：
+>
+> - 添加一个新的友谊关系，即一个人 x 成为另一个人 y 的朋友，也就是向集合中添加新元素。
+> - 查找个人 x 是否是个人 y 的朋友（直接或间接的朋友）”
+
+
 
 **Examples:** 
 
@@ -1404,7 +1962,8 @@ Consider a situation with a number of persons and the following tasks to be perf
 > g <-> j
 >
 > Given queries like whether a is a friend of d or not. We basically need to create following 4 groups and maintain a quickly accessible connection among group items:
-> G1 = {a, b, d}
+>
+> 给出类似`a 是否是 d 的朋友`这样的查询。我们基本上需要创建以下 4 个组，并维持组内项之间快速可访问的连接：G1 = {a, b, d}
 > G2 = {c, f, i}
 > G3 = {e, g, j}
 > G4 = {h}
@@ -1420,6 +1979,15 @@ Partitioning the individuals into different sets according to the groups in whic
 - **How to Resolve sets?** Initially, all elements belong to different sets. After working on the given relations, we select a member as a **representative**. There can be many ways to select a representative, a simple one is to select with the biggest index.
 - **Check if 2 persons are in the same group?** If representatives of two individuals are the same, then they’ll become friends.
 
+> 查找 x 和 y 是否属于同一个组，即判断 x 和 y 是否为直接或间接的朋友。
+>
+> 根据个人所属的组将他们分区成不同的集合。这种方法被称为不相交集合合并（Disjoint Set Union），它维护一组不相交集合，每个集合由其成员之一代表。
+>
+> 要回答上述问题，需要考虑两个关键点：
+>
+> 如何确定集合？ 最初，所有元素各自属于不同的集合。在处理给定的关系后，我们选择一个成员作为代表。选择代表有多种方法，一种简单的方法是选择具有最大索引的成员。
+> 如何检查两个人是否属于同一组？ 如果两个人的代表相同，则说明他们属于同一组，因此他们是朋友（直接或间接）。
+
 
 
 **Data Structures used are:** 
@@ -1427,6 +1995,12 @@ Partitioning the individuals into different sets according to the groups in whic
 **Array:** An array of integers is called **Parent[]**. If we are dealing with **N** items, i’th element of the array represents the i’th item. More precisely, the i’th element of the Parent[] array is the parent of the i’th item. These relationships create one or more virtual trees.
 
 **Tree:** It is a **Disjoint set**. If two elements are in the same tree, then they are in the same **Disjoint set**. The root node (or the topmost node) of each tree is called the **representative** of the set. There is always a single **unique representative** of each set. A simple rule to identify a representative is if ‘i’ is the representative of a set, then **Parent[i] = i**. If i is not the representative of his set, then it can be found by traveling up the tree until we find the representative.
+
+> **所使用的数据结构：**
+>
+> **数组：** 一个整数数组被称为 **Parent[]**。如果我们处理的是 **N** 个元素，那么数组的第 i 个元素代表第 i 个项。更准确地说，Parent[] 数组的第 i 个元素是第 i 个项的父节点。这些关系创建了一个或多个虚拟树。
+>
+> **树：** 它是一个 **不相交集合（Disjoint set）**。如果两个元素位于同一棵树中，则它们属于同一个 **不相交集合**。每棵树的根节点（或最顶层节点）称为该集合的 **代表元（representative）**。每个集合总是有一个唯一的代表元。一个简单的规则来识别代表元是：如果 ‘i’ 是一个集合的代表元，则 **Parent[i] = i**。如果 i 不是其集合的代表元，则可以通过沿着树向上遍历直到找到代表元来确定它。
 
 
 
@@ -1437,6 +2011,8 @@ Partitioning the individuals into different sets according to the groups in whic
 #### 4.1.1 Find
 
 Can be implemented by recursively traversing the parent array until we hit a node that is the parent of itself.
+
+> 可以通过递归遍历父节点数组，直到遇到一个节点是其自身的父节点为止。
 
 
 
@@ -1474,6 +2050,10 @@ def find(i):
 
 It takes **two elements** as input and finds the representatives of their sets using the **Find** operation, and finally puts either one of the trees (representing the set) under the root node of the other tree.
 
+> 它接收**两个元素**作为输入，使用 **Find** 操作找到它们各自所属集合的代表元，最后将其中一个树（表示集合）置于另一棵树的根节点之下。
+
+
+
 ```python
 # Unites the set that includes i
 # and the set that includes j
@@ -1504,13 +2084,19 @@ def union(parent, rank, i, j):
 
 The efficiency depends heavily on which tree get attached to the other. There are 2 ways in which it can be done. First is Union by Rank, which considers height of the tree as the factor and Second is Union by Size, which considers size of the tree as the factor while attaching one tree to the other . This method along with Path Compression gives complexity of nearly constant time.
 
+> 效率在很大程度上取决于哪棵树被连接到另一棵树上。有两种实现方式：第一种是按秩合并（Union by Rank），它以树的高度为因素；第二种是按大小合并（Union by Size），它以树的大小为因素，在将一棵树连接到另一棵树时进行考虑。结合路径压缩（Path Compression），这种方法几乎可以达到常数时间复杂度。
 
 
-#### 4.2.1 Path Compression
+
+#### 4.2.1 Path Compression路径压缩
 
 Modifications to Find()):
 
 It speeds up the data structure by **compressing the height** of the trees. It can be achieved by inserting a small caching mechanism into the **Find** operation. Take a look at the code for more details:
+
+> 对 Find 操作的修改：
+>
+> 通过压缩树的高度来加速数据结构。这可以通过在 Find 操作中加入一个小的缓存机制来实现。具体细节请参见代码：
 
 ```python
 # Finds the representative of the set that i
@@ -1555,11 +2141,24 @@ Now recall that in the Union operation, it doesn’t matter which of the two tre
 - If the rank of **left** is less than the rank of **right**, then it’s best to move **left under right**, because that won’t change the rank of right (while moving right under left would increase the height). In the same way, if the rank of right is less than the rank of left, then we should move right under left.
 - If the ranks are equal, it doesn’t matter which tree goes under the other, but the rank of the result will always be one greater than the rank of the trees.
 
+> 首先，我们需要一个新的整数数组，称为 **rank[]**。这个数组的大小与父节点数组 **Parent[]** 相同。如果 i 是一个集合的代表元，那么 **rank[i]** 表示该集合所对应的树的高度。
+>
+> 现在回想一下，在合并（Union）操作中，哪棵树被移动到另一棵树下其实并不重要。我们想要做的是最小化结果树的高度。如果我们正在合并两棵树（或集合），分别称它们为左树和右树，那么这取决于 **左树的秩（rank of left）** 和 **右树的秩（rank of right）**。
+>
+> - 如果 **左树的秩** 小于 **右树的秩**，那么最好将 **左树移到右树下**，因为这样不会改变右树的秩（而将右树移到左树下会增加树的高度）。同样地，如果右树的秩小于左树的秩，那么我们应该将右树移到左树下。
+> - 如果两棵树的秩相等，则哪棵树移到另一棵树下都无所谓，但结果树的秩总是比原来的树的秩大 1。
+>
+> 
+
 
 
 #### 4.2.3 Path compression and union by rank
 
 Below is the complete implementation of disjoint set with path compression and union by rank.
+
+> #### 4.2.3 路径压缩和按秩合并
+>
+> 以下是带有路径压缩和按秩合并的不相交集合的完整实现。
 
 ```python
 class DisjSet:
@@ -1647,6 +2246,15 @@ Now we are uniting two trees (or sets), let’s call them left and right, then i
 
 - If the size of **left** is less than the size of **right**, then it’s best to move **left under right** and increase size of right by size of left. In the same way, if the size of right is less than the size of left, then we should move right under left. and increase size of left by size of right.
 - If the sizes are equal, it doesn’t matter which tree goes under the other.
+
+> 4.2.4 按大小合并
+>
+> 同样，我们需要一个新的整数数组，称为 size[]。这个数组的大小与父节点数组 Parent[] 相同。如果 i 是一个集合的代表元，那么 size[i] 表示该集合所对应的树中元素的数量。
+>
+> 现在我们正在合并两棵树（或集合），分别称它们为左树和右树，在这种情况下，这取决于 左树的大小（size of left） 和 右树的大小（size of right）。
+>
+> 如果 左树的大小 小于 右树的大小，那么最好将 左树移到右树下 并将右树的大小增加左树的大小。同样地，如果右树的大小小于左树的大小，那么我们应该将右树移到左树下，并将左树的大小增加右树的大小。
+> 如果两棵树的大小相等，则哪棵树移到另一棵树下都无所谓。
 
 ```python
 class UnionFind:
@@ -1813,13 +2421,13 @@ https://sunnywhy.com/sfbj/9/6/361
 
 现已知学校中共 n 个学生（编号为从`1`到`n`），并给出 m 组学生关系（指定两个学生处于一个班级），问总共有多少个班级，并按降序给出每个班级的人数。
 
-输入
+**输入**
 
 第一行两个整数 $m、n (1 \le n \le 100, 1 \le m \le 100)$，分别表示学生个数、学生关系个数；
 
 接下来 m 行，每行两个整数 a 和 b $ (1 \le a \le n, 1 \le b \le n, a \ne b)$，表示编号为`a`的学生和编号为`b`的学生处于一个班级。
 
-输出
+**输出**
 
 第一行输出一个整数，表示班级个数；
 
@@ -2577,7 +3185,7 @@ if __name__ == "__main__":
 - **优化后的双指针**：马拉车算法通过一些技巧避免了重复计算。它利用已经处理过的部分信息来加速后续的查找过程。
 
 ### 动态规划的思想
-- **状态定义**：在传统动态规划方法中，我们会定义一个二维数组dp[i][j]表示从i到j的子串是否为回文。但对于马拉车算法来说，我们并不直接使用这样的二维数组。
+- **状态定义**：在传统动态规划方法中，我们会定义一个二维数组`dp[i][j]`表示从i到j的子串是否为回文。但对于马拉车算法来说，我们并不直接使用这样的二维数组。
 - **状态转移**：虽然没有显式地构建dp数组，但马拉车算法隐含地使用了之前计算过的信息来决定当前可以跳过多少个不需要检查的位置，这实际上是一种基于已知信息推导新信息的过程，类似于动态规划中的状态转移。
 
 ### 马拉车算法的关键点
