@@ -1,6 +1,6 @@
-# Assignment #D: 奇思妙想 
+# Assignment #D: 十全十美 
 
-Updated 0210 GMT+8 Dec 17, 2024
+Updated 1254 GMT+8 Dec 17, 2024
 
 2024 fall, Complied by <mark>同学的姓名、院系</mark>
 
@@ -18,9 +18,9 @@ Updated 0210 GMT+8 Dec 17, 2024
 
 ## 1. 题目
 
-### 73.矩阵置零
+### 02692: 假币问题
 
-https://leetcode.cn/problems/set-matrix-zeroes/
+brute force, http://cs101.openjudge.cn/practice/02692
 
 思路：
 
@@ -40,9 +40,9 @@ https://leetcode.cn/problems/set-matrix-zeroes/
 
 
 
-### 74.搜索二维矩阵
+### 01088: 滑雪
 
-binary search, https://leetcode.cn/problems/search-a-2d-matrix/
+dp, dfs similar, http://cs101.openjudge.cn/practice/01088
 
 思路：
 
@@ -62,31 +62,9 @@ binary search, https://leetcode.cn/problems/search-a-2d-matrix/
 
 
 
-### 698.划分为k个相等的子集
+### 25572: 螃蟹采蘑菇
 
-dfs, https://leetcode.cn/problems/partition-to-k-equal-sum-subsets/
-
-思路：
-
-
-
-代码：
-
-```python
-
-```
-
-
-
-代码运行截图 <mark>（至少包含有"Accepted"）</mark>
-
-
-
-
-
-### 239.滑动窗口最大值
-
-队列, 滑动窗口, 单调队列, https://leetcode.cn/problems/sliding-window-maximum/
+bfs, dfs, http://cs101.openjudge.cn/practice/25572/
 
 思路：
 
@@ -106,9 +84,9 @@ dfs, https://leetcode.cn/problems/partition-to-k-equal-sum-subsets/
 
 
 
-### 42.接雨水
+### 27373: 最大整数
 
-monotonic stack, https://leetcode.cn/problems/trapping-rain-water/
+dp, http://cs101.openjudge.cn/practice/27373/
 
 思路：
 
@@ -128,9 +106,31 @@ monotonic stack, https://leetcode.cn/problems/trapping-rain-water/
 
 
 
-### 41.缺失的第一个正数
+### 02811: 熄灯问题
 
-标记，置换，https://leetcode.cn/problems/first-missing-positive/
+brute force, http://cs101.openjudge.cn/practice/02811
+
+思路：
+
+
+
+代码：
+
+```python
+
+```
+
+
+
+代码运行截图 <mark>（至少包含有"Accepted"）</mark>
+
+
+
+
+
+### 08210: 河中跳房子
+
+binary search, greedy, http://cs101.openjudge.cn/practice/08210/
 
 思路：
 
