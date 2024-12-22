@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2057 GMT+8 Dec 16 2024
+Updated 1857 GMT+8 Dec 22 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -2797,6 +2797,177 @@ class Solution:
 if __name__ == "__main__":
     nums = [1,2,3]
     print(Solution().subsets(nums))
+```
+
+
+
+## LCR 107.01 矩阵
+
+dp, https://leetcode.cn/problems/2bCMpM/
+
+给定一个由 `0` 和 `1` 组成的矩阵 `mat` ，请输出一个大小相同的矩阵，其中每一个格子是 `mat` 中对应位置元素到最近的 `0` 的距离。
+
+两个相邻元素间的距离为 `1` 。
+
+ 
+
+**示例 1：**
+
+![img](https://pic.leetcode-cn.com/1626667201-NCWmuP-image.png)
+
+```
+输入：mat = [[0,0,0],[0,1,0],[0,0,0]]
+输出：[[0,0,0],[0,1,0],[0,0,0]]
+```
+
+**示例 2：**
+
+![img](https://pic.leetcode-cn.com/1626667205-xFxIeK-image.png)
+
+```
+输入：mat = [[0,0,0],[0,1,0],[1,1,1]]
+输出：[[0,0,0],[0,1,0],[1,2,1]]
+```
+
+ 
+
+**提示：**
+
+- `m == mat.length`
+- `n == mat[i].length`
+- `1 <= m, n <= 104`
+- `1 <= m * n <= 104`
+- `mat[i][j] is either 0 or 1.`
+- `mat` 中至少有一个 `0 `
+
+ 
+
+注意：本题与主站 542 题相同：https://leetcode-cn.com/problems/01-matrix/
+
+
+
+是 OJ01088:滑雪 的升级版。因为矩阵每个点的高度有更新，不能只用sort一次，需要使用heapq。
+
+```python
+import heapq
+from typing import List
+
+class Solution:
+    def updateMatrix(self, mat: List[List[int]]) -> List[List[int]]:
+        m, n = len(mat), len(mat[0])
+        dp = [[float('inf')] * n for _ in range(m)]
+        heap = []
+
+        # 初始化，所有的0加入到堆中
+        for i in range(m):
+            for j in range(n):
+                if mat[i][j] == 0:
+                    dp[i][j] = 0
+                    heapq.heappush(heap, (0, i, j))  # (distance, x, y)
+
+        # 定义四个方向的移动
+        directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+
+        # 使用堆进行更新
+        while heap:
+            dist, x, y = heapq.heappop(heap)
+
+            # 如果当前的距离大于 dp[x][y]，说明这个位置已经被更新过，不需要再次处理
+            if dist > dp[x][y]:
+                continue
+
+            # 对当前点的四个方向进行处理
+            for dx, dy in directions:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < m and 0 <= ny < n:
+                    # 如果新位置的dp值可以更新（即发现更短的路径）
+                    if dp[nx][ny] > dp[x][y] + 1:
+                        dp[nx][ny] = dp[x][y] + 1
+                        heapq.heappush(heap, (dp[nx][ny], nx, ny))
+
+        return dp
+
+# 测试用例
+if __name__ == "__main__":
+    mat = [[0,0,0],[0,1,0],[1,1,1]]
+    print(Solution().updateMatrix(mat))
+```
+
+
+
+```python
+from typing import List
+from collections import deque
+
+class Solution:
+    def updateMatrix(self, mat: List[List[int]]) -> List[List[int]]:
+        m, n = len(mat), len(mat[0])
+        dp = [[float('inf')] * n for _ in range(m)]
+        queue = deque()
+
+        # 将所有0的元素加入队列并初始化dp数组
+        for i in range(m):
+            for j in range(n):
+                if mat[i][j] == 0:
+                    dp[i][j] = 0
+                    queue.append((i, j))
+
+        # 定义四个方向的移动
+        directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+
+        # BFS开始
+        while queue:
+            x, y = queue.popleft()
+            # 对当前点的四个方向进行处理
+            for dx, dy in directions:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < m and 0 <= ny < n:
+                    # 如果新位置的dp值可以更新（即发现更短的路径）
+                    if dp[nx][ny] > dp[x][y] + 1:
+                        dp[nx][ny] = dp[x][y] + 1
+                        queue.append((nx, ny))
+
+        return dp
+
+# 测试用例
+if __name__ == "__main__":
+    mat = [[0,0,0],[0,1,0],[1,1,1]]
+    print(Solution().updateMatrix(mat))
+```
+
+
+
+
+
+```python
+from typing import List
+class Solution:
+    def updateMatrix(self, mat: List[List[int]]) -> List[List[int]]:
+        m, n = len(mat), len(mat[0])
+        dp = [[float('inf') for _ in range(n)] for _ in range(m)]
+        for i in range(m):
+            for j in range(n):
+                if mat[i][j] == 0:
+                    dp[i][j] = 0
+                else:
+                    if i > 0:
+                        dp[i][j] = min(dp[i][j], dp[i-1][j]+1)
+                    if j > 0:
+                        dp[i][j] = min(dp[i][j], dp[i][j-1]+1)
+        for i in range(m-1, -1, -1):
+            for j in range(n-1, -1, -1):
+                if mat[i][j] == 0:
+                    dp[i][j] = 0
+                else:
+                    if i < m-1:
+                        dp[i][j] = min(dp[i][j], dp[i+1][j]+1)
+                    if j < n-1:
+                        dp[i][j] = min(dp[i][j], dp[i][j+1]+1)
+        return dp
+
+if __name__ == "__main__":
+    mat = [[0,0,0],[0,1,0],[0,0,0]]
+    print(Solution().updateMatrix(mat))
 ```
 
 
