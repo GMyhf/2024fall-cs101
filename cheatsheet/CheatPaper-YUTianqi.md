@@ -31,6 +31,7 @@ def dijkstra(x1,y1,x2,y2):
 bisect_left:
 
 ```python
+lo,hi=0,len(a)
 while lo < hi:
 	mid = (lo + hi) // 2
     if a[mid] < x:
@@ -42,6 +43,7 @@ while lo < hi:
 bisect_right:
 
 ```python
+lo,hi=0,len(a)
 while lo < hi:
     mid = (lo + hi) // 2
     if x < a[mid]:
