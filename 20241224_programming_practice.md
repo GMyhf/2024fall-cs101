@@ -1,6 +1,6 @@
 # 20241224-Week16 编程练习
 
-Updated 2019 GMT+8 Dec 23, 2024
+Updated 1429 GMT+8 Dec 24, 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -966,6 +966,79 @@ pokemons = [tuple(map(int, input().split())) for _ in range(K)]
 captured, health = solve(N, M, K, pokemons)
 print(captured, health)
 ```
+
+
+
+66ms AC
+
+```python
+# 刘思昊，24工学院
+n, m, k = map(int, input().split())
+wild_pokemon = []
+for _ in range(k):
+    balls, damage = map(int, input().split())
+    wild_pokemon.append((balls, damage))
+
+# 按伤害升序排序
+wild_pokemon.sort(key=lambda x: x[1])
+
+# 初始化 DP 数组
+dp = [[0, 0] for _ in range(n + 1)]  # dp[i] = [最大收服数, 总伤害]
+
+for balls, damage in wild_pokemon:
+    for i in range(n, balls - 1, -1):
+        prev_num, prev_damage = dp[i - balls]
+        if prev_damage + damage >= m:  # 超过体力限制，跳过
+            continue
+        # 更新 DP：选择更优方案
+        if prev_num + 1 > dp[i][0]:
+            dp[i] = [prev_num + 1, prev_damage + damage]
+        elif prev_num + 1 == dp[i][0]:
+            dp[i][1] = min(dp[i][1], prev_damage + damage)
+
+
+max_captured, total_damage = dp[-1]
+print(max_captured, m - total_damage)
+```
+
+> 思路是 **动态规划 + 贪心**，并通过对小精灵列表按伤害值 (`hp`) 升序排序来优化结果。以下是对其正确性的分析和改进建议：
+>
+> **算法说明**
+>
+> 1. **排序优化**:
+>
+>    - 按照伤害值升序排列小精灵后，优先考虑那些对皮卡丘伤害较小的小精灵。
+>    - 这种排序确保了在尽量收服更多小精灵的情况下，皮卡丘的剩余体力尽可能多。
+>
+> 2. **动态规划**:
+>
+>    - `dp[i] = [num, hp]`：表示使用了 `i` 个精灵球时，最多能收服的精灵数 `num` 和相应情况下皮卡丘所受的总伤害 `hp`。
+>
+>    - 状态转移公式：
+>
+>      - 如果当前精灵可以被收服（即精灵球数足够，且皮卡丘体力不至于小于等于 0）：
+>
+>        ```python
+>        dp[i] = max(dp[i], [dp[i-ball][0] + 1, dp[i-ball][1] + hp])
+>        ```
+>
+>        在数量相等时比较伤害值，取伤害值更小的方案。
+>
+> 3. **复杂度分析**:
+>
+>    - 预排序的时间复杂度为 $O(K \log K)$。
+>    - 动态规划部分的复杂度为 $O(K \times N)$，因为每个小精灵需要遍历精灵球的使用情况。
+>
+> **正确性分析**
+>
+> 该算法的思想与经典的 **0-1 背包问题** 类似，目的是在有限资源（精灵球和皮卡丘体力）的约束下，优化两个目标：
+>
+> - 收服小精灵的数量（主目标）；
+> - 剩余体力的最大化（次目标）。
+>
+> **排序的贪心性**
+>
+> 排序确保了优先考虑对皮卡丘伤害较小的小精灵，减少了高伤害精灵对后续选择的影响。因为动态规划的顺序遍历会保留最优解，所以排序不会影响结果的正确性。
 
 
 
