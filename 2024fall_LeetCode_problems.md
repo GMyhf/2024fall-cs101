@@ -1945,6 +1945,37 @@ if __name__ == "__main__":
 
 
 
+隐式回溯写法
+
+```python
+from typing import List
+
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        n = len(nums)
+        ans = []
+
+        def dfs(a, remaining):
+            if len(a) == n:
+                ans.append(a[:])  # 收集当前排列
+                return
+            for i in range(len(remaining)):
+                # 选择 remaining[i] 并递归
+                dfs(a + [remaining[i]], remaining[:i] + remaining[i+1:])
+
+        dfs([], nums)
+        return ans
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.permute([1, 2, 3]))
+
+```
+
+
+
+
+
 ```python
 from typing import List
 
