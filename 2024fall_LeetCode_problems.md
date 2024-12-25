@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1857 GMT+8 Dec 22 2024
+Updated 2108 GMT+8 Dec 25 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -1526,6 +1526,44 @@ class Solution:
 if __name__ == "__main__":
     digits = "23"
     print(Solution().letterCombinations(digits))
+```
+
+
+
+上面代码中使用了隐式回溯，因为回溯函数 `backtrack` 的参数中直接传递了新的状态。
+
+显示回溯代码如下：
+
+```python
+from typing import List
+
+class Solution:
+    def letterCombinations(self, digits: str) -> List[str]:
+        num_to_char = {'2': 'abc', '3': 'def', '4': 'ghi', '5': 'jkl', '6': 'mno',
+                       '7': 'pqrs', '8': 'tuv', '9': 'wxyz'}
+        ans = []
+
+        def backtrack(combination, next_digits):
+            if len(next_digits) == 0:
+                ans.append(combination)
+            else:
+                # 显式回溯：使用循环遍历数字对应的字母
+                for letter in num_to_char[next_digits[0]]:
+                    # 将当前字母加入组合
+                    combination += letter
+                    # 递归回溯，进入下一个数字
+                    backtrack(combination, next_digits[1:])
+                    # 显式回溯：移除上一个字母，恢复到原来的状态
+                    combination = combination[:-1]
+
+        if digits:
+            backtrack("", digits)  # start with an empty string
+        return ans
+
+if __name__ == "__main__":
+    digits = "23"
+    print(Solution().letterCombinations(digits))
+
 ```
 
 
