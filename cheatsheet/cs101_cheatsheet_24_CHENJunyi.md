@@ -1,5 +1,7 @@
 # 计算概论期末考试总结
 
+2024.12.26：发现考前一个高效复习的办法。bilibili搜左程云，这个up的算法更新的很全，自己哪块薄弱就看哪块，可以快速大量云刷题
+
 ## 一·函数
 
 ### 输出
@@ -140,6 +142,8 @@ ans = sum(dp)
 #### 背包问题
 
 ##### 0-1背包
+
+![image-20241226090713633](C:\Users\31983\AppData\Roaming\Typora\typora-user-images\image-20241226090713633.png)
 
 考虑取前i个物品用t时间所能得到的最大值，枚举第i个物品是否取完成转移。注意这里**加上时间参数t**，因为转移过程中t的限定可能会变。“加参数”是DP问题中最重要的技巧之一。
 
@@ -398,7 +402,11 @@ while queue:
             ...
 ```
 
+![image-20241225095808023](C:\Users\31983\AppData\Roaming\Typora\typora-user-images\image-20241225095808023.png)
+
 #### **dijkstra**（bfs变形）
+
+![image-20241225105822799](C:\Users\31983\AppData\Roaming\Typora\typora-user-images\image-20241225105822799.png)
 
 ```python
 import heapq#小顶堆
@@ -519,7 +527,9 @@ for i in range(n):
     print(answer[shuru-1])
 ```
 
-### 二分查找
+### 二分
+
+![image-20241225165242146](C:\Users\31983\AppData\Roaming\Typora\typora-user-images\image-20241225165242146.png)
 
 #### bisect库
 
