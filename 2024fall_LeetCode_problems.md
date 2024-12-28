@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2108 GMT+8 Dec 25 2024
+Updated 1533 GMT+8 Dec 28 2024
 
 2024 fall, Complied by Hongfei Yan
 
@@ -4717,25 +4717,105 @@ class Solution:
 
 
 
-```python
+
+
+## 2947.统计美丽子字符串 I
+
+https://leetcode.cn/problems/count-beautiful-substrings-i/
+
+给你一个字符串 `s` 和一个正整数 `k` 。
+
+用 `vowels` 和 `consonants` 分别表示字符串中元音字母和辅音字母的数量。
+
+如果某个字符串满足以下条件，则称其为 **美丽字符串** ：
+
+- `vowels == consonants`，即元音字母和辅音字母的数量相等。
+- `(vowels * consonants) % k == 0`，即元音字母和辅音字母的数量的乘积能被 `k` 整除。
+
+返回字符串 `s` 中 **非空美丽子字符串** 的数量。
+
+子字符串是字符串中的一个连续字符序列。
+
+英语中的 **元音字母** 为 `'a'`、`'e'`、`'i'`、`'o'` 和 `'u'` 。
+
+英语中的 **辅音字母** 为除了元音字母之外的所有字母。
+
+ 
+
+**示例 1：**
 
 ```
-
-
-
-```python
-
+输入：s = "baeyh", k = 2
+输出：2
+解释：字符串 s 中有 2 个美丽子字符串。
+- 子字符串 "baeyh"，vowels = 2（["a","e"]），consonants = 2（["y","h"]）。
+可以看出字符串 "aeyh" 是美丽字符串，因为 vowels == consonants 且 vowels * consonants % k == 0 。
+- 子字符串 "baeyh"，vowels = 2（["a","e"]），consonants = 2（["b","y"]）。
+可以看出字符串 "baey" 是美丽字符串，因为 vowels == consonants 且 vowels * consonants % k == 0 。
+可以证明字符串 s 中只有 2 个美丽子字符串。
 ```
 
-
-
-```python
+**示例 2：**
 
 ```
+输入：s = "abba", k = 1
+输出：3
+解释：字符串 s 中有 3 个美丽子字符串。
+- 子字符串 "abba"，vowels = 1（["a"]），consonants = 1（["b"]）。
+- 子字符串 "abba"，vowels = 1（["a"]），consonants = 1（["b"]）。
+- 子字符串 "abba"，vowels = 2（["a","a"]），consonants = 2（["b","b"]）。
+可以证明字符串 s 中只有 3 个美丽子字符串。
+```
+
+**示例 3：**
+
+```
+输入：s = "bcdf", k = 1
+输出：0
+解释：字符串 s 中没有美丽子字符串。
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 1000`
+- `1 <= k <= 1000`
+- `s` 仅由小写英文字母组成。
 
 
 
 ```python
+class Solution:
+    def beautifulSubstrings(self, s: str, k: int) -> int:
+        vowels_set = {'a', 'e', 'i', 'o', 'u'}
+        n = len(s)
+        beautiful_count = 0
+
+        # 遍历所有子字符串
+        for i in range(n):
+            vowels = 0
+            consonants = 0
+            for j in range(i, n):
+                if s[j] in vowels_set:
+                    vowels += 1
+                else:
+                    consonants += 1
+
+                # 检查美丽字符串条件
+                if vowels == consonants and (vowels * consonants) % k == 0:
+                    beautiful_count += 1
+
+        return beautiful_count
+
+if __name__ == '__main__':
+    s = Solution()
+    print(s.beautifulSubstrings("aeiou", 2))  # 输出: 2
+    print(s.beautifulSubstrings("aba", 1))  # 输出: 2
+    print(s.beautifulSubstrings("baeyh", 2))  # 输出: 2
+    print(s.beautifulSubstrings("abba", 1))  # 输出: 3
+    print(s.beautifulSubstrings("bcdf", 1))  # 输出: 0
+
 
 ```
 
@@ -5798,6 +5878,123 @@ class Solution:
 >    ```
 >    - 返回 `dp[n][k]`，即使用 `1` 到 `n` 的数字，恰好有 `k` 个逆序对的数组个数。
 >
+
+
+
+
+
+## 2403.杀死所有怪物的最短时间
+
+28832:【附加题】《黑神话·悟空》，http://jsgl_liding.openjudge.cn/2024midtermtestv1/9/
+
+https://doocs.github.io/leetcode/lc/2403/
+
+你有一个整数数组 `power`，其中 `power[i]` 是第 `i` 个怪物的力量。
+
+你从 `0` 点法力值开始，每天获取 `gain` 点法力值，最初 `gain` 等于 `1`。
+
+每天，在获得 `gain` 点法力值后，如果你的法力值大于或等于怪物的力量，你就可以打败怪物。当你打败怪物时:
+
+- 你的法力值会被重置为 `0`，并且
+- `gain` 的值增加 `1`。
+
+返回*打败所有怪物所需的 **最少** 天数。*
+
+ 
+
+**示例 1:**
+
+```
+输入: power = [3,1,4]
+输出: 4
+解释: 打败所有怪物的最佳方法是:
+- 第 1 天: 获得 1 点法力值，现在总共拥有 1 点法力值。用尽所有法力值击杀第 2 个怪物。
+- 第 2 天: 获得 2 点法力值，现在总共拥有 2 点法力值。
+- 第 3 天: 获得 2 点法力值，现在总共拥有 4 点法力值。用尽所有法力值击杀第 3 个怪物。
+- 第 4 天: 获得 3 点法力值，现在总共拥有 3 点法力值。 用尽所有法力值击杀第 1 个怪物。
+可以证明，4 天是最少需要的天数。
+```
+
+**示例 2:**
+
+```
+输入: power = [1,1,4]
+输出: 4
+解释: 打败所有怪物的最佳方法是:
+- 第 1 天: 获得 1 点法力值，现在总共拥有 1 点法力值。用尽所有法力值击杀第 1 个怪物。
+- 第 2 天: 获得 2 点法力值，现在总共拥有 2 点法力值。用尽所有法力值击杀第 2 个怪物。
+- 第 3 天: 获得 3 点法力值，现在总共拥有 3 点法力值。
+- 第 4 天: 获得 3 点法力值，现在总共拥有 6 点法力值。用尽所有法力值击杀第 3 个怪物。
+可以证明，4 天是最少需要的天数。
+```
+
+**示例 3:**
+
+```
+输入: power = [1,2,4,9]
+输出: 6
+解释: 打败所有怪物的最佳方法是:
+- 第 1 天: 获得 1 点法力值，现在总共拥有 1 点法力值。用尽所有法力值击杀第 1 个怪物
+- 第 2 天: 获得 2 点法力值，现在总共拥有 2 点法力值。用尽所有法力值击杀第 2 个怪物。
+- 第 3 天: 获得 3 点法力值，现在总共拥有 3 点法力值。
+- 第 4 天: 获得 3 点法力值，现在总共拥有 6 点法力值。
+- 第 5 天: 获得 3 点法力值，现在总共拥有 9 点法力值。用尽所有法力值击杀第 4 个怪物。
+- 第 6 天: 获得 4 点法力值，现在总共拥有 4 点法力值。用尽所有法力值击杀第 3 个怪物。
+可以证明，6 天是最少需要的天数。
+```
+
+ 
+
+**提示:**
+
+- `1 <= power.length <= 17`
+- `1 <= power[i] <= 109`
+
+
+
+状态压缩 + 动态规划
+
+定义 `f[mask]` 表示当前怪物的状态为*mask* 时，打败所有怪物所需的最少天数。其中 *mask* 是一个 *n* 位的二进制数，其中第 *i* 位为 1 表示第 *i* 个怪物已被击败，为 0 表示第 *i* 个怪物还活着。初始时 `f[0]=0`，其余 `f[mask]=+∞`。答案即为 $f[2^n−1]$。
+
+我们在 $[1,2^n−1]$ 的范围内枚举 *mask*，对于每个 *mask*，我们枚举每个怪物 *i*，如果第 *i* 个怪物被击败，那么它可以从上一个状态 $mask⊕2^i$ 转移过来，转移的代价为 (power[i]+gain−1)/gain，其中 `gain=mask.bitCount()`。
+
+最后，返回 $f[2^n−1]$。
+
+时间复杂度 $O(2^n×n)$，空间复杂度 $O(2^n)$。其中 n 为怪物的数量。
+
+```python
+from typing import List
+
+class Solution:
+    def minimumTime(self, power: List[int]) -> int:
+        n = len(power)
+        max_mask = (1 << n)
+        
+        # dp[mask] 表示当前选择了哪些武器的最小时间
+        dp = [float('inf')] * max_mask
+        dp[0] = 0  # 初始状态，没有选择任何武器
+        
+        for mask in range(max_mask):
+            selected_count = bin(mask).count('1')  # 已选择武器的数量
+            gain = 1 + selected_count  # 当前增益值
+            
+            for i in range(n):
+                if mask & (1 << i) == 0:  # 如果第 i 个武器未被选择
+                    next_mask = mask | (1 << i)
+                    dp[next_mask] = min(
+                        dp[next_mask],
+                        dp[mask] + (power[i] + gain - 1) // gain
+                    )
+        
+        return dp[max_mask - 1]
+
+if __name__ == '__main__':
+    sol = Solution()
+    pow = list(map(int, input().split()))
+    print(sol.minimumTime(pow))
+```
+
+
 
 
 
