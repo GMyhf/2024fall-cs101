@@ -5998,6 +5998,70 @@ if __name__ == '__main__':
 
 
 
+
+
+贪心做，这题就是要把题目里给的n个boss的力量值和1~n匹配，相除后向上取整并求和。让大的力量值尽可能去匹配大的除数，同时因为涉及到取整，可能有多个除数除出来会是一样的结果，为了避免浪费在商相同的情况下选取最小的那个除数，这样是能AC的，但是我在数学上暂时还给不出一个严格的证明。
+
+```python
+#24 物院 郑涵予
+
+a = list(map(int, input().split()))
+n = len(a)
+a.sort(reverse=True)
+b = [False] * n
+sum = 0
+for i in range(n):
+    index = -1
+    time = 1e10
+    for j in range(n - 1, -1, -1):
+        if b[j]:
+            continue
+        current_time = (a[i] + j) // (j + 1)
+        if time == 1e10:
+            time = current_time
+            index = j
+        elif current_time == time:
+            index = j
+        else:
+            break
+    b[index] = True
+    sum += time
+print(sum)
+```
+
+
+
+```python
+#邹一鸣 2400011815
+boss_power=sorted(list(map(int,input().split())))
+pp=list(boss_power)
+def findbest(l,gain):
+    if len(l)==1:
+        return l[0]//gain+int(bool(l[0]%gain))
+    poss=[]
+    for i in range(len(l)):
+        if l[i]<=3*gain:
+            a=l.pop(i)
+            poss.append(a//gain+int(bool(a%gain))+findbest(l,gain+1))
+            l.insert(i,a)
+    if any(poss):
+        return min(poss)
+    return l[0]//gain+int(bool(l[0]%gain))+findbest(l[1:],gain+1)
+a=0
+for t in range(len(boss_power)):
+    if boss_power[t]<=t+1:
+        a+=1
+        pp.remove(boss_power[t])
+    else:
+        a+=findbest(pp,t+1)
+        break
+print(a)
+```
+
+
+
+
+
 ## 2931.购买物品的最大开销
 
 greedy, https://leetcode.cn/problems/maximum-spending-after-buying-items/
