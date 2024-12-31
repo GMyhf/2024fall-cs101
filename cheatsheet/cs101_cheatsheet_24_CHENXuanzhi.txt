@@ -1,0 +1,323 @@
+1.函数
+1)二分查找
+import bisect
+loc=bisect.bisect_left(list,item)
+loc=bisect.bisect_right(list,item)
+
+2)时间 
+Import calendar, datetime
+Calendar.isleap(2020)
+Datetime.datetime(2023,10,15).weekday()
+
+
+2.Tips
+1)深拷贝
+from copy import deepcopy
+lcopy=deepcopy(l)
+
+2)保留小数
+  "{:.2f}".format(num)
+  #或
+  "%.2f" % num
+  
+3)建一个以每行输入的字符串为元素的列表:
+  import sys
+  sys.stdin.readlines()
+  
+4)遍历每一项的索引和值组成的元组(类似于dict.items()):
+  for index,value in enumerate(list)
+  
+5)dfs→dp
+  from functools import lru_cache
+  @lru_cache(maxsize = None)
+  
+6)递归深度限制设置:
+  sys.setrecursionlimit(...)
+  
+7)未知组数输入：
+  While True:
+    try:
+    
+    except EOFError:
+      break
+
+3.数据结构
+1)defaultdict
+  from collections import defaultdict
+  a=defaultdict(list)
+  
+2)deque
+  from collections import deque
+  deque.append()
+  deque.pop()
+  deque.appendleft()
+  deque.popleft()
+
+3)heapq
+  import heapq
+  heapq.heapify(list)
+  heapq.heappush(list,item)
+  heapq.heappop(list)
+  heapq.heappushpop(list,item)
+  
+4)set
+  s.add()
+  s.remove()/s.discard()
+  s.clear()
+  a|b:并集
+  a&b：交集
+  a-b：差
+
+4.算法
+1)欧拉筛
+def ES(n):
+  isprime=[True for _ in range(n+1)]
+  prime=[]
+  for i in range(2,n+1):
+      if isprime[i]:
+          prime.append(i)
+      for j in range(len(prime)):
+          if  i*prime[j]>n:break
+          isprime[i*prime[j]]=False
+          if i%prime[j]==0 :break
+
+  return prime
+2)dfs
+  def dfs(x,y,i,j):
+    stack=[(x,y)]
+    while stack:
+      cx,cy=stack.pop()
+      if (cx,cy)==(i,j):
+        return True
+      for dx,dy in directions:
+        nx,ny=cx+dx,cy+dy
+        if 0<=nx<m and 0<=ny<n and some限制因素:
+          stack.append((nx,ny))
+    return False
+
+3)bfs
+  from collections import deque
+  def bfs(x,y,i,j):
+    q=deque((x,y,0))
+    inq=set((x,y))
+    while q:
+      cx,cy,step=q.popleft()
+      if (cx,cy)==(i,j):
+        return step
+      for dx,dy in directions:
+        nx,ny=cx+dx,cy+dy
+        if 0<=nx<n and 0<=ny<n and (nx,ny) not in inq:
+          if some 限制因素:
+            q.append(nx,ny,step+1)
+            inq.add((nx,ny))
+
+4)Dijkstra
+  import heapq
+  def dijkstra(s,mat,e):#s,e分别是起点和终点.起点s=(0,x0,y0),终点e=(xe,ye).
+      MAXN=float('inf')
+      weight=[[MAXN]*len(mat[0]) for _ in range(len(mat))]
+      q=[s]
+      weight[s[1]][s[2]]=0
+      d=[(-1,0),(1,0),(0,-1),(0,1)]
+
+      while q:
+          w,x,y=heapq.heappop(q)
+          if (x,y)==e:
+              return weight[x][y]
+          for dx,dy in d:
+              nx,ny=x+dx,y+dy
+              if 0<=nx<len(mat) and 0<=ny<len(mat[0]):#不用not in visited
+                  new_w=weight[x][y]+______#这段填上点(x,y)到(nx,ny)的权重
+                  if new_w<weight[nx][ny]:
+                      weight[nx][ny]=new_w
+                      heapq.heappush(q,(new_w,nx,ny))
+  return -1
+
+5)全排列
+  def permute(nums):
+      if len(nums) == 1: return [nums]  # 递归终止条件：只有一个元素时返回自身
+      permutations = []  # 存储答案
+      for i in range(len(nums)):
+          current = nums[i]  # 当前元素
+          remaining = nums[:i] + nums[i+1:]  # 剩余元素
+          for p in permute(remaining):  # 递归生成剩余元素的排列，并加上当前元素
+              permutations.append([current] + p)
+      return permutations
+
+6)Cantor展开
+  import math
+  def Cantor(nums):
+      res=0#res是最终的编号
+      for i in range(len(nums)):#对于nums中的每个数
+          c=0
+          for j in range(i+1,len(nums)):#找到它后面有几个比它小的数
+              if nums[j]<nums[i]:
+                  c+=1
+          res+=c*math.factorial(len(nums)-1-i)
+      return res
+
+  def retro_Cantor(x,length):#length是排列的长度
+      res=[]
+      r=list(range(1,length+1))
+      for i in range(length-1,-1,-1):
+          f=math.factorial(i)
+          res.append(r.pop(x//f))
+          x%=f
+  return res
+
+7)Narayana Pandita算法求下一个排列
+  def NP(nums):
+      for i in range(len(nums)-2,-1,-1):
+          if nums[i]<nums[i+1]:
+              for j in range(len(nums)-1,i,-1):
+                  if nums[j]>nums[i]:
+                      nums[j],nums[i] = nums[i],nums[j]
+                      tmp=nums[len(nums)-1:i:-1]
+                      nums[i+1:]=tmp
+                      return nums
+      else:
+          nums.reverse()
+          return nums
+  print(NP([4,2,6,3]))
+
+8)二分查找
+  def bisect_left(a, x, lo=0, hi=None, *, key=None):
+      if hi==None:
+          hi=len(a)
+      if key is None:
+          while lo < hi:
+              mid = (lo + hi) // 2
+              if a[mid] < x:
+                  lo = mid + 1
+              else:
+                  hi = mid 
+      else:
+           while lo < hi:
+               mid = (lo + hi) // 2
+               if key(a[mid]) < key(x):
+                   lo = mid + 1
+               else:
+                   hi = mid 
+  return lo 
+9)Kadane算法
+  def kadane(v):#卡丹算法求最大子序列
+      max_cur=0
+      max_all=0
+      for i in range(len(v)):
+          max_cur=max(v[i],max_cur+v[i])
+          max_all=max(max_all,max_cur)
+  return max_all
+
+#卡丹算法求最大子矩阵
+  def qzh(mat,n,m):#前缀和
+      qzh=[]
+      for i in range(n):
+          qzh.append([0])
+          for j in range(m):
+  qzh[i].append(qzh[i][-1]+mat[i][j])
+      return qzh
+  def kadane(a):#卡丹算法求最大子序列
+      max_cur=0
+      max_all=0
+      for i in range(len(a)):
+          max_cur=max(a[i],max_cur+a[i])
+          max_all=max(max_all,max_cur)
+      return max_all
+  def max_submat(qzh,n,m):
+      #现在我要算每个对于左边界为l，右边界为r的，上下浮动和伸缩的一系列子矩阵的最大值
+      maxn=0
+      for l in range(1,m+1):
+          for r in range(l,m):
+              a=list(qzh[i][r]-qzh[i][l-1] for i in range(n))
+              maxn=max(maxn,kadane(a))
+      return(maxn)
+  #主函数
+  n,m=map(int,input().split())#行数:n,列数:m
+  mat=[]
+  for i in range(n):
+      mat.append(list(map(int,input().split())))
+  qzh=qzh(mat,n,m)
+  print(max_submat(qzh,n,m))
+
+10)归并排序
+  def MergeSort(arr):
+      if len(arr)<=1: return arr
+      else:
+          l,r=arr[:len(arr)//2],arr[len(arr)//2:]
+          return Merge(MergeSort(l),MergeSort(r))
+  def Merge(l,r):
+      res=[]
+      i,j=0,0
+      while i<len(l) and j<len(r):
+          if l[i]<=r[j]:
+              res.append(l[i])
+              i+=1
+          else:
+              res.append(r[j])
+              j+=1
+      res+=l[i:]+r[j:]
+  return res
+
+11)Dp
+①01背包
+  dp = [0]*T
+  for i in range(n):
+      for t in range(T,time[i]-1,-1):
+          dp[t] = max(dp[t],dp[t-time[i]]+value[i])
+  ans = dp[T]
+②完全背包：内层循环正着遍历
+③多重背包：二进制优化
+  dp = [0]*T
+  for i in range(n):
+      all_num = nums[i]
+      k = 1
+      while all_num>0:
+          use_num = min(k,all_num) #处理最后剩不足2的幂的情形
+          for t in range(T,use_num*time[i]-1,-1):
+              dp[t] = max(dp[t-use_num*time[i]]+use_num*value[i],dp[t])
+          k *= 2
+          all_num -= use_num
+
+12)区间问题
+①右端点排序：不相交区间，区间取点
+②左端点排序：区间合并，区间覆盖，区间分组
+
+13)单调栈
+  class Solution:
+      def trap(self, height: List[int]) -> int:
+          stack = []  # 初始化一个空栈，用于存储柱子的索引
+          water = 0  # 初始化水的总量为0
+          for i in range(len(height)):  # 遍历每个柱子
+              while stack and height[i] > height[stack[-1]]:  # 当栈不为空且当前柱子高于栈顶柱子时
+                  top = stack.pop()  # 弹出栈顶柱子的索引
+                  if not stack:  # 如果栈为空，说明没有左边的边界，无法形成水坑
+                      break
+                  distance = i - stack[-1] - 1  # 计算左右边界之间的距离
+                  bounded_height = min(height[i], height[stack[-1]]) - height[top]  # 计算水坑的高度
+                  water += distance * bounded_height  # 计算水坑的容量，并累加到总水量中
+              stack.append(i)  # 将当前柱子的索引压入栈中
+          return water  # 返回总的水容量
+
+14)马拉车算法
+  def manacher(s):
+      # 1.预处理字符串
+      t = '^#' + '#'.join(s) + '#$'  # 字符间插入#,从而对于偶数子串也可以中心扩展
+      n = len(t)  # 得到新字符串长度
+      P = [0] * n  # P[i]表示以t[i]为中心的回文半径
+      C, R = 0, 0  # C为当前回文中心,R为当前回文的右边界
+      # 2.计算回文半径
+      for i in range(1, n - 1):  # i位置为中心
+          # 如果 i 在 R 范围内，用对称位置的回文半径初始化 P[i]
+          P[i] = min(R - i, P[2 * C - i]) if i < R else 0
+          # 中心扩展，尝试扩展回文半径
+          while t[i + P[i] + 1] == t[i - P[i] - 1]:
+              P[i] += 1
+          # 更新回文的中心和右边界
+          if i + P[i] > R:
+              C, R = i, i + P[i]
+      # 3.找到最长回文
+      max_len = max(P)  # 最长回文半径
+      center_index = P.index(max_len)  # 最长回文对应的中心索引
+      # 原始字符串中的起始索引
+      start = (center_index - max_len) // 2
+      return s[start:start + max_len]
