@@ -1,6 +1,6 @@
 # 20240521 计算概论B笔试资料
 
-Updated 1103 GMT+8 Dec 11, 2024
+Updated 1637 GMT+8 Jan 1, 2025
 
 2024 spring, Complied by Hongfei Yan
 
@@ -3463,9 +3463,35 @@ int main() {
 
 1. 在一个局域网内，把各台计算机连接在一起的设备是
    
-   A) 集线器	B) 防火墙	C) 调制解调器	<mark>D</mark>) 以上均不是
+    <mark>A</mark>) 集线器	B) 防火墙	C) 调制解调器	D) 以上均不是
    
-   > 通常使用交换机或路由器。
+   > 如果答案写 交换机 就没有歧义了。集线器确实能连，但是淘汰买不到了。
+   >
+   > 
+   >
+   > Which device is used to connect multiple computers in a LAN? 2 POINTS 
+   >
+   > A Firewall B Switch C Modem D Router
+   >
+   > https://www.gauthmath.com/solution/1803567712329734/Which-device-is-used-to-connect-multiple-computers-in-a-LAN-2-POINTS-A-Firewall-
+   >
+   > Answer	B) Switch.
+   >
+   > Explanation
+   >
+   > The device used to connect multiple computers in a LAN is a Switch.
+   >
+   > 
+   >
+   > **What is a device that connects multiple devices on a LAN?**
+   >
+   > https://www.quora.com/What-is-a-device-that-connects-multiple-devices-on-a-LAN
+   >
+   > There are several choices, but the one most commonly used that is both practical and cheap for the home is a small router. It is more capable than the other options, and theoretically more expensive, but because they are so common and widely manufactured, small routers for home use are actually pretty cheap. In addition to store-and-forwarding packets, it is common for a router to include security functions and often a WiFi access point.
+   >
+   > The nominally cheaper option is a switch. A switch has less capability but does the basic job of storing-and-forwarding packets on each of the connected ports according to the destination address. Over time, “switches” have added functionality, and the line between a router and a switch is somewhat blurred. Since its takes so little additional effort to make a switch into a router, most consumer device manufacturers don’t bother making switches. In high-volume commercial environments, a switch can be faster.
+   >
+   > An older device which is rarely used anymore is the hub. A hub is little more that a connection sharing device. A bit like a power strip for electric power. The problem is that each device connected to a hub *shares* the same link. This allows collisions, which is how Ethernet was originally designed to work. But using switches and routers keeps all the traffic separate and enables each device to get the full bandwidth the media allows - so nearly everyone changed to switches and routers.
    
 2. 在计算机软件系统中，最基础、最核心的软件是
    
