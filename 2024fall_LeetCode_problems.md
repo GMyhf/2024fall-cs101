@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2139 GMT+8 Jan 3 2025
+Updated 2247 GMT+8 Jan 3 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -3360,6 +3360,100 @@ class Solution:
                     count += 1
                     dfs(i, j)
         return count
+```
+
+
+
+## 240.搜索二维矩阵II
+
+https://leetcode.cn/problems/search-a-2d-matrix-ii/
+
+编写一个高效的算法来搜索 `*m* x *n*` 矩阵 `matrix` 中的一个目标值 `target` 。该矩阵具有以下特性：
+
+- 每行的元素从左到右升序排列。
+- 每列的元素从上到下升序排列。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/11/25/searchgrid2.jpg)
+
+```
+输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 5
+输出：true
+```
+
+**示例 2：**
+
+![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/11/25/searchgrid.jpg)
+
+```
+输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 20
+输出：false
+```
+
+ 
+
+**提示：**
+
+- `m == matrix.length`
+- `n == matrix[i].length`
+- `1 <= n, m <= 300`
+- `-109 <= matrix[i][j] <= 109`
+- 每行的所有元素从左到右升序排列
+- 每列的所有元素从上到下升序排列
+- `-109 <= target <= 109`
+
+
+
+```python
+from typing import List
+import bisect
+
+class Solution:
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        for row in matrix:
+            # 在每行中使用 bisect_left 查找目标值的插入位置
+            index = bisect.bisect_left(row, target)
+            # 检查插入位置是否有效且等于目标值
+            if index < len(row) and row[index] == target:
+                return True
+        return False
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.searchMatrix([[1, 4, 7, 11, 15], [2, 5, 8, 12, 19], [3, 6, 9, 16, 22], [10, 13, 14, 17, 24], [18, 21, 23, 26, 30]], 5))  # 输出: True
+    print(sol.searchMatrix([[1, 4, 7, 11, 15], [2, 5, 8, 12, 19], [3, 6, 9, 16, 22], [10, 13, 14, 17, 24], [18, 21, 23, 26, 30]], 20)) # 输出: False
+    print(sol.searchMatrix([[1]], 1))  # 输出: True
+```
+
+
+
+参照源码实现二分，https://github.com/python/cpython/blob/main/Lib/bisect.py
+
+```python
+from typing import List
+
+class Solution:
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        for row in matrix:
+            lo, hi = 0, len(row)
+            while lo < hi:
+                mid = (lo + hi) // 2
+                if row[mid] < target:
+                    lo = mid + 1
+                else:
+                    hi = mid
+            # 在找到的位置检查是否是目标值
+            if lo < len(row) and row[lo] == target:
+                return True
+        return False  # 如果未找到目标值
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.searchMatrix([[1, 4, 7, 11, 15], [2, 5, 8, 12, 19], [3, 6, 9, 16, 22], [10, 13, 14, 17, 24], [18, 21, 23, 26, 30]], 5))  # 输出: True
+
 ```
 
 
