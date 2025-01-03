@@ -1,6 +1,6 @@
 # 20240521 计算概论B笔试资料
 
-Updated 2209 GMT+8 Jan 1, 2025
+Updated 1022 GMT+8 Jan 3, 2025
 
 2024 spring, Complied by Hongfei Yan
 
@@ -1738,17 +1738,18 @@ while j >= 0:
 <mark>（对照其程序符合流程，以及流程图规范即可）</mark>
 
 ```mermaid
-graph LR;
-    A[开始] --> B(输入整数n表示将要输入的整数个数);
-    B --> C{初始化列表};
-    C --> D[循环n次];
-    D --> E(输入一个整数);
-    E --> F{添加到列表};
-    F --> G[循环结束？];
-    G -- 是 --> H{列表转集合去除重复项};
-    G -- 否 --> D;
-    H --> I(输出不重复整数的数量);
-    I --> J[结束];
+graph LR
+    A[开始] --> B[输入整数 n]
+    B --> C{n < 1000?}
+    C -- 是 --> D[初始化字典 counts]
+    C -- 否 --> E[提示输入错误并结束程序]
+    D --> F[循环输入 n 个整数]
+    F --> G[更新 counts 中的整数出现次数]
+    G --> H[循环结束?]
+    H -- 否 --> F
+    H -- 是 --> I[遍历 counts，统计值为 1 的键]
+    I --> J[输出不重复的整数数量]
+    J --> K[结束]
 ```
 
 2）写出程序的代码（3分）
@@ -1756,18 +1757,32 @@ graph LR;
 **[说明：无需考虑程序的执行效率，程序中不可 import 任何模块]**
 
 ```python
-# 不重复整数的数量
-def count_unique_numbers():
-    n = int(input())
-    numbers = []
+# 开始
+n = int(input("请输入整数 n（n < 1000）："))
+
+# 判断 n 的范围
+if n >= 1000:
+    print("输入错误，n 必须小于 1000")
+else:
+    # 初始化一个字典用于记录每个整数的出现次数
+    counts = {}
+    print(f"请依次输入 {n} 个整数：")
     for _ in range(n):
         num = int(input())
-        numbers.append(num)
-    
-    unique_numbers = set(numbers)
-    print(len(unique_numbers))
+        if num in counts:
+            counts[num] += 1
+        else:
+            counts[num] = 1
 
-count_unique_numbers()
+    # 统计不重复的整数数量
+    unique_count = 0
+    for key in counts:
+        if counts[key] == 1:
+            unique_count += 1
+
+    # 输出不重复的整数数量
+    print("不重复的整数数量是：", unique_count)
+
 ```
 
 
