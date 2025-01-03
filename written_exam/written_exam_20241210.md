@@ -1,6 +1,6 @@
 # 20240521 计算概论B笔试资料
 
-Updated 1022 GMT+8 Jan 3, 2025
+Updated 1838 GMT+8 Jan 3, 2025
 
 2024 spring, Complied by Hongfei Yan
 
@@ -3625,7 +3625,7 @@ $
 
 10分钟：
 
-​	$10 * 60 * (192 + 0.5) \text{ MB} = 115500 \text{ MB} \approx 112.8 \text{ GB}$
+​	$10 * 60 * (108 + 0.5) \text{ MB} = 65100 \text{ MB} \approx 63.6 \text{ GB}$
 
 列出正确的计算式子，即可给满分，其余视具体情况酌情给分，不超过3分。
 
