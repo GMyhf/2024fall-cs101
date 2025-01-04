@@ -2455,7 +2455,7 @@ def main():
 
     # 检查数据包的接收地址是否为北京大学局域网地址，不是则丢弃
     【2】提取局域网编号
-    if receiver_ip != 0x2269:
+    if subnetID != 0x2269:
         ...丢弃
         return 0
 
@@ -2464,8 +2464,8 @@ def main():
         if sender_ip == blacklist[i]:
             ...屏蔽
             return 0
-    else:
-        ...转发
+        else:
+            ...转发
     
     return 0
 
@@ -2501,6 +2501,19 @@ D. 以上方法均不对
 <mark>错误：必须将发送地址与完整的黑名单比较，与任何一个黑名单地址都不同才能被转发。原代码中只要与某一个黑名单地址不同即被转发。（意思对即可）</mark>
 
 <mark>修改：使用一个标记变量，初始时为0，当发送地址与黑名单地址相同时标记变量修改为1，在循环结束后判断标记变量的值决定是屏蔽还是转发。或将i设为全局变量，通过比较i是否等于blacklistsize进行判断（意思对即可）。</mark>
+
+> else缩进往前提，与for对齐
+>
+> ```python
+>     for i in range(blacklist_size):     # 【3】
+>         if sender_ip == blacklist[i]:
+>             ...屏蔽
+>             return 0
+>     else:
+>         ...转发
+> ```
+>
+> 
 
 
 
