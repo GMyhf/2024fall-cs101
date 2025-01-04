@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2247 GMT+8 Jan 3 2025
+Updated 2139 GMT+8 Jan 4 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -4531,7 +4531,68 @@ Explanation of Changes:
 
 
 
+## 729.我的日程安排表I
 
+https://leetcode.cn/problems/my-calendar-i/
+
+实现一个 `MyCalendar` 类来存放你的日程安排。如果要添加的日程安排不会造成 **重复预订** ，则可以存储这个新的日程安排。
+
+当两个日程安排有一些时间上的交叉时（例如两个日程安排都在同一时间内），就会产生 **重复预订**。
+
+日程可以用一对整数 `startTime` 和 `endTime` 表示，这里的时间是半开区间，即 `[startTime, endTime)`, 实数 `x` 的范围为，  `startTime <= x < endTime` 。
+
+实现 `MyCalendar` 类：
+
+- `MyCalendar()` 初始化日历对象。
+- `boolean book(int startTime, int endTime)` 如果可以将日程安排成功添加到日历中而不会导致重复预订，返回 `true` 。否则，返回 `false` 并且不要将该日程安排添加到日历中。
+
+ 
+
+**示例：**
+
+```
+输入：
+["MyCalendar", "book", "book", "book"]
+[[], [10, 20], [15, 25], [20, 30]]
+输出：
+[null, true, false, true]
+
+解释：
+MyCalendar myCalendar = new MyCalendar();
+myCalendar.book(10, 20); // return True
+myCalendar.book(15, 25); // return False ，这个日程安排不能添加到日历中，因为时间 15 已经被另一个日程安排预订了。
+myCalendar.book(20, 30); // return True ，这个日程安排可以添加到日历中，因为第一个日程安排预订的每个时间都小于 20 ，且不包含时间 20 。
+```
+
+ 
+
+**提示：**
+
+- `0 <= start < end <= 109`
+- 每个测试用例，调用 `book` 方法的次数最多不超过 `1000` 次。
+
+
+
+```python
+from sortedcontainers import SortedDict
+
+class MyCalendar:
+    def __init__(self):
+        self.booked = SortedDict()
+
+    def book(self, start: int, end: int) -> bool:
+        i = self.booked.bisect_left(end)
+        if i == 0 or self.booked.items()[i - 1][1] <= start:
+            self.booked[start] = end
+            return True
+        return False
+
+if __name__ == "__main__":
+    obj = MyCalendar()
+    print(obj.book(10, 20))
+    print(obj.book(15, 25))
+    print(obj.book(20, 30))
+```
 
 
 
@@ -6026,6 +6087,86 @@ class Solution:
 >
 
 
+
+## 732.我的日程安排表III
+
+区间重叠, https://leetcode.cn/problems/my-calendar-iii/
+
+当 `k` 个日程存在一些非空交集时（即, `k` 个日程包含了一些相同时间），就会产生 `k` 次预订。
+
+给你一些日程安排 `[startTime, endTime)` ，请你在每个日程安排添加后，返回一个整数 `k` ，表示所有先前日程安排会产生的最大 `k` 次预订。
+
+实现一个 `MyCalendarThree` 类来存放你的日程安排，你可以一直添加新的日程安排。
+
+- `MyCalendarThree()` 初始化对象。
+- `int book(int startTime, int endTime)` 返回一个整数 `k` ，表示日历中存在的 `k` 次预订的最大值。
+
+ 
+
+**示例：**
+
+```
+输入：
+["MyCalendarThree", "book", "book", "book", "book", "book", "book"]
+[[], [10, 20], [50, 60], [10, 40], [5, 15], [5, 10], [25, 55]]
+输出：
+[null, 1, 1, 2, 3, 3, 3]
+
+解释：
+MyCalendarThree myCalendarThree = new MyCalendarThree();
+myCalendarThree.book(10, 20); // 返回 1 ，第一个日程安排可以预订并且不存在相交，所以最大 k 次预订是 1 次预订。
+myCalendarThree.book(50, 60); // 返回 1 ，第二个日程安排可以预订并且不存在相交，所以最大 k 次预订是 1 次预订。
+myCalendarThree.book(10, 40); // 返回 2 ，第三个日程安排 [10, 40) 与第一个日程安排相交，所以最大 k 次预订是 2 次预订。
+myCalendarThree.book(5, 15); // 返回 3 ，剩下的日程安排的最大 k 次预订是 3 次预订。
+myCalendarThree.book(5, 10); // 返回 3
+myCalendarThree.book(25, 55); // 返回 3
+```
+
+ 
+
+**提示：**
+
+- `0 <= startTime < endTime <= 109`
+- 每个测试用例，调用 `book` 函数最多不超过 `400`次
+
+
+
+```python
+from bisect import insort, bisect_left
+
+class MyCalendarThree:
+
+    def __init__(self):
+        self.times = []  # 存储时间点及其增量的列表 [(time, delta)...]
+
+    def book(self, start: int, end: int) -> int:
+        # 使用二分插入以保持times列表有序
+        insort(self.times, (start, 1))  # 开始时间，增量+1
+        insort(self.times, (end, -1))   # 结束时间，增量-1
+        
+        maxBook = ans = 0
+        for _, delta in self.times:
+            maxBook += delta
+            ans = max(ans, maxBook)
+        
+        return ans
+
+if __name__ == "__main__":
+    obj = MyCalendarThree()
+    print(obj.book(10, 20))
+    print(obj.book(50, 60))
+    print(obj.book(10, 40))
+    print(obj.book(5, 15))
+    print(obj.book(5, 10))
+    print(obj.book(25, 55))
+    print(obj.book(15, 25))
+```
+
+
+
+```python
+
+```
 
 
 
