@@ -1,6 +1,6 @@
 # 20240521 计算概论B笔试资料
 
-Updated 1838 GMT+8 Jan 3, 2025
+Updated 1626 GMT+8 Jan 4, 2025
 
 2024 spring, Complied by Hongfei Yan
 
@@ -1033,6 +1033,52 @@ NOT运算符的唯一应用就是对整个模式求反。对模式应用此运�
    > - `step` 是 -1，这意味着以逆序的方式取字符。
    >
    > 请注意，中文字符和英文字符一样，在Python中每个都被视为单个字符，所以在进行切片操作时，它们的处理方式是一致的。
+
+   > **2022年计概（B）C语言版，填空第9题**
+   >
+   > 在C语言中，字符串`s="你好,@_pku"`的长度是 <mark>11</mark> ，其中"_"表示一个英文空格；在 32 位机器上，一个整型指针变量 (如 `int *p`)占用 4个字节的内存空间，一个双精度浮点型指针变量(如 `double *g`)占用 <mark>4</mark> 个字节的内存空间。
+   >
+   > 这个题目有bug，没有说明汉字编码，如果是GBK编码，可以如下：
+   >
+   > <mark>在Mac上复现</mark>
+   >
+   > ```
+   > echo "你好,@_pku" > input.txt
+   > ```
+   >
+   > 使用 `iconv` 将文件的编码从 UTF-8 转换为 GBK
+   >
+   > ```
+   > iconv -f UTF-8 -t GBK input.txt > input_gbk.txt
+   > ```
+   >
+   > 编译C程序 gcc str_len.c
+   >
+   > ⚠️：不要忘记末尾'\0'。
+   >
+   > ```c
+   > #include <stdio.h>
+   > #include <string.h>
+   > 
+   > char str[100];
+   > int main() {
+   >         //memset(str, 0, 100);
+   >         scanf("%s", str);
+   >         int len = strlen(str);
+   >         printf("%d\n", len + 1);
+   >         return 0;
+   > }
+   > 
+   > ```
+   >
+   > 
+   >
+   > ```
+   > ./a.out < input_gbk.txt
+   > 11
+   > ```
+   >
+   > 
 
 10. 程序
 
