@@ -1,6 +1,6 @@
 # 20241210 计算概论B笔试资料
 
-Updated 2254 GMT+8 Jan 5, 2025
+Updated 2302 GMT+8 Jan 5, 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -522,6 +522,12 @@ print(chr(uppera))
 **(1) 两种运算**
 
 在深入讨论这种表示法之前，我们需要介绍两种运算。第一种称为<mark>反码</mark>或取一个整数的反码。该运算可以应用到任何整数，无论是正的还是负的。该运算简单反转各个位，即把0位变为1位，把1位变为0位。
+
+> 正数的补码和其原码相同；负数的补码是它的原码除符号位外逐位取反(即0变1，1变0)，最后在末位加1。
+>
+> <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20250105230125177.png" alt="image-20250105230125177" style="zoom: 33%;" />
+
+> <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20250105230201883.png" alt="image-20250105230201883" style="zoom:50%;" />
 
 
 
