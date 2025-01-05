@@ -1,6 +1,6 @@
 # 20240521 计算概论B笔试资料
 
-Updated 1647 GMT+8 Jan 4, 2025
+Updated 1140 GMT+8 Jan 5, 2025
 
 2024 spring, Complied by Hongfei Yan
 
@@ -243,7 +243,7 @@ print(chr(uppera))
 
 ## 4.其他知识点
 
-《计算机科学导论》，佛罗赞，2009年1月第2版。
+《计算机科学导论》，佛罗赞，2018年1月第4版。
 
 
 
