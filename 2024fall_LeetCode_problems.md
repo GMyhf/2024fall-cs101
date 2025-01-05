@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0106 GMT+8 Jan 5 2025
+Updated 2331 GMT+8 Jan 5 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -529,6 +529,135 @@ class Solution:
 
         return s.pop()
 ```
+
+
+
+## 160.相交链表
+
+https://leetcode.cn/problems/intersection-of-two-linked-lists/
+
+给你两个单链表的头节点 `headA` 和 `headB` ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 `null` 。
+
+图示两个链表在节点 `c1` 开始相交**：**
+
+[![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/14/160_statement.png)](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/14/160_statement.png)
+
+题目数据 **保证** 整个链式结构中不存在环。
+
+**注意**，函数返回结果后，链表必须 **保持其原始结构** 。
+
+**自定义评测：**
+
+**评测系统** 的输入如下（你设计的程序 **不适用** 此输入）：
+
+- `intersectVal` - 相交的起始节点的值。如果不存在相交节点，这一值为 `0`
+- `listA` - 第一个链表
+- `listB` - 第二个链表
+- `skipA` - 在 `listA` 中（从头节点开始）跳到交叉节点的节点数
+- `skipB` - 在 `listB` 中（从头节点开始）跳到交叉节点的节点数
+
+评测系统将根据这些输入创建链式数据结构，并将两个头节点 `headA` 和 `headB` 传递给你的程序。如果程序能够正确返回相交节点，那么你的解决方案将被 **视作正确答案** 。
+
+ 
+
+**示例 1：**
+
+[![img](https://assets.leetcode.com/uploads/2021/03/05/160_example_1_1.png)](https://assets.leetcode.com/uploads/2018/12/13/160_example_1.png)
+
+```
+输入：intersectVal = 8, listA = [4,1,8,4,5], listB = [5,6,1,8,4,5], skipA = 2, skipB = 3
+输出：Intersected at '8'
+解释：相交节点的值为 8 （注意，如果两个链表相交则不能为 0）。
+从各自的表头开始算起，链表 A 为 [4,1,8,4,5]，链表 B 为 [5,6,1,8,4,5]。
+在 A 中，相交节点前有 2 个节点；在 B 中，相交节点前有 3 个节点。
+— 请注意相交节点的值不为 1，因为在链表 A 和链表 B 之中值为 1 的节点 (A 中第二个节点和 B 中第三个节点) 是不同的节点。换句话说，它们在内存中指向两个不同的位置，而链表 A 和链表 B 中值为 8 的节点 (A 中第三个节点，B 中第四个节点) 在内存中指向相同的位置。
+```
+
+ 
+
+**示例 2：**
+
+[![img](https://assets.leetcode.com/uploads/2021/03/05/160_example_2.png)](https://assets.leetcode.com/uploads/2018/12/13/160_example_2.png)
+
+```
+输入：intersectVal = 2, listA = [1,9,1,2,4], listB = [3,2,4], skipA = 3, skipB = 1
+输出：Intersected at '2'
+解释：相交节点的值为 2 （注意，如果两个链表相交则不能为 0）。
+从各自的表头开始算起，链表 A 为 [1,9,1,2,4]，链表 B 为 [3,2,4]。
+在 A 中，相交节点前有 3 个节点；在 B 中，相交节点前有 1 个节点。
+```
+
+**示例 3：**
+
+[![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/14/160_example_3.png)](https://assets.leetcode.com/uploads/2018/12/13/160_example_3.png)
+
+```
+输入：intersectVal = 0, listA = [2,6,4], listB = [1,5], skipA = 3, skipB = 2
+输出：No intersection
+解释：从各自的表头开始算起，链表 A 为 [2,6,4]，链表 B 为 [1,5]。
+由于这两个链表不相交，所以 intersectVal 必须为 0，而 skipA 和 skipB 可以是任意值。
+这两个链表不相交，因此返回 null 。
+```
+
+ 
+
+**提示：**
+
+- `listA` 中节点数目为 `m`
+- `listB` 中节点数目为 `n`
+- `1 <= m, n <= 3 * 104`
+- `1 <= Node.val <= 105`
+- `0 <= skipA <= m`
+- `0 <= skipB <= n`
+- 如果 `listA` 和 `listB` 没有交点，`intersectVal` 为 `0`
+- 如果 `listA` 和 `listB` 有交点，`intersectVal == listA[skipA] == listB[skipB]`
+
+
+
+```python
+class Solution:
+    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> Optional[ListNode]:
+        if not headA or not headB:
+            return None
+        
+        pointerA, pointerB = headA, headB
+        
+        while pointerA is not pointerB:
+            # 如果到达链表末尾，则转向另一个链表的头部
+            pointerA = headB if pointerA is None else pointerA.next
+            pointerB = headA if pointerB is None else pointerB.next
+        
+        # 两种情况下会退出循环：
+        # 1. 在交点相遇
+        # 2. 两个链表都遍历完没有交点（此时 pointerA 和 pointerB 都为 None）
+        return pointerA
+```
+
+> 这个算法能够找到两个链表相交的节点，其背后的核心思想是通过调整两个指针遍历链表的方式，使得它们在第二次遍历时同时到达交点或链表末尾。下面是该算法为什么有效的原因：
+>
+> **关键点**
+>
+> 1. **两次遍历**：每个指针都会遍历自己的链表一次，并且如果到达链表末尾（即 `None`），则跳转到另一个链表的头部继续遍历。这意味着每个指针最终会遍历两个链表。
+>
+> 2. **等距原则**：假设链表 A 的长度为 $L_A$，链表 B 的长度为 $L_B$，而从各自头结点到交点的距离分别为 $D_A$ 和 $D_B$，交点之后的长度为 C。那么有：
+>    - 如果两个链表相交，则 $D_A + C = L_A$ 和 $D_B + C = L_B$。
+>    - 当指针A遍历完链表A后跳转到链表B的头部，它实际上走了 $D_A + C + D_B$ 的距离；同样地，当指针B遍历完链表B后跳转到链表A的头部，它实际上也走了 $D_B + C + D_A$ 的距离。
+>
+> 3. **相遇条件**：由于两个指针走过的总距离相同 ($D_A + C + D_B = D_B + C + D_A$)，所以当它们第二次遍历时，要么会在交点处相遇（因为此时它们都走了相同的距离并且指向同一个节点），要么同时到达链表的末尾（即 `None`），这表明没有交点。
+>
+> 退出循环的情况
+>
+> - **交点相遇**：如果两个链表相交，两个指针会在交点处相遇，此时 `pointerA == pointerB`，因此会退出循环并返回该节点。
+> - **无交点情况**：如果两个链表不相交，那么两个指针最终都会遍历完两个链表，并且都变为 `None`，这时也会退出循环，返回 `None` 表示没有交点。
+>
+> **算法的优势**
+>
+> - **时间复杂度**：该算法的时间复杂度为 O(n + m)，其中 n 和 m 分别是两个链表的长度。这是因为每个指针最多遍历两个链表各一次。
+> - **空间复杂度**：只需要常数级别的额外空间来存储两个指针，因此空间复杂度为 O(1)。
+>
+> 综上所述，这个算法巧妙地利用了两个指针遍历两个链表的方式，确保了即使两个链表长度不同，也能准确找到它们的交点或者确认不存在交点。这种方法不仅高效而且简洁，是解决此类问题的一种经典方法。
+
+
 
 
 
