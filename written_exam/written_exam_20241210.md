@@ -1,6 +1,6 @@
 # 20240521 计算概论B笔试资料
 
-Updated 2211 GMT+8 Jan 5, 2025
+Updated 2 GMT+8 Jan 5, 2025
 
 2024 spring, Complied by Hongfei Yan
 
