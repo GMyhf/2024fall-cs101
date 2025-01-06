@@ -3298,7 +3298,7 @@ elif op == "/":
     if b == 0:  # 【3】
         print("The variable b can NOT be zero!")
     else:
-        print(f"{a} / {b} = {a / b}")  # 【4】 使用浮点除法
+        print(f"{a} / {b} = {a // b}")  # 【4】 使用浮点除法
 else:  # 【5】
     print("Invalid operator!")
 ```
