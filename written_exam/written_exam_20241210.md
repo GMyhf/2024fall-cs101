@@ -1,6 +1,6 @@
 # 20241210 计算概论B笔试资料
 
-Updated 2302 GMT+8 Jan 5, 2025
+Updated 1725 GMT+8 Jan 6, 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -1578,6 +1578,54 @@ Telnet 和 FTP（文件传输协议）的传统实现确实是以明文形式传
 
 
 
+### 4.7 只读方式打开一个utf-8 编码文件
+
+这个程序涉及到了按照绝对路径，或者相对路径打开一个utf-8编码的文件。
+
+我是mac系统，斜杠与window下面是相反的。双斜杠是因为有一个是转义作用。
+
+我的程序，在下面三种路径中，都可以正常显示。
+
+
+
+在program/data目录中
+
+```
+echo "北京大学PKU" > math.csv
+```
+
+
+
+在program目录
+
+```python
+import csv
+
+#file_path = "data/math.csv"
+file_path = "data//math.csv"
+#file_path = '/Users/hfyan/Code/5.1/program/data/math.csv'
+try:
+        fo = open(file_path, 'r', encoding='utf-8')
+        reader = csv.reader(fo)
+        for row in reader:
+                print(row)
+
+except FileNotFoundError:
+        print(f"Error: The file at {file_path} was not found.")
+except Exception as e:
+        print(f"An error occured: {e}")
+```
+
+运行python read_file.py 
+
+```
+['北京大学PKU']
+```
+
+https://www.runoob.com/python3/python3-file-methods.html
+
+
+
 # 20221227笔试（Python）
 
 ## 一、填空题（每空1分，共15分）
@@ -2211,8 +2259,8 @@ top = -1  # 栈顶位置
 def push(a, elem):
     global top
     # 压栈
-    a.append(elem)
     top += 1
+    a[top] = elem
 
 def pop(a):
     global top
@@ -2229,7 +2277,7 @@ def visit(a):
         return ' '  # 在栈为空时返回一个空格
 
 if __name__ == '__main__':
-    a = []
+    a = [0]*100
     s = input()
     length = len(s)
 
@@ -2583,6 +2631,20 @@ count_numbers_greater_than_m()
    > - 因此，4GB的内存空间可以存储 \(4GB / 1MB = 4096\) 张这样的图片。
    >
    > 综上所述，32位的CPU通过32位地址总线所能访问的内存空间能存储如此压缩后的图片共4096张。
+
+   > 两种不同的度量单位系统，它们用来表示计算机存储容量或信息量。这两个术语经常被混淆，但实际上它们代表不同的值：
+   >
+   > - **Kilobyte (KB)**: 在国际单位制（SI）中，前缀 "kilo-" 表示1000。因此，在这种情况下，1 Kilobyte 等于 1000 字节。这个定义通常用于硬盘制造商和某些网络传输速度的描述中。
+   >
+   > - **Kibibyte (KiB)**: 这是一个二进制前缀，由国际电工委员会（IEC）提出，用来更准确地表示基于2的幂次方的数值。1 Kibibyte 等于 1024 字节，即 \(2^{10}\) 字节。这个定义在计算机科学中更为常见，因为它反映了计算机内存地址空间是以2的幂来组织的事实。
+   >
+   > 因此，当我们谈论计算机存储时，使用 KiB 更为精确，尤其是在涉及操作系统报告文件大小或RAM容量的时候。而 KB 则更多地出现在需要与十进制标准兼容的情况下，比如硬盘驱动器的标注。
+   >
+   > 总结：
+   > - $1 \, \text{KB (kilobyte)} = 1000 \, \text{bytes}$
+   > - $1 \, \text{KiB (kibibyte)} = 1024 \, \text{bytes}$
+   >
+   > 
 
 5. 已知二进制数 a 是 00101101，如果想通过整型变量 b 与 a 做异或运算，使变量 a 的高 4 位取反，低 4 位不变，则 b 的二进制数值应是<mark>11110000</mark>。
 
@@ -4334,6 +4396,10 @@ $
 ​	$10 * 60 * (108 + 0.5) \text{ MB} = 65100 \text{ MB} \approx 63.6 \text{ GB}$
 
 列出正确的计算式子，即可给满分，其余视具体情况酌情给分，不超过3分。
+
+> 如果考虑对512种颜色进行编码需要2进制的9位，8位一个字节，9位必须用到第二个字节，所以每个像素用两字节存储。颜色编码 
+>
+> $2^5 * 2^{11} * 3 * 2^9 * 2B = 4 * 3 * 9 \text{ MB} = 108 \text{ MB}$
 
 
 
