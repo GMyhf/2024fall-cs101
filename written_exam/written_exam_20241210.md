@@ -2175,6 +2175,7 @@ A-B: 2, A-C: 4, B-D: 3, B-E: 1, C-D: 1, C-G: 1, D-F: 2, E-F: 5, E-H: 6, G-H: 1
 ### 第1题
 
 ```python
+# s 大于等于 100，小于 1000。e 大于等于 100，小于 1000, e 大于 s。
 s, e = [int(x) for x in input().split()]
 sum = 0
 for i in range(s, e + 1):
@@ -2203,7 +2204,7 @@ print(sum)
 ### 第2题
 
 ```python
-# 读入两个整数k, n
+# 读入两个整数k, 正整数n，n是下面待输入数据的数量（小于 100）
 k, n = map(int, input().split())
 
 # 读入n个整数，放在数组nums之中
@@ -2253,28 +2254,24 @@ else:
 ### 第3题
 
 ```python
-# 定义栈的相关操作
-top = -1  # 栈顶位置
+top = -1
 
 def push(a, elem):
     global top
-    # 压栈
     top += 1
     a[top] = elem
 
 def pop(a):
     global top
-    # 出栈
     if top == -1:
         return
     top -= 1
 
 def visit(a):
-    # 访问栈顶
     if top != -1:
         return a[top]
     else:
-        return ' '  # 在栈为空时返回一个空格
+        return ' '
 
 if __name__ == '__main__':
     a = [0]*100
