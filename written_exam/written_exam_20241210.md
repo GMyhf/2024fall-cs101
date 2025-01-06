@@ -2263,8 +2263,8 @@ if __name__ == '__main__':
 def isSpecial(n):
     flag = cnt = length = 0
     b = n
-    while b > 0:	# 【1】
-        b //= 10	#	【2】
+    while n > 0:	# 【1】
+        n //= 10	#	【2】
         length += 1
 
     if length % 2 == 0:
