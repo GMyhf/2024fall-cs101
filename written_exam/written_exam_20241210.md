@@ -1,6 +1,6 @@
 # 20241210 计算概论B笔试资料
 
-Updated 0031 GMT+8 Jan 7, 2025
+Updated 1034 GMT+8 Jan 7, 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -519,17 +519,9 @@ print(chr(uppera))
 
 **在二进制补码表示法中，最左位决定符号。如果它是0，该整数为正，如果是1，该整数为负。**
 
-**(1) 两种运算**
+**(1) 两种运算 Two operations **
 
 在深入讨论这种表示法之前，我们需要介绍两种运算。第一种称为<mark>反码</mark>或取一个整数的反码。该运算可以应用到任何整数，无论是正的还是负的。该运算简单反转各个位，即把0位变为1位，把1位变为0位。
-
-> 正数的补码和其原码相同；负数的补码是它的原码除符号位外逐位取反(即0变1，1变0)，最后在末位加1。
->
-> <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20250105230125177.png" alt="image-20250105230125177" style="zoom: 33%;" />
-
-> <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20250105230201883.png" alt="image-20250105230201883" style="zoom:50%;" />
-
-
 
 **例3.8 下面显示如何取整数00110110的反码。**
 
@@ -557,6 +549,8 @@ print(chr(uppera))
 
 ​	进行1次补码运算：1 1 0 0 1 1 0 0
 
+> 目前讲的是补码的运算，还没有到二进制存储，所以暂时不考虑正负，只考虑运算。
+
 
 
 **例3.11 下面显示我们如果进行2次补码运算，就可以得到原先的整数。**
@@ -571,20 +565,31 @@ print(chr(uppera))
 
 
 
-**(2) 以二进制补码格式存储整数**
+**(2) 以二进制补码格式存储整数Storing an integer in two’s complement format**
 
 以二进制补码格式存储整数，计算机遵循以下步骤：
 - 将整数变成n位的二进制数。
 
 - 如果整数是正数或零，以其原样存储；<mark>如果是负数，计算机取其补码存储。</mark>
 
-  
 
-**(3) 从二进制补码格式还原整数**
+> 正数的补码和其原码相同；负数的补码是它的原码除符号位外逐位取反(即0变1，1变0)，最后在末位加1。
+>
+> <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20250105230125177.png" alt="image-20250105230125177" style="zoom: 33%;" />
+
+> <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20250105230201883.png" alt="image-20250105230201883" style="zoom:50%;" />
+
+
+
+**(3) 从二进制补码格式还原整数**Retrieving an integer in two’s complement format
 
 从二进制补码格式还原整数，计算机遵循以下步骤：
 - 如果最左位是1，计算机取其补码。如果最左位是0，计算机不进行操作。
 - 计算机将该整数转换为十进制。
+
+
+
+
 
 
 
