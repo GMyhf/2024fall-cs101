@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0929 GMT+8 Jan 8 2025
+Updated 2200 GMT+8 Jan 8 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -724,6 +724,70 @@ class Solution:
 
         return ans[0]
 
+```
+
+
+
+## 206.反转链表
+
+https://leetcode.cn/problems/reverse-linked-list/
+
+给你单链表的头节点 `head` ，请你反转链表，并返回反转后的链表。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2021/02/19/rev1ex1.jpg)
+
+```
+输入：head = [1,2,3,4,5]
+输出：[5,4,3,2,1]
+```
+
+**示例 2：**
+
+![img](https://assets.leetcode.com/uploads/2021/02/19/rev1ex2.jpg)
+
+```
+输入：head = [1,2]
+输出：[2,1]
+```
+
+**示例 3：**
+
+```
+输入：head = []
+输出：[]
+```
+
+ 
+
+**提示：**
+
+- 链表中节点的数目范围是 `[0, 5000]`
+- `-5000 <= Node.val <= 5000`
+
+
+
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+class Solution:
+    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        pre = None
+        current = head
+        while current:
+            next_node = current.next
+            current.next = pre
+            pre = current
+            current = next_node
+
+        return pre
+        
 ```
 
 
