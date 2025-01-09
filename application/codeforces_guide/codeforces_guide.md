@@ -1,6 +1,6 @@
 # 抓取codeforce.com题目元数据并分析统计
 
-Updated 1836 GMT+8 Jan 9 2025
+Updated 2216 GMT+8 Jan 9 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -8,7 +8,7 @@ Updated 1836 GMT+8 Jan 9 2025
 
 课程中练习到一些codeforce.com（简记为CF）题目，因此希望统计出CF的题目类型（标签）、难度（编号中的字母）分布。在2023年9月4日，我们通过spider直接抓取题目列表页面，NLP提取，然后进行分析统计（https://github.com/GMyhf/2019fall-cs101/blob/master/20230904_CFTagDifficultyDistribution.md）。由于CF很容易封禁程序抓取，因此改用CF提供的API获得题目数据，然后分析统计。
 
-## 1.查看题目页面确定CF题目元数据
+## 1.查看 CF 题目页面列表确定所需元数据
 
 <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20250109155116617.png" alt="image-20250109155116617" style="zoom: 33%;" />
 
@@ -18,13 +18,13 @@ Updated 1836 GMT+8 Jan 9 2025
 
 第三列是标签（tags），即`problem.get('tags', [])`；
 
-倒数第二列是问题难度（rating (difficulty)），即`problem.get('rating', [])`；
+倒数第二列是问题难度（rating (difficulty)），即`problem.get('rating', 0)`；
 
 倒数第一列是完成题目人数（Number of users, who solved the problem），即`stat.get('solvedCount', 0)`。
 
 
 
-## 2.找到codeforces提供的API
+## 2.找到 CF 提供的API
 
 https://codeforces.com/apiHelp/objects
 
