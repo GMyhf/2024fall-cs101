@@ -1,1 +1,1 @@
-1.抓取codeforces.com网页，统计题目类型分布
+抓取codeforce.com题目元数据并分析统计
