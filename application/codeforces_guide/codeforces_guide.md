@@ -8,11 +8,9 @@ Updated 1836 GMT+8 Jan 9 2025
 
 课程中练习到一些codeforce.com（简记为CF）题目，因此希望统计出CF的题目类型（标签）、难度（编号中的字母）分布。在2023年9月4日，我们通过spider直接抓取题目列表页面，NLP提取，然后进行分析统计（https://github.com/GMyhf/2019fall-cs101/blob/master/20230904_CFTagDifficultyDistribution.md）。由于CF很容易封禁程序抓取，因此改用CF提供的API获得题目数据，然后分析统计。
 
-
-
 ## 1.查看题目页面确定CF题目元数据
 
-![image-20250109155116617](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20250109155116617.png)
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20250109155116617.png" alt="image-20250109155116617" style="zoom: 33%;" />
 
 题目列表中第一列是数字和字母组合，表示题目编号和字母序增大的难度（Usually, a letter or letter with digit(s) indicating the problem index in a contest），即`{problem['contestId']}{problem['index']}`；
 
@@ -233,7 +231,7 @@ plt.show()
 
 
 
-结果程序。pychar中运行这个可视化，竟然很多单元格是空的，找了半天找不到bug。在anaconda/spyder中运行，可视化结果正常如下。
+pycharm中运行这个可视化，竟然很多单元格是空的，找了半天找不到bug。在anaconda/spyder中运行，可视化结果正常如下。
 
 ![image-20250109183346524](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20250109183346524.png)
 
