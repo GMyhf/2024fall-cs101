@@ -1,22 +1,36 @@
-# 抓取codeforce.com题目数据并分析统计
+# 抓取codeforce.com题目元数据并分析统计
 
-Updated 0801 GMT+8 Jan 9 2025
+Updated 1836 GMT+8 Jan 9 2025
 
 2024 fall, Complied by Hongfei Yan
 
 
 
-课程中练习到一些codeforce.com（简记为CF）上面题目，因此希望统计出CF的题目类型、难度分布。在2023年9月4日，我们通过spider直接抓取题目列表页面，然后进行分析统计（https://github.com/GMyhf/2019fall-cs101/blob/master/20230904_CFTagDifficultyDistribution.md）。但是CF封禁程序抓取，改程序已经失效。因此直接利用CF提供的API获得题目数据，然后分析统计。
+课程中练习到一些codeforce.com（简记为CF）题目，因此希望统计出CF的题目类型（标签）、难度（编号中的字母）分布。在2023年9月4日，我们通过spider直接抓取题目列表页面，NLP提取，然后进行分析统计（https://github.com/GMyhf/2019fall-cs101/blob/master/20230904_CFTagDifficultyDistribution.md）。由于CF很容易封禁程序抓取，因此改用CF提供的API获得题目数据，然后分析统计。
 
 
 
-# codeforces提供的API
+## 1.查看题目页面确定CF题目元数据
+
+![image-20250109155116617](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20250109155116617.png)
+
+题目列表中第一列是数字和字母组合，表示题目编号和字母序增大的难度（Usually, a letter or letter with digit(s) indicating the problem index in a contest），即`{problem['contestId']}{problem['index']}`；
+
+第二列是标题（name），即`problem.get('name', '')`；
+
+第三列是标签（tags），即`problem.get('tags', [])`；
+
+倒数第二列是问题难度（rating (difficulty)），即`problem.get('rating', [])`；
+
+倒数第一列是完成题目人数（Number of users, who solved the problem），即`stat.get('solvedCount', 0)`。
+
+
+
+## 2.找到codeforces提供的API
 
 https://codeforces.com/apiHelp/objects
 
-### Problem
-
-Represents a problem.
+**Problem**: Represents a problem.
 
 | Field          | Description                                                  |
 | :------------- | :----------------------------------------------------------- |
@@ -29,9 +43,7 @@ Represents a problem.
 | rating         | Integer. Can be absent. Problem rating (difficulty).         |
 | tags           | String list. Problem tags.                                   |
 
-### ProblemStatistics
-
-Represents a statistic data about a problem.
+**ProblemStatistics**: Represents a statistic data about a problem.
 
 | Field       | Description                                                  |
 | :---------- | :----------------------------------------------------------- |
@@ -41,10 +53,15 @@ Represents a statistic data about a problem.
 
 
 
+## 3.抓取元数据并保存
 
+代码 cf_guide-1.py
 
 ```python
 import requests
+import os
+import csv
+
 
 def fetch_problems():
     # 定义API URL
@@ -55,7 +72,7 @@ def fetch_problems():
         response.raise_for_status()  # 检查是否发生HTTP错误
 
         data = response.json()
-        
+
         if data['status'] != 'OK':
             print(f"API call failed with comment: {data['comment']}")
             return None
@@ -73,6 +90,7 @@ def fetch_problems():
                         'id': problem_id,
                         'name': problem.get('name', ''),
                         'tags': problem.get('tags', []),
+                        'rating': problem.get('rating', 0),
                         'solvedCount': stat.get('solvedCount', 0),
                     })
                     break
@@ -86,76 +104,138 @@ def fetch_problems():
         print("An error occurred:", e)
         return None
 
-# 调用函数并打印结果
+
+# 调用函数并保存结果
 problems = fetch_problems()
 if problems:
-    for problem in problems:
-        print(problem)
+    # for problem in problems:
+    # print(problem)
+    # %% output the problem set to csv files
+    root = os.getcwd()
+    with open(os.path.join(root, "CodeForces-ProblemSet.csv"), "w", encoding="utf-8") as f_out:
+        f_csv = csv.writer(f_out)
+        f_csv.writerow(['ID', 'Name', 'Tags', 'Rating', 'SolvedCount'])
+        for row in problems:
+            print(row)
+            f_csv.writerow([row['id'], row['name'], ','.join(row['tags']), row['rating'], row['solvedCount']])
+        f_out.close()
 else:
     print("Failed to fetch the problems.")
+
 ```
 
 
 
+## 4.分析和保存
 
-
-# 附录
-
-## 1.不通过api，直接抓取网页失败
-
-![image-20250109075718170](https://raw.githubusercontent.com/GMyhf/img/main/img/202501090757043.png)
-
-
+代码 cf_guide-2.py
 
 ```python
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from bs4 import BeautifulSoup
-import time
+import csv
+import os
+import re
 
-# 设置Chrome选项
-chrome_options = Options()
-chrome_options.add_argument("--headless")  # 无头模式，不打开浏览器窗口
-chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--no-sandbox")
-chrome_options.add_argument("--disable-dev-shm-usage")
+root = os.getcwd()
+filepath = os.path.join(root, "CodeForces-ProblemSet.csv")
 
-# 指定WebDriver的位置
-service = ChromeService(executable_path='/Users/hfyan/chromedriver-mac-arm64/chromedriver')
+codeforces = {}
 
-# 创建WebDriver对象
-driver = webdriver.Chrome(service=service, options=chrome_options)
+with open(filepath, "r", encoding="utf-8") as f_in:
+    f_csv = csv.reader(f_in)
+    header = next(f_csv)  # 读取文件头
+    for row in f_csv:
+        id = row[0]
+        if id == "ID":
+            continue
 
-try:
-    url = "https://codeforces.com/problemset/page/1"
-    
-    # 访问目标网址
-    driver.get(url)
-    
-    # 等待页面加载完成
-    wait = WebDriverWait(driver, 30)  # 增加超时时间
-    wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'a.problem-code')))  # 等待所有问题的链接加载
-    
-    # 获取页面源代码
-    page_source = driver.page_source
-    
-    # 使用BeautifulSoup解析HTML
-    soup = BeautifulSoup(page_source, 'html.parser')
-    
-    # 找到所有问题链接
-    problem_links = soup.find_all('a', class_='problem-code')
-    
-    for link in problem_links:
-        problem_name = link.text.strip()
-        problem_url = link['href']
-        print(f"Problem: {problem_name}, URL: {problem_url}")
+        name = row[1]
+        tags = row[2].split(",")
+        tags = [tag.strip() for tag in tags]
+        rating = row[3]
+        solvedCount = row[4]
+        codeforces[id] = {'name': name, 'tags': tags, 'rating': rating, 'solvedCount': solvedCount}
+    f_in.close()
 
-finally:
-    # 关闭浏览器
-    driver.quit()
+# %% analyze the problem set
+# initialize the difficult and tag list
+difficult_level = {}
+tags_level = {}
+for id in codeforces:
+    match = re.findall('([A-Z])', id)
+    if match:
+        difficult = match[0]
+        tags = codeforces[id]['tags']
+        difficult_level[difficult] = difficult_level.get(difficult, 0) + 1
+        for tag in tags:
+            tags_level[tag] = tags_level.get(tag, 0) + 1
+
+
+tag_level = sorted(tags_level.items(), key=lambda x: x[1], reverse=True)
+tag_list = [_[0] for _ in tag_level]
+print(tag_list)
+
+difficult_level = sorted(difficult_level.items())
+difficult_list = [_[0] for _ in difficult_level]
+print(difficult_list)
+
+# initialize the 2D relationships matrix
+# matrix_freq: the number of tag frequency for each difficult level
+matrix_freq = [[0] * len(difficult_list) for _ in range(len(tag_list))]
+
+# construct the 2D relationships matrix
+for id in codeforces:
+    match = re.findall('([A-Z])', id)
+    if match:
+        difficult = match[0]
+        difficult_id = difficult_list.index(difficult)
+        tags = codeforces[id]['tags']
+        for tag in tags:
+            tag_id = tag_list.index(tag)
+            matrix_freq[tag_id][difficult_id] += 1
+
+# %% visualization
+root = os.getcwd()
+def outputMatrix(name, data):
+    with open(os.path.join(root, name), "w", encoding="utf-8") as f_out:
+        f_csv = csv.writer(f_out)
+        f_csv.writerow(['Tags/Difficult '] + difficult_list)
+        for i in range(len(tag_list)):
+            tag = tag_list[i]
+            f_csv.writerow([tag] + data[i])
+        f_out.close()
+    return
+
+outputMatrix('Matrix-Freq.csv', matrix_freq)
 ```
+
+
+
+## 5.可视化
+
+代码 heapmap_Matrix-Freq.py
+
+```python
+# ref: https://stackoverflow.com/questions/37790429/seaborn-heatmap-using-pandas-dataframe
+# https://seaborn.pydata.org/generated/seaborn.heatmap.html
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+Matrix_Freq = pd.read_csv("Matrix-Freq.csv", index_col=0)
+#print(Matrix_Freq)
+
+fig, ax = plt.subplots(figsize=(14, 9))
+
+sns.heatmap(Matrix_Freq, annot=True, fmt="d", linewidths=.5, cmap='viridis')
+
+plt.show()
+```
+
+
+
+结果程序。pychar中运行这个可视化，竟然很多单元格是空的，找了半天找不到bug。在anaconda/spyder中运行，可视化结果正常如下。
+
+![image-20250109183346524](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20250109183346524.png)
+
+
 
