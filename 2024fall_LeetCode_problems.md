@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2200 GMT+8 Jan 8 2025
+Updated 2242 GMT+8 Jan 9 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -5565,6 +5565,93 @@ if __name__ == '__main__':
     print(s.beautifulSubstrings("bcdf", 1))  # 输出: 0
 
 
+```
+
+
+
+## 3297.统计重新排列后包含另一个字符串的子字符串数目I
+
+滑动窗口，https://leetcode.cn/problems/count-substrings-that-can-be-rearranged-to-contain-a-string-i/
+
+给你两个字符串 `word1` 和 `word2` 。
+
+如果一个字符串 `x` 重新排列后，`word2` 是重排字符串的前缀，那么我们称字符串 `x` 是 **合法的** 。
+
+请你返回 `word1` 中 **合法** 子字符串的数目。
+
+
+
+**示例 1：**
+
+**输入：**word1 = "bcca", word2 = "abc"
+
+**输出：**1
+
+**解释：**
+
+唯一合法的子字符串是 `"bcca"` ，可以重新排列得到 `"abcc"` ，`"abc"` 是它的前缀。
+
+**示例 2：**
+
+**输入：**word1 = "abcabc", word2 = "abc"
+
+**输出：**10
+
+**解释：**
+
+除了长度为 1 和 2 的所有子字符串都是合法的。
+
+**示例 3：**
+
+**输入：**word1 = "abcabc", word2 = "aaabc"
+
+**输出：**0
+
+ 
+
+**解释：**
+
+- `1 <= word1.length <= 10^5`
+- `1 <= word2.length <= 10^4`
+- `word1` 和 `word2` 都只包含小写英文字母。
+
+
+
+
+
+这明明是困难，谁把它归到了中等难度。
+
+```python
+class Solution:
+    def validSubstringCount(self, word1: str, word2: str) -> int:
+        diff = [0] * 26
+        for c in word2:
+            diff[ord(c) - ord('a')] -= 1
+
+        res = 0
+        cnt = sum(1 for c in diff if c < 0)
+
+        def update(c: int, add: int):
+            nonlocal cnt
+            diff[c] += add
+            if add == 1 and diff[c] == 0:
+                # 表明 diff[c] 由 -1 变为 0
+                cnt -= 1
+            elif add == -1 and diff[c] == -1:
+                # 表明 diff[c] 由 0 变为 -1
+                cnt += 1
+
+        l, r = 0, 0
+        while l < len(word1):
+            while r < len(word1) and cnt > 0:
+                update(ord(word1[r]) - ord('a'), 1)
+                r += 1
+            if cnt == 0:
+                res += len(word1) - r + 1
+            update(ord(word1[l]) - ord('a'), -1)
+            l += 1
+
+        return res
 ```
 
 
