@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1952 GMT+8 Jan 10 2025
+Updated 2252 GMT+8 Jan 10 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -730,7 +730,7 @@ class Solution:
 
 ## 206.反转链表
 
-https://leetcode.cn/problems/reverse-linked-list/
+linked-list, https://leetcode.cn/problems/reverse-linked-list/
 
 给你单链表的头节点 `head` ，请你反转链表，并返回反转后的链表。
 
@@ -788,6 +788,107 @@ class Solution:
 
         return pre
         
+```
+
+
+
+## 234.回文链表
+
+linked-list, https://leetcode.cn/problems/palindrome-linked-list/
+
+给你一个单链表的头节点 `head` ，请你判断该链表是否为
+
+回文链表（**回文** 序列是向前和向后读都相同的序列。如果是，返回 `true` ；否则，返回 `false` 。
+
+
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2021/03/03/pal1linked-list.jpg)
+
+```
+输入：head = [1,2,2,1]
+输出：true
+```
+
+**示例 2：**
+
+![img](https://assets.leetcode.com/uploads/2021/03/03/pal2linked-list.jpg)
+
+```
+输入：head = [1,2]
+输出：false
+```
+
+ 
+
+**提示：**
+
+- 链表中节点数目在范围`[1, 105]` 内
+- `0 <= Node.val <= 9`
+
+ 
+
+**进阶：**你能否用 `O(n)` 时间复杂度和 `O(1)` 空间复杂度解决此题？
+
+
+
+```python
+from typing import Optional
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+class Solution:
+    def isPalindrome(self, head: Optional[ListNode]) -> bool:
+        if not head or not head.next:
+            return True
+
+        # Count the length of the linked list
+        n = 0
+        cur = head
+        while cur:
+            n += 1
+            cur = cur.next
+        
+        odd_f = n % 2 == 1
+        n_half = n // 2
+        pre = None
+        cur = head
+        cnt = 0
+        while cnt < n_half:
+            next_node = cur.next
+            cur.next = pre
+            pre = cur
+            cur = next_node
+            cnt += 1
+        
+        if odd_f:
+            cur = cur.next  # Skip the middle node if the length is odd
+
+        # Compare the reversed first half and the second half.
+        while cur and pre:
+            if cur.val != pre.val:
+                return False
+            cur = cur.next
+            pre = pre.next
+        
+        return True
+
+if __name__ == "__main__":
+    sol = Solution()
+    # Test case for non-palindrome linked list
+    head = ListNode(1, ListNode(2))
+    print(sol.isPalindrome(head))  # Expected output: False
+
+    # Test case for palindrome linked list
+    # Uncomment the following line to test a palindrome linked list
+    # head = ListNode(1, ListNode(2, ListNode(2, ListNode(1))))
+    # print(sol.isPalindrome(head))  # Expected output: True
 ```
 
 
