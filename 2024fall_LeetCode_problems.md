@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2252 GMT+8 Jan 10 2025
+Updated 2131 GMT+8 Jan 11 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -1163,13 +1163,94 @@ if __name__ == "__main__":
 
 
 
-```python
+## 3270.求出数字答案
 
+https://leetcode.cn/problems/find-the-key-of-the-numbers/description/
+
+给你三个 **正** 整数 `num1` ，`num2` 和 `num3` 。
+
+数字 `num1` ，`num2` 和 `num3` 的数字答案 `key` 是一个四位数，定义如下：
+
+- 一开始，如果有数字 **少于** 四位数，给它补 **前导 0** 。
+- 答案 `key` 的第 `i` 个数位（`1 <= i <= 4`）为 `num1` ，`num2` 和 `num3` 第 `i` 个数位中的 **最小** 值。
+
+请你返回三个数字 **没有** 前导 0 的数字答案。
+
+ 
+
+**示例 1：**
+
+**输入：**num1 = 1, num2 = 10, num3 = 1000
+
+**输出：**0
+
+**解释：**
+
+补前导 0 后，`num1` 变为 `"0001"` ，`num2` 变为 `"0010"` ，`num3` 保持不变，为 `"1000"` 。
+
+- 数字答案 `key` 的第 `1` 个数位为 `min(0, 0, 1)` 。
+- 数字答案 `key` 的第 `2` 个数位为 `min(0, 0, 0)` 。
+- 数字答案 `key` 的第 `3` 个数位为 `min(0, 1, 0)` 。
+- 数字答案 `key` 的第 `4` 个数位为 `min(1, 0, 0)` 。
+
+所以数字答案为 `"0000"` ，也就是 0 。
+
+**示例 2：**
+
+**输入：** num1 = 987, num2 = 879, num3 = 798
+
+**输出：**777
+
+**示例 3：**
+
+**输入：**num1 = 1, num2 = 2, num3 = 3
+
+**输出：**1
+
+ 
+
+**提示：**
+
+- `1 <= num1, num2, num3 <= 9999`
+
+
+
+```python
+class Solution:
+    def generateKey(self, num1: int, num2: int, num3: int) -> int:
+        n1_list = (4-len(str(num1)))*['0'] + list(str(num1))
+        n2_list = (4-len(str(num2)))*['0'] + list(str(num2))
+        n3_list = (4-len(str(num3)))*['0'] + list(str(num3))
+        res = []
+        flag = False
+        for i in range(4):
+            cur = min(n1_list[i], n2_list[i], n3_list[i])
+            if not flag and cur == '0':
+                continue
+            if not flag and cur:
+                flag = True
+
+            res.append(cur)
+                
+        if res:
+            return int(''.join(res))
+        else:
+            return 0
 ```
 
 
 
+不用显性给三个数添加前导零，从三个数的最低位开始构造，每次取`min(num1%10,num2%10,num3%10)×base`累加在答案上，然后更新num1，num2，num3供后续使用。这样次低位又变成了最低位，直到num1=num2=num3=0成立。
+
 ```python
+class Solution:
+    def generateKey(self, num1: int, num2: int, num3: int) -> int:
+        key, p = 0, 1
+        while num1 and num2 and num3:
+            key += min(num1 % 10, num2 % 10, num3 % 10) * p
+            p *= 10
+            num1, num2, num3 = num1 // 10, num2 // 10, num3 // 10
+        return key
 
 ```
 
