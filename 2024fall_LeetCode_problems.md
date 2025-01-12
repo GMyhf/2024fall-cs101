@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0144 GMT+8 Jan 12 2025
+Updated 0023 GMT+8 Jan 13 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -5585,6 +5585,71 @@ if __name__ == '__main__':
 
 
 
+## 2270.分割数组的方案数
+
+https://leetcode.cn/problems/number-of-ways-to-split-array/
+
+给你一个下标从 **0** 开始长度为 `n` 的整数数组 `nums` 。
+如果以下描述为真，那么 `nums` 在下标 `i` 处有一个 **合法的分割** ：
+
+- 前 `i + 1` 个元素的和 **大于等于** 剩下的 `n - i - 1` 个元素的和。
+- 下标 `i` 的右边 **至少有一个** 元素，也就是说下标 `i` 满足 `0 <= i < n - 1` 。
+
+请你返回 `nums` 中的 **合法分割** 方案数。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [10,4,-8,7]
+输出：2
+解释：
+总共有 3 种不同的方案可以将 nums 分割成两个非空的部分：
+- 在下标 0 处分割 nums 。那么第一部分为 [10] ，和为 10 。第二部分为 [4,-8,7] ，和为 3 。因为 10 >= 3 ，所以 i = 0 是一个合法的分割。
+- 在下标 1 处分割 nums 。那么第一部分为 [10,4] ，和为 14 。第二部分为 [-8,7] ，和为 -1 。因为 14 >= -1 ，所以 i = 1 是一个合法的分割。
+- 在下标 2 处分割 nums 。那么第一部分为 [10,4,-8] ，和为 6 。第二部分为 [7] ，和为 7 。因为 6 < 7 ，所以 i = 2 不是一个合法的分割。
+所以 nums 中总共合法分割方案受为 2 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [2,3,1,0]
+输出：2
+解释：
+总共有 2 种 nums 的合法分割：
+- 在下标 1 处分割 nums 。那么第一部分为 [2,3] ，和为 5 。第二部分为 [1,0] ，和为 1 。因为 5 >= 1 ，所以 i = 1 是一个合法的分割。
+- 在下标 2 处分割 nums 。那么第一部分为 [2,3,1] ，和为 6 。第二部分为 [0] ，和为 0 。因为 6 >= 0 ，所以 i = 2 是一个合法的分割。
+```
+
+ 
+
+**提示：**
+
+- `2 <= nums.length <= 10^5`
+- `-105 <= nums[i] <= 10^5`
+
+
+
+```python
+class Solution:
+    def waysToSplitArray(self, nums: List[int]) -> int:
+        total_v = sum(nums)
+        prefix_sum = 0
+        cnt = 0
+        for i in nums[:-1]:
+            prefix_sum += i
+            if prefix_sum >= total_v - prefix_sum:
+                cnt += 1
+        
+        return cnt
+```
+
+
+
+
+
 ## 2274.不含特殊楼层的最大连续楼层数
 
 dfs, https://leetcode.cn/problems/maximum-consecutive-floors-without-special-floors/
@@ -6822,6 +6887,82 @@ if __name__ == "__main__":
 > **时间复杂度优化**：
 >
 > - 每个元素最多被加入和移出队列一次，因此总时间复杂度为 O(n)。
+
+
+
+## 517.超级洗衣机
+
+greedy, https://leetcode.cn/problems/super-washing-machines/
+
+假设有 `n` 台超级洗衣机放在同一排上。开始的时候，每台洗衣机内可能有一定量的衣服，也可能是空的。
+
+在每一步操作中，你可以选择任意 `m` (`1 <= m <= n`) 台洗衣机，与此同时将每台洗衣机的一件衣服送到相邻的一台洗衣机。
+
+给定一个整数数组 `machines` 代表从左至右每台洗衣机中的衣物数量，请给出能让所有洗衣机中剩下的衣物的数量相等的 **最少的操作步数** 。如果不能使每台洗衣机中衣物的数量相等，则返回 `-1` 。
+
+ 
+
+**示例 1：**
+
+```
+输入：machines = [1,0,5]
+输出：3
+解释：
+第一步:    1     0 <-- 5    =>    1     1     4
+第二步:    1 <-- 1 <-- 4    =>    2     1     3    
+第三步:    2     1 <-- 3    =>    2     2     2   
+```
+
+**示例 2：**
+
+```
+输入：machines = [0,3,0]
+输出：2
+解释：
+第一步:    0 <-- 3     0    =>    1     2     0    
+第二步:    1     2 --> 0    =>    1     1     1     
+```
+
+**示例 3：**
+
+```
+输入：machines = [0,2,0]
+输出：-1
+解释：
+不可能让所有三个洗衣机同时剩下相同数量的衣物。
+```
+
+ 
+
+**提示：**
+
+- `n == machines.length`
+- `1 <= n <= 104`
+- `0 <= machines[i] <= 105`
+
+
+
+```python
+class Solution:
+    def findMinMoves(self, machines: List[int]) -> int:
+        avg, mod = divmod(sum(machines), len(machines))
+        if mod != 0:
+            return -1
+        """
+        先将所有数减去平均值，然后取前缀和，然后将左侧的元素作为整体考虑：
+        如果前缀和`prefixSum[i]`大于0，则该整体必须向右侧移出`prefixSum[i]`个单位，所需步数为`prefixSum[i]`
+        如果前缀和`prefixSum[i]`小于0，则右侧必须向该整体移入`prefixSum[i]`个单位，所需步数为`-prefixSum[i]`
+
+        而又因为一台洗衣机可以同时接受两侧的移入，但不可以同时向两侧移出
+        所以最少步数必然不小于单台洗衣机移出需要的最大步数
+        """
+        ans = x = 0
+        for n in machines:
+            x += n - avg
+            ans = max(ans, n - avg, abs(x))
+
+        return ans
+```
 
 
 
