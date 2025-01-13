@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0023 GMT+8 Jan 13 2025
+Updated 1643 GMT+8 Jan 13 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -832,6 +832,47 @@ linked-list, https://leetcode.cn/problems/palindrome-linked-list/
  
 
 **进阶：**你能否用 `O(n)` 时间复杂度和 `O(1)` 空间复杂度解决此题？
+
+
+
+快慢指针查找链表的中间节点
+
+```python
+# Definition for singly-linked list.
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+class Solution:
+    def isPalindrome(self, head: Optional[ListNode]) -> bool:
+        if not head or not head.next:
+            return True
+        
+        # 1. 使用快慢指针找到链表的中点
+        slow, fast = head, head
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+        
+        # 2. 反转链表的后半部分
+        prev = None
+        while slow:
+            next_node = slow.next
+            slow.next = prev
+            prev = slow
+            slow = next_node
+        
+        # 3. 对比前半部分和反转后的后半部分
+        left, right = head, prev
+        while right:  # right 是反转后的链表的头
+            if left.val != right.val:
+                return False
+            left = left.next
+            right = right.next
+        
+        return True
+
+```
 
 
 
