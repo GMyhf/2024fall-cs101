@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1812 GMT+8 Jan 15 2025
+Updated 2013 GMT+8 Jan 15 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -158,6 +158,79 @@ class Solution:
                     return False
                 stack.pop()
         return not stack
+```
+
+
+
+## 21.合并两个有序链表
+
+https://leetcode.cn/problems/merge-two-sorted-lists/
+
+将两个升序链表合并为一个新的 **升序** 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2020/10/03/merge_ex1.jpg)
+
+```
+输入：l1 = [1,2,4], l2 = [1,3,4]
+输出：[1,1,2,3,4,4]
+```
+
+**示例 2：**
+
+```
+输入：l1 = [], l2 = []
+输出：[]
+```
+
+**示例 3：**
+
+```
+输入：l1 = [], l2 = [0]
+输出：[0]
+```
+
+ 
+
+**提示：**
+
+- 两个链表的节点数目范围是 `[0, 50]`
+- `-100 <= Node.val <= 100`
+- `l1` 和 `l2` 均按 **非递减顺序** 排列
+
+
+
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+
+class Solution:
+    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
+        # 创建一个哨兵节点（dummy node），简化边界条件处理
+        prehead = ListNode(-200)
+        prev = prehead
+
+        # 遍历两个链表直到其中一个为空
+        while list1 and list2:
+            if list1.val <= list2.val:
+                prev.next = list1
+                list1 = list1.next
+            else:
+                prev.next = list2
+                list2 = list2.next            
+            prev = prev.next
+
+        # 连接还未遍历完的那个链表
+        prev.next = list1 if list1 is not None else list2
+
+        # 返回合并后的链表，跳过哨兵节点
+        return prehead.next
 ```
 
 
