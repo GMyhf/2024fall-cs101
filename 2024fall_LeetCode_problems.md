@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2013 GMT+8 Jan 15 2025
+Updated 1436 GMT+8 Jan 16 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -1413,6 +1413,88 @@ class Solution:
 if __name__ == "__main__":
     sol = Solution()
     print(sol.sumOfEncryptedInt([123, 456, 789])) 
+```
+
+
+
+## 3095.或值至少K的最短子数组I
+
+滑动窗口，https://leetcode.cn/problems/shortest-subarray-with-or-at-least-k-i/
+
+给你一个 **非负** 整数数组 `nums` 和一个整数 `k` 。
+
+如果一个数组中所有元素的按位或运算 `OR` 的值 **至少** 为 `k` ，那么我们称这个数组是 **特别的** 。
+
+请你返回 `nums` 中 **最短特别非空** 
+
+子数组
+
+的长度，如果特别子数组不存在，那么返回 `-1` 。
+
+**示例 1：**
+
+**输入：**nums = [1,2,3], k = 2
+
+**输出：**1
+
+**解释：**
+
+子数组 `[3]` 的按位 `OR` 值为 `3` ，所以我们返回 `1` 。
+
+注意，`[2]` 也是一个特别子数组。
+
+**示例 2：**
+
+**输入：**nums = [2,1,8], k = 10
+
+**输出：**3
+
+**解释：**
+
+子数组 `[2,1,8]` 的按位 `OR` 值为 `11` ，所以我们返回 `3` 。
+
+**示例 3：**
+
+**输入：**nums = [1,2], k = 0
+
+**输出：**1
+
+**解释：**
+
+子数组 `[1]` 的按位 `OR` 值为 `1` ，所以我们返回 `1` 。
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 50`
+- `0 <= nums[i] <= 50`
+- `0 <= k < 64`
+
+
+
+```python
+class Solution:
+    def minimumSubarrayLength(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        left = 0
+        or_value = 0
+        min_length = float('inf')
+
+        for right in range(n):
+            or_value |= nums[right]
+
+            # 收缩窗口，确保按位或值 >= k
+            while or_value >= k and left <= right:
+                min_length = min(min_length, right - left + 1)
+                left += 1
+                # 重新计算窗口的按位或值
+                or_value = 0
+                for i in range(left, right + 1):
+                    or_value |= nums[i]
+
+        return min_length if min_length != float('inf') else -1
+        
 ```
 
 
