@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1436 GMT+8 Jan 16 2025
+Updated 0759 GMT+8 Jan 17 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -2449,6 +2449,99 @@ if __name__ == "__main__":
     digits = "23"
     print(Solution().letterCombinations(digits))
 
+```
+
+
+
+## 19.删除链表的倒数第N个结点
+
+快慢指针，https://leetcode.cn/problems/remove-nth-node-from-end-of-list/
+
+给你一个链表，删除链表的倒数第 `n` 个结点，并且返回链表的头结点。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2020/10/03/remove_ex1.jpg)
+
+```
+输入：head = [1,2,3,4,5], n = 2
+输出：[1,2,3,5]
+```
+
+**示例 2：**
+
+```
+输入：head = [1], n = 1
+输出：[]
+```
+
+**示例 3：**
+
+```
+输入：head = [1,2], n = 1
+输出：[1]
+```
+
+ 
+
+**提示：**
+
+- 链表中结点的数目为 `sz`
+- `1 <= sz <= 30`
+- `0 <= Node.val <= 100`
+- `1 <= n <= sz`
+
+
+
+```python
+from typing import Optional
+#Definition for singly-linked list.
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+class Solution:
+    def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
+        # 创建哑结点（dummy）以处理头结点可能被删除的情况
+        dummy = ListNode(0)
+        dummy.next = head
+        fast = slow = dummy
+
+        # 快指针先前进 n+1 步
+        for _ in range(n + 1):
+            fast = fast.next
+
+        # 快慢指针同时移动直到快指针到达链表末尾
+        while fast:
+            fast = fast.next
+            slow = slow.next
+
+        # 此时慢指针的下一个结点是要删除的结点
+        slow.next = slow.next.next
+
+        # 返回头结点
+        return dummy.next
+
+# 测试用例
+def print_list(head):
+    result = []
+    while head:
+        result.append(head.val)
+        head = head.next
+    return result
+
+if __name__ == '__main__':
+    head = ListNode(1, ListNode(2, ListNode(3, ListNode(4, ListNode(5)))))
+    sol = Solution()
+    print(print_list(sol.removeNthFromEnd(head, 2)))  # 输出：[1, 2, 3, 5]
+
+    head = ListNode(1)
+    print(print_list(sol.removeNthFromEnd(head, 1)))  # 输出：[]
+
+    head = ListNode(1, ListNode(2))
+    print(print_list(sol.removeNthFromEnd(head, 1)))  # 输出：[1]
 ```
 
 
