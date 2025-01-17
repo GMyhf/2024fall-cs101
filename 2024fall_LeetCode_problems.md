@@ -1499,6 +1499,42 @@ class Solution:
 
 
 
+作者：力扣官方题解
+链接：https://leetcode.cn/problems/shortest-subarray-with-or-at-least-k-i/solutions/3040100/huo-zhi-zhi-shao-k-de-zui-duan-zi-shu-zu-vl4c/
+
+由于给定数组 nums 中的元素大小不超过 10^9，因此最多需要考虑二进制表示的前 30 位。我们需要维护一个长度为 30 的数组 bits，其中 bits[i] 表示滑动窗口中满足二进制表示的从低到高第 i 位的值为 1 的元素个数。
+
+```python
+class Solution:
+    def minimumSubarrayLength(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        bits = [0] * 30
+        res = inf
+        def calc(bits):
+            return sum(1 << i for i in range(30) if bits[i] > 0)
+
+        left = 0
+        for right in range(n):
+            for i in range(30):
+                bits[i] += (nums[right] >> i) & 1
+            while left <= right and calc(bits) >= k:
+                res = min(res, right - left + 1)
+                for i in range(30):
+                    bits[i] -= (nums[left] >> i) & 1
+                left += 1
+
+        return -1 if res == inf else res
+
+```
+
+复杂度分析
+
+时间复杂度：O(nlogU)，其中 n 表示给定数组 nums 的长度，U 表示数组中的最大的元素。由于使用滑动窗口遍历需要的时间为 O(n)，每次更新窗口元素时需要实时计算当前子数组按位或的值需要的时间为 O(logU)，此时需要的总时间即为 O(nlogU)。
+
+空间复杂度：O(logU)。计算时需要存储当前子数组中每一个二进制位中的统计情况，最多有 logU 位需要记录，因此需要的空间为 logU。
+
+
+
 ## 3270.求出数字答案
 
 https://leetcode.cn/problems/find-the-key-of-the-numbers/description/
