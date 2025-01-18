@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1142 GMT+8 Jan 17 2025
+Updated 1103 GMT+8 Jan 18 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -8251,6 +8251,319 @@ if __name__ == "__main__":
         print(sol.maxSpending(values1))  # Output: 285
         print(sol.maxSpending(values2))  # Output: 386
 
+```
+
+
+
+## 3287.求出数组中最大序列值﻿﻿
+
+枚举 + 01背包，https://leetcode.cn/problems/find-the-maximum-sequence-value-of-array/
+
+给你一个整数数组 `nums` 和一个 **正** 整数 `k` 。
+
+定义长度为 `2 * x` 的序列 `seq` 的 **值** 为：
+
+- `(seq[0] OR seq[1] OR ... OR seq[x - 1]) XOR (seq[x] OR seq[x + 1] OR ... OR seq[2 * x - 1])`.
+
+请你求出 `nums` 中所有长度为 `2 * k` 的 子序列的 **最大值** 。
+
+⚠️子序列 是可以通过从另一个数组删除或不删除某些元素，但不更改其余元素的顺序得到的数组。
+
+**示例 1：**
+
+**输入：**nums = [2,6,7], k = 1
+
+**输出：**5
+
+**解释：**
+
+子序列 `[2, 7]` 的值最大，为 `2 XOR 7 = 5` 。
+
+**示例 2：**
+
+**输入：**nums = [4,2,5,6,7], k = 2
+
+**输出：**2
+
+**解释：**
+
+子序列 `[4, 5, 6, 7]` 的值最大，为 `(4 OR 5) XOR (6 OR 7) = 2` 。
+
+ 
+
+**提示：**
+
+- `2 <= nums.length <= 400`
+- `1 <= nums[i] < 2^7`
+- `1 <= k <= nums.length / 2`
+
+
+
+
+
+LeetCode排名第4。【mipha, https://leetcode.cn/u/mipha-2022/ 】
+
+更多题目模板总结，请参考 2023年度总结与题目分享﻿﻿，https://leetcode.cn/circle/discuss/1a9w0h/
+
+
+
+思路，将题目分解成两部分：左侧|运算  ^  右侧|运算 
+
+枚举左右侧两部分的分解线。看到**左右**侧就很容易联想到 dp ，题目要求的是子序列，那就是 选与不选 的问题，很容易就想到 01背包 
+
+ `left[i][j] = h` 代表原数组 [0,i-1] 中子序列长度为 j 的 or 值集合 `h = set()` 。
+
+$400∗400∗2^7=20,480,000$。1e7 不会超时捏。
+
+
+
+```python
+        # left[i][j] 到第i位 子序列长度为j的 or 值
+        left = [ [set() for _ in range(k+1)]  for _ in range(n+1) ]
+        # init
+        left[0][0].add(0)
+
+        for i in range(n):
+            # 不选
+            for lj in range(k+1):
+                left[i+1][lj] = left[i][lj].copy()
+
+            num = nums[i]
+            # 选
+            for lj in range(k):
+                for lnum in left[i][lj]:
+                    left[i+1][lj+1].add(lnum|num)
+
+```
+
+﻿
+
+同理求右侧  right  时也是同样的方法，当然可以在枚举分界线过程中，滚动数组处理 right 。
+
+```python
+        # 右 滚动数组
+        right = [set() for _ in range(k+1)]
+        right[0].add(0)
+        
+        res = 0
+        # 枚举分界线
+        for i in range(n-1,-1,-1):
+            # 不选
+            tmp = deepcopy(right)
+            
+            num = nums[i]
+            # 选
+            for lj in range(k):
+                for lnum in right[lj]:
+                    tmp[lj+1].add(lnum|num) 
+
+            right = tmp
+            # 计算左右侧的异或值
+            for a in left[i][k]:
+                for b in right[k]:
+                    c = a ^ b
+                    if c > res:
+                        res = c
+```
+
+﻿
+
+
+
+```python
+class Solution:
+    def maxValue(self, nums: List[int], k: int) -> int:
+        '''
+        res = 前半|运算 ^ 后半|运算
+
+        子序列res最大值
+        k 长度
+
+        每个数的二进制只有7位 ※
+        128
+        '''
+        n = len(nums)
+
+        # 枚举分界线 + dp
+
+        # left[i][j] 到第i位 子序列长度为j的 or 值
+        left = [ [set() for _ in range(k+1)]  for _ in range(n+1) ]
+        # init
+        left[0][0].add(0)
+        
+        from copy import deepcopy 
+        for i in range(n):
+            # 不选
+            left[i+1] = deepcopy(left[i])
+
+            num = nums[i]
+            # 选
+            for lj in range(k):
+                for lnum in left[i][lj]:
+                    left[i+1][lj+1].add(lnum|num)
+            
+        
+        # 右 滚动数组
+        right = [set() for _ in range(k+1)]
+        right[0].add(0)
+        
+        res = 0
+        # 枚举分界线
+        for i in range(n-1,-1,-1):
+            # 不选
+            tmp = deepcopy(right)
+            
+            num = nums[i]
+            # 选
+            for lj in range(k):
+                for lnum in right[lj]:
+                    tmp[lj+1].add(lnum|num) 
+
+            right = tmp
+            # 计算左右侧的异或值
+            for a in left[i][k]:
+                for b in right[k]:
+                    c = a ^ b
+                    if c > res:
+                        res = c
+        
+        return res
+
+```
+
+﻿
+
+> chatgpt.com解读并优化
+>
+> 这段代码的目的是求解通过分割数组并进行按位“或”操作后，子序列的最大异或值。它将问题分为左右两个部分，并利用动态规划（DP）存储每个子序列的“或”结果。具体的，代码利用了滚动数组技巧，降低空间复杂度，且通过枚举分界线来找到最优解。
+>
+> **代码分析与优化建议：**
+>
+> 1. **内存优化：**
+>
+> - 代码中使用了 `deepcopy` 来复制数组，然而 `deepcopy` 在内存上消耗较大且效率低下，特别是对于大数据量的情况。你可以考虑改用直接的复制方式（例如直接用切片 `[:]` 或手动复制）。
+> - 对于 `left` 和 `right` 数组，`set` 用来存储中间结果是合适的，但是 `set` 会导致很多冗余的计算，特别是当子序列长度较大时，冗余计算会影响性能。
+>
+> 2. **代码结构与可读性：**
+>
+> - 注释部分提供了一些背景信息，但可以进一步简化说明，避免过多无关的信息。
+> - 代码本身可以进行进一步优化，尤其是在 `deepcopy` 和状态更新部分。
+>
+> 3. **优化方向：**
+>
+> - **减少重复计算**： `left` 和 `right` 的状态空间可以进一步压缩。
+> - **不需要深拷贝**：通过手动管理每个 DP 状态，可以避免使用 `deepcopy`，从而提高效率。
+> - **按需更新`left`和`right`**：考虑仅更新必要的状态，减少不必要的计算。
+>
+> 优化后的代码：
+
+```python
+class Solution:
+    def maxValue(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+
+        # dp数组存储每个子序列的or值
+        left = [[set() for _ in range(k+1)] for _ in range(n+1)]
+        right = [set() for _ in range(k+1)]
+
+        # 初始化
+        left[0][0].add(0)
+        right[0].add(0)
+
+        # 枚举从左到右的dp
+        for i in range(n):
+            # 不选当前数字
+            for j in range(k+1):
+                left[i+1][j] = left[i][j].copy()
+
+            num = nums[i]
+            # 选当前数字
+            for j in range(k):
+                for val in left[i][j]:
+                    left[i+1][j+1].add(val | num)
+
+        res = 0
+        # 枚举从右到左的dp
+        for i in range(n-1, -1, -1):
+            # 不选当前数字
+            tmp = [right[j].copy() for j in range(k+1)]
+            num = nums[i]
+            # 选当前数字
+            for j in range(k):
+                for val in right[j]:
+                    tmp[j+1].add(val | num)
+
+            right = tmp
+
+            # 计算最大异或值
+            for val_left in left[i][k]:
+                for val_right in right[k]:
+                    res = max(res, val_left ^ val_right)
+
+        return res
+```
+
+> 主要优化点：
+>
+> 1. **去除 `deepcopy`**：直接通过复制 `set`（`copy()`）来避免深拷贝。
+> 2. **代码结构简化**：直接使用 `set` 的 `copy()` 方法来更新状态数组，避免不必要的复杂度。
+> 3. **`left` 和 `right` 的管理**：仅在需要时更新，减少了不必要的空间使用。
+>
+> 性能分析：
+>
+> - 时间复杂度：`O(n * k^2)`，其中 `n` 是数组长度，`k` 是子序列长度。因为我们每次更新状态数组时，会遍历当前所有的 `k` 长度子序列，并且每个状态需要 `k` 次检查。
+> - 空间复杂度：`O(n * k)`，由于我们保存了 `n` 个位置和每个位置 `k` 长度的子序列的 `or` 值。
+>
+> 结论：
+>
+> 优化后的代码通过减少不必要的内存开销和避免深拷贝，提升了效率，并且保持了代码的可读性。如果需要处理更大规模的数据，可以进一步考虑压缩状态空间，或者使用其他优化技术（如位运算技巧）。
+
+
+
+超时代码
+
+```python
+from typing import List
+from itertools import combinations
+
+
+class Solution:
+    def maxValue(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        max_val = 0
+
+        # 预先计算所有可能的 OR 结果
+        or_results = {}
+        for i in range(n):
+            or_results[(i, i)] = nums[i]
+            for j in range(i + 1, n):
+                or_results[(i, j)] = or_results.get((i, j - 1), 0) | nums[j]
+
+        # 枚举所有可能的长度为 2*k 的子序列
+        for comb in combinations(range(n), 2 * k):
+            left = comb[:k]
+            right = comb[k:]
+
+            # 计算前半部分和后半部分的 OR 值
+            left_or = 0
+            for i in left:
+                left_or |= nums[i]
+
+            right_or = 0
+            for i in right:
+                right_or |= nums[i]
+
+            # 更新最大值
+            max_val = max(max_val, left_or ^ right_or)
+
+        return max_val
+
+
+# Test cases
+if __name__ == "__main__":
+    solution = Solution()
+    print(solution.maxValue([2, 6, 7], 1))  # Expected Output: 5
+    print(solution.maxValue([4, 2, 5, 6, 7], 2))  # Expected Output: 2
 ```
 
 
