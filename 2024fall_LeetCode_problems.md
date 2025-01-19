@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2228 GMT+8 Jan 19 2025
+Updated 0054 GMT+8 Jan 20 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -1145,6 +1145,60 @@ if __name__ == "__main__":
     # Uncomment the following line to test a palindrome linked list
     # head = ListNode(1, ListNode(2, ListNode(2, ListNode(1))))
     # print(sol.isPalindrome(head))  # Expected output: True
+```
+
+
+
+## 2239.找到最接近0的数字
+
+https://leetcode.cn/problems/find-closest-number-to-zero/
+
+给你一个长度为 `n` 的整数数组 `nums` ，请你返回 `nums` 中最 **接近** `0` 的数字。如果有多个答案，请你返回它们中的 **最大值** 。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [-4,-2,1,4,8]
+输出：1
+解释：
+-4 到 0 的距离为 |-4| = 4 。
+-2 到 0 的距离为 |-2| = 2 。
+1 到 0 的距离为 |1| = 1 。
+4 到 0 的距离为 |4| = 4 。
+8 到 0 的距离为 |8| = 8 。
+所以，数组中距离 0 最近的数字为 1 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [2,-1,1]
+输出：1
+解释：1 和 -1 都是距离 0 最近的数字，所以返回较大值 1 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= n <= 1000`
+- `-105 <= nums[i] <= 105`
+
+
+
+```python
+class Solution:
+    def findClosestNumber(self, nums: List[int]) -> int:
+        nums.sort(reverse = True)
+        minv = abs(nums[0] - 0)
+        raw = nums[0]
+        for i in nums[1:]:
+            if abs(i - 0) < minv:
+                minv = abs(i-0)
+                raw = i
+        return raw
 ```
 
 
