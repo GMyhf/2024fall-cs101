@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0756 GMT+8 Jan 19 2025
+Updated 2228 GMT+8 Jan 19 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -8968,6 +8968,554 @@ if __name__ == "__main__":
 ```
 
 
+
+## P1429 平面最近点对（加强版）
+
+https://www.luogu.com.cn/problem/P1429
+
+[P7883](/problem/P7883) 平面最近点对（加强加强版）
+
+给定平面上 $n$ 个点，找出其中的一对点的距离，使得在这 $n$ 个点的所有点对中，该距离为所有点对中最小的
+
+输入格式
+
+第一行：$n$ ，保证 $2\le n\le 200000$ 。
+
+接下来 $n$ 行：每行两个实数：$x\ y$ ，表示一个点的行坐标和列坐标，中间用一个空格隔开。
+
+输出格式
+
+仅一行，一个实数，表示最短距离，精确到小数点后面 $4$ 位。
+
+样例 #1
+
+样例输入 #1
+
+```
+3
+1 1
+1 2
+2 2
+```
+
+样例输出 #1
+
+```
+1.0000
+```
+
+提示
+
+数据保证 $0\le x,y\le 10^9$
+
+
+
+参考 https://oi-wiki.org/ds/kdt/
+
+```c++
+#include <algorithm>
+#include <cmath>
+#include <cstdlib>
+#include <cstring>
+#include <iomanip>
+#include <iostream>
+using namespace std;
+constexpr int MAXN = 200010;
+int n, d[MAXN], lc[MAXN], rc[MAXN];
+double ans = 2e18;
+
+struct node {
+  double x, y;
+} s[MAXN];
+
+double L[MAXN], R[MAXN], D[MAXN], U[MAXN];
+
+double dist(int a, int b) {
+  return (s[a].x - s[b].x) * (s[a].x - s[b].x) +
+         (s[a].y - s[b].y) * (s[a].y - s[b].y);
+}
+
+bool cmp1(node a, node b) { return a.x < b.x; }
+
+bool cmp2(node a, node b) { return a.y < b.y; }
+
+void maintain(int x) {
+  L[x] = R[x] = s[x].x;
+  D[x] = U[x] = s[x].y;
+  if (lc[x])
+    L[x] = min(L[x], L[lc[x]]), R[x] = max(R[x], R[lc[x]]),
+    D[x] = min(D[x], D[lc[x]]), U[x] = max(U[x], U[lc[x]]);
+  if (rc[x])
+    L[x] = min(L[x], L[rc[x]]), R[x] = max(R[x], R[rc[x]]),
+    D[x] = min(D[x], D[rc[x]]), U[x] = max(U[x], U[rc[x]]);
+}
+
+int build(int l, int r) {
+  if (l > r) return 0;
+  if (l == r) {
+    maintain(l);
+    return l;
+  }
+  int mid = (l + r) >> 1;
+  double avx = 0, avy = 0, vax = 0, vay = 0;  // average variance
+  for (int i = l; i <= r; i++) avx += s[i].x, avy += s[i].y;
+  avx /= (double)(r - l + 1);
+  avy /= (double)(r - l + 1);
+  for (int i = l; i <= r; i++)
+    vax += (s[i].x - avx) * (s[i].x - avx),
+        vay += (s[i].y - avy) * (s[i].y - avy);
+  if (vax >= vay)
+    d[mid] = 1, nth_element(s + l, s + mid, s + r + 1, cmp1);
+  else
+    d[mid] = 2, nth_element(s + l, s + mid, s + r + 1, cmp2);
+  lc[mid] = build(l, mid - 1), rc[mid] = build(mid + 1, r);
+  maintain(mid);
+  return mid;
+}
+
+double f(int a, int b) {
+  double ret = 0;
+  if (L[b] > s[a].x) ret += (L[b] - s[a].x) * (L[b] - s[a].x);
+  if (R[b] < s[a].x) ret += (s[a].x - R[b]) * (s[a].x - R[b]);
+  if (D[b] > s[a].y) ret += (D[b] - s[a].y) * (D[b] - s[a].y);
+  if (U[b] < s[a].y) ret += (s[a].y - U[b]) * (s[a].y - U[b]);
+  return ret;
+}
+
+void query(int l, int r, int x) {
+  if (l > r) return;
+  int mid = (l + r) >> 1;
+  if (mid != x) ans = min(ans, dist(x, mid));
+  if (l == r) return;
+  double distl = f(x, lc[mid]), distr = f(x, rc[mid]);
+  if (distl < ans && distr < ans) {
+    if (distl < distr) {
+      query(l, mid - 1, x);
+      if (distr < ans) query(mid + 1, r, x);
+    } else {
+      query(mid + 1, r, x);
+      if (distl < ans) query(l, mid - 1, x);
+    }
+  } else {
+    if (distl < ans) query(l, mid - 1, x);
+    if (distr < ans) query(mid + 1, r, x);
+  }
+}
+
+int main() {
+  cin.tie(nullptr)->sync_with_stdio(false);
+  cin >> n;
+  for (int i = 1; i <= n; i++) cin >> s[i].x >> s[i].y;
+  build(1, n);
+  for (int i = 1; i <= n; i++) query(1, n, i);
+  cout << fixed << setprecision(4) << sqrt(ans) << '\n';
+  return 0;
+}
+```
+
+
+
+能AC前三个和最后一个数据。
+
+但是能AC这个题目。 
+
+## P1257 平面上的最接近点对
+
+https://www.luogu.com.cn/problem/P1257
+
+给定平面上 $n$ 个点，找出其中的一对点的距离，使得在这 $n$ 个点的所有点对中，该距离为所有点对中最小的。
+
+**输入格式**
+
+第一行一个整数 $n$，表示点的个数。
+
+接下来 $n$ 行，每行两个整数 $x,y$ ，表示一个点的行坐标和列坐标。
+
+**输出格式**
+
+仅一行，一个实数，表示最短距离，四舍五入保留 $4$ 位小数。
+
+样例 #1
+
+样例输入 #1
+
+```
+3
+1 1
+1 2
+2 2
+```
+
+样例输出 #1
+
+```
+1.0000
+```
+
+提示
+
+数据规模与约定
+
+对于 $100\%$ 的数据，保证 $1 \leq n \leq 10^4$，$0 \leq x, y \leq 10^9$。
+
+
+
+```python
+import math
+from functools import cmp_to_key
+import sys
+sys.setrecursionlimit(1000000)
+
+MAXN = 200010
+INF = float("inf")
+
+class Node:
+    def __init__(self, x=0.0, y=0.0):
+        self.x = x
+        self.y = y
+
+class KDTree:
+    def __init__(self):
+        self.n = 0
+        self.s = [Node() for _ in range(MAXN)]  # 点集
+        self.lc = [0] * MAXN  # 左子树
+        self.rc = [0] * MAXN  # 右子树
+        self.d = [0] * MAXN   # 划分维度
+        self.L = [0.0] * MAXN
+        self.R = [0.0] * MAXN
+        self.D = [0.0] * MAXN
+        self.U = [0.0] * MAXN
+        self.ans = INF
+
+    def dist(self, a, b):
+        """计算两点之间的欧几里得距离平方"""
+        return (self.s[a].x - self.s[b].x) ** 2 + (self.s[a].y - self.s[b].y) ** 2
+
+    def maintain(self, x):
+        """维护边界矩形"""
+        self.L[x] = self.R[x] = self.s[x].x
+        self.D[x] = self.U[x] = self.s[x].y
+        if self.lc[x]:
+            lc = self.lc[x]
+            self.L[x] = min(self.L[x], self.L[lc])
+            self.R[x] = max(self.R[x], self.R[lc])
+            self.D[x] = min(self.D[x], self.D[lc])
+            self.U[x] = max(self.U[x], self.U[lc])
+        if self.rc[x]:
+            rc = self.rc[x]
+            self.L[x] = min(self.L[x], self.L[rc])
+            self.R[x] = max(self.R[x], self.R[rc])
+            self.D[x] = min(self.D[x], self.D[rc])
+            self.U[x] = max(self.U[x], self.U[rc])
+
+    def cmp1(self, a, b):
+        return -1 if a.x < b.x else (1 if a.x > b.x else 0)
+
+    def cmp2(self, a, b):
+        return -1 if a.y < b.y else (1 if a.y > b.y else 0)
+
+    def build(self, l, r):
+        """构建 KD 树"""
+        if l > r:
+            return 0
+        if l == r:
+            self.maintain(l)
+            return l
+
+        mid = (l + r) >> 1
+        avx = avy = vax = vay = 0.0  # 平均值与方差
+        for i in range(l, r + 1):
+            avx += self.s[i].x
+            avy += self.s[i].y
+        avx /= (r - l + 1)
+        avy /= (r - l + 1)
+        for i in range(l, r + 1):
+            vax += (self.s[i].x - avx) ** 2
+            vay += (self.s[i].y - avy) ** 2
+
+        if vax >= vay:
+            self.d[mid] = 1
+            self.s[l:r + 1] = sorted(self.s[l:r + 1], key=cmp_to_key(self.cmp1))
+        else:
+            self.d[mid] = 2
+            self.s[l:r + 1] = sorted(self.s[l:r + 1], key=cmp_to_key(self.cmp2))
+
+        self.lc[mid] = self.build(l, mid - 1)
+        self.rc[mid] = self.build(mid + 1, r)
+        self.maintain(mid)
+        return mid
+
+    def f(self, a, b):
+        """计算点 a 到矩形 b 的最短距离"""
+        ret = 0
+        if self.L[b] > self.s[a].x:
+            ret += (self.L[b] - self.s[a].x) ** 2
+        if self.R[b] < self.s[a].x:
+            ret += (self.s[a].x - self.R[b]) ** 2
+        if self.D[b] > self.s[a].y:
+            ret += (self.D[b] - self.s[a].y) ** 2
+        if self.U[b] < self.s[a].y:
+            ret += (self.s[a].y - self.U[b]) ** 2
+        return ret
+
+    def query(self, l, r, x):
+        """查询点 x 的最近邻点"""
+        if l > r:
+            return
+        mid = (l + r) >> 1
+        if mid != x:
+            self.ans = min(self.ans, self.dist(x, mid))
+        if l == r:
+            return
+
+        dist_l = self.f(x, self.lc[mid]) if self.lc[mid] else INF
+        dist_r = self.f(x, self.rc[mid]) if self.rc[mid] else INF
+
+        if dist_l < dist_r:
+            if dist_l < self.ans:
+                self.query(l, mid - 1, x)
+            if dist_r < self.ans:
+                self.query(mid + 1, r, x)
+        else:
+            if dist_r < self.ans:
+                self.query(mid + 1, r, x)
+            if dist_l < self.ans:
+                self.query(l, mid - 1, x)
+
+    def solve(self):
+        """主函数逻辑"""
+        root = self.build(1, self.n)
+        for i in range(1, self.n + 1):
+            self.query(1, self.n, i)
+        return math.sqrt(self.ans)
+
+# 示例用法
+if __name__ == "__main__":
+    kd_tree = KDTree()
+    kd_tree.n = int(input())
+    for i in range(1, kd_tree.n + 1):
+        x, y = map(float, input().split())
+        kd_tree.s[i] = Node(x, y)
+
+    result = kd_tree.solve()
+    print(f"{result:.4f}")
+
+```
+
+
+
+
+
+## P4390 [BalkanOI2007] Mokia 摩基亚
+
+https://www.luogu.com.cn/problem/P4390
+
+摩尔瓦多的移动电话公司摩基亚（Mokia）设计出了一种新的用户定位系统。和其他的定位系统一样，它能够迅速回答任何形如 “用户 C 的位置在哪？” 的问题，精确到毫米。但其真正高科技之处在于，它能够回答形如 “给定区域内有多少名用户？” 的问题。
+
+在定位系统中，世界被认为是一个 $w\times w$ 的正方形区域，由 $1\times 1$ 的方格组成。每个方格都有一个坐标 $(x, y)$，$1\leq x,y\leq w$。坐标的编号从 $1$ 开始。对于一个 $4\times 4$ 的正方形，就有 $1\leq x\leq 4$，$1\leq y\leq 4$（如图）：
+
+![](https://cdn.luogu.com.cn/upload/pic/17271.png)
+
+请帮助 Mokia 公司编写一个程序来计算在某个矩形区域内有多少名用户。
+
+**输入格式**
+
+有三种命令，意义如下：
+
+| 命令 |         参数         |                             意义                             |
+| :--: | :------------------: | :----------------------------------------------------------: |
+| $0$  |         $w$          |         初始化一个全零矩阵。本命令仅开始时出现一次。         |
+| $1$  |      $x\ y\ a$       |      向方格 $(x, y)$ 中添加 $a$ 个用户。$a$ 是正整数。       |
+| $2$  | $x_1\ y_1\ x_2\ y_2$ | 查询 $x_1\leq x\leq x_2$，$y_1\leq y\leq y_2$ 所规定的矩形中的用户数量。 |
+| $3$  |        无参数        |              结束程序。本命令仅结束时出现一次。              |
+
+输入共若干行，每行有若干个整数，表示一个命令。
+
+**输出格式**
+
+对所有命令 $2$，输出一个一行整数，即当前询问矩形内的用户数量。
+
+**样例 #1**
+
+**样例输入 #1**
+
+```
+0 4
+1 2 3 3
+2 1 1 3 3
+1 2 2 2
+2 2 2 3 4
+3
+```
+
+**样例输出 #1**
+
+```
+3
+5
+```
+
+**提示**
+
+**数据规模与约定**
+
+
+对于 $100\%$ 的数据，保证：
+
+- $1\leq w\leq 2\times 10 ^ 6$。
+- $1\leq x_1\leq x_2\leq w$，$1\leq y_1\leq y_2\leq w$，$1\leq x,y\leq w$，$0<a\leq 10000$。
+- 命令 $1$ 不超过 $160000$ 个。
+- 命令 $2$ 不超过 $10000$ 个。
+
+
+
+
+
+KD树超时，能AC前两个数据。
+
+```python
+class KDTree:
+    def __init__(self):
+        self.nodes = []
+        self.root = None
+
+    class Node:
+        def __init__(self, x, y, a):
+            self.x = x
+            self.y = y
+            self.a = a
+            self.left = None
+            self.right = None
+            self.dim = 0  # 分割维度：0 表示 x，1 表示 y
+
+    def build(self, points, depth=0):
+        if not points:
+            return None
+        k = depth % 2  # 当前分割维度
+        points.sort(key=lambda p: (p[0], p[1]) if k == 0 else (p[1], p[0]))
+        mid = len(points) // 2
+        node = self.Node(*points[mid])
+        node.dim = k
+        node.left = self.build(points[:mid], depth + 1)
+        node.right = self.build(points[mid + 1:], depth + 1)
+        return node
+
+    def insert(self, root, x, y, a, depth=0):
+        if not root:
+            return self.Node(x, y, a)
+        k = depth % 2
+        if (x < root.x if k == 0 else y < root.y):
+            root.left = self.insert(root.left, x, y, a, depth + 1)
+        else:
+            root.right = self.insert(root.right, x, y, a, depth + 1)
+        return root
+
+    def query(self, root, x1, y1, x2, y2, depth=0):
+        if not root:
+            return 0
+        k = depth % 2
+        if x1 <= root.x <= x2 and y1 <= root.y <= y2:
+            res = root.a
+        else:
+            res = 0
+        if k == 0:
+            if x1 <= root.x:
+                res += self.query(root.left, x1, y1, x2, y2, depth + 1)
+            if x2 >= root.x:
+                res += self.query(root.right, x1, y1, x2, y2, depth + 1)
+        else:
+            if y1 <= root.y:
+                res += self.query(root.left, x1, y1, x2, y2, depth + 1)
+            if y2 >= root.y:
+                res += self.query(root.right, x1, y1, x2, y2, depth + 1)
+        return res
+
+    def add_point(self, x, y, a):
+        self.root = self.insert(self.root, x, y, a)
+
+    def range_query(self, x1, y1, x2, y2):
+        return self.query(self.root, x1, y1, x2, y2)
+
+
+# 主程序
+import sys
+input = sys.stdin.read
+data = input().splitlines()
+
+kdtree = KDTree()
+
+for line in data:
+    cmd = list(map(int, line.split()))
+    if cmd[0] == 0:
+        w = cmd[1]  # 初始化宽度，但不需要存储实际矩阵
+        continue
+    elif cmd[0] == 1:
+        x, y, a = cmd[1:]
+        kdtree.add_point(x, y, a)
+    elif cmd[0] == 2:
+        x1, y1, x2, y2 = cmd[1:]
+        print(kdtree.range_query(x1, y1, x2, y2))
+    elif cmd[0] == 3:
+        break
+
+```
+
+
+
+二维树状数组（Fenwick Tree / BIT）或者二维线段树。能AC第一个数据，其他数据超内存。
+
+```python
+import sys
+
+input = sys.stdin.read
+data = input().splitlines()
+
+class FenwickTree2D:
+    def __init__(self, size):
+        self.size = size
+        self.tree = [[0] * (size + 1) for _ in range(size + 1)]
+
+    def update(self, x, y, delta):
+        while x <= self.size:
+            ny = y
+            while ny <= self.size:
+                self.tree[x][ny] += delta
+                ny += ny & -ny
+            x += x & -x
+
+    def query(self, x, y):
+        sum = 0
+        while x > 0:
+            ny = y
+            while ny > 0:
+                sum += self.tree[x][ny]
+                ny -= ny & -ny
+            x -= x & -x
+        return sum
+
+    def range_query(self, x1, y1, x2, y2):
+        return (self.query(x2, y2) - self.query(x2, y1 - 1) -
+                self.query(x1 - 1, y2) + self.query(x1 - 1, y1 - 1))
+
+def process_commands(data):
+    w = 0
+    fenwick_tree = None
+    for line in data:
+        cmd = list(map(int, line.split()))
+        if cmd[0] == 0:
+            w = cmd[1]
+            fenwick_tree = FenwickTree2D(w)
+        elif cmd[0] == 1:
+            x, y, a = cmd[1:]
+            fenwick_tree.update(x, y, a)
+        elif cmd[0] == 2:
+            x1, y1, x2, y2 = cmd[1:]
+            print(fenwick_tree.range_query(x1, y1, x2, y2))
+        elif cmd[0] == 3:
+            break
+
+process_commands(data)
+```
 
 
 
