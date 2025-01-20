@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0054 GMT+8 Jan 20 2025
+Updated 0230 GMT+8 Jan 21 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -8144,9 +8144,117 @@ if __name__ == "__main__":
 
 
 
-```python
+## 2218.从栈中取出K个硬币的最大面值和
+
+dp, https://leetcode.cn/problems/maximum-value-of-k-coins-from-piles/
+
+一张桌子上总共有 `n` 个硬币 **栈** 。每个栈有 **正整数** 个带面值的硬币。
+
+每一次操作中，你可以从任意一个栈的 **顶部** 取出 1 个硬币，从栈中移除它，并放入你的钱包里。
+
+给你一个列表 `piles` ，其中 `piles[i]` 是一个整数数组，分别表示第 `i` 个栈里 **从顶到底** 的硬币面值。同时给你一个正整数 `k` ，请你返回在 **恰好** 进行 `k` 次操作的前提下，你钱包里硬币面值之和 **最大为多少** 。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2019/11/09/e1.png)
 
 ```
+输入：piles = [[1,100,3],[7,8,9]], k = 2
+输出：101
+解释：
+上图展示了几种选择 k 个硬币的不同方法。
+我们可以得到的最大面值为 101 。
+```
+
+**示例 2：**
+
+```
+输入：piles = [[100],[100],[100],[100],[100],[100],[1,1,1,1,1,1,700]], k = 7
+输出：706
+解释：
+如果我们所有硬币都从最后一个栈中取，可以得到最大面值和。
+```
+
+ 
+
+**提示：**
+
+- `n == piles.length`
+- `1 <= n <= 1000`
+- `1 <= piles[i][j] <= 105`
+- `1 <= k <= sum(piles[i].length) <= 2000`
+
+
+
+```python
+from typing import List
+class Solution:
+    def maxValueOfCoins(self, piles: List[List[int]], k: int) -> int:
+        n = len(piles)
+        dp = [[0] * (k + 1) for _ in range(n + 1)]
+
+        for i in range(1, n + 1):
+            for j in range(k + 1):
+                current_sum = 0
+                for x in range(min(j, len(piles[i-1])) + 1):
+                    if x > 0:
+                        current_sum += piles[i-1][x-1]
+                    dp[i][j] = max(dp[i][j], dp[i-1][j-x] + current_sum)
+
+        return dp[n][k]
+
+if __name__ == '__main__':
+    sol = Solution()
+    piles = [[1, 100, 3], [7, 8, 9]]
+    k = 2
+    print(sol.maxValueOfCoins(piles, k))  # Output: 101
+
+    piles = [[100], [100], [100], [100], [100], [100], [1, 1, 1, 1, 1, 1, 700]]
+    k = 7
+    print(sol.maxValueOfCoins(piles, k))  # Output: 706
+```
+
+
+
+> 这是一个典型的动态规划问题，涉及从多个堆中取出硬币的最大价值。题目大意是：给定若干个堆，每个堆包含一些硬币。你需要从每个堆中选择若干个硬币，使得总共选出的硬币数不超过 `k`，并且硬币的总价值最大。`piles` 是一个二维数组，每个子数组代表一个堆的硬币；`k` 是最多可以选择的硬币数量。
+>
+> 1. **初始化：**
+>
+>    ```python
+>    n = len(piles)
+>    dp = [[0] * (k + 1) for _ in range(n + 1)]
+>    ```
+>
+>    `n` 是堆的数量。`dp[i][j]` 代表考虑前 `i` 个堆，最多取 `j` 个硬币时的最大价值。初始化时，所有的 `dp[i][j]` 都是 `0`，表示初始状态下没有选择任何硬币。
+>
+> 2. **填充动态规划表格：**
+>
+>    ```python
+>    for i in range(1, n + 1):
+>        for j in range(k + 1):
+>            current_sum = 0
+>            for x in range(min(j, len(piles[i-1])) + 1):
+>                if x > 0:
+>                    current_sum += piles[i-1][x-1]
+>                dp[i][j] = max(dp[i][j], dp[i-1][j-x] + current_sum)
+>    ```
+>
+>    这三层嵌套循环的作用是逐步计算每个 `dp[i][j]` 的值：
+>
+>    - 外层循环 `i` 从 `1` 到 `n`，表示正在考虑第 `i` 个堆。
+>    - 中层循环 `j` 从 `0` 到 `k`，表示选择的硬币数量。
+>    - 内层循环 `x` 从 `0` 到 `min(j, len(piles[i-1]))`，表示从当前堆中选择的硬币数量。`min(j, len(piles[i-1]))` 保证不会选择超过当前堆硬币数的硬币。
+>
+>    `current_sum` 记录当前堆选择的硬币的总价值。如果 `x > 0`，说明选择了 `x` 个硬币，那么就将 `piles[i-1][x-1]` 加入到 `current_sum` 中。
+>
+>    `dp[i][j]` 的值通过比较两种情况来更新：
+>
+>    - 不选择当前堆的硬币，`dp[i-1][j]`；
+>    - 选择 `x` 个硬币时的值，`dp[i-1][j-x] + current_sum`。
+
+
 
 
 
