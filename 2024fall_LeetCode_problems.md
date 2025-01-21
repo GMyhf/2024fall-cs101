@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1010 GMT+8 Jan 21 2025
+Updated 2336 GMT+8 Jan 21 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -421,7 +421,7 @@ class Solution:
 
 
 
-# 101.对称二叉树
+## 101.对称二叉树
 
 https://leetcode.cn/problems/symmetric-tree/
 
@@ -1326,6 +1326,68 @@ if __name__ == "__main__":
     # Uncomment the following line to test a palindrome linked list
     # head = ListNode(1, ListNode(2, ListNode(2, ListNode(1))))
     # print(sol.isPalindrome(head))  # Expected output: True
+```
+
+
+
+## 543.二叉树的直径
+
+https://leetcode.cn/problems/diameter-of-binary-tree/
+
+给你一棵二叉树的根节点，返回该树的 **直径** 。
+
+二叉树的 **直径** 是指树中任意两个节点之间最长路径的 **长度** 。这条路径可能经过也可能不经过根节点 `root` 。
+
+两节点之间路径的 **长度** 由它们之间边数表示。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2021/03/06/diamtree.jpg)
+
+```
+输入：root = [1,2,3,4,5]
+输出：3
+解释：3 ，取路径 [4,2,1,3] 或 [5,2,1,3] 的长度。
+```
+
+**示例 2：**
+
+```
+输入：root = [1,2]
+输出：1
+```
+
+ 
+
+**提示：**
+
+- 树中节点数目在范围 `[1, 104]` 内
+- `-100 <= Node.val <= 100`
+
+
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+        self.diameter = 0
+        def depth(node: TreeNode) -> int:
+            if not node:
+                return 0
+            ldepth = depth(node.left)
+            rdepth = depth(node.right)
+            self.diameter = max(self.diameter, ldepth + rdepth)
+            return 1 + max(ldepth, rdepth)
+
+        depth(root)
+        return self.diameter
 ```
 
 
