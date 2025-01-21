@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0258 GMT+8 Jan 21 2025
+Updated 1010 GMT+8 Jan 21 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -417,6 +417,65 @@ class Solution:
         
         dfs(root)
         return result
+```
+
+
+
+# 101.对称二叉树
+
+https://leetcode.cn/problems/symmetric-tree/
+
+给你一个二叉树的根节点 `root` ， 检查它是否轴对称。
+
+ 
+
+**示例 1：**
+
+![img](https://pic.leetcode.cn/1698026966-JDYPDU-image.png)
+
+```
+输入：root = [1,2,2,3,4,4,3]
+输出：true
+```
+
+**示例 2：**
+
+![img](https://pic.leetcode.cn/1698027008-nPFLbM-image.png)
+
+```
+输入：root = [1,2,2,null,3,null,3]
+输出：false
+```
+
+ 
+
+**提示：**
+
+- 树中节点数目在范围 `[1, 1000]` 内
+- `-100 <= Node.val <= 100`
+
+
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def isSymmetric(self, root: Optional[TreeNode]) -> bool:
+        if not root:
+            return True
+
+        def isMirror(left: TreeNode, right: TreeNode) -> bool:
+            if not left and not right:
+                return True
+            if not left or not right:
+                return False
+            return (left.val == right.val) and isMirror(left.left, right.right) and isMirror(left.right, right.left)
+
+        return isMirror(root.left, root.right)
 ```
 
 
