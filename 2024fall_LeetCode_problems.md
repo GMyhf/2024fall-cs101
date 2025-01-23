@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1046 GMT+8 Jan 23 2025
+Updated 1617 GMT+8 Jan 23 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -534,6 +534,65 @@ class Solution:
             return max(left_depth, right_depth) + 1
         
         return tree_depth(root)
+```
+
+
+
+## 108.将有序数组转换为二叉搜索树
+
+https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/
+
+给你一个整数数组 `nums` ，其中元素已经按 **升序** 排列，请你将其转换为一棵 平衡二叉搜索树。
+
+平衡二叉树是指该树所有节点的左右子树的高度相差不超过1. 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2021/02/18/btree1.jpg" alt="img" style="zoom: 67%;" />
+
+```
+输入：nums = [-10,-3,0,5,9]
+输出：[0,-3,9,-10,null,5]
+解释：[0,-10,5,null,-3,null,9] 也将被视为正确答案：
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2021/02/18/btree.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：nums = [1,3]
+输出：[3,1]
+解释：[1,null,3] 和 [3,1] 都是高度平衡二叉搜索树。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 104`
+- `-104 <= nums[i] <= 104`
+- `nums` 按 **严格递增** 顺序排列
+
+
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def sortedArrayToBST(self, nums: List[int]) -> Optional[TreeNode]:
+        if not nums:
+            return
+        mid = len(nums) // 2
+        root = TreeNode(nums[mid])
+        root.left = self.sortedArrayToBST(nums[:mid])
+        root.right = self.sortedArrayToBST(nums[mid +1:])
+        
+        return root
 ```
 
 
@@ -4302,6 +4361,83 @@ if __name__ == "__main__":
 
 
 
+## 102.二叉树的层序遍历
+
+https://leetcode.cn/problems/binary-tree-level-order-traversal/
+
+给你二叉树的根节点 `root` ，返回其节点值的 **层序遍历** 。 （即逐层地，从左到右访问所有节点）。
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2021/02/19/tree1.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：root = [3,9,20,null,null,15,7]
+输出：[[3],[9,20],[15,7]]
+```
+
+**示例 2：**
+
+```
+输入：root = [1]
+输出：[[1]]
+```
+
+**示例 3：**
+
+```
+输入：root = []
+输出：[]
+```
+
+ 
+
+**提示：**
+
+- 树中节点数目在范围 `[0, 2000]` 内
+- `-1000 <= Node.val <= 1000`
+
+
+
+
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        if not root:
+            return []
+
+        result = []
+        queue = deque([root])
+
+        while queue:
+            level_size = len(queue)
+            level = []
+
+            for _ in range(level_size):
+                node = queue.popleft()
+                level.append(node.val)
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+
+            result.append(level)
+
+        return result
+        
+```
+
+
+
+
+
 ## LCR 107.01 矩阵
 
 dp, https://leetcode.cn/problems/2bCMpM/
@@ -4656,309 +4792,6 @@ class Solution:
 
 
 
-## 155.最小栈
-
-辅助栈, https://leetcode.cn/problems/min-stack/
-
-设计一个支持 `push` ，`pop` ，`top` 操作，并能在常数时间内检索到最小元素的栈。
-
-实现 `MinStack` 类:
-
-- `MinStack()` 初始化堆栈对象。
-- `void push(int val)` 将元素val推入堆栈。
-- `void pop()` 删除堆栈顶部的元素。
-- `int top()` 获取堆栈顶部的元素。
-- `int getMin()` 获取堆栈中的最小元素。
-
- 
-
-**示例 1:**
-
-```
-输入：
-["MinStack","push","push","push","getMin","pop","top","getMin"]
-[[],[-2],[0],[-3],[],[],[],[]]
-
-输出：
-[null,null,null,null,-3,null,0,-2]
-
-解释：
-MinStack minStack = new MinStack();
-minStack.push(-2);
-minStack.push(0);
-minStack.push(-3);
-minStack.getMin();   --> 返回 -3.
-minStack.pop();
-minStack.top();      --> 返回 0.
-minStack.getMin();   --> 返回 -2.
-```
-
- 
-
-**提示：**
-
-- `-231 <= val <= 231 - 1`
-- `pop`、`top` 和 `getMin` 操作总是在 **非空栈** 上调用
-- `push`, `pop`, `top`, and `getMin`最多被调用 `3 * 104` 次
-
-
-
-```python
-class MinStack:
-
-    def __init__(self):
-        self.stack = []
-        self.min_stack = []
-
-    def push(self, val: int) -> None:
-        self.stack.append(val)
-        if not self.min_stack or val <= self.min_stack[-1]:
-            self.min_stack.append(val)
-
-    def pop(self) -> None:
-        if self.stack:
-            if self.stack[-1] == self.min_stack[-1]:
-                self.min_stack.pop()
-            self.stack.pop()
-
-    def top(self) -> int:
-        if self.stack:
-            return self.stack[-1]
-
-    def getMin(self) -> int:
-        if self.min_stack:
-            return self.min_stack[-1]
-
-# Your MinStack object will be instantiated and called as such:
-# obj = MinStack()
-# obj.push(val)
-# obj.pop()
-# param_3 = obj.top()
-# param_4 = obj.getMin()
-```
-
-
-
-
-
-## 200.岛屿数量
-
-dfs, https://leetcode.cn/problems/number-of-islands/ 
-
-给你一个由 `'1'`（陆地）和 `'0'`（水）组成的的二维网格，请你计算网格中岛屿的数量。
-
-岛屿总是被水包围，并且每座岛屿只能由水平方向和/或竖直方向上相邻的陆地连接形成。
-
-此外，你可以假设该网格的四条边均被水包围。
-
- 
-
-**示例 1：**
-
-```
-输入：grid = [
-  ["1","1","1","1","0"],
-  ["1","1","0","1","0"],
-  ["1","1","0","0","0"],
-  ["0","0","0","0","0"]
-]
-输出：1
-```
-
-**示例 2：**
-
-```
-输入：grid = [
-  ["1","1","0","0","0"],
-  ["1","1","0","0","0"],
-  ["0","0","1","0","0"],
-  ["0","0","0","1","1"]
-]
-输出：3
-```
-
- 
-
-**提示：**
-
-- `m == grid.length`
-- `n == grid[i].length`
-- `1 <= m, n <= 300`
-- `grid[i][j]` 的值为 `'0'` 或 `'1'`
-
-
-
-```python
-from typing import List
-
-
-class Solution:
-    def numIslands(self, grid: List[List[str]]) -> int:
-        def dfs(i, j):
-            if i < 0 or j < 0 or i >= len(grid) or j >= len(grid[0]) or grid[i][j] == '0':
-                return
-            grid[i][j] = '0'
-            dfs(i + 1, j)
-            dfs(i - 1, j)
-            dfs(i, j + 1)
-            dfs(i, j - 1)
-        
-        if not grid:
-            return 0
-        count = 0
-        for i in range(len(grid)):
-            for j in range(len(grid[0])):
-                if grid[i][j] == '1':
-                    count += 1
-                    dfs(i, j)
-        return count
-```
-
-
-
-## 240.搜索二维矩阵II
-
-https://leetcode.cn/problems/search-a-2d-matrix-ii/
-
-编写一个高效的算法来搜索 `*m* x *n*` 矩阵 `matrix` 中的一个目标值 `target` 。该矩阵具有以下特性：
-
-- 每行的元素从左到右升序排列。
-- 每列的元素从上到下升序排列。
-
- 
-
-**示例 1：**
-
-![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/11/25/searchgrid2.jpg)
-
-```
-输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 5
-输出：true
-```
-
-**示例 2：**
-
-![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/11/25/searchgrid.jpg)
-
-```
-输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 20
-输出：false
-```
-
- 
-
-**提示：**
-
-- `m == matrix.length`
-- `n == matrix[i].length`
-- `1 <= n, m <= 300`
-- `-109 <= matrix[i][j] <= 109`
-- 每行的所有元素从左到右升序排列
-- 每列的所有元素从上到下升序排列
-- `-109 <= target <= 109`
-
-
-
-```python
-from typing import List
-import bisect
-
-class Solution:
-    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
-        for row in matrix:
-            # 在每行中使用 bisect_left 查找目标值的插入位置
-            index = bisect.bisect_left(row, target)
-            # 检查插入位置是否有效且等于目标值
-            if index < len(row) and row[index] == target:
-                return True
-        return False
-
-if __name__ == "__main__":
-    sol = Solution()
-    print(sol.searchMatrix([[1, 4, 7, 11, 15], [2, 5, 8, 12, 19], [3, 6, 9, 16, 22], [10, 13, 14, 17, 24], [18, 21, 23, 26, 30]], 5))  # 输出: True
-    print(sol.searchMatrix([[1, 4, 7, 11, 15], [2, 5, 8, 12, 19], [3, 6, 9, 16, 22], [10, 13, 14, 17, 24], [18, 21, 23, 26, 30]], 20)) # 输出: False
-    print(sol.searchMatrix([[1]], 1))  # 输出: True
-```
-
-
-
-参照源码实现二分，https://github.com/python/cpython/blob/main/Lib/bisect.py
-
-```python
-from typing import List
-
-class Solution:
-    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
-        for row in matrix:
-            lo, hi = 0, len(row)
-            while lo < hi:
-                mid = (lo + hi) // 2
-                if row[mid] < target:
-                    lo = mid + 1
-                else:
-                    hi = mid
-            # 在找到的位置检查是否是目标值
-            if lo < len(row) and row[lo] == target:
-                return True
-        return False  # 如果未找到目标值
-
-if __name__ == "__main__":
-    sol = Solution()
-    print(sol.searchMatrix([[1, 4, 7, 11, 15], [2, 5, 8, 12, 19], [3, 6, 9, 16, 22], [10, 13, 14, 17, 24], [18, 21, 23, 26, 30]], 5))  # 输出: True
-
-```
-
-
-
-## 279.完全平方数
-
-dp, https://leetcode.cn/problems/perfect-squares
-
-给你一个整数 `n` ，返回 *和为 `n` 的完全平方数的最少数量* 。
-
-**完全平方数** 是一个整数，其值等于另一个整数的平方；换句话说，其值等于一个整数自乘的积。例如，`1`、`4`、`9` 和 `16` 都是完全平方数，而 `3` 和 `11` 不是。
-
- 
-
-**示例 1：**
-
-```
-输入：n = 12
-输出：3 
-解释：12 = 4 + 4 + 4
-```
-
-**示例 2：**
-
-```
-输入：n = 13
-输出：2
-解释：13 = 4 + 9
-```
-
- 
-
-**提示：**
-
-- `1 <= n <= 104`
-
-
-
-```python
-class Solution:
-    def numSquares(self, n: int) -> int:
-        coins = [i * i for i in range(1, 101)]
-        dp = [0] + [float('inf')] * n
-        for i in range(1, n + 1):
-            dp[i] = min(dp[i - c] for c in coins if c <= i) + 1
-
-        return dp[n]
-
-if __name__ == '__main__':
-    sol = Solution()
-    print(sol.numSquares(12))
-```
-
 
 
 ## 139.单词拆分
@@ -5158,6 +4991,91 @@ if __name__ == "__main__":
 
 
 
+## 155.最小栈
+
+辅助栈, https://leetcode.cn/problems/min-stack/
+
+设计一个支持 `push` ，`pop` ，`top` 操作，并能在常数时间内检索到最小元素的栈。
+
+实现 `MinStack` 类:
+
+- `MinStack()` 初始化堆栈对象。
+- `void push(int val)` 将元素val推入堆栈。
+- `void pop()` 删除堆栈顶部的元素。
+- `int top()` 获取堆栈顶部的元素。
+- `int getMin()` 获取堆栈中的最小元素。
+
+ 
+
+**示例 1:**
+
+```
+输入：
+["MinStack","push","push","push","getMin","pop","top","getMin"]
+[[],[-2],[0],[-3],[],[],[],[]]
+
+输出：
+[null,null,null,null,-3,null,0,-2]
+
+解释：
+MinStack minStack = new MinStack();
+minStack.push(-2);
+minStack.push(0);
+minStack.push(-3);
+minStack.getMin();   --> 返回 -3.
+minStack.pop();
+minStack.top();      --> 返回 0.
+minStack.getMin();   --> 返回 -2.
+```
+
+ 
+
+**提示：**
+
+- `-231 <= val <= 231 - 1`
+- `pop`、`top` 和 `getMin` 操作总是在 **非空栈** 上调用
+- `push`, `pop`, `top`, and `getMin`最多被调用 `3 * 104` 次
+
+
+
+```python
+class MinStack:
+
+    def __init__(self):
+        self.stack = []
+        self.min_stack = []
+
+    def push(self, val: int) -> None:
+        self.stack.append(val)
+        if not self.min_stack or val <= self.min_stack[-1]:
+            self.min_stack.append(val)
+
+    def pop(self) -> None:
+        if self.stack:
+            if self.stack[-1] == self.min_stack[-1]:
+                self.min_stack.pop()
+            self.stack.pop()
+
+    def top(self) -> int:
+        if self.stack:
+            return self.stack[-1]
+
+    def getMin(self) -> int:
+        if self.min_stack:
+            return self.min_stack[-1]
+
+# Your MinStack object will be instantiated and called as such:
+# obj = MinStack()
+# obj.push(val)
+# obj.pop()
+# param_3 = obj.top()
+# param_4 = obj.getMin()
+```
+
+
+
+
+
 ## 189.轮转数组
 
 two pointers, https://leetcode.cn/problems/rotate-array/
@@ -5230,6 +5148,83 @@ class Solution:
 
 
 
+## 200.岛屿数量
+
+dfs, https://leetcode.cn/problems/number-of-islands/ 
+
+给你一个由 `'1'`（陆地）和 `'0'`（水）组成的的二维网格，请你计算网格中岛屿的数量。
+
+岛屿总是被水包围，并且每座岛屿只能由水平方向和/或竖直方向上相邻的陆地连接形成。
+
+此外，你可以假设该网格的四条边均被水包围。
+
+ 
+
+**示例 1：**
+
+```
+输入：grid = [
+  ["1","1","1","1","0"],
+  ["1","1","0","1","0"],
+  ["1","1","0","0","0"],
+  ["0","0","0","0","0"]
+]
+输出：1
+```
+
+**示例 2：**
+
+```
+输入：grid = [
+  ["1","1","0","0","0"],
+  ["1","1","0","0","0"],
+  ["0","0","1","0","0"],
+  ["0","0","0","1","1"]
+]
+输出：3
+```
+
+ 
+
+**提示：**
+
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 300`
+- `grid[i][j]` 的值为 `'0'` 或 `'1'`
+
+
+
+```python
+from typing import List
+
+
+class Solution:
+    def numIslands(self, grid: List[List[str]]) -> int:
+        def dfs(i, j):
+            if i < 0 or j < 0 or i >= len(grid) or j >= len(grid[0]) or grid[i][j] == '0':
+                return
+            grid[i][j] = '0'
+            dfs(i + 1, j)
+            dfs(i - 1, j)
+            dfs(i, j + 1)
+            dfs(i, j - 1)
+        
+        if not grid:
+            return 0
+        count = 0
+        for i in range(len(grid)):
+            for j in range(len(grid[0])):
+                if grid[i][j] == '1':
+                    count += 1
+                    dfs(i, j)
+        return count
+```
+
+
+
+
+
 ## 238.除自身以外数组的乘积
 
 前缀和, https://leetcode.cn/problems/product-of-array-except-self/
@@ -5299,6 +5294,153 @@ class Solution:
         
         return ans
 ```
+
+
+
+## 240.搜索二维矩阵II
+
+https://leetcode.cn/problems/search-a-2d-matrix-ii/
+
+编写一个高效的算法来搜索 `*m* x *n*` 矩阵 `matrix` 中的一个目标值 `target` 。该矩阵具有以下特性：
+
+- 每行的元素从左到右升序排列。
+- 每列的元素从上到下升序排列。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/11/25/searchgrid2.jpg)
+
+```
+输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 5
+输出：true
+```
+
+**示例 2：**
+
+![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/11/25/searchgrid.jpg)
+
+```
+输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 20
+输出：false
+```
+
+ 
+
+**提示：**
+
+- `m == matrix.length`
+- `n == matrix[i].length`
+- `1 <= n, m <= 300`
+- `-109 <= matrix[i][j] <= 109`
+- 每行的所有元素从左到右升序排列
+- 每列的所有元素从上到下升序排列
+- `-109 <= target <= 109`
+
+
+
+```python
+from typing import List
+import bisect
+
+class Solution:
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        for row in matrix:
+            # 在每行中使用 bisect_left 查找目标值的插入位置
+            index = bisect.bisect_left(row, target)
+            # 检查插入位置是否有效且等于目标值
+            if index < len(row) and row[index] == target:
+                return True
+        return False
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.searchMatrix([[1, 4, 7, 11, 15], [2, 5, 8, 12, 19], [3, 6, 9, 16, 22], [10, 13, 14, 17, 24], [18, 21, 23, 26, 30]], 5))  # 输出: True
+    print(sol.searchMatrix([[1, 4, 7, 11, 15], [2, 5, 8, 12, 19], [3, 6, 9, 16, 22], [10, 13, 14, 17, 24], [18, 21, 23, 26, 30]], 20)) # 输出: False
+    print(sol.searchMatrix([[1]], 1))  # 输出: True
+```
+
+
+
+参照源码实现二分，https://github.com/python/cpython/blob/main/Lib/bisect.py
+
+```python
+from typing import List
+
+class Solution:
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        for row in matrix:
+            lo, hi = 0, len(row)
+            while lo < hi:
+                mid = (lo + hi) // 2
+                if row[mid] < target:
+                    lo = mid + 1
+                else:
+                    hi = mid
+            # 在找到的位置检查是否是目标值
+            if lo < len(row) and row[lo] == target:
+                return True
+        return False  # 如果未找到目标值
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.searchMatrix([[1, 4, 7, 11, 15], [2, 5, 8, 12, 19], [3, 6, 9, 16, 22], [10, 13, 14, 17, 24], [18, 21, 23, 26, 30]], 5))  # 输出: True
+
+```
+
+
+
+## 279.完全平方数
+
+dp, https://leetcode.cn/problems/perfect-squares
+
+给你一个整数 `n` ，返回 *和为 `n` 的完全平方数的最少数量* 。
+
+**完全平方数** 是一个整数，其值等于另一个整数的平方；换句话说，其值等于一个整数自乘的积。例如，`1`、`4`、`9` 和 `16` 都是完全平方数，而 `3` 和 `11` 不是。
+
+ 
+
+**示例 1：**
+
+```
+输入：n = 12
+输出：3 
+解释：12 = 4 + 4 + 4
+```
+
+**示例 2：**
+
+```
+输入：n = 13
+输出：2
+解释：13 = 4 + 9
+```
+
+ 
+
+**提示：**
+
+- `1 <= n <= 104`
+
+
+
+```python
+class Solution:
+    def numSquares(self, n: int) -> int:
+        coins = [i * i for i in range(1, 101)]
+        dp = [0] + [float('inf')] * n
+        for i in range(1, n + 1):
+            dp[i] = min(dp[i - c] for c in coins if c <= i) + 1
+
+        return dp[n]
+
+if __name__ == '__main__':
+    sol = Solution()
+    print(sol.numSquares(12))
+```
+
+
 
 
 
