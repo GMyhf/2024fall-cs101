@@ -9819,6 +9819,147 @@ if __name__ == "__main__":
 
 
 
+## P1165 日志分析
+
+辅助栈，懒删除，https://www.luogu.com.cn/problem/P1165
+
+M 海运公司最近要对旗下仓库的货物进出情况进行统计。目前他们所拥有的唯一记录就是一个记录集装箱进出情况的日志。该日志记录了两类操作：第一类操作为集装箱入库操作，以及该次入库的集装箱重量；第二类操作为集装箱的出库操作。这些记录都严格按时间顺序排列。集装箱入库和出库的规则为先进后出，即每次出库操作出库的集装箱为当前在仓库里所有集装箱中最晚入库的集装箱。
+
+出于分析目的，分析人员在日志中随机插入了若干第三类操作――查询操作。分析日志时，每遇到一次查询操作，都要报告出当前仓库中最大集装箱的重量。
+
+**输入格式**
+
+包含 $N+1$ 行：
+
+第一行为一个正整数 $N$，对应于日志内所含操作的总数。
+
+接下来的 $N$ 行，分别属于以下三种格式之一：
+
+- 格式 1：`0 X`，表示一次集装箱入库操作，正整数 $X$ 表示该次入库的集装箱的重量。
+- 格式 2：`1`，表示一次集装箱出库操作，（就当时而言）最后入库的集装箱出库。
+- 格式 3：`2`，表示一次查询操作，要求分析程序输出当前仓库内最大集装箱的重量。
+
+当仓库为空时你应该忽略出库操作，当仓库为空查询时你应该输出 $0$。
+
+**输出格式**
+
+输出行数等于日志中查询操作的次数。每行为一个整数，表示查询结果。
+
+样例 #1
+
+样例输入 #1
+
+```
+13
+0 1
+0 2
+2
+0 4
+0 2
+2
+1
+2
+1
+1
+2
+1
+2
+```
+
+样例输出 #1
+
+```
+2
+4
+4
+1
+0
+```
+
+提示
+
+数据范围及约定
+
+- 对于 $20\%$ 的数据，有 $N \le 10$；
+- 对于 $40\%$ 的数据，有 $N \le 1000$；
+- 对于 $100\%$ 的数据，有 $1 \le N \le 200000$，$1 \le X \le 10^8$。
+
+
+
+这道题本来想着用堆+懒删除做，但是确实不如使用辅助栈维护最大值。（参考快速堆猪，一样的道理）
+
+```python
+stack = []
+for _ in range(int(input())):
+	operation = list(map(int, input().split()))
+	if operation[0] == 0:
+		if stack:
+			stack.append(max(stack[-1], operation[1]))
+		else:
+			stack.append(operation[1])
+	elif operation[0] == 1:
+		if stack:
+			stack.pop()
+	else:
+		if stack:
+			print(stack[-1])
+		else:
+			print(0)
+
+```
+
+
+
+懒删除
+
+```python
+import heapq
+
+def main():
+    N = int(input())
+
+    stack = []
+    max_heap = []
+    max_heap_map = {}
+
+    result = []
+
+    for _ in range(N):
+        op = list(map(int, input().split()))
+        if op[0] == 0:
+            weight = int(op[1])
+            stack.append(weight)
+            heapq.heappush(max_heap, -weight)
+            if weight in max_heap_map:
+                max_heap_map[weight] += 1
+            else:
+                max_heap_map[weight] = 1
+        elif op[0] == 1:
+            if stack:
+                weight = stack.pop()
+                max_heap_map[weight] -= 1
+                if max_heap_map[weight] == 0:
+                    del max_heap_map[weight]
+        elif op[0] == 2:
+            if max_heap:
+                while max_heap and -max_heap[0] not in max_heap_map:
+                    heapq.heappop(max_heap)
+                if max_heap:
+                    result.append(-max_heap[0])
+                else:
+                    result.append(0)
+            else:
+                result.append(0)
+
+    for res in result:
+        print(res)
+
+if __name__ == "__main__":
+    main()
+```
+
+
+
 ## P1429 平面最近点对（加强版）
 
 https://www.luogu.com.cn/problem/P1429
