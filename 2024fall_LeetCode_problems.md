@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1539 GMT+8 Jan 24 2025
+Updated 1617 GMT+8 Jan 24 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -3126,6 +3126,74 @@ if __name__ == "__main__":
     n = 3
     print(sol.generateParenthesis(n))
 ```
+
+
+
+
+
+## 24.两两交换链表中的节点
+
+https://leetcode.cn/problems/swap-nodes-in-pairs/
+
+给你一个链表，两两交换其中相邻的节点，并返回交换后链表的头节点。你必须在不修改节点内部的值的情况下完成本题（即，只能进行节点交换）。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2020/10/03/swap_ex1.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：head = [1,2,3,4]
+输出：[2,1,4,3]
+```
+
+**示例 2：**
+
+```
+输入：head = []
+输出：[]
+```
+
+**示例 3：**
+
+```
+输入：head = [1]
+输出：[1]
+```
+
+ 
+
+**提示：**
+
+- 链表中节点的数目在范围 `[0, 100]` 内
+- `0 <= Node.val <= 100`
+
+
+
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+class Solution:
+    def swapPairs(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        dummy = ListNode(next=head)
+        pre = dummy
+        while head and head.next:
+            next_node = head.next.next
+            pre.next = head.next
+            head.next.next = head
+            head.next = next_node
+            pre = head
+            head = next_node
+        
+        return dummy.next
+        
+```
+
+
 
 
 
