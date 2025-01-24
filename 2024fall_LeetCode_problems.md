@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1617 GMT+8 Jan 24 2025
+Updated 1746 GMT+8 Jan 24 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -7610,6 +7610,95 @@ class Solution:
 
 
 # 困难
+
+## 25.K个一组翻转链表
+
+https://leetcode.cn/problems/reverse-nodes-in-k-group/description/
+
+给你链表的头节点 `head` ，每 `k` 个节点一组进行翻转，请你返回修改后的链表。
+
+`k` 是一个正整数，它的值小于或等于链表的长度。如果节点总数不是 `k` 的整数倍，那么请将最后剩余的节点保持原有顺序。
+
+你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2020/10/03/reverse_ex1.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：head = [1,2,3,4,5], k = 2
+输出：[2,1,4,3,5]
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2020/10/03/reverse_ex2.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：head = [1,2,3,4,5], k = 3
+输出：[3,2,1,4,5]
+```
+
+ 
+
+**提示：**
+
+- 链表中的节点数目为 `n`
+- `1 <= k <= n <= 5000`
+- `0 <= Node.val <= 1000`
+
+ 
+
+**进阶：**你可以设计一个只用 `O(1)` 额外内存空间的算法解决此问题吗？
+
+
+
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+
+class Solution:
+    def reverseKGroup(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+        # 创建一个虚拟头节点，并将其next指针指向head
+        dummy = ListNode(next=head)
+        groupPrev = dummy
+        
+        while True:
+            # 检查从当前起始节点开始是否有k个节点
+            kth = self.getKth(groupPrev, k)
+            if not kth:
+                break
+            groupNext = kth.next
+            
+            # 反转该组内的节点
+            prev, curr = groupNext, groupPrev.next
+            while curr != groupNext:
+                nxt = curr.next
+                curr.next = prev
+                prev = curr
+                curr = nxt
+
+            # 将前一个group的最后一个节点与新反转后的第一个节点连接起来
+            tmp = groupPrev.next
+            groupPrev.next = kth
+            groupPrev = tmp
+
+        return dummy.next
+
+    def getKth(self, curr: ListNode, k: int) -> Optional[ListNode]:
+        # 移动curr直到第k个节点或到达链表末尾
+        while curr and k > 0:
+            curr = curr.next
+            k -= 1
+        return curr
+```
+
+
 
 ## 32.最长有效括号
 
