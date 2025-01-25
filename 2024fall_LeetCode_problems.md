@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1746 GMT+8 Jan 24 2025
+Updated 1206 GMT+8 Jan 25 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -9215,6 +9215,104 @@ for t in range(len(boss_power)):
         break
 print(a)
 ```
+
+
+
+## 2412.完成所有交易的初始最少钱数
+
+greedy, https://leetcode.cn/problems/minimum-money-required-before-transactions/
+
+给你一个下标从 **0** 开始的二维整数数组 `transactions`，其中`transactions[i] = [costi, cashbacki]` 。
+
+数组描述了若干笔交易。其中每笔交易必须以 **某种顺序** 恰好完成一次。在任意一个时刻，你有一定数目的钱 `money` ，为了完成交易 `i` ，`money >= costi` 这个条件必须为真。执行交易后，你的钱数 `money` 变成 `money - costi + cashbacki` 。
+
+请你返回 **任意一种** 交易顺序下，你都能完成所有交易的最少钱数 `money` 是多少。
+
+ 
+
+**示例 1：**
+
+```
+输入：transactions = [[2,1],[5,0],[4,2]]
+输出：10
+解释：
+刚开始 money = 10 ，交易可以以任意顺序进行。
+可以证明如果 money < 10 ，那么某些交易无法进行。
+```
+
+**示例 2：**
+
+```
+输入：transactions = [[3,0],[0,3]]
+输出：3
+解释：
+- 如果交易执行的顺序是 [[3,0],[0,3]] ，完成所有交易需要的最少钱数是 3 。
+- 如果交易执行的顺序是 [[0,3],[3,0]] ，完成所有交易需要的最少钱数是 0 。
+所以，刚开始钱数为 3 ，任意顺序下交易都可以全部完成。
+```
+
+ 
+
+**提示：**
+
+- `1 <= transactions.length <= 105`
+- `transactions[i].length == 2`
+- `0 <= costi, cashbacki <= 10^9`
+
+
+
+题目要求的是在任意一种交易顺序下都能完成所有交易的最少初始金额。为了确保在最费钱的交易顺序下也能完成所有交易，我们需要找到一种最费钱的交易排列方式。  
+
+分类交易：  将交易分为两类：cost > cashback 和 cost <= cashback。
+排序：  
+对于 cost > cashback 的交易，按 cashback 升序排序。
+对于 cost <= cashback 的交易，按 cost 降序排序。
+
+```python
+from typing import List
+
+class Solution:
+    def minimumMoney(self, transactions: List[List[int]]) -> int:
+        # Separate transactions into two categories
+        # 1. Transactions where cost > cashback
+        # 2. Transactions where cost <= cashback
+        cost_greater_than_cashback = []
+        cost_less_or_equal_cashback = []
+        
+        for cost, cashback in transactions:
+            if cost > cashback:
+                cost_greater_than_cashback.append((cost, cashback))
+            else:
+                cost_less_or_equal_cashback.append((cost, cashback))
+        
+        # Sort the first category by cashback in ascending order
+        cost_greater_than_cashback.sort(key=lambda x: x[1])
+        
+        # Sort the second category by cost in descending order
+        cost_less_or_equal_cashback.sort(key=lambda x: -x[0])
+        
+        # Combine the two sorted lists
+        sorted_transactions = cost_greater_than_cashback + cost_less_or_equal_cashback
+        
+        # Calculate the minimum initial money required
+        min_money = 0
+        current_money = 0
+        
+        for cost, cashback in sorted_transactions:
+            if current_money < cost:
+                min_money += cost - current_money
+                current_money = cost
+            current_money = current_money - cost + cashback
+        
+        return min_money
+
+# Example usage
+if __name__ == "__main__":
+    transactions = [[2, 1], [5, 0], [4, 2]]
+    print(Solution().minimumMoney(transactions))  # Output: 10
+```
+
+
 
 
 
