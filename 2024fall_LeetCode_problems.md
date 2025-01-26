@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1505 GMT+8 Jan 26 2025
+Updated 1942 GMT+8 Jan 26 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -7859,6 +7859,167 @@ class Solution:
                 
         return d
                  
+```
+
+
+
+## 3434.子数组操作后的最大频率
+
+Kadane, https://leetcode.cn/problems/maximum-frequency-after-subarray-operation/
+
+给你一个长度为 `n` 的数组 `nums` ，同时给你一个整数 `k` 。
+
+你可以对 `nums` 执行以下操作 **一次** ：
+
+- 选择一个子数组 `nums[i..j]` ，其中 `0 <= i <= j <= n - 1` 。
+- 选择一个整数 `x` 并将 `nums[i..j]` 中 **所有** 元素都增加 `x` 。
+
+请你返回执行以上操作以后数组中 `k` 出现的 **最大** 频率。
+
+**子数组** 是一个数组中一段连续 **非空** 的元素序列。
+
+ 
+
+**示例 1：**
+
+**输入：**nums = [1,2,3,4,5,6], k = 1
+
+**输出：**2
+
+**解释：**
+
+将 `nums[2..5]` 增加 -5 后，1 在数组 `[1, 2, -2, -1, 0, 1]` 中的频率为最大值 2 。
+
+**示例 2：**
+
+**输入：**nums = [10,2,3,4,5,5,4,3,2,2], k = 10
+
+**输出：**4
+
+**解释：**
+
+将 `nums[1..9]` 增加 8 以后，10 在数组 `[10, 10, 11, 12, 13, 13, 12, 11, 10, 10]` 中的频率为最大值 4 。
+
+ 
+
+**提示：**
+
+- `1 <= n == nums.length <= 105`
+- `1 <= nums[i] <= 50`
+- `1 <= k <= 50`
+
+
+
+```python
+class Solution:
+    def maxFrequency(self, nums, k):
+        # 计算初始的 k 出现次数
+        totalK = nums.count(k)
+        
+        maxExtra = 0
+        # 遍历所有可能的增益 (从 -k 到 50 - k)
+        for x in range(-k, 51 - k):
+            currentSum = 0
+            maxSum = 0
+            # 遍历数组，计算增益
+            for num in nums:
+                if num == k + x:
+                    currentSum += 1  # 非k元素贡献 +1
+                if num == k:
+                    currentSum -= 1  # k元素贡献 -1
+                if currentSum < 0:
+                    currentSum = 0  # 如果增益为负数，重置
+                maxSum = max(currentSum, maxSum)  # 更新当前最大增益
+            
+            maxExtra = max(maxSum, maxExtra)  # 更新最大增益
+        
+        # 返回最终结果：原有的 k 的频率 + 最大增益
+        return totalK + maxExtra
+
+```
+
+
+
+
+
+结合 Kadane 算法来做：
+
+遍历数组，统计 k 的初始出现次数 kFreq，并收集所有非 k 元素到一个 set 中。
+对于每个非 k 元素 nonKNum，使用 Kadane 算法 计算其对应的最大增益子数组。增益子数组的贡献规则为：nonKNum 出现时贡献 +1，k 出现时贡献 -1，其他元素不影响。
+维护当前最大增益值 maxGain，遍历所有非 k 元素后，得到最大增益。
+最终结果为 kFreq + maxGain。
+
+作者：Attention
+链接：https://leetcode.cn/circle/discuss/o8jnpD/view/cBtoFf/
+
+```python
+class Solution:
+    def maxFrequency(self, nums, k):
+        # 计算k在nums中的频率
+        k_freq = nums.count(k)
+        
+        # 使用集合来存储不是k的数字
+        non_k_nums = set(num for num in nums if num != k)
+        
+        max_gain = 0
+        
+        for non_k_num in non_k_nums:
+            cur_max = 0
+            max_subarray = 0
+            for num in nums:
+                if num == non_k_num:
+                    cur_max += 1
+                elif num == k:
+                    cur_max -= 1
+                
+                max_subarray = max(max_subarray, cur_max)
+                if cur_max < 0:
+                    cur_max = 0
+            
+            max_gain = max(max_gain, max_subarray)
+        
+        return k_freq + max_gain
+```
+
+
+
+```c++
+class Solution {
+   public:
+    int maxFrequency(vector<int>& nums, int k) {
+        int kFreq = 0;
+        unordered_set<int> nonKNums;
+        for (int num : nums) {
+            if (num == k) {
+                kFreq++;
+            } else {
+                nonKNums.insert(num);
+            }
+        }
+
+        int maxGain = 0;
+
+        for (int nonKNum : nonKNums) {
+            int curMax = 0;
+            int maxSubarray = 0;
+            for (int num : nums) {
+                if (num == nonKNum) {
+                    curMax += 1;
+                } else if (num == k) {
+                    curMax -= 1;
+                }
+
+                maxSubarray = max(maxSubarray, curMax);
+                if (curMax < 0) {
+                    curMax = 0;
+                }
+            }
+            maxGain = max(maxGain, maxSubarray);
+        }
+
+        return kFreq + maxGain;
+    }
+};
 ```
 
 
