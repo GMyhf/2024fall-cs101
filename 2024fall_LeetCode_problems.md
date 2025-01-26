@@ -7940,17 +7940,12 @@ class Solution:
 
 
 
+实际上是找连续子串中相同元素最多的。结合 Kadane 算法来做：
 
-
-结合 Kadane 算法来做：
-
-遍历数组，统计 k 的初始出现次数 kFreq，并收集所有非 k 元素到一个 set 中。
+【Attention】：遍历数组，统计 k 的初始出现次数 kFreq，并收集所有非 k 元素到一个 set 中。
 对于每个非 k 元素 nonKNum，使用 Kadane 算法 计算其对应的最大增益子数组。增益子数组的贡献规则为：nonKNum 出现时贡献 +1，k 出现时贡献 -1，其他元素不影响。
 维护当前最大增益值 maxGain，遍历所有非 k 元素后，得到最大增益。
 最终结果为 kFreq + maxGain。
-
-作者：Attention
-链接：https://leetcode.cn/circle/discuss/o8jnpD/view/cBtoFf/
 
 ```python
 class Solution:
