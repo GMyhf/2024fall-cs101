@@ -1,12 +1,14 @@
 # Problems in leetcode.cn
 
-Updated 0041 GMT+8 Jan 27 2025
+Updated 2359 GMT+8 Jan 27 2025
 
 2024 fall, Complied by Hongfei Yan
 
 
 
 > Logs:
+>
+> 2025/1/27, 力扣题目难度分数，https://zerotrac.github.io/leetcode_problem_rating/#/
 >
 > 2024/11/14, 尽量先刷 LeetCode热题100， https://leetcode.cn/studyplan/top-100-liked/
 
@@ -10469,6 +10471,171 @@ class Solution:
             l += 1
 
         return res
+```
+
+
+
+## 3435.最短公共超序列的字母出现频率
+
+枚举, 图谱排序, https://leetcode.cn/problems/frequencies-of-shortest-supersequences/
+
+给你一个字符串数组 `words` 。请你找到 `words` 所有 **最短公共超序列** ，且确保它们互相之间无法通过排列得到。
+
+**最短公共超序列** 指的是一个字符串，`words` 中所有字符串都是它的子序列，且它的长度 **最短** 。
+
+请你返回一个二维整数数组 `freqs` ，表示所有的最短公共超序列，其中 `freqs[i]` 是一个长度为 26 的数组，它依次表示一个最短公共超序列的所有小写英文字母的出现频率。你可以以任意顺序返回这个频率数组。
+
+**排列** 指的是一个字符串中所有字母重新安排顺序以后得到的字符串。
+
+一个 **子序列** 是从一个字符串中删除一些（也可以不删除）字符后，剩余字符不改变顺序连接得到的 **非空** 字符串。
+
+ 
+
+**示例 1：**
+
+**输入：**words = ["ab","ba"]
+
+**输出：**[[1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+
+**解释：**
+
+两个最短公共超序列分别是 `"aba"` 和 `"bab"` 。输出分别是两者的字母出现频率。
+
+**示例 2：**
+
+**输入：**words = ["aa","ac"]
+
+**输出：**[[2,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+
+**解释：**
+
+两个最短公共超序列分别是 `"aac"` 和 `"aca"` 。由于它们互为排列，所以只保留 `"aac"` 。
+
+**示例 3：**
+
+**输入：**words = ["aa","bb","cc"]
+
+**输出：**[[2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+
+**解释：**
+
+`"aabbcc"` 和它所有的排列都是最短公共超序列。
+
+ 
+
+**提示：**
+
+- `1 <= words.length <= 256`
+- `words[i].length == 2`
+- `words` 中所有字符串都包含不超过 16 个互不相同的小写英文字母。
+- `words` 中的字符串互不相同。
+
+
+
+【LeetCode作者：流萤】
+
+假设出现两次的字母为 `abc...i`，出现一次的字母为 `jkl...p`，那么序列应该是 `abc...i [jkl...p 的某种排列] abc...i` 最好。这样，对于 `words` 中任何长度为 2 的字符串 $c_1c_2$，只要 $c_1$和 $c_2$其中一个出现两次，那么一定能在这个序列里找到对应的子序列；如果两者都只出现一次，那么它们都会出现在序列的中间，而且必须满足 $c_1$排在 $c_2$的前面。剩下的问题就是只出现一次的字母需要怎么排列。“$c_1$排在 $c_2$前面”这就是经典的拓扑排序。
+
+
+
+```python
+from graphlib import TopologicalSorter
+from collections import defaultdict
+from itertools import combinations
+from typing import List
+
+class Solution:
+    def supersequences(self, words: List[str]) -> List[List[int]]:
+        # 创建一个集合，包含所有的单词
+        word_set = set(words)
+        
+        # 创建一个字符集合，包含所有出现在单词中的字母
+        all_chars = set(y for word in words for y in word)
+        
+        # 创建一个长度为26的列表，用于记录每个字母的计数
+        char_count = [0] * 26
+        
+        # 遍历所有字母，更新它们的计数
+        for char in all_chars:
+            # 通过 ord() 将字符转为对应的数字（从'a'到'z'）
+            # 假设字母是小写字母，从0开始到25，映射到char_count的索引
+            char_count[ord(char) - 97] += 2  # 每个字符初始计数加2
+            
+        # 从字符集(all_chars)的大小开始，尝试逐步减少，直到0
+        for cnt in range(len(all_chars), -1, -1):
+            possible_answers = []  # 用来存储当前长度为cnt的可能结果
+            
+            # 获取所有长度为cnt的字母组合
+            for char_combo in combinations(all_chars, cnt):
+                # 创建一个图结构，用字典存储字符的依赖关系
+                graph = defaultdict(list)
+                
+                # 遍历当前组合中的字符对
+                for char1 in char_combo:
+                    for char2 in char_combo:
+                        # 如果字符对组成的字符串是单词中的一部分，则建立依赖关系
+                        if char1 + char2 in word_set:
+                            graph[char1].append(char2)
+                
+                try:
+                    # 使用 TopologicalSorter 来检测是否存在有效的拓扑排序
+                    list(TopologicalSorter(graph).static_order())
+                    
+                    # 复制字符计数列表
+                    updated_count = char_count.copy()
+                    
+                    # 对于当前组合中的每个字符，减去1
+                    for char in char_combo:
+                        updated_count[ord(char) - 97] -= 1
+                    
+                    # 将更新后的计数添加到结果列表中
+                    possible_answers.append(updated_count)
+                
+                except:
+                    # 如果出现异常（说明无法进行拓扑排序），继续尝试其他组合
+                    continue
+            
+            # 如果有有效的答案，则返回这些结果
+            if possible_answers:
+                return possible_answers
+
+```
+
+
+
+
+
+```python
+from graphlib import TopologicalSorter
+
+class Solution:
+    def supersequences(self, words: List[str]) -> List[List[int]]:
+        d = set(words)
+        d0 = set(y for x in words for y in x)
+        l = [0] * 26
+        for x in d0:
+            l[ord(x) - 97] += 2
+            
+        for cnt in range(len(d0), -1, -1):
+            ans = []
+            for x in combinations(d0, cnt):
+                g = defaultdict(list)
+                for y in x:
+                    for z in x:
+                        if y + z in d:
+                            g[y].append(z)
+                try:
+                    list(TopologicalSorter(g).static_order())
+                    res = l.copy()
+                    for y in x:
+                        res[ord(y) - 97] -= 1
+                    ans.append(res)
+                except:
+                    continue
+            if ans:
+                return ans
+
+
 ```
 
 
