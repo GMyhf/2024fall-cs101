@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2256 GMT+8 Jan 28 2025
+Updated 0036 GMT+8 Jan 29 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -1239,6 +1239,60 @@ class Solution:
         return pre
         
 ```
+
+
+
+## 219.存在重复元素II
+
+https://leetcode.cn/problems/contains-duplicate-ii/
+
+给你一个整数数组 `nums` 和一个整数 `k` ，判断数组中是否存在两个 **不同的索引** `i` 和 `j` ，满足 `nums[i] == nums[j]` 且 `abs(i - j) <= k` 。如果存在，返回 `true` ；否则，返回 `false` 。
+
+**示例 1：**
+
+```
+输入：nums = [1,2,3,1], k = 3
+输出：true
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,0,1,1], k = 1
+输出：true
+```
+
+**示例 3：**
+
+```
+输入：nums = [1,2,3,1,2,3], k = 2
+输出：false
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 105`
+- `-109 <= nums[i] <= 109`
+- `0 <= k <= 105`
+
+
+
+```python
+class Solution:
+    def containsNearbyDuplicate(self, nums: List[int], k: int) -> bool:
+        n = len(nums)
+        d = dict()
+        for i in range(n):
+            if nums[i] in d and abs(i - d[nums[i]]) <= k:
+                    return True
+            d[nums[i]] = i
+        
+        return False
+```
+
+
 
 
 
