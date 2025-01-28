@@ -174,7 +174,7 @@ https://leetcode.cn/problems/merge-two-sorted-lists/
 
 **示例 1：**
 
-![img](https://assets.leetcode.com/uploads/2020/10/03/merge_ex1.jpg)
+<img src="https://assets.leetcode.com/uploads/2020/10/03/merge_ex1.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：l1 = [1,2,4], l2 = [1,3,4]
@@ -500,7 +500,7 @@ https://leetcode.cn/problems/symmetric-tree/
 
 **示例 1：**
 
-![img](https://pic.leetcode.cn/1698026966-JDYPDU-image.png)
+<img src="https://pic.leetcode.cn/1698026966-JDYPDU-image.png" alt="img" style="zoom:67%;" />
 
 ```
 输入：root = [1,2,2,3,4,4,3]
@@ -509,7 +509,7 @@ https://leetcode.cn/problems/symmetric-tree/
 
 **示例 2：**
 
-![img](https://pic.leetcode.cn/1698027008-nPFLbM-image.png)
+<img src="https://pic.leetcode.cn/1698027008-nPFLbM-image.png" alt="img" style="zoom:67%;" />
 
 ```
 输入：root = [1,2,2,null,3,null,3]
@@ -676,7 +676,7 @@ dp, https://leetcode.cn/problems/pascals-triangle/
 
 在「杨辉三角」中，每个数是它左上方和右上方的数的和。
 
-![img](https://pic.leetcode-cn.com/1626927345-DZmfxB-PascalTriangleAnimated2.gif)
+<img src="https://pic.leetcode-cn.com/1626927345-DZmfxB-PascalTriangleAnimated2.gif" alt="img" style="zoom:67%;" />
 
  
 
@@ -728,7 +728,7 @@ dp, https://leetcode.cn/problems/pascals-triangle/
 
 在「杨辉三角」中，每个数是它左上方和右上方的数的和。
 
-![img](https://pic.leetcode-cn.com/1626927345-DZmfxB-PascalTriangleAnimated2.gif)
+<img src="https://pic.leetcode-cn.com/1626927345-DZmfxB-PascalTriangleAnimated2.gif" alt="img" style="zoom:67%;" />
 
  
 
@@ -921,7 +921,7 @@ https://leetcode.cn/problems/linked-list-cycle/
 
 **示例 1：**
 
-![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/07/circularlinkedlist.png)
+<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/07/circularlinkedlist.png" alt="img" style="zoom:67%;" />
 
 ```
 输入：head = [3,2,0,-4], pos = 1
@@ -931,7 +931,7 @@ https://leetcode.cn/problems/linked-list-cycle/
 
 **示例 2：**
 
-![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/07/circularlinkedlist_test2.png)
+<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/07/circularlinkedlist_test2.png" alt="img" style="zoom:67%;" />
 
 ```
 输入：head = [1,2], pos = 0
@@ -941,7 +941,7 @@ https://leetcode.cn/problems/linked-list-cycle/
 
 **示例 3：**
 
-![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/07/circularlinkedlist_test3.png)
+<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/07/circularlinkedlist_test3.png" alt="img" style="zoom:67%;" />
 
 ```
 输入：head = [1], pos = -1
@@ -990,7 +990,7 @@ https://leetcode.cn/problems/intersection-of-two-linked-lists/
 
 图示两个链表在节点 `c1` 开始相交**：**
 
-[![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/14/160_statement.png)](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/14/160_statement.png)
+[<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/14/160_statement.png" alt="img" style="zoom:67%;" />](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/14/160_statement.png)
 
 题目数据 **保证** 整个链式结构中不存在环。
 
@@ -1012,7 +1012,7 @@ https://leetcode.cn/problems/intersection-of-two-linked-lists/
 
 **示例 1：**
 
-[![img](https://assets.leetcode.com/uploads/2021/03/05/160_example_1_1.png)](https://assets.leetcode.com/uploads/2018/12/13/160_example_1.png)
+[<img src="https://assets.leetcode.com/uploads/2021/03/05/160_example_1_1.png" alt="img" style="zoom:67%;" />](https://assets.leetcode.com/uploads/2018/12/13/160_example_1.png)
 
 ```
 输入：intersectVal = 8, listA = [4,1,8,4,5], listB = [5,6,1,8,4,5], skipA = 2, skipB = 3
@@ -1027,7 +1027,7 @@ https://leetcode.cn/problems/intersection-of-two-linked-lists/
 
 **示例 2：**
 
-[![img](https://assets.leetcode.com/uploads/2021/03/05/160_example_2.png)](https://assets.leetcode.com/uploads/2018/12/13/160_example_2.png)
+[<img src="https://assets.leetcode.com/uploads/2021/03/05/160_example_2.png" alt="img" style="zoom:67%;" />](https://assets.leetcode.com/uploads/2018/12/13/160_example_2.png)
 
 ```
 输入：intersectVal = 2, listA = [1,9,1,2,4], listB = [3,2,4], skipA = 3, skipB = 1
@@ -1039,7 +1039,7 @@ https://leetcode.cn/problems/intersection-of-two-linked-lists/
 
 **示例 3：**
 
-[![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/14/160_example_3.png)](https://assets.leetcode.com/uploads/2018/12/13/160_example_3.png)
+[<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/14/160_example_3.png" alt="img" style="zoom:67%;" />](https://assets.leetcode.com/uploads/2018/12/13/160_example_3.png)
 
 ```
 输入：intersectVal = 0, listA = [2,6,4], listB = [1,5], skipA = 3, skipB = 2
@@ -1188,7 +1188,7 @@ linked-list, https://leetcode.cn/problems/reverse-linked-list/
 
 **示例 1：**
 
-![img](https://assets.leetcode.com/uploads/2021/02/19/rev1ex1.jpg)
+<img src="https://assets.leetcode.com/uploads/2021/02/19/rev1ex1.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：head = [1,2,3,4,5]
@@ -1197,7 +1197,7 @@ linked-list, https://leetcode.cn/problems/reverse-linked-list/
 
 **示例 2：**
 
-![img](https://assets.leetcode.com/uploads/2021/02/19/rev1ex2.jpg)
+<img src="https://assets.leetcode.com/uploads/2021/02/19/rev1ex2.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：head = [1,2]
@@ -1318,7 +1318,7 @@ linked-list, https://leetcode.cn/problems/palindrome-linked-list/
 
 **示例 1：**
 
-![img](https://assets.leetcode.com/uploads/2021/03/03/pal1linked-list.jpg)
+<img src="https://assets.leetcode.com/uploads/2021/03/03/pal1linked-list.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：head = [1,2,2,1]
@@ -1327,7 +1327,7 @@ linked-list, https://leetcode.cn/problems/palindrome-linked-list/
 
 **示例 2：**
 
-![img](https://assets.leetcode.com/uploads/2021/03/03/pal2linked-list.jpg)
+<img src="https://assets.leetcode.com/uploads/2021/03/03/pal2linked-list.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：head = [1,2]
@@ -1550,7 +1550,7 @@ https://leetcode.cn/problems/diameter-of-binary-tree/
 
 **示例 1：**
 
-![img](https://assets.leetcode.com/uploads/2021/03/06/diamtree.jpg)
+<img src="https://assets.leetcode.com/uploads/2021/03/06/diamtree.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：root = [1,2,3,4,5]
@@ -2273,7 +2273,7 @@ linked list, https://leetcode.cn/problems/add-two-numbers/
 
 **示例 1：**
 
-![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2021/01/02/addtwonumber1.jpg)
+<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2021/01/02/addtwonumber1.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：l1 = [2,4,3], l2 = [5,6,4]
@@ -2828,7 +2828,7 @@ two pointers, https://leetcode.cn/problems/container-with-most-water/
 
 **示例 1：**
 
-![img](https://aliyun-lc-upload.oss-cn-hangzhou.aliyuncs.com/aliyun-lc-upload/uploads/2018/07/25/question_11.jpg)
+<img src="https://aliyun-lc-upload.oss-cn-hangzhou.aliyuncs.com/aliyun-lc-upload/uploads/2018/07/25/question_11.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：[1,8,6,2,5,4,8,3,7]
@@ -3071,7 +3071,7 @@ if __name__ == "__main__":
 
 **示例 1：**
 
-![img](https://assets.leetcode.com/uploads/2020/10/03/remove_ex1.jpg)
+<img src="https://assets.leetcode.com/uploads/2020/10/03/remove_ex1.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：head = [1,2,3,4,5], n = 2
@@ -3843,7 +3843,7 @@ https://leetcode.cn/problems/rotate-image/
 
 **示例 1：**
 
-![img](https://assets.leetcode.com/uploads/2020/08/28/mat1.jpg)
+<img src="https://assets.leetcode.com/uploads/2020/08/28/mat1.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：matrix = [[1,2,3],[4,5,6],[7,8,9]]
@@ -3852,7 +3852,7 @@ https://leetcode.cn/problems/rotate-image/
 
 **示例 2：**
 
-![img](https://assets.leetcode.com/uploads/2020/08/28/mat2.jpg)
+<img src="https://assets.leetcode.com/uploads/2020/08/28/mat2.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]
@@ -4029,7 +4029,7 @@ matrix, simulation, https://leetcode.cn/problems/spiral-matrix/
 
 **示例 1：**
 
-![img](https://assets.leetcode.com/uploads/2020/11/13/spiral1.jpg)
+<img src="https://assets.leetcode.com/uploads/2020/11/13/spiral1.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：matrix = [[1,2,3],[4,5,6],[7,8,9]]
@@ -4038,7 +4038,7 @@ matrix, simulation, https://leetcode.cn/problems/spiral-matrix/
 
 **示例 2：**
 
-![img](https://assets.leetcode.com/uploads/2020/11/13/spiral.jpg)
+<img src="https://assets.leetcode.com/uploads/2020/11/13/spiral.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]
@@ -4190,7 +4190,7 @@ dp, math, https://leetcode.cn/problems/unique-paths/
 
 **示例 1：**
 
-![img](https://pic.leetcode.cn/1697422740-adxmsI-image.png)
+<img src="https://pic.leetcode.cn/1697422740-adxmsI-image.png" alt="img" style="zoom:67%;" />
 
 ```
 输入：m = 3, n = 7
@@ -4390,7 +4390,7 @@ https://leetcode.cn/problems/minimum-path-sum/
 
 **示例 1：**
 
-![img](https://assets.leetcode.com/uploads/2020/11/05/minpath.jpg)
+<img src="https://assets.leetcode.com/uploads/2020/11/05/minpath.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：grid = [[1,3,1],[1,5,1],[4,2,1]]
@@ -4552,7 +4552,7 @@ https://leetcode.cn/problems/set-matrix-zeroes/
 
 **示例 1：**
 
-![img](https://assets.leetcode.com/uploads/2020/08/17/mat1.jpg)
+<img src="https://assets.leetcode.com/uploads/2020/08/17/mat1.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：matrix = [[1,1,1],[1,0,1],[1,1,1]]
@@ -4561,7 +4561,7 @@ https://leetcode.cn/problems/set-matrix-zeroes/
 
 **示例 2：**
 
-![img](https://assets.leetcode.com/uploads/2020/08/17/mat2.jpg)
+<img src="https://assets.leetcode.com/uploads/2020/08/17/mat2.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：matrix = [[0,1,2,0],[3,4,5,2],[1,3,1,5]]
@@ -4631,7 +4631,7 @@ binary search, https://leetcode.cn/problems/search-a-2d-matrix/
 
 **示例 1：**
 
-![img](https://assets.leetcode.com/uploads/2020/10/05/mat.jpg)
+<img src="https://assets.leetcode.com/uploads/2020/10/05/mat.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 3
@@ -4640,7 +4640,7 @@ binary search, https://leetcode.cn/problems/search-a-2d-matrix/
 
 **示例 2：**
 
-![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/11/25/mat2.jpg)
+<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/11/25/mat2.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 13
@@ -4834,7 +4834,7 @@ dp, https://leetcode.cn/problems/2bCMpM/
 
 **示例 1：**
 
-![img](https://pic.leetcode-cn.com/1626667201-NCWmuP-image.png)
+<img src="https://pic.leetcode-cn.com/1626667201-NCWmuP-image.png" alt="img" style="zoom:67%;" />
 
 ```
 输入：mat = [[0,0,0],[0,1,0],[0,0,0]]
@@ -4843,7 +4843,7 @@ dp, https://leetcode.cn/problems/2bCMpM/
 
 **示例 2：**
 
-![img](https://pic.leetcode-cn.com/1626667205-xFxIeK-image.png)
+<img src="https://pic.leetcode-cn.com/1626667205-xFxIeK-image.png" alt="img" style="zoom:67%;" />
 
 ```
 输入：mat = [[0,0,0],[0,1,0],[1,1,1]]
@@ -5104,76 +5104,6 @@ if __name__ == "__main__":
 
 
 
-## 142.环形链表II
-
-https://leetcode.cn/problems/linked-list-cycle-ii/
-
-给定一个链表的头节点  `head` ，返回链表开始入环的第一个节点。 *如果链表无环，则返回 `null`。*
-
-如果链表中有某个节点，可以通过连续跟踪 `next` 指针再次到达，则链表中存在环。 为了表示给定链表中的环，评测系统内部使用整数 `pos` 来表示链表尾连接到链表中的位置（**索引从 0 开始**）。如果 `pos` 是 `-1`，则在该链表中没有环。**注意：`pos` 不作为参数进行传递**，仅仅是为了标识链表的实际情况。
-
-**不允许修改** 链表。
-
- 
-
-**示例 1：**
-
-![img](https://assets.leetcode.com/uploads/2018/12/07/circularlinkedlist.png)
-
-```
-输入：head = [3,2,0,-4], pos = 1
-输出：返回索引为 1 的链表节点
-解释：链表中有一个环，其尾部连接到第二个节点。
-```
-
-**示例 2：**
-
-![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/07/circularlinkedlist_test2.png)
-
-```
-输入：head = [1,2], pos = 0
-输出：返回索引为 0 的链表节点
-解释：链表中有一个环，其尾部连接到第一个节点。
-```
-
-**示例 3：**
-
-![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/07/circularlinkedlist_test3.png)
-
-```
-输入：head = [1], pos = -1
-输出：返回 null
-解释：链表中没有环。
-```
-
- 
-
-**提示：**
-
-- 链表中节点的数目范围在范围 `[0, 104]` 内
-- `-105 <= Node.val <= 105`
-- `pos` 的值为 `-1` 或者链表中的一个有效索引
-
-
-
-```python
-# Definition for singly-linked list.
-# class ListNode:
-#     def __init__(self, x):
-#         self.val = x
-#         self.next = None
-
-class Solution:
-    def detectCycle(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        visited = set()
-        while head:
-            if head in visited:
-                return head
-            visited.add(head)
-            head = head.next
-        return None
-```
-
 
 
 ## 138.随机链表的复制
@@ -5411,6 +5341,192 @@ if __name__ == "__main__":
 
 
 ```
+
+
+
+## 142.环形链表II
+
+https://leetcode.cn/problems/linked-list-cycle-ii/
+
+给定一个链表的头节点  `head` ，返回链表开始入环的第一个节点。 *如果链表无环，则返回 `null`。*
+
+如果链表中有某个节点，可以通过连续跟踪 `next` 指针再次到达，则链表中存在环。 为了表示给定链表中的环，评测系统内部使用整数 `pos` 来表示链表尾连接到链表中的位置（**索引从 0 开始**）。如果 `pos` 是 `-1`，则在该链表中没有环。**注意：`pos` 不作为参数进行传递**，仅仅是为了标识链表的实际情况。
+
+**不允许修改** 链表。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2018/12/07/circularlinkedlist.png" alt="img" style="zoom:67%;" />
+
+```
+输入：head = [3,2,0,-4], pos = 1
+输出：返回索引为 1 的链表节点
+解释：链表中有一个环，其尾部连接到第二个节点。
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/07/circularlinkedlist_test2.png" alt="img" style="zoom:67%;" />
+
+```
+输入：head = [1,2], pos = 0
+输出：返回索引为 0 的链表节点
+解释：链表中有一个环，其尾部连接到第一个节点。
+```
+
+**示例 3：**
+
+<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/07/circularlinkedlist_test3.png" alt="img" style="zoom:67%;" />
+
+```
+输入：head = [1], pos = -1
+输出：返回 null
+解释：链表中没有环。
+```
+
+ 
+
+**提示：**
+
+- 链表中节点的数目范围在范围 `[0, 104]` 内
+- `-105 <= Node.val <= 105`
+- `pos` 的值为 `-1` 或者链表中的一个有效索引
+
+
+
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    def detectCycle(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        visited = set()
+        while head:
+            if head in visited:
+                return head
+            visited.add(head)
+            head = head.next
+        return None
+```
+
+
+
+
+
+## 148.排序链表
+
+https://leetcode.cn/problems/sort-list/
+
+给你链表的头结点 `head` ，请将其按 **升序** 排列并返回 **排序后的链表** 。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2020/09/14/sort_list_1.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：head = [4,2,1,3]
+输出：[1,2,3,4]
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2020/09/14/sort_list_2.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：head = [-1,5,3,4,0]
+输出：[-1,0,3,4,5]
+```
+
+**示例 3：**
+
+```
+输入：head = []
+输出：[]
+```
+
+ 
+
+**提示：**
+
+- 链表中节点的数目在范围 `[0, 5 * 10^4]` 内
+- `-105 <= Node.val <= 10^5`
+
+ 
+
+**进阶：**你可以在 `O(n log n)` 时间复杂度和常数级空间复杂度下，对链表进行排序吗？
+
+
+
+```python
+# Definition for singly-linked list.
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+class Solution:
+    def sortList(self, head: ListNode) -> ListNode:
+        if not head or not head.next:
+            return head
+        
+        # Helper function to find the middle of the linked list
+        def find_middle(head):
+            slow, fast = head, head.next
+            while fast and fast.next:
+                slow = slow.next
+                fast = fast.next.next
+            return slow
+        
+        # Helper function to merge two sorted linked lists
+        def merge(l1, l2):
+            dummy = ListNode()
+            tail = dummy
+            while l1 and l2:
+                if l1.val < l2.val:
+                    tail.next = l1
+                    l1 = l1.next
+                else:
+                    tail.next = l2
+                    l2 = l2.next
+                tail = tail.next
+            tail.next = l1 if l1 else l2
+            return dummy.next
+        
+        # Split the linked list into two halves
+        mid = find_middle(head)
+        right = mid.next
+        mid.next = None
+        left = head
+        
+        # Recursively sort each half
+        left = self.sortList(left)
+        right = self.sortList(right)
+        
+        # Merge the sorted halves
+        return merge(left, right)
+
+# Example usage
+if __name__ == "__main__":
+    def print_list(node):
+        while node:
+            print(node.val, end=" -> ")
+            node = node.next
+        print("None")
+    
+    # Create linked list [4, 2, 1, 3]
+    head = ListNode(4, ListNode(2, ListNode(1, ListNode(3))))
+    sorted_head = Solution().sortList(head)
+    print_list(sorted_head)  # Output: 1 -> 2 -> 3 -> 4 -> None
+```
+
+
 
 
 
@@ -5801,7 +5917,7 @@ https://leetcode.cn/problems/search-a-2d-matrix-ii/
 
 **示例 1：**
 
-![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/11/25/searchgrid2.jpg)
+<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/11/25/searchgrid2.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 5
@@ -5810,7 +5926,7 @@ https://leetcode.cn/problems/search-a-2d-matrix-ii/
 
 **示例 2：**
 
-![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/11/25/searchgrid.jpg)
+<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/11/25/searchgrid.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 20
@@ -7028,7 +7144,7 @@ binary search, https://leetcode.cn/problems/magnetic-force-between-two-balls/
 
 **示例 1：**
 
-![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/08/16/q3v1.jpg)
+<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/08/16/q3v1.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：position = [1,2,3,4,7], m = 3
@@ -8753,7 +8869,7 @@ monotonic stack, https://leetcode.cn/problems/trapping-rain-water/
 
 **示例 1：**
 
-![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/10/22/rainwatertrap.png)
+<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/10/22/rainwatertrap.png" alt="img" style="zoom:67%;" />
 
 ```
 输入：height = [0,1,0,2,1,0,1,3,2,1,2,1]
@@ -9579,7 +9695,7 @@ dp, https://leetcode.cn/problems/maximum-value-of-k-coins-from-piles/
 
 **示例 1：**
 
-![img](https://assets.leetcode.com/uploads/2019/11/09/e1.png)
+<img src="https://assets.leetcode.com/uploads/2019/11/09/e1.png" alt="img" style="zoom:67%;" />
 
 ```
 输入：piles = [[1,100,3],[7,8,9]], k = 2
@@ -9992,7 +10108,7 @@ tree dp, https://leetcode.cn/problems/maximum-points-after-collecting-coins-from
 
 **示例 1：**
 
-![img](https://assets.leetcode.com/uploads/2023/09/18/ex1-copy.png)
+<img src="https://assets.leetcode.com/uploads/2023/09/18/ex1-copy.png" alt="img" style="zoom:67%;" />
 
 ```
 输入：edges = [[0,1],[1,2],[2,3]], coins = [10,10,3,3], k = 5
@@ -10007,7 +10123,7 @@ tree dp, https://leetcode.cn/problems/maximum-points-after-collecting-coins-from
 
 **示例 2：**
 
-**![img](https://assets.leetcode.com/uploads/2023/09/18/ex2.png)**
+**<img src="https://assets.leetcode.com/uploads/2023/09/18/ex2.png" alt="img" style="zoom:67%;" />**
 
 ```
 输入：edges = [[0,1],[0,2]], coins = [8,4,4], k = 0
