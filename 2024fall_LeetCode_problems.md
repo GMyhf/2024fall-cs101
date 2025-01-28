@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2359 GMT+8 Jan 27 2025
+Updated 1116 GMT+8 Jan 28 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -720,87 +720,75 @@ dp, https://leetcode.cn/problems/pascals-triangle/
 
 
 
-​	
+## 119.杨辉三角II
 
-给定一个数组 `nums`，编写一个函数将所有 `0` 移动到数组的末尾，同时保持非零元素的相对顺序。
+滚动数组，https://leetcode.cn/problems/pascals-triangle-ii/
 
-**请注意** ，必须在不复制数组的情况下原地对数组进行操作。
+给定一个非负索引 `rowIndex`，返回「杨辉三角」的第 `rowIndex` 行。
+
+在「杨辉三角」中，每个数是它左上方和右上方的数的和。
+
+![img](https://pic.leetcode-cn.com/1626927345-DZmfxB-PascalTriangleAnimated2.gif)
 
  
 
 **示例 1:**
 
 ```
-输入: nums = [0,1,0,3,12]
-输出: [1,3,12,0,0]
+输入: rowIndex = 3
+输出: [1,3,3,1]
 ```
 
 **示例 2:**
 
 ```
-输入: nums = [0]
-输出: [0]
+输入: rowIndex = 0
+输出: [1]
+```
+
+**示例 3:**
+
+```
+输入: rowIndex = 1
+输出: [1,1]
 ```
 
  
 
-**提示**:
+**提示:**
 
-- `1 <= nums.length <= 104`
-- `-231 <= nums[i] <= 231 - 1`
+- `0 <= rowIndex <= 33`
 
  
 
-**进阶：**你能尽量减少完成的操作次数吗？
+**进阶：**
 
-
-
-维护最左边的空位的位置（下标）。
-
-从左到右遍历 `nums[i]`。同时维护另一个下标 $i_0$（初始值为 0），并保证下标区间 $[i_0,i−1]$ 都是空位，且 $i_0$指向最左边的空位。
-
-每次遇到 nums[i]≠0 的情况，就把 nums[i] 移动到最左边的空位上，也就是交换 nums[i] 和 $nums[i_0]$。交换后把 $i_0$和 i 都加一，从而使【[$i_0$ ,i−1] 都是空位】这一性质仍然成立。
-
-如果 nums[i]=0，无需交换，只把 i 加一。
-
-https://leetcode.cn/problems/move-zeroes/solutions/2969353/kuai-man-zhi-zhen-wei-shi-yao-ke-yi-ba-s-1h8x/
-
-```python
-class Solution:
-    def moveZeroes(self, nums: List[int]) -> None:
-        i0 = 0
-        for i in range(len(nums)):
-            if nums[i]:
-                nums[i], nums[i0] = nums[i0], nums[i]
-                i0 += 1
-
-```
+你可以优化你的算法到 `*O*(*rowIndex*)` 空间复杂度吗？
 
 
 
 
+
+滚动数组都是 `简单` 题了？https://leetcode.cn/problems/pascals-triangle-ii/
+
+滚动数组不易理解，可以 https://pythontutor.com/ 看可视化执行过程。
+
+杨辉三角形需要前一行的数据来计算当前行的数据，利用一个一维数组（即滚动数组）来保存这些数据，并随着行数的增加不断更新这个数组。
+
+`dp`数组实际上代表了当前行。从当前行的末尾开始向前遍历并更新`dp`数组中的元素。这样做的好处是不会覆盖掉计算新值所需的旧值，从而确保了算法的正确性，同时节省了额外的存储空间。
 
 ```python
 class Solution:
-    def moveZeroes(self, nums: List[int]) -> None:
-        """
-        Do not return anything, modify nums in-place instead.
-        """
-        left = 0; right = 0
-        while left < len(nums) and right < len(nums):
-            if not nums[left] and nums[right]:
-                if left > right:
-                    right += 1
-                    continue
-                nums[left], nums[right] = nums[right], nums[left]
-                left += 1
-                right += 1
-                continue
-            if nums[left]:
-                left += 1
-            if not nums[right]:
-                right += 1
+    def getRow(self, rowIndex: int) -> List[int]:
+        dp = [1] * (rowIndex + 1)
+        for row in range(1, rowIndex + 1):
+            for i in range(row - 1, 0, -1):
+                dp[i] = dp[i - 1] + dp[i]
+
+        return dp
 ```
+
+
 
 
 
@@ -1455,6 +1443,96 @@ if __name__ == "__main__":
     # head = ListNode(1, ListNode(2, ListNode(2, ListNode(1))))
     # print(sol.isPalindrome(head))  # Expected output: True
 ```
+
+
+
+
+
+## 283.移动零
+
+https://leetcode.cn/problems/move-zeroes/
+
+给定一个数组 `nums`，编写一个函数将所有 `0` 移动到数组的末尾，同时保持非零元素的相对顺序。
+
+**请注意** ，必须在不复制数组的情况下原地对数组进行操作。
+
+ 
+
+**示例 1:**
+
+```
+输入: nums = [0,1,0,3,12]
+输出: [1,3,12,0,0]
+```
+
+**示例 2:**
+
+```
+输入: nums = [0]
+输出: [0]
+```
+
+ 
+
+**提示**:
+
+- `1 <= nums.length <= 104`
+- `-231 <= nums[i] <= 231 - 1`
+
+ 
+
+**进阶：**你能尽量减少完成的操作次数吗？
+
+
+
+维护最左边的空位的位置（下标）。
+
+从左到右遍历 `nums[i]`。同时维护另一个下标 $i_0$（初始值为 0），并保证下标区间 $[i_0,i−1]$ 都是空位，且 $i_0$指向最左边的空位。
+
+每次遇到 nums[i]≠0 的情况，就把 nums[i] 移动到最左边的空位上，也就是交换 nums[i] 和 $nums[i_0]$。交换后把 $i_0$和 i 都加一，从而使【[$i_0$ ,i−1] 都是空位】这一性质仍然成立。
+
+如果 nums[i]=0，无需交换，只把 i 加一。
+
+https://leetcode.cn/problems/move-zeroes/solutions/2969353/kuai-man-zhi-zhen-wei-shi-yao-ke-yi-ba-s-1h8x/
+
+```python
+class Solution:
+    def moveZeroes(self, nums: List[int]) -> None:
+        i0 = 0
+        for i in range(len(nums)):
+            if nums[i]:
+                nums[i], nums[i0] = nums[i0], nums[i]
+                i0 += 1
+
+```
+
+
+
+
+
+```python
+class Solution:
+    def moveZeroes(self, nums: List[int]) -> None:
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+        left = 0; right = 0
+        while left < len(nums) and right < len(nums):
+            if not nums[left] and nums[right]:
+                if left > right:
+                    right += 1
+                    continue
+                nums[left], nums[right] = nums[right], nums[left]
+                left += 1
+                right += 1
+                continue
+            if nums[left]:
+                left += 1
+            if not nums[right]:
+                right += 1
+```
+
+
 
 
 
