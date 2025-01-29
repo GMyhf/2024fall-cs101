@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0116 GMT+8 Jan 29 2025
+Updated 2108 GMT+8 Jan 29 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -5885,6 +5885,174 @@ class Solution:
 ```
 
 
+
+## 230.二叉搜索树中第K小的元素
+
+https://leetcode.cn/problems/kth-smallest-element-in-a-bst/
+
+给定一个二叉搜索树的根节点 `root` ，和一个整数 `k` ，请你设计一个算法查找其中第 `k` 小的元素（从 1 开始计数）。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2021/01/28/kthtree1.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：root = [3,1,4,null,2], k = 1
+输出：1
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2021/01/28/kthtree2.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：root = [5,3,6,2,4,null,null,1], k = 3
+输出：3
+```
+
+ 
+
+ 
+
+**提示：**
+
+- 树中的节点数为 `n` 。
+- `1 <= k <= n <= 104`
+- `0 <= Node.val <= 104`
+
+ 
+
+**进阶：**如果二叉搜索树经常被修改（插入/删除操作）并且你需要频繁地查找第 `k` 小的值，你将如何优化算法？
+
+
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
+        # Initialize the result and the counter
+        self.result = None
+        self.count = 0
+
+        # Helper function to perform in-order traversal
+        def in_order(node):
+            if not node or self.result is not None:
+                return
+            in_order(node.left)
+            self.count += 1
+            if self.count == k:
+                self.result = node.val
+                return
+            in_order(node.right)
+
+        # Start in-order traversal from the root
+        in_order(root)
+        return self.result
+        
+```
+
+
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
+        # Helper function for inorder traversal
+        def inorder(node):
+            if not node:
+                return None
+            
+            # Traverse the left subtree
+            left_result = inorder(node.left)
+            if left_result is not None:
+                return left_result
+            
+            # Visit current node: if it's the kth node, return its value
+            nonlocal k
+            k -= 1
+            if k == 0:
+                return node.val
+            
+            # Otherwise, traverse the right subtree
+            return inorder(node.right)
+        
+        return inorder(root)
+        
+```
+
+
+
+进阶：如果二叉搜索树经常被修改（插入/删除操作）并且你需要频繁地查找第 k 小的值，你将如何优化算法？
+
+为了优化频繁查找第 `k` 小的值的算法，可以在每个节点中维护一个额外的属性 `size`，表示以该节点为根的子树的节点总数。这样可以在对数时间内找到第 `k` 小的元素。
+
+以下是优化后的代码：
+
+```python
+from typing import Optional
+
+# Definition for a binary tree node.
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+        self.size = 1  # Initialize size of the subtree rooted at this node
+
+class Solution:
+    def updateSize(self, node: Optional[TreeNode]) -> None:
+        if node:
+            node.size = 1 + (node.left.size if node.left else 0) + (node.right.size if node.right else 0)
+
+    def insert(self, root: Optional[TreeNode], val: int) -> TreeNode:
+        if not root:
+            return TreeNode(val)
+        if val < root.val:
+            root.left = self.insert(root.left, val)
+        else:
+            root.right = self.insert(root.right, val)
+        self.updateSize(root)
+        return root
+
+    def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
+        left_size = root.left.size if root.left else 0
+        if k <= left_size:
+            return self.kthSmallest(root.left, k)
+        elif k == left_size + 1:
+            return root.val
+        else:
+            return self.kthSmallest(root.right, k - left_size - 1)
+
+# Example usage:
+if __name__ == '__main__':
+    root = TreeNode(5)
+    solution = Solution()
+    solution.insert(root, 3)
+    solution.insert(root, 6)
+    solution.insert(root, 2)
+    solution.insert(root, 4)
+    solution.insert(root, 1)
+    print(solution.kthSmallest(root, 3))  # Output: 3
+```
+
+> 解释：
+>
+> 1. **TreeNode 类**：增加了 `size` 属性来表示以该节点为根的子树的节点总数。
+> 2. **updateSize 方法**：更新节点的 `size` 属性。
+> 3. **insert 方法**：插入新节点并更新 `size` 属性。
+> 4. **kthSmallest 方法**：利用 `size` 属性在对数时间内找到第 `k` 小的元素。
 
 
 
