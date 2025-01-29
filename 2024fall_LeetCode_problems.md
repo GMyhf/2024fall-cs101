@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0035 GMT+8 Jan 30 2025
+Updated 0125 GMT+8 Jan 30 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -5011,6 +5011,79 @@ class Solution:
 
         return result
         
+```
+
+
+
+## 105.从前序与中序遍历序列构造二叉树
+
+https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
+
+给定两个整数数组 `preorder` 和 `inorder` ，其中 `preorder` 是二叉树的**先序遍历**， `inorder` 是同一棵树的**中序遍历**，请构造二叉树并返回其根节点。
+
+**示例 1:**
+
+<img src="https://assets.leetcode.com/uploads/2021/02/19/tree.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入: preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]
+输出: [3,9,20,null,null,15,7]
+```
+
+**示例 2:**
+
+```
+输入: preorder = [-1], inorder = [-1]
+输出: [-1]
+```
+
+ 
+
+**提示:**
+
+- `1 <= preorder.length <= 3000`
+- `inorder.length == preorder.length`
+- `-3000 <= preorder[i], inorder[i] <= 3000`
+- `preorder` 和 `inorder` 均 **无重复** 元素
+- `inorder` 均出现在 `preorder`
+- `preorder` **保证** 为二叉树的前序遍历序列
+- `inorder` **保证** 为二叉树的中序遍历序列
+
+
+
+```python
+from typing import List, Optional
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def buildTree(self, preorder: List[int], inorder: List[int]) -> Optional[TreeNode]:
+        if not preorder or not inorder:
+            return None
+
+        # The first element in preorder is the root
+        root_val = preorder[0]
+        root = TreeNode(root_val)
+
+        # Find the index of the root in inorder
+        root_index = inorder.index(root_val)
+
+        # Recursively build the left and right subtrees
+        root.left = self.buildTree(preorder[1:1 + root_index], inorder[:root_index])
+        root.right = self.buildTree(preorder[1 + root_index:], inorder[root_index + 1:])
+
+        return root
+
+if __name__ == '__main__':
+    solution = Solution()
+    preorder = [3, 9, 20, 15, 7]
+    inorder = [9, 3, 15, 20, 7]
+    root = solution.buildTree(preorder, inorder)
+    # The output tree is [3, 9, 20, None, None, 15, 7]
+
 ```
 
 
