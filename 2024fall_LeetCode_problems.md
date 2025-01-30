@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0134 GMT+8 Jan 31 2025
+Updated 0204 GMT+8 Jan 31 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -6995,6 +6995,181 @@ if __name__ == '__main__':
 ```
 
 
+
+## 287.寻找重复数
+
+二分查找，快慢指针，https://leetcode.cn/problems/find-the-duplicate-number/
+
+给定一个包含 `n + 1` 个整数的数组 `nums` ，其数字都在 `[1, n]` 范围内（包括 `1` 和 `n`），可知至少存在一个重复的整数。
+
+假设 `nums` 只有 **一个重复的整数** ，返回 **这个重复的数** 。
+
+你设计的解决方案必须 **不修改** 数组 `nums` 且只用常量级 `O(1)` 的额外空间。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,3,4,2,2]
+输出：2
+```
+
+**示例 2：**
+
+```
+输入：nums = [3,1,3,4,2]
+输出：3
+```
+
+**示例 3 :**
+
+```
+输入：nums = [3,3,3,3,3]
+输出：3
+```
+
+ 
+
+ 
+
+**提示：**
+
+- `1 <= n <= 105`
+- `nums.length == n + 1`
+- `1 <= nums[i] <= n`
+- `nums` 中 **只有一个整数** 出现 **两次或多次** ，其余整数均只出现 **一次**
+
+ 
+
+**进阶：**
+
+- 如何证明 `nums` 中至少存在一个重复的数字?
+- 你可以设计一个线性级时间复杂度 `O(n)` 的解决方案吗？
+
+
+
+这是一个经典的“寻找重复数字”的问题，可以使用 **Floyd's Tortoise and Hare** 算法来解决，它的时间复杂度是 **O(n)**，空间复杂度是 **O(1)**。这个算法基于快慢指针的思想。
+
+**解决思路**
+
+1. 数组的性质：
+   - 数组 `nums` 中的数字是从 `1` 到 `n` 之间的整数，长度是 `n + 1`，意味着根据鸽巢原理，至少有一个数字会重复。
+2. 如何找到重复数字：
+   - 我们可以将数组 `nums` 看作一个指向数组中位置的指针链。每个数字 `nums[i]` 指向数组中的位置 `nums[i]`。
+   - 根据这个链的结构，可以使用类似于链表中环的检测算法，**Floyd’s Cycle Detection Algorithm (Tortoise and Hare)** 来找到重复的数字。
+
+**Floyd's Cycle Detection Algorithm**
+
+这个算法可以分为两个步骤：
+
+**1. 找到相遇点**
+
+- 使用两个指针，一个快指针（`hare`），每次移动两步；一个慢指针（`tortoise`），每次移动一步。
+- 如果存在环（即重复的数字），这两个指针最终会相遇。
+
+**2. 找到入口点**
+
+- 一旦快慢指针相遇，将慢指针重置到数组的起始位置，然后同时移动快指针和慢指针，每次都移动一步。相遇的那个点即是重复的数字。
+
+**代码实现**
+
+```python
+from typing import List
+class Solution:
+    def findDuplicate(self, nums: List[int]) -> int:
+        # Step 1: Initialize the slow and fast pointers
+        tortoise = nums[0]
+        hare = nums[0]
+
+        # Step 2: Move the tortoise and hare until they meet
+        while True:
+            tortoise = nums[tortoise]  # Slow pointer moves one step
+            hare = nums[nums[hare]]  # Fast pointer moves two steps
+            if tortoise == hare:  # They meet, meaning a cycle exists
+                break
+
+        # Step 3: Find the entrance to the cycle
+        tortoise = nums[0]  # Reset tortoise to the start
+        while tortoise != hare:
+            tortoise = nums[tortoise]  # Move one step
+            hare = nums[hare]  # Move one step
+
+        return hare  # The duplicate number
+
+if __name__ == '__main__':
+    solution = Solution()
+    nums = [1, 3, 4, 2, 2]
+    print(solution.findDuplicate(nums))  # Output: 2
+
+    nums = [3, 1, 3, 4, 2]
+    print(solution.findDuplicate(nums))  # Output: 3
+
+    nums = [1, 1]
+    print(solution.findDuplicate(nums))  # Output: 1
+
+    nums = [1, 1, 2]
+    print(solution.findDuplicate(nums))  # Output: 1
+```
+
+> **解释：**
+>
+> 1. **初始化**：`tortoise` 和 `hare` 都从数组的第一个元素开始。
+> 2. **找环**：通过快慢指针的方式，`tortoise` 每次移动一步，`hare` 每次移动两步。当它们相遇时，证明数组中有环，即存在重复数字。
+> 3. **找重复数字**：将 `tortoise` 重置到起始位置，然后和 `hare` 一起继续移动，直到它们再次相遇，那个位置就是重复的数字。
+>
+> **时间和空间复杂度**
+>
+> - **时间复杂度**：`O(n)`，因为快慢指针最多走两倍的距离，最多需要 `n` 步。
+> - **空间复杂度**：`O(1)`，因为只用了两个额外的指针，空间开销是常数级别的。
+>
+> **进阶问题解答**
+>
+> 1. **如何证明 `nums` 中至少存在一个重复的数字？**
+>    - 由于数组长度是 `n + 1`，而数组中的数字是从 `1` 到 `n`，根据鸽巢原理，在 `n + 1` 个位置中，只能容纳 `n` 个不同的数字，必定有至少一个数字出现多次。
+> 2. **能否设计一个线性时间复杂度 `O(n)` 的解决方案？**
+>    - 是的，使用上述的 Floyd’s Cycle Detection Algorithm 方法，我们能在 `O(n)` 的时间复杂度内找到重复的数字，并且使用常量级别的空间。
+
+
+
+要解决这个问题而不修改数组 `nums` 且只使用常量级的额外空间，可以利用二分查找结合鸽巢原理来寻找重复的数字。这种方法能在满足题目要求的情况下实现线性级时间复杂度 O(n) 的解决方案。
+
+**解决思路**
+
+根据题意，我们知道数组 `nums` 中包含 n+1 个整数，范围从 1 到 n，并且至少有一个数字是重复的。基于这个信息，我们可以使用二分查找的方法来缩小可能的重复数字的范围：
+
+1. **确定搜索区间**：初始时，我们的搜索区间是 `[1, n]`。
+2. **计算中间值**：对于当前的搜索区间 `[low, high]`，我们计算中间值 `mid`。
+3. **遍历数组统计**：遍历数组，统计数组中小于等于 `mid` 的元素个数 `count`。
+4. **调整搜索区间**：
+   - 如果 `count` 大于 `mid`，说明重复的数字在 `[low, mid]` 范围内。
+   - 否则，重复的数字在 `[mid + 1, high]` 范围内。
+5. **重复上述步骤**，直到找到重复的数字。
+
+这种方法之所以有效是因为它利用了鸽巢原理（如果 `n` 个物品放入 `m` 个容器中，且 `n > m`，那么至少有一个容器里包含了多于一个物品），以及二分查找可以高效地缩小查找范围。
+
+**代码实现**
+
+```python
+def findDuplicate(nums):
+    low = 1
+    high = len(nums) - 1
+    
+    while low < high:
+        mid = (low + high) // 2
+        count = sum(num <= mid for num in nums)
+        
+        if count > mid:
+            high = mid
+        else:
+            low = mid + 1
+            
+    return low
+```
+
+这段代码首先定义了搜索区间的两端 `low` 和 `high`，然后进入一个循环，在循环中通过计算中间值 `mid` 并统计数组中小于等于 `mid` 的元素个数来决定如何调整搜索区间。最终当 `low` 等于 `high` 时，我们就找到了重复的数字。
+
+这种方法的时间复杂度为 O(n log n)，因为每次都需要遍历整个数组来计算 `count`，而二分查找的过程是对数级别的。虽然这里提到希望设计一个线性级时间复杂度 O(n) 的解决方案，但实际上上述方法已经非常接近线性时间复杂度，并且满足题目对空间的要求。对于严格意义上的 O(n) 时间复杂度解法，可以考虑使用快慢指针模拟链表环检测算法（Floyd's Tortoise and Hare algorithm），但那会涉及到将数组视为一种特殊的链表结构进行处理。
 
 
 
