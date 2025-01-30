@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1346 GMT+8 Jan 30 2025
+Updated 1815 GMT+8 Jan 30 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -6601,6 +6601,105 @@ if __name__ == '__main__':
 > 2. **updateSize 方法**：更新节点的 `size` 属性。
 > 3. **insert 方法**：插入新节点并更新 `size` 属性。
 > 4. **kthSmallest 方法**：利用 `size` 属性在对数时间内找到第 `k` 小的元素。
+
+
+
+## 236.二叉树的最近公共祖先
+
+https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/
+
+给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+
+[百度百科](https://baike.baidu.com/item/最近公共祖先/8918834?fr=aladdin)中最近公共祖先的定义为：“对于有根树 T 的两个节点 p、q，最近公共祖先表示为一个节点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（**一个节点也可以是它自己的祖先**）。”
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2018/12/14/binarytree.png)
+
+```
+输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+输出：3
+解释：节点 5 和节点 1 的最近公共祖先是节点 3 。
+```
+
+**示例 2：**
+
+![img](https://assets.leetcode.com/uploads/2018/12/14/binarytree.png)
+
+```
+输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
+输出：5
+解释：节点 5 和节点 4 的最近公共祖先是节点 5 。因为根据定义最近公共祖先节点可以为节点本身。
+```
+
+**示例 3：**
+
+```
+输入：root = [1,2], p = 1, q = 2
+输出：1
+```
+
+ 
+
+**提示：**
+
+- 树中节点数目在范围 `[2, 105]` 内。
+- `-10^9 <= Node.val <= 10^9`
+- 所有 `Node.val` `互不相同` 。
+- `p != q`
+- `p` 和 `q` 均存在于给定的二叉树中。
+
+
+
+这是一个典型的二叉树问题，要求找到两个节点的最近公共祖先。通过深度优先搜索（DFS）的方法来解决。算法的核心思想是：
+
+1. 从根节点开始递归遍历二叉树。
+2. 如果当前节点为空，返回 `None`。
+3. 如果当前节点是 `p` 或 `q`，则返回当前节点（因为节点本身也可以是自己的祖先）。
+4. 对左右子树递归查找。如果左右子树都找到了 `p` 或 `q`，则当前节点就是最近公共祖先。
+5. 如果左子树或右子树找到一个节点，返回那个节点。如果两个子树都返回非空节点，说明当前节点是最近公共祖先。
+
+以下是实现代码：
+
+```python
+# Definition for a binary tree node.
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+class Solution:
+    def lowestCommonAncestor(self, root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
+        # 递归终止条件
+        if not root:
+            return None
+        if root == p or root == q:
+            return root
+        
+        # 递归查找左右子树
+        left = self.lowestCommonAncestor(root.left, p, q)
+        right = self.lowestCommonAncestor(root.right, p, q)
+        
+        # 如果左右子树都找到了p或q，当前节点是公共祖先
+        if left and right:
+            return root
+        
+        # 如果左子树找到了p或q，返回左子树的结果，否则返回右子树的结果
+        return left if left else right
+```
+
+时间复杂度：
+
+- 每个节点最多访问一次，因此时间复杂度是 O(N)，其中 N 是树中的节点数。
+
+空间复杂度：
+
+- 由于递归调用的栈空间，空间复杂度是 O(H)，其中 H 是树的高度。在最坏情况下（树为链状结构），H = N；在平衡二叉树中，H = log(N)。
+
+
 
 
 
