@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1947 GMT+8 Jan 30 2025
+Updated 2350 GMT+8 Jan 30 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -4965,6 +4965,82 @@ class Solution:
         
         return flag
 ```
+
+
+
+## 75.颜色分类
+
+https://leetcode.cn/problems/sort-colors/
+
+给定一个包含红色、白色和蓝色、共 `n` 个元素的数组 `nums` ，**[原地](https://baike.baidu.com/item/原地算法)** 对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+
+我们使用整数 `0`、 `1` 和 `2` 分别表示红色、白色和蓝色。
+
+必须在不使用库内置的 sort 函数的情况下解决这个问题。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [2,0,2,1,1,0]
+输出：[0,0,1,1,2,2]
+```
+
+**示例 2：**
+
+```
+输入：nums = [2,0,1]
+输出：[0,1,2]
+```
+
+ 
+
+**提示：**
+
+- `n == nums.length`
+- `1 <= n <= 300`
+- `nums[i]` 为 `0`、`1` 或 `2`
+
+
+
+使用荷兰国旗问题的算法来解决这个问题。该算法基于三个指针：一个指向红色的边界（0），一个指向白色的边界（1），一个指向蓝色的边界（2）。我们可以通过一次遍历，将所有的颜色分组并按顺序排列。
+
+具体步骤如下：
+
+1. 使用三个指针，`low`（红色的边界）、`mid`（白色的当前指针）和 `high`（蓝色的边界）。
+2. 遍历数组，遇到以下情况：
+   - 如果当前元素是 `0`，将它和 `low` 指向的元素交换，然后 `low` 和 `mid` 都向右移动。
+   - 如果当前元素是 `1`，只需将 `mid` 向右移动。
+   - 如果当前元素是 `2`，将它和 `high` 指向的元素交换，然后 `high` 向左移动，`mid` 不变。
+
+这个算法的时间复杂度是 O(n)，空间复杂度是 O(1)。
+
+下面是代码实现：
+
+```python
+class Solution:
+    def sortColors(self, nums: List[int]) -> None:
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+        low, mid, high = 0, 0, len(nums) - 1
+    
+        while mid <= high:
+            if nums[mid] == 0:
+                nums[low], nums[mid] = nums[mid], nums[low]  # Swap 0 to the low part
+                low += 1
+                mid += 1
+            elif nums[mid] == 1:
+                mid += 1  # Just move the mid pointer
+            else:  # nums[mid] == 2
+                nums[high], nums[mid] = nums[mid], nums[high]  # Swap 2 to the high part
+                high -= 1
+        
+        return nums
+```
+
+这个算法会一次性完成排序，且不使用任何额外的空间。
 
 
 
