@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1014 GMT+8 Jan 31 2025
+Updated 1127 GMT+8 Jan 31 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -6507,6 +6507,160 @@ class Solution:
                     dfs(i, j)
         return count
 ```
+
+
+
+## 207.课程表
+
+拓扑排序，https://leetcode.cn/problems/course-schedule/
+
+你这个学期必须选修 `numCourses` 门课程，记为 `0` 到 `numCourses - 1` 。
+
+在选修某些课程之前需要一些先修课程。 先修课程按数组 `prerequisites` 给出，其中 `prerequisites[i] = [ai, bi]` ，表示如果要学习课程 `ai` 则 **必须** 先学习课程 `bi` 。
+
+- 例如，先修课程对 `[0, 1]` 表示：想要学习课程 `0` ，你需要先完成课程 `1` 。
+
+请你判断是否可能完成所有课程的学习？如果可以，返回 `true` ；否则，返回 `false` 。
+
+ 
+
+**示例 1：**
+
+```
+输入：numCourses = 2, prerequisites = [[1,0]]
+输出：true
+解释：总共有 2 门课程。学习课程 1 之前，你需要完成课程 0 。这是可能的。
+```
+
+**示例 2：**
+
+```
+输入：numCourses = 2, prerequisites = [[1,0],[0,1]]
+输出：false
+解释：总共有 2 门课程。学习课程 1 之前，你需要先完成课程 0 ；并且学习课程 0 之前，你还应先完成课程 1 。这是不可能的。
+```
+
+ 
+
+**提示：**
+
+- `1 <= numCourses <= 2000`
+- `0 <= prerequisites.length <= 5000`
+- `prerequisites[i].length == 2`
+- `0 <= ai, bi < numCourses`
+- `prerequisites[i]` 中的所有课程对 **互不相同**
+
+
+
+这个问题是一个典型的**拓扑排序**问题，要求判断是否可以完成所有课程的学习，或者判断课程之间是否存在循环依赖。拓扑排序的两种常用方法是：**Kahn 算法**（基于入度）和**深度优先搜索**（DFS）。下面我将分别给出这两种方法的 Python 实现。
+
+**1. Kahn 算法（基于入度的拓扑排序）**
+
+Kahn 算法通过入度来实现拓扑排序。首先我们需要构建一个图，并计算每个节点（课程）的入度。然后从入度为 0 的节点开始，依次移除节点并更新相邻节点的入度。如果最后能访问所有课程，则说明没有环，反之则有环。
+
+```python
+from collections import deque, defaultdict
+from typing import List
+
+class Solution:
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        # 构建图和入度数组
+        graph = defaultdict(list)
+        in_degree = [0] * numCourses
+        
+        for dest, src in prerequisites:
+            graph[src].append(dest)
+            in_degree[dest] += 1
+        
+        # 初始化入度为0的节点
+        queue = deque([i for i in range(numCourses) if in_degree[i] == 0])
+        
+        # 拓扑排序
+        visited_courses = 0
+        
+        while queue:
+            course = queue.popleft()
+            visited_courses += 1
+            
+            for neighbor in graph[course]:
+                in_degree[neighbor] -= 1
+                if in_degree[neighbor] == 0:
+                    queue.append(neighbor)
+        
+        # 如果访问的课程数量等于总课程数，则说明没有环，返回 True
+        return visited_courses == numCourses
+
+# Example usage
+if __name__ == "__main__":
+    numCourses = 2
+    prerequisites = [[1, 0]]
+    print(Solution().canFinish(numCourses, prerequisites))  # Output: true
+        
+```
+
+解析
+
+- **Kahn 算法**：基于入度，首先统计每个节点的入度。入度为 0 的节点可以先学习，然后逐步删除这些节点并减少相邻节点的入度。如果最终所有课程都能学习完，则返回 `True`，否则返回 `False`。
+
+- **Kahn 算法**：`O(V + E)`，其中 `V` 是课程数量，`E` 是先修课程对的数量。
+
+
+
+**2.深度优先搜索（DFS）**
+
+DFS 方法通过递归检查课程之间的依赖关系，如果遇到一个课程被访问过两次，说明存在环。在 DFS 过程中，使用一个标记数组来表示当前节点的状态：
+
+- `0` 表示未访问过；
+- `1` 表示正在访问（递归栈中）；
+- `2` 表示访问完成。
+
+**Plan:**
+
+1. Create a graph using adjacency list representation.
+2. Use Depth-First Search (DFS) to detect cycles in the graph.
+3. If a cycle is detected, return `false` (not possible to complete all courses).
+4. If no cycle is detected, return `true` (possible to complete all courses).
+
+```python
+from typing import List
+
+class Solution:
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        # Create adjacency list for the graph
+        graph = [[] for _ in range(numCourses)]
+        for course, prereq in prerequisites:
+            graph[prereq].append(course)
+        
+        # States: 0 = unvisited, 1 = visiting, 2 = visited
+        state = [0] * numCourses
+        
+        def hasCycle(v):
+            if state[v] == 1:  # Found a cycle
+                return True
+            if state[v] == 2:  # Already visited node
+                return False
+            
+            state[v] = 1  # Mark as visiting
+            for neighbor in graph[v]:
+                if hasCycle(neighbor):
+                    return True
+            state[v] = 2  # Mark as visited
+            return False
+        
+        for course in range(numCourses):
+            if hasCycle(course):
+                return False
+        
+        return True
+
+# Example usage
+if __name__ == "__main__":
+    numCourses = 2
+    prerequisites = [[1, 0]]
+    print(Solution().canFinish(numCourses, prerequisites))  # Output: true
+```
+
+**DFS 方法**：通过深度优先搜索检测图中是否存在环。如果在递归过程中，发现某个节点正在被访问，说明出现了环。时间复杂度`O(V + E)`，每个节点和边最多会被访问一次。
 
 
 
