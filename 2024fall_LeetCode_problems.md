@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2328 GMT+8 Jan 31 2025
+Updated 0036 GMT+8 Feb 1 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -10857,6 +10857,75 @@ class Solution:
 > - **双指针** 则更适合理解为按照列来计算雨水量，因为它直接计算每个柱子上方能接住的雨水量，而不需要显式地找出每个凹陷处。
 >
 > 两种方法虽然计算方式不同，但是都能有效地解决问题，并且时间复杂度都是 O(n)，其中 n 是高度数组的长度。空间复杂度方面，单调栈方法需要额外的空间来存储栈，而双指针方法只需要常数级别的额外空间。
+
+
+
+## 51.N皇后
+
+backtracking, https://leetcode.cn/problems/n-queens/
+
+按照国际象棋的规则，皇后可以攻击与之处在同一行或同一列或同一斜线上的棋子。
+
+**n 皇后问题** 研究的是如何将 `n` 个皇后放置在 `n×n` 的棋盘上，并且使皇后彼此之间不能相互攻击。
+
+给你一个整数 `n` ，返回所有不同的 **n 皇后问题** 的解决方案。
+
+每一种解法包含一个不同的 **n 皇后问题** 的棋子放置方案，该方案中 `'Q'` 和 `'.'` 分别代表了皇后和空位。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2020/11/13/queens.jpg)
+
+```
+输入：n = 4
+输出：[[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]
+解释：如上图所示，4 皇后问题存在两个不同的解法。
+```
+
+**示例 2：**
+
+```
+输入：n = 1
+输出：[["Q"]]
+```
+
+ 
+
+**提示：**
+
+- `1 <= n <= 9`
+
+
+
+斜率是+1或者-1，截距是常数。遍历每一列 `q`，检查当前列 `q` 是否可以放置皇后：
+
+- `q not in queens` 确保没有其他皇后在同一列。
+- `p - q not in xy_diff` 确保没有其他皇后在同一左下到右上的对角线。
+- `p + q not in xy_sum` 确保没有其他皇后在同一左上到右下的对角线。
+
+```python
+from typing import List
+class Solution:
+    def solveNQueens(self, n: int) -> List[List[str]]:
+        def dfs(queens, xy_diff, xy_sum):
+            p = len(queens)
+            if p == n:
+                result.append(queens)
+                return
+            for q in range(n):
+                if q not in queens and p - q not in xy_diff and p + q not in xy_sum:
+                    dfs(queens + [q], xy_diff + [p - q], xy_sum + [p + q])
+        result = []
+        dfs([], [], [])
+        print(result)
+        return [["." * i + "Q" + "." * (n - i - 1) for i in sol] for sol in result]
+
+if __name__ == '__main__':
+    s = Solution()
+    print(s.solveNQueens(4))
+```
 
 
 
