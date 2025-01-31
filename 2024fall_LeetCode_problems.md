@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1442 GMT+8 Jan 31 2025
+Updated 2328 GMT+8 Jan 31 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -5104,6 +5104,132 @@ if __name__ == "__main__":
 
 
 
+## 79.单词搜索
+
+回溯，https://leetcode.cn/problems/word-search/
+
+
+
+给定一个 `m x n` 二维字符网格 `board` 和一个字符串单词 `word` 。如果 `word` 存在于网格中，返回 `true` ；否则，返回 `false` 。
+
+单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2020/11/04/word2.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCCED"
+输出：true
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2020/11/04/word-1.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "SEE"
+输出：true
+```
+
+**示例 3：**
+
+<img src="https://assets.leetcode.com/uploads/2020/10/15/word3.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCB"
+输出：false
+```
+
+ 
+
+**提示：**
+
+- `m == board.length`
+- `n = board[i].length`
+- `1 <= m, n <= 6`
+- `1 <= word.length <= 15`
+- `board` 和 `word` 仅由大小写英文字母组成
+
+ 
+
+**进阶：**你可以使用搜索剪枝的技术来优化解决方案，使其在 `board` 更大的情况下可以更快解决问题？
+
+
+
+3535ms，击败58.21%
+
+```python
+class Solution:
+    def exist(self, board: List[List[str]], word: str) -> bool:
+        def dfs(i, j, k):
+            if not 0 <= i < len(board) or not 0 <= j < len(board[0]) or board[i][j] != word[k]:
+                return False
+            if k == len(word) - 1:
+                return True
+            tmp, board[i][j] = board[i][j], '/'
+            res = dfs(i + 1, j, k + 1) or dfs(i - 1, j, k + 1) or dfs(i, j + 1, k + 1) or dfs(i, j - 1, k + 1)
+            board[i][j] = tmp
+            return res
+
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                if dfs(i, j, 0):
+                    return True
+        return False
+        
+```
+
+
+
+
+
+**进阶：**你可以使用搜索剪枝的技术来优化解决方案，使其在 `board` 更大的情况下可以更快解决问题？
+
+To optimize the solution using search pruning, we can add a few checks to avoid unnecessary recursive calls. One effective technique is to use a set to keep track of visited cells, which helps in avoiding revisiting the same cell within the same path.
+
+Here is the optimized Python code:
+
+5133ms，击败18.36%
+
+```python
+from typing import List
+
+class Solution:
+    def exist(self, board: List[List[str]], word: str) -> bool:
+        def dfs(i, j, k, visited):
+            if not 0 <= i < len(board) or not 0 <= j < len(board[0]) or board[i][j] != word[k] or (i, j) in visited:
+                return False
+            if k == len(word) - 1:
+                return True
+            visited.add((i, j))
+            res = (dfs(i + 1, j, k + 1, visited) or
+                   dfs(i - 1, j, k + 1, visited) or
+                   dfs(i, j + 1, k + 1, visited) or
+                   dfs(i, j - 1, k + 1, visited))
+            visited.remove((i, j))
+            return res
+
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                if dfs(i, j, 0, set()):
+                    return True
+        return False
+```
+
+### Explanation:
+
+1. **Visited Set**: A set `visited` is used to keep track of the cells that have been visited in the current path.
+2. **DFS Function**: The `dfs` function now takes an additional parameter `visited` to manage the visited cells.
+3. **Pruning**: Before making recursive calls, the function checks if the current cell is already visited or if it does not match the current character in the word.
+4. **Backtracking**: After exploring all possible paths from the current cell, the cell is removed from the `visited` set to allow other paths to use it.
+
+
+
+
+
 ## 98.验证二叉搜索树
 
 https://leetcode.cn/problems/validate-binary-search-tree/
@@ -5697,6 +5823,62 @@ if __name__ == "__main__":
     sol = Solution()
     print(sol.rob([2, 1, 1, 2])) # 3
 ```
+
+
+
+## 131.分割回文串
+
+backtracking, https://leetcode.cn/problems/palindrome-partitioning/
+
+给你一个字符串 `s`，请你将 `s` 分割成一些子串，使每个子串都是 
+
+**回文串**。返回 `s` 所有可能的分割方案。回文串是指向前和向后读都相同的字符串。
+
+
+
+**示例 1：**
+
+```
+输入：s = "aab"
+输出：[["a","a","b"],["aa","b"]]
+```
+
+**示例 2：**
+
+```
+输入：s = "a"
+输出：[["a"]]
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 16`
+- `s` 仅由小写英文字母组成
+
+
+
+```python
+class Solution:
+    def partition(self, s: str) -> List[List[str]]:
+        def is_palindrome(s):
+            return s == s[::-1]
+
+        def backtracking(start, path):
+            if start == len(s):
+                res.append(path)
+                return 
+            for i in range(start, len(s)):
+                if is_palindrome(s[start:i+1]):
+                    backtracking(i+1, path + [s[start:i+1]])
+        
+        res = []
+        backtracking(0, [])
+        return res
+```
+
+
 
 
 
