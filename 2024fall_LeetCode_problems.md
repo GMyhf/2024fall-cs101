@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1745 GMT+8 Feb 1 2025
+Updated 2103 GMT+8 Feb 1 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -11734,6 +11734,86 @@ class Solution:
 # t = "ABC"
 # print(sol.minWindow(s, t))  # 输出: "BANC"
 ```
+
+
+
+
+
+## 84.柱状图中最大的矩形
+
+monotonic stack, https://leetcode.cn/problems/largest-rectangle-in-histogram/
+
+给定 *n* 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
+
+求在该柱状图中，能够勾勒出来的矩形的最大面积。
+
+ 
+
+**示例 1:**
+
+<img src="https://assets.leetcode.com/uploads/2021/01/04/histogram.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：heights = [2,1,5,6,2,3]
+输出：10
+解释：最大的矩形为图中红色区域，面积为 10
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2021/01/04/histogram-1.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入： heights = [2,4]
+输出： 4
+```
+
+ 
+
+**提示：**
+
+- `1 <= heights.length <=10^5`
+- `0 <= heights[i] <= 10^4`
+
+
+
+```python
+from typing import List
+class Solution:
+    def largestRectangleArea(self, heights: List[int]) -> int:
+        stack = []
+        heights = [0] + heights + [0]
+        res = 0
+        for i in range(len(heights)):
+            while stack and heights[i] < heights[stack[-1]]:
+                h = heights[stack.pop()]
+                w = i - stack[-1] - 1
+                res = max(res, h * w)
+            stack.append(i)
+        return res
+
+if __name__ == '__main__':
+    s = Solution()
+    print(s.largestRectangleArea([2,1,5,6,2,3]))
+```
+
+关键概念：
+
+1. **单调栈**：
+   - 用栈来维护柱子的索引，并确保栈中的柱子高度是单调递增的。
+   - 当遇到比栈顶柱子矮的柱子时，就意味着栈顶的柱子已经不能再扩展更大的矩形了，应该从栈中弹出这个柱子，计算以它为高度的矩形面积。
+2. **为什么需要在 `heights` 前后加 0**：
+   - 通过在 `heights` 数组的开始和结束分别加上 `0`，可以保证栈最终能清空，并且在所有柱子处理完后能够强制计算出最后一块矩形面积。
+   - 这个“0”是为了处理栈中剩余的柱子（特别是最后一部分）。
+
+栈操作：
+
+- **栈中存储的是什么**：
+  - `stack` 中存储的是柱子的 **索引**，而不是柱子的高度。这样可以通过 `heights[i]` 直接访问到柱子的高度。
+- **计算矩形面积**：
+  - 在栈顶元素出栈时，表示栈顶柱子所能组成的最大矩形已经结束，当前的矩形高度就是栈顶柱子的高度。
+  - 宽度 `w` 的计算是当前索引 `i` 减去栈中的下一个元素索引（即 `stack[-1]`），再减去 1，因为栈中的元素代表了一个 **区间**。
+  - 例如，如果 `stack[-1]` 是索引 `j`，那么这个矩形的宽度就是 `i - j - 1`。
 
 
 
