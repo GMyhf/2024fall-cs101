@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2149 GMT+8 Feb 1 2025
+Updated 2216 GMT+8 Feb 1 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -8274,6 +8274,98 @@ if __name__ == "__main__":
 ```
 
 
+
+## 347.前K个高频元素
+
+桶排序，堆，https://leetcode.cn/problems/top-k-frequent-elements/
+
+为了满足题目要求，即时间复杂度优于 O(n log n)，我们可以使用一个基于桶排序的方法来解决这个问题。这种方法的时间复杂度为 O(n)，因为我们遍历了输入数组两次，并且对固定数量的桶进行了处理。
+
+下面是具体的实现步骤：
+
+1. 使用一个哈希表（字典）统计每个数字出现的频率。
+2. 创建一系列的“桶”，每个桶对应一种出现频率。将每个数字放入相应频率的桶中。
+3. 从最高频率开始，从桶中取出前 k 个高频元素。
+
+以下是 Python 实现代码：3ms，击败93.39%
+
+```python
+from collections import defaultdict, Counter
+from typing import List
+
+
+class Solution:
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        # 统计每个数字出现的次数
+        count = Counter(nums)
+
+        # 按照出现的频率分桶
+        buckets = defaultdict(list)
+        for num, freq in count.items():
+            buckets[freq].append(num)
+
+        # 收集结果
+        res = []
+        for freq in range(len(nums), 0, -1):  # 从最高的频率开始收集
+            if freq in buckets:
+                res += buckets[freq]
+                if len(res) >= k:  # 如果已经收集到足够的元素，则停止
+                    break
+
+        return res[:k]
+
+
+if __name__ == '__main__':
+    s = Solution()
+    nums = [1, 1, 1, 2, 2, 3]
+    k = 2
+    print(s.topKFrequent(nums, k))  # 输出：[1, 2]
+```
+
+> 解释：
+>
+> - **`Counter`**：首先使用 `Counter` 来统计每个数字出现的次数，这一步时间复杂度是 O(n)。
+> - **桶排序**：然后创建一系列桶，其中索引代表出现频率，值是一个列表，包含所有具有该频率的数字。通过遍历 `count` 字典并将每个数字放入相应的桶中完成这一过程。
+> - **收集结果**：最后，我们从最大可能的频率开始（即数组长度），依次向较低频率检查并添加对应的数字到结果列表中，直到收集到了 k 个元素为止。
+>
+> 这种方法确保了我们可以在 O(n) 时间复杂度内找到前 k 个高频元素，符合题目要求。
+
+
+
+```python
+import heapq
+from collections import Counter
+from typing import List
+
+
+class Solution:
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        # 统计每个数字出现的次数
+        count = Counter(nums)
+
+        # 使用最小堆来保存频率最高的k个元素
+        min_heap = []
+        for num, freq in count.items():
+            if len(min_heap) < k:
+                heapq.heappush(min_heap, (freq, num))
+            else:
+                # 如果当前元素的频率大于堆顶元素的频率，则替换堆顶元素
+                if freq > min_heap[0][0]:
+                    heapq.heapreplace(min_heap, (freq, num))
+
+        # 提取堆中的元素，并只返回数字部分
+        return [x[1] for x in min_heap]
+
+
+if __name__ == '__main__':
+    s = Solution()
+    nums = [1, 1, 1, 2, 2, 3]
+    k = 2
+    print(s.topKFrequent(nums, k))  # 输出：[1, 2]
+
+```
+
+> 使用堆（Heap）来解决这个问题也是一个非常有效的方法。我们可以利用 Python 的 heapq 模块来创建一个最小堆，从而保持前 K 个高频元素。这种方法的时间复杂度为 O(n log k)，其中 n 是数组的长度，k 是需要返回的高频元素的数量。虽然这比桶排序的 O(n) 方法稍微慢一些，但在很多实际情况下依然非常高效。这种方法不仅简洁，而且在处理大数据集时也能保证较好的性能。
 
 
 
