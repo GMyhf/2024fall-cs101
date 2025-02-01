@@ -8245,6 +8245,127 @@ class Solution:
 
 
 
+## 394.字符串解码
+
+stack, https://leetcode.cn/problems/decode-string/
+
+给定一个经过编码的字符串，返回它解码后的字符串。
+
+编码规则为: `k[encoded_string]`，表示其中方括号内部的 `encoded_string` 正好重复 `k` 次。注意 `k` 保证为正整数。
+
+你可以认为输入字符串总是有效的；输入字符串中没有额外的空格，且输入的方括号总是符合格式要求的。
+
+此外，你可以认为原始数据不包含数字，所有的数字只表示重复的次数 `k` ，例如不会出现像 `3a` 或 `2[4]` 的输入。
+
+ 
+
+**示例 1：**
+
+```
+输入：s = "3[a]2[bc]"
+输出："aaabcbc"
+```
+
+**示例 2：**
+
+```
+输入：s = "3[a2[c]]"
+输出："accaccacc"
+```
+
+**示例 3：**
+
+```
+输入：s = "2[abc]3[cd]ef"
+输出："abcabccdcdcdef"
+```
+
+**示例 4：**
+
+```
+输入：s = "abc3[cd]xyz"
+输出："abccdcdcdxyz"
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 30`
+- `s` 由小写英文字母、数字和方括号 `'[]'` 组成
+- `s` 保证是一个 **有效** 的输入。
+- `s` 中所有整数的取值范围为 `[1, 300]` 
+
+
+
+```python
+class Solution:
+    def decodeString(self, s: str) -> str:
+        stack = []
+        for i in s:
+            if i != ']':
+                stack.append(i)
+                continue
+            
+            sub_s = []
+            while stack[-1] != '[':
+                sub_s.append(stack.pop())
+            stack.pop()
+            sub_s = ''.join(sub_s[::-1])
+
+            freq = []
+            while stack and stack[-1].isdigit():
+                freq.append(stack.pop())
+            
+            freq = int(''.join(freq[::-1]))
+            
+            stack.append(sub_s * freq)
+        
+        return ''.join(stack)
+```
+
+
+
+您的代码已经很好地实现了字符串解码的功能，但我们可以进行一些优化来提高代码的可读性和效率。下面是经过优化后的版本：
+
+```python
+class Solution:
+    def decodeString(self, s: str) -> str:
+        stack = []
+        current_num = 0
+        current_string = ""
+        
+        for char in s:
+            if char.isdigit():
+                # 当前字符是数字时，更新当前的数字
+                current_num = current_num * 10 + int(char)
+            elif char == '[':
+                # 遇到'['时，将当前的数字和字符串压入栈，并重置变量
+                stack.append((current_string, current_num))
+                current_string, current_num = "", 0
+            elif char == ']':
+                # 遇到']'时，从栈中弹出，并根据保存的数字重复当前字符串
+                prev_string, num = stack.pop()
+                current_string = prev_string + current_string * num
+            else:
+                # 普通字符直接添加到当前字符串
+                current_string += char
+                
+        return current_string
+```
+
+主要改进点：
+
+1. **减少字符串操作次数**：原版代码在遇到`]`时，通过不断弹出栈顶元素来构建子串，然后反转拼接。新版本直接使用一个变量存储当前构建的字符串，减少了多次字符串操作带来的开销。
+2. **简化频率解析逻辑**：新版直接在遍历过程中计算数字（频率），而不是通过额外的循环来解析栈中的数字。
+3. **提高可读性**：通过明确区分处理数字、`[`、`]`和其他字符的不同逻辑块，使代码更易读。
+
+这样的改动不仅提升了代码执行效率，也使得代码结构更加清晰，便于理解和维护。
+
+
+
+
+
 ## 416.分割等和子集
 
 dp, https://leetcode.cn/problems/partition-equal-subset-sum
