@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2103 GMT+8 Feb 1 2025
+Updated 2149 GMT+8 Feb 1 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -7203,6 +7203,219 @@ if __name__ == "__main__":
     print(trie.search("app"))     # return True
 
 ```
+
+
+
+## 215.数组中的第K个最大元素
+
+heap, https://leetcode.cn/problems/kth-largest-element-in-an-array/
+
+给定整数数组 `nums` 和整数 `k`，请返回数组中第 `k` 个最大的元素。
+
+请注意，你需要找的是数组排序后的第 `k` 个最大的元素，而不是第 `k` 个不同的元素。
+
+你必须设计并实现时间复杂度为 `O(n)` 的算法解决此问题。
+
+ 
+
+**示例 1:**
+
+```
+输入: [3,2,1,5,6,4], k = 2
+输出: 5
+```
+
+**示例 2:**
+
+```
+输入: [3,2,3,1,2,4,5,5,6], k = 4
+输出: 4
+```
+
+ 
+
+**提示：** 
+
+- `1 <= k <= nums.length <= 10^5`
+- `-10^4 <= nums[i] <= 10^4`
+
+
+
+对于你提供的情况，数组长度达到 10 万左右且包含大量相同的元素，使用 **快速选择算法**（Quickselect）有时可能会遇到性能瓶颈，尤其是当数组中大部分元素相同时，快速选择算法的性能会退化到最坏情况，导致时间复杂度为 $O(n^2)$。为了避免这种情况，我们可以考虑使用更稳定的算法，比如 **堆排序**（Heap Sort），这也是一个适用于此类问题的常见方法。
+
+使用堆实现第 k 个最大元素
+
+我们可以通过 **最小堆**（Min-Heap）来解决这个问题。具体思路是：
+
+1. 构建一个大小为 k 的最小堆。
+2. 遍历数组，对于每个元素，如果堆的大小小于 kk，就将元素加入堆中。
+3. 如果堆的大小已经达到 k，并且当前元素比堆顶元素大，则替换堆顶元素。
+4. 最终堆顶的元素就是第 k 个最大元素。
+
+这样做的时间复杂度为 $O(n \log k)$，对于你的情况，使用最小堆是一个较为高效的解决方法。
+
+代码实现：
+
+```python
+import heapq
+from typing import List
+
+
+class Solution:
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        # 使用最小堆
+        # 堆的大小保持为 k
+        heap = nums[:k]
+        heapq.heapify(heap)  # 将前 k 个元素构建成一个最小堆
+
+        for num in nums[k:]:
+            if num > heap[0]:  # 如果当前元素大于堆顶元素
+                heapq.heapreplace(heap, num)  # 弹出堆顶并加入新元素
+
+        return heap[0]  # 堆顶就是第 k 个最大元素
+
+if __name__ == '__main__':
+    s = Solution()
+    print(s.findKthLargest([3, 2, 1, 5, 6, 4], 2))  # 输出 5
+    print(s.findKthLargest([3, 2, 3, 1, 2, 4, 5, 5, 6], 4))
+
+
+    # 对于大数组的测试
+    nums = [1] * 100000
+    nums[-5:] = [-5, -4, -3, -2, -1]  # 将最后五个元素设置为 -5 到 -1
+    k = 50000
+    print(s.findKthLargest(nums, k))  # 输出第 50000 个最大的元素
+```
+
+> 代码解释：
+>
+> 1. 最小堆的构建：
+>
+>    - 我们先构建一个大小为 k 的最小堆，它会存储数组中的前 k 个元素。
+>
+> 2. 遍历数组：
+>
+>    - 然后我们从第 k+1
+>
+>      个元素开始遍历，检查每个元素与堆顶的元素：
+>
+>      - 如果当前元素比堆顶元素大，就用当前元素替换堆顶元素。
+>
+> 3. 最终结果：
+>
+>    - 经过遍历后，堆顶的元素就是第 k 个最大元素。
+>
+> 时间复杂度：
+>
+> - 构建最小堆的时间复杂度是 O(k)。
+> - 遍历剩余的 n - k 个元素，每个操作的时间复杂度是 $O(\log k)$，因为我们每次要对堆进行替换操作。
+> - 总体时间复杂度是 $O(n \log k)$。
+>
+> 空间复杂度：
+>
+> - 堆占用的空间为 O(k)，因此空间复杂度是 O(k)。
+>
+> 示例：
+>
+> 对于输入 `nums = [1, 2, 3, 4, 5, 1, ..., 1, 1, 1, 1, 1, -5, -4, -3, -2, -1]` 和 `k = 50000`，该算法可以在较短的时间内处理大规模数据，并且避免了快速选择算法可能的最坏情况。
+>
+> 总结：
+>
+> 使用最小堆解决这个问题是一个高效的方式，尤其是当数组中包含大量重复元素时，它的性能会比快速选择算法更稳定。
+
+
+
+
+
+
+
+为了在时间复杂度为 O(n) 的情况下解决这个问题，可以利用 **快速选择算法**（Quickselect）。这是一种基于快速排序的分治算法，它能够在平均时间复杂度为 O(n) 的情况下找到数组中的第 k 个最大元素。
+
+思路：
+
+1. **快速排序的思路**：
+   - 快速排序的核心思想是选择一个 "pivot" 元素，并将数组划分为两部分：一部分小于或等于 pivot，另一部分大于 pivot。
+   - 快速选择算法基于这个思路，通过划分数组来逐步缩小搜索范围，直到找到第 kk 个最大元素。
+2. **选择第 kk 个最大元素**：
+   - 如果我们希望找到第 k 个 **最大的** 元素，实际上是在排序后的数组中找到第 n-k 个 **最小** 元素。
+   - 通过快速选择，我们可以只在需要的部分递归查找，而不需要对整个数组进行排序，从而提高效率。
+
+快速选择算法的核心步骤：
+
+- 随机选择一个 pivot 元素。
+- 划分数组，使得 pivot 左边的所有元素都小于 pivot，右边的所有元素都大于 pivot。
+- 根据 pivot 的位置与 n−k 比较，确定下一步应该在哪个部分继续查找。
+
+代码实现。超出时间限制，41 / 42 个通过的测试用例。
+
+```python
+import random	
+from typing import List
+
+
+class Solution:
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        def quickselect(left, right):
+            # 随机选择一个 pivot
+            pivot_index = random.randint(left, right)
+            pivot_index = partition(left, right, pivot_index)
+
+            # 判断 pivot 所在位置与目标位置的关系
+            if pivot_index == k:
+                return nums[pivot_index]
+            elif pivot_index < k:
+                return quickselect(pivot_index + 1, right)
+            else:
+                return quickselect(left, pivot_index - 1)
+
+        def partition(left, right, pivot_index):
+            pivot_value = nums[pivot_index]
+            # 将 pivot 移动到右边
+            nums[pivot_index], nums[right] = nums[right], nums[pivot_index]
+            store_index = left
+            # 将所有小于 pivot 的元素移到左边
+            for i in range(left, right):
+                if nums[i] < pivot_value:
+                    nums[store_index], nums[i] = nums[i], nums[store_index]
+                    store_index += 1
+            # 将 pivot 移动到它的正确位置
+            nums[right], nums[store_index] = nums[store_index], nums[right]
+            return store_index
+
+        # 目标位置是第 n-k 最小的元素
+        n = len(nums)
+        k = n - k  # 转换为最小元素的索引
+        return quickselect(0, n - 1)
+
+
+if __name__ == '__main__':
+    s = Solution()
+    print(s.findKthLargest([3, 2, 1, 5, 6, 4], 2))  # 输出 5
+    print(s.findKthLargest([3, 2, 3, 1, 2, 4, 5, 5, 6], 4))  # 输出 4
+
+```
+
+> 代码解释：
+>
+> 1. **`quickselect` 函数**：
+>    - 这是快速选择算法的主函数，用来在数组的子区间 `[left, right]` 中查找第 kk 个最大元素。
+>    - `pivot_index` 是通过 `partition` 函数划分数组后 pivot 元素的最终位置。
+>    - 如果 pivot 的位置是目标位置（即 `pivot_index == k`），则返回该元素。
+>    - 如果 pivot 的位置小于目标位置，继续在右半部分查找；如果大于目标位置，继续在左半部分查找。
+> 2. **`partition` 函数**：
+>    - 通过选定的 pivot 元素将数组划分成两部分：一部分小于 pivot，另一部分大于 pivot。
+>    - 最后返回 pivot 的位置，供 `quickselect` 函数进一步判断。
+> 3. **目标位置转换**：
+>    - 因为我们要求的是第 kk 个 **最大的** 元素，所以在 `quickselect` 中，实际上是查找数组中第 `n-k` 个 **最小** 元素的位置（其中 `n` 是数组的长度）。
+>
+> 时间复杂度：
+>
+> - **平均时间复杂度**是 O(n)，这是由于快速选择算法通过每次划分数组的方式将搜索空间缩小到一半。
+> - 最坏情况下，时间复杂度为 $O(n^2)$，但这种情况极为少见（当每次选择的 pivot 总是最小或最大时）。
+>
+> 空间复杂度：
+>
+> - 快速选择算法的空间复杂度是 O(1)，因为我们只使用了常数级别的额外空间，除了递归栈的深度。
 
 
 
