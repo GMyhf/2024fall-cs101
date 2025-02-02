@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1403 GMT+8 Feb 2 2025
+Updated 0034 GMT+8 Feb 3 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -14693,6 +14693,156 @@ if __name__ == '__main__':
     print(sol.minCostGoodCaption("aca"))
     print(sol.minCostGoodCaption("bc"))
 ```
+
+
+
+## 3444.使数组包含目标值倍数的最少增量
+
+动态规划（DP）+ 最小公倍数（LCM）+ 位掩码（Bitmasking），https://leetcode.cn/problems/minimum-increments-for-target-multiples-in-an-array/
+
+给你两个数组 `nums` 和 `target` 。
+
+在一次操作中，你可以将 `nums` 中的任意一个元素递增 1 。
+
+返回要使 `target` 中的每个元素在 `nums` 中 **至少** 存在一个倍数所需的 **最少操作次数** 。
+
+ 
+
+**示例 1：**
+
+**输入：**nums = [1,2,3], target = [4]
+
+**输出：**1
+
+**解释：**
+
+满足题目条件的最少操作次数是 1 。
+
+- 将 3 增加到 4 ，需要 1 次操作，4 是目标值 4 的倍数。
+
+**示例 2：**
+
+**输入：**nums = [8,4], target = [10,5]
+
+**输出：**2
+
+**解释：**
+
+满足题目条件的最少操作次数是 2 。
+
+- 将 8 增加到 10 ，需要 2 次操作，10 是目标值 5 和 10 的倍数。
+
+**示例 3：**
+
+**输入：**nums = [7,9,10], target = [7]
+
+**输出：**0
+
+**解释：**
+
+数组中已经包含目标值 7 的一个倍数，不需要执行任何额外操作。
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 5 * 10^4`
+- `1 <= target.length <= 4`
+- `target.length <= nums.length`
+- `1 <= nums[i], target[i] <= 10^4`
+
+
+
+有两个列表 `nums` 和 `target`，要求通过对 `nums` 中的元素增加一些数值，使得它们符合目标的倍数要求。我们最终的目标是计算最少的增量，使得每个目标的倍数都得到满足。
+
+解题思路：
+
+1. **目标描述**：对于每个目标 `target[i]`，我们需要通过对 `nums` 中的元素进行一些增量操作，使得它们满足某种倍数关系。
+2. **位运算与子集组合**：使用位掩码 (`mask`) 来表示各个目标的组合情况。`mask` 表示一个目标子集，这样就可以通过动态规划 (DP) 遍历所有的目标组合。
+3. **最小公倍数（LCM）计算**：通过计算每个子集目标的最小公倍数（LCM），来帮助确定每次增量操作所需要的最小值。
+
+详细分析：
+
+1. **子集遍历**：
+
+   - 对于目标 `target` 中的每一个子集，我们计算其对应的最小公倍数（LCM）。
+   - `lcm_map` 是一个字典，用来存储每个子集对应的 LCM 值。使用位掩码（从 `1` 到 `full`）来遍历所有子集。
+
+2. **动态规划（DP）**：
+
+   - `dp[s]` 表示从 `nums` 中选取的元素的增量之和，使得已经满足了 `target` 中子集 `s` 的倍数条件。
+   - 我们通过逐个更新 `dp` 数组，来得到每个可能的子集满足的最小增量值。
+
+3. **LCM 计算**：
+
+   - 对于每个目标子集，首先计算该子集的 LCM，然后对每个 `nums` 中的元素，计算将其增加到满足 LCM 倍数的最小增量。
+
+代码解读：
+
+```python
+from math import gcd
+from typing import List
+
+class Solution:
+    def minimumIncrements(self, nums: List[int], target: List[int]) -> int:
+        m = len(target)
+        full = (1 << m) - 1  # 计算全子集的掩码
+
+        # 计算每个子集的最小公倍数 (LCM)
+        lcm_map = {}
+        for mask in range(1, full + 1):  # 从1开始，表示不为空的子集
+            l = 1
+            i = 0
+            tmp = mask
+            while tmp:
+                if tmp & 1:
+                    t = target[i]
+                    l = l * t // gcd(l, t)  # 计算LCM
+                tmp //= 2  # 移除最低有效位
+                i += 1
+            lcm_map[mask] = l
+
+        # 动态规划：dp[s]表示达到子集s的最小增量
+        inf = float('inf')
+        dp = [inf] * (full + 1)
+        dp[0] = 0  # 初始状态，子集为空时，增量为0
+
+        # 遍历nums数组
+        for a in nums:
+            new_dp = dp[:]
+            for s in range(full + 1):
+                if dp[s] == inf:
+                    continue  # 如果当前子集不可能达到，跳过
+
+                # 对于每个子集和LCM，计算增量
+                for sub, L in lcm_map.items():
+                    cost = (L - (a % L)) % L  # 计算使a满足L倍数的增量
+                    ns = s | sub  # 更新子集
+                    if new_dp[ns] > dp[s] + cost:
+                        new_dp[ns] = dp[s] + cost  # 更新最小增量
+            dp = new_dp
+
+        return dp[full]  # 返回全子集的最小增量
+
+```
+
+> 关键部分解释：
+>
+> - **`full = (1 << m) - 1`**：这表示 `target` 数组的所有子集掩码，即 `m` 个目标的全组合（即所有目标的集合）。
+> - **`lcm_map`**：通过位掩码和目标数组 `target` 的组合计算每个子集的最小公倍数（LCM）。
+> - **动态规划数组 `dp`**：`dp[s]` 记录了使得目标子集 `s` 满足倍数条件的最小增量，初始时为 `inf`，表示尚未达到该状态。
+>
+> 优化建议：
+>
+> 1. **减小空间复杂度**：
+>    - `dp` 和 `new_dp` 每次只依赖于上一轮的结果，可以直接修改 `dp` 数组，避免多次复制。
+>
+> 2. **提前终止**：
+>    - 如果发现某个子集的增量已经达到最小值，可以提前结束进一步的计算，避免不必要的计算。
+>
+> 总结：
+>
+> 这个解法利用了位运算表示子集组合和动态规划，时间复杂度较高，尤其是涉及 LCM 和子集的遍历（`2^m` 的子集），适用于中等规模的输入数据。如果要进一步优化，可能需要减少不必要的状态更新和优化 LCM 的计算。
 
 
 
