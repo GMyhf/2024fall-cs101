@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0055 GMT+8 Feb 3 2025
+Updated 0104 GMT+8 Feb 3 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -1941,6 +1941,74 @@ class Solution:
         
         # 最大值一定是操作次数，即受影响的最小行和列的乘积
         return min_a * min_b
+```
+
+
+
+## 680.验证回文串II
+
+双指针，https://leetcode.cn/problems/valid-palindrome-ii/
+
+给你一个字符串 `s`，**最多** 可以从中删除一个字符。
+
+请你判断 `s` 是否能成为回文字符串：如果能，返回 `true` ；否则，返回 `false` 。
+
+ 
+
+**示例 1：**
+
+```
+输入：s = "aba"
+输出：true
+```
+
+**示例 2：**
+
+```
+输入：s = "abca"
+输出：true
+解释：你可以删除字符 'c' 。
+```
+
+**示例 3：**
+
+```
+输入：s = "abc"
+输出：false
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 10^5`
+- `s` 由小写英文字母组成
+
+
+
+```python
+class Solution:
+    def validPalindrome(self, s: str) -> bool:
+        def is_palindrome(subs, left, right):
+            """检查子串 subs[left:right+1] 是否为回文"""
+            while left < right:
+                if subs[left] != subs[right]:
+                    return False
+                left += 1
+                right -= 1
+            return True
+        
+        left, right = 0, len(s) - 1
+        
+        while left < right:
+            if s[left] != s[right]:  
+                # 尝试删除左边或右边的字符，看是否是回文
+                return is_palindrome(s, left + 1, right) or is_palindrome(s, left, right - 1)
+            left += 1
+            right -= 1
+        
+        return True  # 如果从头到尾都是回文，直接返回 True
+
 ```
 
 
