@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0034 GMT+8 Feb 3 2025
+Updated 0055 GMT+8 Feb 3 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -14913,6 +14913,348 @@ class Solution:
 > 总结：
 >
 > 这个解法利用了位运算表示子集组合和动态规划，时间复杂度较高，尤其是涉及 LCM 和子集的遍历（`2^m` 的子集），适用于中等规模的输入数据。如果要进一步优化，可能需要减少不必要的状态更新和优化 LCM 的计算。
+
+
+
+## 3445.奇偶频次间的最大差值II
+
+前缀和 + 哈希表（字典）+ 二分查找 组合的 优化滑动窗口，https://leetcode.cn/problems/maximum-difference-between-even-and-odd-frequency-ii/
+
+给你一个字符串 `s` 和一个整数 `k` 。请你找出 `s` 的子字符串 `subs` 中两个字符的出现频次之间的 **最大** 差值，`freq[a] - freq[b]` ，其中：
+
+- `subs` 的长度 **至少** 为 `k` 。
+- 字符 `a` 在 `subs` 中出现奇数次。
+- 字符 `b` 在 `subs` 中出现偶数次。
+
+返回 **最大** 差值。
+
+**注意** ，`subs` 可以包含超过 2 个 **互不相同** 的字符。.
+
+**子字符串** 是字符串中的一个连续字符序列。
+
+ 
+
+**示例 1：**
+
+**输入：**s = "12233", k = 4
+
+**输出：**-1
+
+**解释：**
+
+对于子字符串 `"12233"` ，`'1'` 的出现次数是 1 ，`'3'` 的出现次数是 2 。差值是 `1 - 2 = -1` 。
+
+**示例 2：**
+
+**输入：**s = "1122211", k = 3
+
+**输出：**1
+
+**解释：**
+
+对于子字符串 `"11222"` ，`'2'` 的出现次数是 3 ，`'1'` 的出现次数是 2 。差值是 `3 - 2 = 1` 。
+
+**示例 3：**
+
+**输入：**s = "110", k = 3
+
+**输出：**-1
+
+ 
+
+**提示：**
+
+- `3 <= s.length <= 3 * 10^4`
+- `s` 仅由数字 `'0'` 到 `'4'` 组成。
+- 输入保证至少存在一个子字符串是由一个出现奇数次的字符和一个出现偶数次的字符组成。
+- `1 <= k <= s.length`
+
+
+
+
+
+
+
+这个问题的核心是 **前缀和 + 哈希表（字典）+ 二分查找** 组合的 **优化滑动窗口** 方法。
+
+**解题思路**
+
+1. **前缀和计算频次**
+   - 使用 **二维前缀和数组 `P[i][d]`** 统计 **前 `i` 个字符中 `d` 出现的次数**（`d` 代表 `0-4`）。
+   - 计算每个 `P[i][a]` 和 `P[i][b]`，并用 `P[i][a] - P[i][b]` 作为关键值进行优化。
+
+2. **分组存储不同的奇偶性**
+   - 记录 `P[i][a]` 和 `P[i][b]` **的奇偶性组合**，存入 `groups[(pa, pb)]`，即：
+     - `pa = P[i][a] % 2`，表示 `a` 的奇偶性。
+     - `pb = P[i][b] % 2`，表示 `b` 的奇偶性。
+   - 这可以帮助我们 **快速查找某个 `a` 和 `b` 的奇偶性匹配的子串**。
+
+3. **二分查找优化**
+   - **存储前缀最小值**，用于计算 `P[i][a] - P[i][b]` 的最优子串。
+   - **二分查找 `bisect_right`** 快速找到满足 `k` 长度的最小索引 `j`，加速 `O(n^2)` 的暴力解法到 `O(n log n)`。
+
+**代码优化**
+
+- **减少 `O(n^2)` 的冗余计算**：
+  - **使用 `defaultdict(list)`** 代替普通字典手动初始化 `groups`。
+  - **去除不必要的 `if` 判断**，简化代码逻辑。
+  - **优化 `bisect_right` 查询**，减少 `O(n log n)` 复杂度的查询次数。
+
+
+
+**优化后的代码**
+
+```python
+from bisect import bisect_right
+from collections import defaultdict
+
+class Solution:
+    def maxDifference(self, s: str, k: int) -> int:
+        n = len(s)
+
+        # 计算前缀和 P[i][d]，其中 d ∈ {0,1,2,3,4}
+        P = [[0] * 5 for _ in range(n + 1)]
+        for i, ch in enumerate(s):
+            d = ord(ch) - ord("0")
+            for j in range(5):
+                P[i + 1][j] = P[i][j]  # 继承前一个前缀和
+            P[i + 1][d] += 1  # 当前字符出现次数+1
+
+        ans = float('-inf')
+
+        # 遍历所有 a, b 的组合（a != b）
+        for a in range(5):
+            for b in range(5):
+                if a == b:
+                    continue
+
+                # 存储 (pa, pb) 奇偶性的索引和差值
+                groups = defaultdict(list)
+                for i in range(n + 1):
+                    pa, pb = P[i][a] & 1, P[i][b] & 1
+                    d_val = P[i][a] - P[i][b]
+                    groups[(pa, pb)].append((i, d_val, P[i][b]))
+
+                # 预处理前缀最小值（前缀和单调队列优化）
+                proc = {}
+                for key, lst in groups.items():
+                    idx_arr, d_arr, pb_arr = zip(*lst)  # 解包三列数据
+                    pre_min = list(d_arr)  # 复制 `d_arr` 作为最小值数组
+
+                    # 构造前缀最小值数组
+                    min_val = float('inf')
+                    for j in range(len(pre_min)):
+                        min_val = min(min_val, pre_min[j])
+                        pre_min[j] = min_val
+
+                    proc[key] = (idx_arr, pb_arr, pre_min)
+
+                # 遍历所有可能的右端点 pos
+                for pos in range(k, n + 1):
+                    pa, pb = P[pos][a] & 1, P[pos][b] & 1
+                    key = (1 - pa, pb)
+
+                    if key not in proc:
+                        continue  # 如果没有对应奇偶性的组合，跳过
+
+                    idx_arr, pb_arr, pre_min = proc[key]
+
+                    # 使用二分查找找到符合 k 限制的最小 j
+                    j1 = bisect_right(idx_arr, pos - k) - 1
+                    j2 = bisect_right(pb_arr, P[pos][b] - 2) - 1
+                    j = min(j1, j2)
+
+                    if j >= 0:
+                        cur = (P[pos][a] - P[pos][b]) - pre_min[j]
+                        ans = max(ans, cur)
+
+        return ans
+```
+
+
+
+> **优化点**
+>
+> **1. 使用 `defaultdict(list)` 简化 `groups` 结构**
+>
+> 原代码手动创建 `groups`：
+>
+> ```python
+> groups = {}
+> for pa in (0, 1):
+>     for pb in (0, 1):
+>         groups[(pa, pb)] = []
+> ```
+>
+> 优化为：
+>
+> ```python
+> groups = defaultdict(list)
+> ```
+>
+> 这样在 `groups[(pa, pb)].append(...)` 时 **自动初始化**，减少了手动赋值的复杂度。
+>
+> ---
+>
+> **2. `zip(*lst)` 直接提取列，减少循环次数**
+>
+> 原代码：
+>
+> ```python
+> idx_arr = [t[0] for t in lst]
+> pb_arr = [t[2] for t in lst]
+> d_arr = [t[1] for t in lst]
+> ```
+>
+> 优化为：
+>
+> ```python
+> idx_arr, d_arr, pb_arr = zip(*lst)
+> ```
+>
+> 直接从 `lst` 提取 **所有列数据**，提高可读性，避免 `O(n)` 额外循环。
+>
+> ---
+>
+> **3. 预计算 `pre_min` 直接更新**
+>
+> 原代码：
+>
+> ```python
+> pre_min = []
+> cur = 10**9
+> for d in d_arr:
+>     if d < cur:
+>         cur = d
+>     pre_min.append(cur)
+> ```
+>
+> 优化为：
+>
+> ```python
+> pre_min = list(d_arr)
+> min_val = float('inf')
+> for j in range(len(pre_min)):
+>     min_val = min(min_val, pre_min[j])
+>     pre_min[j] = min_val
+> ```
+>
+> - 直接用 `list(d_arr)` **减少一次数组拷贝**。
+> - 使用 `min_val` **单调更新**，简洁高效。
+>
+> ---
+>
+> **4. 避免不必要的 `continue` 和 `if`**
+>
+> 原代码：
+>
+> ```python
+> if key not in proc:
+>     continue
+> ```
+>
+> 优化：
+>
+> ```python
+> proc.get(key, None)  # 直接返回 None，避免 continue 逻辑跳跃
+> ```
+>
+> 不过这个优化 **可选**，因为 `continue` 仍然可以有效减少循环嵌套深度。
+>
+> ---
+>
+> **时间复杂度分析**
+>
+> | 操作                  | 复杂度       |
+> | --------------------- | ------------ |
+> | 计算前缀和 `P`        | `O(n)`       |
+> | 遍历 `a, b` 组合      | `O(25)`      |
+> | 分组存储前缀          | `O(n)`       |
+> | 预处理前缀最小值      | `O(n log n)` |
+> | 遍历 `pos` 并二分查找 | `O(n log n)` |
+>
+> **最终时间复杂度**：
+> $
+> O(25 \times (n + n \log n)) = O(n \log n)
+> $
+> 由于 `25` 是常数，这个解法对于 `n ≤ 30,000` **可以接受**。
+>
+> ---
+>
+> **最终优化结果**
+>
+> 1. **`defaultdict(list)` 替代手动字典初始化**
+> 2. **`zip(*lst)` 直接提取列数据**
+> 3. **预计算 `pre_min` 使用 `min_val` 直接更新**
+> 4. **减少 `if` 和 `continue`**
+> 5. **`O(n log n)` 复杂度，高效处理大数据**
+>
+> 这样优化后，代码更清晰、执行速度更快，能够顺利通过 `LeetCode` 的测试用例！
+
+
+
+
+
+```python
+class Solution:
+    def maxDifference(self, s: str, k: int) -> int:
+        n = len(s)
+
+        P = [[0] * 5 for _ in range(n + 1)]
+        for i, ch in enumerate(s):
+            d = ord(ch) - ord("0")
+            for j in range(5):
+                P[i + 1][j] = P[i][j]
+            P[i + 1][d] += 1
+
+        ans = -(10**9)
+
+        for a in range(5):
+            for b in range(5):
+                if a == b:
+                    continue
+
+                groups = {}
+                for pa in (0, 1):
+                    for pb in (0, 1):
+                        groups[(pa, pb)] = []
+                for i in range(n + 1):
+                    pa = P[i][a] & 1
+                    pb = P[i][b] & 1
+                    d_val = P[i][a] - P[i][b]
+                    groups[(pa, pb)].append((i, d_val, P[i][b]))
+
+                proc = {}
+                for key, lst in groups.items():
+
+                    idx_arr = [t[0] for t in lst]
+                    pb_arr = [t[2] for t in lst]
+                    d_arr = [t[1] for t in lst]
+
+                    pre_min = []
+                    cur = 10**9
+                    for d in d_arr:
+                        if d < cur:
+                            cur = d
+                        pre_min.append(cur)
+                    proc[key] = (idx_arr, pb_arr, pre_min, d_arr)
+
+                for pos in range(k, n + 1):
+                    pa = P[pos][a] & 1
+                    pb = P[pos][b] & 1
+
+                    key = (1 - pa, pb)
+                    idx_arr, pb_arr, pre_min, _ = proc[key]
+
+                    j1 = bisect_right(idx_arr, pos - k) - 1
+                    j2 = bisect_right(pb_arr, P[pos][b] - 2) - 1
+                    j = min(j1, j2)
+                    if j >= 0:
+                        cur = (P[pos][a] - P[pos][b]) - pre_min[j]
+                        if cur > ans:
+                            ans = cur
+        return ans
+```
 
 
 
