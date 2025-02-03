@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1516 GMT+8 Feb 3 2025
+Updated 1604 GMT+8 Feb 3 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -9736,6 +9736,117 @@ class Solution:
 ```
 
 
+
+## 763.划分字母区间
+
+greedy, https://leetcode.cn/problems/partition-labels/
+
+给你一个字符串 `s` 。我们要把这个字符串划分为尽可能多的片段，同一字母最多出现在一个片段中。
+
+注意，划分结果需要满足：将所有划分结果按顺序连接，得到的字符串仍然是 `s` 。
+
+返回一个表示每个字符串片段的长度的列表。
+
+ 
+
+**示例 1：**
+
+```
+输入：s = "ababcbacadefegdehijhklij"
+输出：[9,7,8]
+解释：
+划分结果为 "ababcbaca"、"defegde"、"hijhklij" 。
+每个字母最多出现在一个片段中。
+像 "ababcbacadefegde", "hijhklij" 这样的划分是错误的，因为划分的片段数较少。 
+```
+
+**示例 2：**
+
+```
+输入：s = "eccbbbbdec"
+输出：[10]
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 500`
+- `s` 仅由小写英文字母组成
+
+ 
+
+
+
+```python
+from collections import defaultdict
+from typing import List
+
+
+class Solution:
+    def partitionLabels(self, s: str) -> List[int]:
+        n = len(s)
+        char_indices = defaultdict(list)  # 存储每个字符的所有索引
+
+        for i in range(n):
+            char_indices[s[i]].append(i)
+
+        segments = []  # 存储合并后的区间
+        for _, indices in char_indices.items():
+            if len(indices) >= 2:
+                segments.append([min(indices), max(indices)])
+            segments.append([indices[0], indices[0]])
+
+        partition_sizes = []  # 存储最终的分割长度
+        start = 0
+        end = segments[0][1]
+
+        for i in range(1, len(segments)):
+            if segments[i][0] > end:
+                partition_sizes.append(end - start + 1)
+                start = segments[i][0]
+                end = segments[i][1]
+            else:
+                end = max(end, segments[i][1])
+
+        if n - sum(partition_sizes) > 0:
+            partition_sizes.append(n - sum(partition_sizes))
+
+        return partition_sizes
+
+```
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def partitionLabels(self, s: str) -> List[int]:
+        last = {c: i for i, c in enumerate(s)}  # 记录每个字符的最远出现位置
+        ans = []
+        start, right = 0, 0  # `start` 记录每个分割区间的起始点，`right` 记录当前区间最远端
+
+        for i, c in enumerate(s):
+            right = max(right, last[c])  # 更新当前区间最远端
+            if i == right:  # 当前索引 `i` 到达最远端，形成一个独立分区
+                ans.append(i - start + 1)
+                start = i + 1  # 更新起点，开始新的区间
+
+        return ans
+
+```
+
+> **优化点**
+>
+> 1. `last = {c: i for i, c in enumerate(s)}`
+>    - 直接记录 **每个字符的最右索引**，避免存储整个索引列表，减少 **空间复杂度**。
+> 2. 遍历 `s` 计算区间
+>    - 维护 `right` 作为当前区间的最远端。
+>    - 遍历字符串 `s` 时，动态更新 `right`。
+>    - 当 `i == right` 时，表示当前区间可以分割，存入 `ans`。
+> 3. 只遍历 `s` 一次 (`O(n)`)
+>    - 不需要额外排序 `segs`，也不需要 `sum(ans)` 计算剩余部分，直接使用 `start` 记录区间起始点。
 
 
 
