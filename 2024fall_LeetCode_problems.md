@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2251 GMT+8 Feb 3 2025
+Updated 0112 GMT+8 Feb 4 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -2175,6 +2175,66 @@ class Solution:
             right -= 1
         
         return True  # 如果从头到尾都是回文，直接返回 True
+
+```
+
+
+
+## 922.按奇偶排序数组II
+
+two pointers, https://leetcode.cn/problems/sort-array-by-parity-ii/
+
+给定一个非负整数数组 `nums`， `nums` 中一半整数是 **奇数** ，一半整数是 **偶数** 。
+
+对数组进行排序，以便当 `nums[i]` 为奇数时，`i` 也是 **奇数** ；当 `nums[i]` 为偶数时， `i` 也是 **偶数** 。
+
+你可以返回 *任何满足上述条件的数组作为答案* 。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [4,2,5,7]
+输出：[4,5,2,7]
+解释：[4,7,2,5]，[2,5,4,7]，[2,7,4,5] 也会被接受。
+```
+
+**示例 2：**
+
+```
+输入：nums = [2,3]
+输出：[2,3]
+```
+
+ 
+
+**提示：**
+
+- `2 <= nums.length <= 2 * 104`
+- `nums.length` 是偶数
+- `nums` 中一半是偶数
+- `0 <= nums[i] <= 1000`
+
+ 
+
+**进阶：**可以不使用额外空间解决问题吗？
+
+
+
+```python
+class Solution:
+    def sortArrayByParityII(self, nums: List[int]) -> List[int]:
+        n = len(nums)
+        j = 1  # Pointer for odd index
+        for i in range(0, len(nums), 2):  # Traverse even indices
+            if nums[i] % 2:  # If an odd number is found at even index
+                while nums[j] % 2:  # Find the next even number at odd index
+                    j += 2
+                # Swap them
+                nums[i], nums[j] = nums[j], nums[i]
+        
+        return nums
 
 ```
 
