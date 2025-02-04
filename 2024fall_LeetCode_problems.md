@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2037 GMT+8 Feb 4 2025
+Updated 0058 GMT+8 Feb 5 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -6150,6 +6150,72 @@ class Solution:
                 left += 1
         
         return False
+```
+
+
+
+## 90.子集II
+
+backtracking, https://leetcode.cn/problems/subsets-ii/
+
+给你一个整数数组 `nums` ，其中可能包含重复元素，请你返回该数组所有可能的 **子集**（幂集）。
+
+数组的子集是数组中选择一些元素（可能为空）。
+
+
+
+解集 **不能** 包含重复的子集。返回的解集中，子集可以按 **任意顺序** 排列。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,2,2]
+输出：[[],[1],[1,2],[1,2,2],[2],[2,2]]
+```
+
+**示例 2：**
+
+```
+输入：nums = [0]
+输出：[[],[0]]
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 10`
+- `-10 <= nums[i] <= 10`
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def subsetsWithDup(self, nums: List[int]) -> List[List[int]]:
+        nums.sort()  # 对输入数组进行排序
+        result = []
+
+        def backtrack(start=0, current=[]):
+            # 将当前构建的子集添加到结果集中
+            result.append(current[:])
+            for i in range(start, len(nums)):
+                # 如果当前元素与前一个元素相同，则跳过，避免重复子集
+                # i > start 确保只跳过当前层的重复元素，而不会影响递归中更深层的重复元素
+                if i > start and nums[i] == nums[i-1]:
+                    continue
+                # 做选择
+                current.append(nums[i])
+                # 递归调用，继续构建子集
+                backtrack(i + 1, current)
+                # 撤销选择
+                current.pop()
+        
+        backtrack()
+        return result
 ```
 
 
