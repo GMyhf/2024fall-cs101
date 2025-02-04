@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1036 GMT+8 Feb 4 2025
+Updated 1057 GMT+8 Feb 4 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -5991,6 +5991,89 @@ class Solution:
 2. **DFS Function**: The `dfs` function now takes an additional parameter `visited` to manage the visited cells.
 3. **Pruning**: Before making recursive calls, the function checks if the current cell is already visited or if it does not match the current character in the word.
 4. **Backtracking**: After exploring all possible paths from the current cell, the cell is removed from the `visited` set to allow other paths to use it.
+
+
+
+## 80.删除有序数组中的重复项II
+
+快慢指针, https://leetcode.cn/problems/remove-duplicates-from-sorted-array-ii/
+
+给你一个有序数组 `nums` ，请你**[ 原地](http://baike.baidu.com/item/原地算法)** 删除重复出现的元素，使得出现次数超过两次的元素**只出现两次** ，返回删除后数组的新长度。
+
+不要使用额外的数组空间，你必须在 **[原地 ](https://baike.baidu.com/item/原地算法)修改输入数组** 并在使用 O(1) 额外空间的条件下完成。
+
+> 在计算机科学中，一个原地算法（in-place algorithm）是一种使用小的，固定数量的额外之空间来转换资料的算法。当算法执行时，输入的资料通常会被要输出的部分覆盖掉。不是原地算法有时候称为非原地（not-in-place）或不得其所（out-of-place）。
+
+ 
+
+**说明：**
+
+为什么返回数值是整数，但输出的答案是数组呢？
+
+请注意，输入数组是以**「引用」**方式传递的，这意味着在函数里修改输入数组对于调用者是可见的。
+
+你可以想象内部操作如下:
+
+```
+// nums 是以“引用”方式传递的。也就是说，不对实参做任何拷贝
+int len = removeDuplicates(nums);
+
+// 在函数里修改输入数组对于调用者是可见的。
+// 根据你的函数返回的长度, 它会打印出数组中 该长度范围内 的所有元素。
+for (int i = 0; i < len; i++) {
+    print(nums[i]);
+}
+```
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,1,1,2,2,3]
+输出：5, nums = [1,1,2,2,3]
+解释：函数应返回新长度 length = 5, 并且原数组的前五个元素被修改为 1, 1, 2, 2, 3。 不需要考虑数组中超出新长度后面的元素。
+```
+
+**示例 2：**
+
+```
+输入：nums = [0,0,1,1,1,1,2,3,3]
+输出：7, nums = [0,0,1,1,2,3,3]
+解释：函数应返回新长度 length = 7, 并且原数组的前七个元素被修改为 0, 0, 1, 1, 2, 3, 3。不需要考虑数组中超出新长度后面的元素。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 3 * 10^4`
+- `-10^4 <= nums[i] <= 10^4`
+- `nums` 已按升序排列
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def removeDuplicates(self, nums: List[int]) -> int:
+        if len(nums) <= 2:
+            return len(nums)
+        
+        # slow指向新数组中应该放置下一个元素的位置
+        slow = 1
+        
+        for fast in range(2, len(nums)):
+            # 如果当前元素与新数组中倒数第二个元素不同，则添加到新数组中
+            if nums[fast] != nums[slow - 1]:
+                slow += 1
+                nums[slow] = nums[fast]
+        
+        return slow + 1
+```
+
+
 
 
 
