@@ -6004,7 +6004,7 @@ class Solution:
         return False
 ```
 
-### Explanation:
+Explanation:
 
 1. **Visited Set**: A set `visited` is used to keep track of the cells that have been visited in the current path.
 2. **DFS Function**: The `dfs` function now takes an additional parameter `visited` to manage the visited cells.
@@ -7372,6 +7372,143 @@ class Solution:
 
 
 
+## 146.LRU缓存
+
+https://leetcode.cn/problems/lru-cache/
+
+请你设计并实现一个满足 [LRU (最近最少使用) 缓存](https://baike.baidu.com/item/LRU) 约束的数据结构。
+
+实现 `LRUCache` 类：
+
+- `LRUCache(int capacity)` 以 **正整数** 作为容量 `capacity` 初始化 LRU 缓存
+- `int get(int key)` 如果关键字 `key` 存在于缓存中，则返回关键字的值，否则返回 `-1` 。
+- `void put(int key, int value)` 如果关键字 `key` 已经存在，则变更其数据值 `value` ；如果不存在，则向缓存中插入该组 `key-value` 。如果插入操作导致关键字数量超过 `capacity` ，则应该 **逐出** 最久未使用的关键字。
+
+函数 `get` 和 `put` 必须以 `O(1)` 的平均时间复杂度运行。
+
+ 
+
+**示例：**
+
+```
+输入
+["LRUCache", "put", "put", "get", "put", "get", "put", "get", "get", "get"]
+[[2], [1, 1], [2, 2], [1], [3, 3], [2], [4, 4], [1], [3], [4]]
+输出
+[null, null, null, 1, null, -1, null, -1, 3, 4]
+
+解释
+LRUCache lRUCache = new LRUCache(2);
+lRUCache.put(1, 1); // 缓存是 {1=1}
+lRUCache.put(2, 2); // 缓存是 {1=1, 2=2}
+lRUCache.get(1);    // 返回 1
+lRUCache.put(3, 3); // 该操作会使得关键字 2 作废，缓存是 {1=1, 3=3}
+lRUCache.get(2);    // 返回 -1 (未找到)
+lRUCache.put(4, 4); // 该操作会使得关键字 1 作废，缓存是 {4=4, 3=3}
+lRUCache.get(1);    // 返回 -1 (未找到)
+lRUCache.get(3);    // 返回 3
+lRUCache.get(4);    // 返回 4
+```
+
+ 
+
+**提示：**
+
+- `1 <= capacity <= 3000`
+- `0 <= key <= 10000`
+- `0 <= value <= 105`
+- 最多调用 `2 * 105` 次 `get` 和 `put`
+
+
+
+
+
+```python
+class DLinkedNode:
+    """双向链表的节点类"""
+    def __init__(self, key=0, value=0):
+        self.key = key
+        self.value = value
+        self.prev = None
+        self.next = None
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache = {}  # 存储 key 到 DLinkedNode 的映射
+        # 初始化双向链表
+        self.head = DLinkedNode()  # 虚拟头节点
+        self.tail = DLinkedNode()  # 虚拟尾节点
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _remove(self, node: DLinkedNode):
+        """从链表中移除节点"""
+        prev = node.prev
+        new = node.next
+        prev.next = new
+        new.prev = prev
+
+    def _insert(self, node: DLinkedNode):
+        """将节点插入到链表的头部"""
+        node.prev = self.head
+        node.next = self.head.next
+        self.head.next.prev = node
+        self.head.next = node
+
+    def get(self, key: int) -> int:
+        """获取缓存中的值"""
+        if key in self.cache:
+            node = self.cache[key]
+            # 移动到头部
+            self._remove(node)
+            self._insert(node)
+            return node.value
+        return -1
+
+    def put(self, key: int, value: int) -> None:
+        """插入/更新键值对"""
+        if key in self.cache:
+            # 如果键存在，先删除再插入，更新顺序
+            node = self.cache[key]
+            self._remove(node)
+            node.value = value
+            self._insert(node)
+        else:
+            # 如果键不存在，创建新节点
+            node = DLinkedNode(key, value)
+            self.cache[key] = node
+            self._insert(node)
+            # 如果超过容量，移除最久未使用的元素
+            if len(self.cache) > self.capacity:
+                # 移除链表尾部的元素，即最久未使用的
+                tail = self.tail.prev
+                self._remove(tail)
+                del self.cache[tail.key]
+
+
+if __name__ == "__main__":
+    # 测试代码
+    lRUCache = LRUCache(2)
+    lRUCache.put(1, 1)
+    lRUCache.put(2, 2)
+    print(lRUCache.get(1))  # 返回 1
+    lRUCache.put(3, 3)  # 该操作会使得关键字 2 作废
+    print(lRUCache.get(2))  # 返回 -1 (未找到)
+    lRUCache.put(4, 4)  # 该操作会使得关键字 1 作废
+    print(lRUCache.get(1))  # 返回 -1 (未找到)
+    print(lRUCache.get(3))  # 返回 3
+    print(lRUCache.get(4))  # 返回 4
+
+
+```
+
+思考题
+
+在本题的基础上，为 *key* 增加过期时间（put 调用时额外传入过期时间）。如果 *key* 过期，则需要删除掉。
+
+
+
 
 
 ## 148.排序链表
@@ -7384,7 +7521,7 @@ https://leetcode.cn/problems/sort-list/
 
 **示例 1：**
 
-<img src="https://assets.leetcode.com/uploads/2020/09/14/sort_list_1.jpg" alt="img" style="zoom:67%;" />
+<img src="https://assets.leetcode.com/uploads/2020/09/14/sort_list_1.jpg" alt="img" style="zoom: 50%;" />
 
 ```
 输入：head = [4,2,1,3]
@@ -7393,7 +7530,7 @@ https://leetcode.cn/problems/sort-list/
 
 **示例 2：**
 
-<img src="https://assets.leetcode.com/uploads/2020/09/14/sort_list_2.jpg" alt="img" style="zoom:67%;" />
+<img src="https://assets.leetcode.com/uploads/2020/09/14/sort_list_2.jpg" alt="img" style="zoom: 50%;" />
 
 ```
 输入：head = [-1,5,3,4,0]
@@ -8124,7 +8261,7 @@ if __name__ == "__main__":
 
 ## 208.实现Trie（前缀树）
 
-字典树，https://leetcode.cn/problems/implement-trie-prefix-tree/
+OOP，字典树，https://leetcode.cn/problems/implement-trie-prefix-tree/
 
 Trie（发音类似 "try"）或者说 **前缀树** 是一种树形数据结构，用于高效地存储和检索字符串数据集中的键。这一数据结构有相当多的应用情景，例如自动补全和拼写检查。
 
@@ -9624,7 +9761,7 @@ class Solution:
 
 ## 380.O(1)时间插入、删除和获取随机元素
 
-https://leetcode.cn/problems/insert-delete-getrandom-o1/
+OOP, https://leetcode.cn/problems/insert-delete-getrandom-o1/
 
 实现`RandomizedSet` 类：
 
@@ -13874,141 +14011,6 @@ class Solution:
 ```
 
 
-
-## 146.LRU缓存
-
-https://leetcode.cn/problems/lru-cache/
-
-请你设计并实现一个满足 [LRU (最近最少使用) 缓存](https://baike.baidu.com/item/LRU) 约束的数据结构。
-
-实现 `LRUCache` 类：
-
-- `LRUCache(int capacity)` 以 **正整数** 作为容量 `capacity` 初始化 LRU 缓存
-- `int get(int key)` 如果关键字 `key` 存在于缓存中，则返回关键字的值，否则返回 `-1` 。
-- `void put(int key, int value)` 如果关键字 `key` 已经存在，则变更其数据值 `value` ；如果不存在，则向缓存中插入该组 `key-value` 。如果插入操作导致关键字数量超过 `capacity` ，则应该 **逐出** 最久未使用的关键字。
-
-函数 `get` 和 `put` 必须以 `O(1)` 的平均时间复杂度运行。
-
- 
-
-**示例：**
-
-```
-输入
-["LRUCache", "put", "put", "get", "put", "get", "put", "get", "get", "get"]
-[[2], [1, 1], [2, 2], [1], [3, 3], [2], [4, 4], [1], [3], [4]]
-输出
-[null, null, null, 1, null, -1, null, -1, 3, 4]
-
-解释
-LRUCache lRUCache = new LRUCache(2);
-lRUCache.put(1, 1); // 缓存是 {1=1}
-lRUCache.put(2, 2); // 缓存是 {1=1, 2=2}
-lRUCache.get(1);    // 返回 1
-lRUCache.put(3, 3); // 该操作会使得关键字 2 作废，缓存是 {1=1, 3=3}
-lRUCache.get(2);    // 返回 -1 (未找到)
-lRUCache.put(4, 4); // 该操作会使得关键字 1 作废，缓存是 {4=4, 3=3}
-lRUCache.get(1);    // 返回 -1 (未找到)
-lRUCache.get(3);    // 返回 3
-lRUCache.get(4);    // 返回 4
-```
-
- 
-
-**提示：**
-
-- `1 <= capacity <= 3000`
-- `0 <= key <= 10000`
-- `0 <= value <= 105`
-- 最多调用 `2 * 105` 次 `get` 和 `put`
-
-
-
-
-
-```python
-class DLinkedNode:
-    """双向链表的节点类"""
-    def __init__(self, key=0, value=0):
-        self.key = key
-        self.value = value
-        self.prev = None
-        self.next = None
-
-class LRUCache:
-    def __init__(self, capacity: int):
-        self.capacity = capacity
-        self.cache = {}  # 存储 key 到 DLinkedNode 的映射
-        # 初始化双向链表
-        self.head = DLinkedNode()  # 虚拟头节点
-        self.tail = DLinkedNode()  # 虚拟尾节点
-        self.head.next = self.tail
-        self.tail.prev = self.head
-
-    def _remove(self, node: DLinkedNode):
-        """从链表中移除节点"""
-        prev = node.prev
-        new = node.next
-        prev.next = new
-        new.prev = prev
-
-    def _insert(self, node: DLinkedNode):
-        """将节点插入到链表的头部"""
-        node.prev = self.head
-        node.next = self.head.next
-        self.head.next.prev = node
-        self.head.next = node
-
-    def get(self, key: int) -> int:
-        """获取缓存中的值"""
-        if key in self.cache:
-            node = self.cache[key]
-            # 移动到头部
-            self._remove(node)
-            self._insert(node)
-            return node.value
-        return -1
-
-    def put(self, key: int, value: int) -> None:
-        """插入/更新键值对"""
-        if key in self.cache:
-            # 如果键存在，先删除再插入，更新顺序
-            node = self.cache[key]
-            self._remove(node)
-            node.value = value
-            self._insert(node)
-        else:
-            # 如果键不存在，创建新节点
-            node = DLinkedNode(key, value)
-            self.cache[key] = node
-            self._insert(node)
-            # 如果超过容量，移除最久未使用的元素
-            if len(self.cache) > self.capacity:
-                # 移除链表尾部的元素，即最久未使用的
-                tail = self.tail.prev
-                self._remove(tail)
-                del self.cache[tail.key]
-
-
-if __name__ == "__main__":
-    # 测试代码
-    lRUCache = LRUCache(2)
-    lRUCache.put(1, 1)
-    lRUCache.put(2, 2)
-    print(lRUCache.get(1))  # 返回 1
-    lRUCache.put(3, 3)  # 该操作会使得关键字 2 作废
-    print(lRUCache.get(2))  # 返回 -1 (未找到)
-    lRUCache.put(4, 4)  # 该操作会使得关键字 1 作废
-    print(lRUCache.get(1))  # 返回 -1 (未找到)
-    print(lRUCache.get(3))  # 返回 3
-    print(lRUCache.get(4))  # 返回 4
-
-
-```
-
-思考题
-
-在本题的基础上，为 *key* 增加过期时间（put 调用时额外传入过期时间）。如果 *key* 过期，则需要删除掉。
 
 
 
