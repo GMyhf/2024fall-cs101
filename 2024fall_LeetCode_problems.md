@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0058 GMT+8 Feb 5 2025
+Updated 1048 GMT+8 Feb 5 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -6190,6 +6190,30 @@ backtracking, https://leetcode.cn/problems/subsets-ii/
 - `-10 <= nums[i] <= 10`
 
 
+
+```python
+class Solution:
+    def subsetsWithDup(self, nums: List[int]) -> List[List[int]]:
+        n = len(nums)
+        nums.sort()
+        ans = set()
+        def dfs(i, path):
+            if i == n:
+                ans.add(tuple(path))
+                return 
+            
+            dfs(i+1, path + [nums[i]])
+            dfs(i+1, path)
+        
+        dfs(0, [])
+        return list(ans)
+```
+
+
+
+考虑数组 [1,2,2]，选择前两个数，或者第一、三个数，都会得到相同的子集。
+
+也就是说，对于当前选择的数 x，若前面有与其相同的数 y，且没有选择 y，此时包含 x 的子集，必然会出现在包含 y 的所有子集中。可以通过判断这种情况，来避免生成重复的子集。
 
 ```python
 from typing import List
