@@ -1262,7 +1262,7 @@ https://leetcode.cn/problems/linked-list-cycle/
 
 **示例 1：**
 
-<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/07/circularlinkedlist.png" alt="img" style="zoom:67%;" />
+<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/07/circularlinkedlist.png" alt="img" style="zoom: 50%;" />
 
 ```
 输入：head = [3,2,0,-4], pos = 1
@@ -1331,7 +1331,7 @@ https://leetcode.cn/problems/intersection-of-two-linked-lists/
 
 图示两个链表在节点 `c1` 开始相交**：**
 
-[<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/14/160_statement.png" alt="img" style="zoom:67%;" />](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/14/160_statement.png)
+[<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/14/160_statement.png" alt="img" style="zoom: 50%;" />](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/14/160_statement.png)
 
 题目数据 **保证** 整个链式结构中不存在环。
 
@@ -1353,7 +1353,7 @@ https://leetcode.cn/problems/intersection-of-two-linked-lists/
 
 **示例 1：**
 
-[<img src="https://assets.leetcode.com/uploads/2021/03/05/160_example_1_1.png" alt="img" style="zoom:67%;" />](https://assets.leetcode.com/uploads/2018/12/13/160_example_1.png)
+[<img src="https://assets.leetcode.com/uploads/2021/03/05/160_example_1_1.png" alt="img" style="zoom: 50%;" />](https://assets.leetcode.com/uploads/2018/12/13/160_example_1.png)
 
 ```
 输入：intersectVal = 8, listA = [4,1,8,4,5], listB = [5,6,1,8,4,5], skipA = 2, skipB = 3
@@ -1368,7 +1368,7 @@ https://leetcode.cn/problems/intersection-of-two-linked-lists/
 
 **示例 2：**
 
-[<img src="https://assets.leetcode.com/uploads/2021/03/05/160_example_2.png" alt="img" style="zoom:67%;" />](https://assets.leetcode.com/uploads/2018/12/13/160_example_2.png)
+[<img src="https://assets.leetcode.com/uploads/2021/03/05/160_example_2.png" alt="img" style="zoom: 50%;" />](https://assets.leetcode.com/uploads/2018/12/13/160_example_2.png)
 
 ```
 输入：intersectVal = 2, listA = [1,9,1,2,4], listB = [3,2,4], skipA = 3, skipB = 1
@@ -1380,7 +1380,7 @@ https://leetcode.cn/problems/intersection-of-two-linked-lists/
 
 **示例 3：**
 
-[<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/14/160_example_3.png" alt="img" style="zoom:67%;" />](https://assets.leetcode.com/uploads/2018/12/13/160_example_3.png)
+[<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/14/160_example_3.png" alt="img" style="zoom: 50%;" />](https://assets.leetcode.com/uploads/2018/12/13/160_example_3.png)
 
 ```
 输入：intersectVal = 0, listA = [2,6,4], listB = [1,5], skipA = 3, skipB = 2
@@ -7374,7 +7374,7 @@ class Solution:
 
 ## 146.LRU缓存
 
-https://leetcode.cn/problems/lru-cache/
+OOP, https://leetcode.cn/problems/lru-cache/
 
 请你设计并实现一个满足 [LRU (最近最少使用) 缓存](https://baike.baidu.com/item/LRU) 约束的数据结构。
 
@@ -11186,7 +11186,7 @@ class Solution:
 
 ## 2241.设计一个ATM机器
 
-https://leetcode.cn/problems/design-an-atm-machine/
+OOP, https://leetcode.cn/problems/design-an-atm-machine/
 
 一个 ATM 机器，存有 `5` 种面值的钞票：`20` ，`50` ，`100` ，`200` 和 `500` 美元。初始时，ATM 机是空的。用户可以用它存或者取任意数目的钱。
 
@@ -14114,7 +14114,7 @@ if __name__ == "__main__":
 
 ## 295.数据流的中位数
 
-heap, https://leetcode.cn/problems/find-median-from-data-stream/
+OOP, heap, https://leetcode.cn/problems/find-median-from-data-stream/
 
 **中位数**是有序整数列表中的中间值。如果列表的大小是偶数，则没有中间值，中位数是两个中间值的平均值。
 
