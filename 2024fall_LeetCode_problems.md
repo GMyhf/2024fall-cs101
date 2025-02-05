@@ -1481,12 +1481,31 @@ https://leetcode.cn/problems/majority-element/
 **提示：**
 
 - `n == nums.length`
-- `1 <= n <= 5 * 104`
-- `-109 <= nums[i] <= 109`
+- `1 <= n <= 5 * 10^4`
+- `-10^9 <= nums[i] <= 10^9`
 
  
 
 **进阶：**尝试设计时间复杂度为 O(n)、空间复杂度为 O(1) 的算法解决此问题。
+
+
+
+可以用 **Boyer-Moore 投票算法** 在 **O(n) 时间复杂度** 和 **O(1) 空间复杂度** 内解决。
+
+```python
+class Solution:
+    def majorityElement(self, nums: List[int]) -> int:
+        candidate, count = None, 0
+
+        for num in nums:
+            if count == 0:
+                candidate = num
+            count += (1 if num == candidate else -1)
+
+        return candidate
+```
+
+性质保证正确性：由于多数元素 **出现次数超过 ⌊n/2⌋**，所以即使有抵消，其仍然会成为最终 `candidate`。
 
 
 
