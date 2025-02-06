@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1722 GMT+8 Feb 6 2025
+Updated 0544 GMT+8 Feb 7 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -5613,6 +5613,65 @@ class Solution:
 - 类型注解（如 `List[List[int]]`）是可选的，但有助于提高代码的可读性和类型检查工具的效率。
 
 
+
+## 59.螺旋矩阵II
+
+https://leetcode.cn/problems/spiral-matrix-ii/
+
+给你一个正整数 `n` ，生成一个包含 `1` 到 `n2` 所有元素，且元素按顺时针顺序螺旋排列的 `n x n`正方形矩阵 `matrix` 。
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2020/11/13/spiraln.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：n = 3
+输出：[[1,2,3],[8,9,4],[7,6,5]]
+```
+
+**示例 2：**
+
+```
+输入：n = 1
+输出：[[1]]
+```
+
+ 
+
+**提示：**
+
+- `1 <= n <= 20`
+
+
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def generateMatrix(self, n: int) -> List[List[int]]:
+        # 方向：右、下、左、上
+        drs = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+        mx = [[0] * n for _ in range(n)]
+        x, y, step = 0, 0, 0
+        for i in range(1, n * n + 1):
+            mx[x][y] = i
+            dx, dy = drs[step]
+            
+            # 检查下一个位置是否有效（未越界且未被访问）
+            if not (0 <= x + dx < n and 0 <= y + dy < n and mx[x + dx][y + dy] == 0):
+                step = (step + 1) % 4
+                dx, dy = drs[step]
+
+            # 更新当前位置
+            x, y = x + dx, y + dy
+        return mx
+
+if __name__ == "__main__":
+    n = 3
+    print(Solution().generateMatrix(n))
+```
 
 
 
