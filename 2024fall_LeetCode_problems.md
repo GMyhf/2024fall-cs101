@@ -7994,9 +7994,9 @@ two pointers, https://leetcode.cn/problems/rotate-array/
 
 **提示：**
 
-- `1 <= nums.length <= 105`
-- `-231 <= nums[i] <= 231 - 1`
-- `0 <= k <= 105`
+- `1 <= nums.length <= 10^5`
+- `-2^31 <= nums[i] <= 2^31 - 1`
+- `0 <= k <= 10^5`
 
  
 
@@ -8006,6 +8006,8 @@ two pointers, https://leetcode.cn/problems/rotate-array/
 - 你可以使用空间复杂度为 `O(1)` 的 **原地** 算法解决这个问题吗？
 
 
+
+思路：反转整个数组，反转前k个，反转后n-k个。
 
 ```python
 class Solution:
