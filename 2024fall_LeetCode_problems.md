@@ -5422,35 +5422,36 @@ from typing import List
 class Solution:
     def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
         if not matrix or not matrix[0]:
-            return list()
+            return []
 
         m, n = len(matrix), len(matrix[0])
         visited = [[False] * n for _ in range(m)]
-        order = []
+        result = []
 
-        directions = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
         x, y = 0, 0
-        direction_idx = 0  # 初始方向为向右
+        dir_idx = 0  # 初始方向为向右
         for _ in range(m * n):
-            order.append(matrix[x][y])
+            result.append(matrix[x][y])
             visited[x][y] = True
 
-            dx, dy = directions[direction_idx]
-            nx, ny = x + dx, y + dy
+            dx, dy = directions[dir_idx]
+            next_x, next_y = x + dx, y + dy
 
             # 检查边界条件和访问状态，如果合法，更新到下一个位置
-            if 0 <= nx < m and 0 <= ny < n and not visited[nx][ny]:
-                x, y = nx, ny
+            if 0 <= next_x < m and 0 <= next_y < n and not visited[next_x][next_y]:
+                x, y = next_x, next_y
             else:
-                direction_idx = (direction_idx + 1) % 4
-                dx, dy = directions[direction_idx]
+                dir_idx = (dir_idx + 1) % 4
+                dx, dy = directions[dir_idx]
                 x, y = x + dx, y + dy
 
-        return order
+        return result
 
 if __name__ == "__main__":
     sol = Solution()
     print(sol.spiralOrder([[1,2,3,4],[5,6,7,8],[9,10,11,12]]))
+        
 
 ```
 
