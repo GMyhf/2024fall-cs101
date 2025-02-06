@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1436 GMT+8 Feb 6 2025
+Updated 1534 GMT+8 Feb 6 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -10407,6 +10407,99 @@ class Solution:
         
         return dp[-1][target]
 ```
+
+
+
+
+
+## 433.最小基因变化
+
+bfs, https://leetcode.cn/problems/minimum-genetic-mutation/
+
+基因序列可以表示为一条由 8 个字符组成的字符串，其中每个字符都是 `'A'`、`'C'`、`'G'` 和 `'T'` 之一。
+
+假设我们需要调查从基因序列 `start` 变为 `end` 所发生的基因变化。一次基因变化就意味着这个基因序列中的一个字符发生了变化。
+
+- 例如，`"AACCGGTT" --> "AACCGGTA"` 就是一次基因变化。
+
+另有一个基因库 `bank` 记录了所有有效的基因变化，只有基因库中的基因才是有效的基因序列。（变化后的基因必须位于基因库 `bank` 中）
+
+给你两个基因序列 `start` 和 `end` ，以及一个基因库 `bank` ，请你找出并返回能够使 `start` 变化为 `end` 所需的最少变化次数。如果无法完成此基因变化，返回 `-1` 。
+
+注意：起始基因序列 `start` 默认是有效的，但是它并不一定会出现在基因库中。
+
+ 
+
+**示例 1：**
+
+```
+输入：start = "AACCGGTT", end = "AACCGGTA", bank = ["AACCGGTA"]
+输出：1
+```
+
+**示例 2：**
+
+```
+输入：start = "AACCGGTT", end = "AAACGGTA", bank = ["AACCGGTA","AACCGCTA","AAACGGTA"]
+输出：2
+```
+
+**示例 3：**
+
+```
+输入：start = "AAAAACCC", end = "AACCCCCC", bank = ["AAAACCCC","AAACCCCC","AACCCCCC"]
+输出：3
+```
+
+ 
+
+**提示：**
+
+- `start.length == 8`
+- `end.length == 8`
+- `0 <= bank.length <= 10`
+- `bank[i].length == 8`
+- `start`、`end` 和 `bank[i]` 仅由字符 `['A', 'C', 'G', 'T']` 组成
+
+
+
+
+
+```python
+import heapq
+from typing import List
+
+class Solution:
+    def minMutation(self, startGene: str, endGene: str, bank: List[str]) -> int:
+        if endGene not in bank:
+            return -1
+        
+        # 使用集合加快查找速度
+        bankSet = set(bank)
+        visited = set([startGene])
+        
+        hq = [(0, startGene)]  # (步数, 当前基因)
+        
+        while hq:
+            step, gene = heapq.heappop(hq)
+            
+            # 如果找到了目标基因，直接返回步数
+            if gene == endGene:
+                return step
+            
+            # 尝试每个位置的每个可能突变
+            for i in range(len(gene)):
+                for base in ['A', 'C', 'G', 'T']:
+                    if gene[i] != base:
+                        new_gene = gene[:i] + base + gene[i+1:]
+                        if new_gene in bankSet and new_gene not in visited:
+                            visited.add(new_gene)
+                            heapq.heappush(hq, (step + 1, new_gene))
+        
+        return -1
+```
+
+
 
 
 
