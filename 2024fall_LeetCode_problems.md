@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1445 GMT+8 Feb 5 2025
+Updated 1036 GMT+8 Feb 6 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -4713,6 +4713,36 @@ backtracking, https://leetcode.cn/problems/permutations/
 - `1 <= nums.length <= 6`
 - `-10 <= nums[i] <= 10`
 - `nums` 中的所有整数 **互不相同**
+
+
+
+思路：
+
+1. **参数传递**：在递归调用中使用可变对象（如列表）作为默认参数是一个常见的Python陷阱，因为默认参数在函数定义时只初始化一次。这意味着所有递归调用共享同一个`perm`列表，这可能导致意外的行为。解决方案是不在函数参数中设置可变默认值。
+2. **遍历索引而非元素**：在当前实现中，你在递归过程中遍历了`nums`来查找未使用的数字。更有效的方法是直接遍历当前索引到数组末尾的范围，并通过交换元素的位置来避免重复选择已经固定的数字。
+
+```python
+from typing import List
+
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        def backtrack(first=0):
+            # 所有数都填完了，触发记录
+            if first == n:  
+                ans.append(nums[:])
+            for i in range(first, n):
+                # 动态维护数组
+                nums[first], nums[i] = nums[i], nums[first]
+                # 继续递归填下一个数
+                backtrack(first + 1)
+                # 撤销操作
+                nums[first], nums[i] = nums[i], nums[first]
+        
+        n = len(nums)
+        ans = []
+        backtrack()
+        return ans
+```
 
 
 
