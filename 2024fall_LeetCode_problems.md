@@ -8007,7 +8007,7 @@ two pointers, https://leetcode.cn/problems/rotate-array/
 
 
 
-思路：反转整个数组，反转前k个，反转后n-k个。
+思路：利用数组翻转的特性。首先整个数组翻转，然后分别翻转前`k`个元素和剩余的元素。。
 
 ```python
 class Solution:
@@ -8015,22 +8015,18 @@ class Solution:
         """
         Do not return anything, modify nums in-place instead.
         """
-        k = k % len(nums)
-        l, r = 0, len(nums) - 1
-
-        while l < r:
-            nums[l], nums[r] = nums[r], nums[l]
-            l, r = l + 1, r - 1
-
-        l, r = 0, k - 1
-        while l < r:
-            nums[l], nums[r] = nums[r], nums[l]
-            l, r = l + 1, r - 1
-
-        l, r = k, len(nums) - 1
-        while l < r:
-            nums[l], nums[r] = nums[r], nums[l]
-            l, r = l + 1, r - 1
+        n = len(nums)
+        k %= n  # 处理k大于n的情况
+        
+        def reverse(start, end):
+            while start < end:
+                nums[start], nums[end] = nums[end], nums[start]
+                start += 1
+                end -= 1
+        
+        reverse(0, n - 1)  # 翻转整个数组
+        reverse(0, k - 1)  # 翻转前k个元素
+        reverse(k, n - 1)  # 翻转剩余的元素
 ```
 
 
