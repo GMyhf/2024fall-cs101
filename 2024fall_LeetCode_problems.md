@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1036 GMT+8 Feb 6 2025
+Updated 1136 GMT+8 Feb 6 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -4841,6 +4841,63 @@ if __name__ == "__main__":
 
 撤销选择：
 由于我们在<mark>每次递归调用时创建了新的路径和剩余元素，所以不需要显式地撤销选择</mark>。递归返回后，自动恢复到之前的状态。
+
+
+
+## 47.全排列II
+
+backtracking, https://leetcode.cn/problems/permutations-ii/
+
+给定一个可包含重复数字的序列 `nums` ，***按任意顺序*** 返回所有不重复的全排列。
+
+**示例 1：**
+
+```
+输入：nums = [1,1,2]
+输出：
+[[1,1,2],
+ [1,2,1],
+ [2,1,1]]
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,2,3]
+输出：[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 8`
+- `-10 <= nums[i] <= 10`
+
+
+
+```python
+from typing import List
+
+
+class Solution:
+    def permuteUnique(self, nums: List[int]) -> List[List[int]]:
+        def backtrack(first=0):
+            # 所有数都填完了，触发记录
+            if first == n:
+                ans.append(nums[:])
+            for i in range(first, n):
+                if nums[i] in nums[first:i]:
+                    continue
+                # 动态维护数组
+                nums[first], nums[i] = nums[i], nums[first]
+                # 继续递归填下一个数
+                backtrack(first + 1)
+                # 撤销操作
+                nums[first], nums[i] = nums[i], nums[first]
+```
+
+
 
 
 
