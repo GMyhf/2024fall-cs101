@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1352 GMT+8 Feb 6 2025
+Updated 1436 GMT+8 Feb 6 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -3884,6 +3884,187 @@ class Solution:
 
 
 
+## 12.整数转罗马数字
+
+https://leetcode.cn/problems/integer-to-roman/
+
+七个不同的符号代表罗马数字，其值如下：
+
+| 符号 | 值   |
+| ---- | ---- |
+| I    | 1    |
+| V    | 5    |
+| X    | 10   |
+| L    | 50   |
+| C    | 100  |
+| D    | 500  |
+| M    | 1000 |
+
+罗马数字是通过添加从最高到最低的小数位值的转换而形成的。将小数位值转换为罗马数字有以下规则：
+
+- 如果该值不是以 4 或 9 开头，请选择可以从输入中减去的最大值的符号，将该符号附加到结果，减去其值，然后将其余部分转换为罗马数字。
+- 如果该值以 4 或 9 开头，使用 **减法形式**，表示从以下符号中减去一个符号，例如 4 是 5 (`V`) 减 1 (`I`): `IV` ，9 是 10 (`X`) 减 1 (`I`)：`IX`。仅使用以下减法形式：4 (`IV`)，9 (`IX`)，40 (`XL`)，90 (`XC`)，400 (`CD`) 和 900 (`CM`)。
+- 只有 10 的次方（`I`, `X`, `C`, `M`）最多可以连续附加 3 次以代表 10 的倍数。你不能多次附加 5 (`V`)，50 (`L`) 或 500 (`D`)。如果需要将符号附加4次，请使用 **减法形式**。
+
+给定一个整数，将其转换为罗马数字。
+
+ 
+
+**示例 1：**
+
+**输入：**num = 3749
+
+**输出：** "MMMDCCXLIX"
+
+**解释：**
+
+```
+3000 = MMM 由于 1000 (M) + 1000 (M) + 1000 (M)
+ 700 = DCC 由于 500 (D) + 100 (C) + 100 (C)
+  40 = XL 由于 50 (L) 减 10 (X)
+   9 = IX 由于 10 (X) 减 1 (I)
+注意：49 不是 50 (L) 减 1 (I) 因为转换是基于小数位
+```
+
+**示例 2：**
+
+**输入：**num = 58
+
+**输出：**"LVIII"
+
+**解释：**
+
+```
+50 = L
+ 8 = VIII
+```
+
+**示例 3：**
+
+**输入：**num = 1994
+
+**输出：**"MCMXCIV"
+
+**解释：**
+
+```
+1000 = M
+ 900 = CM
+  90 = XC
+   4 = IV
+```
+
+ 
+
+**提示：**
+
+- `1 <= num <= 3999`
+
+
+
+
+
+7ms 击败46.27%
+
+```python
+class Solution:
+    def intToRoman(self, num: int) -> str:
+        # 定义数值和对应罗马数字符号的列表
+        value_symbols = [
+            (1000, "M"), (900, "CM"), (500, "D"), (400, "CD"),
+            (100, "C"), (90, "XC"), (50, "L"), (40, "XL"),
+            (10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I")
+        ]
+        
+        roman = ""
+        for value, symbol in value_symbols:
+            while num >= value:
+                roman += symbol
+                num -= value
+        return roman
+```
+
+
+
+3ms 击败79.12%
+
+1. **使用列表代替字符串连接**：使用`+=`操作符来拼接字符串。由于字符串是不可变对象，在循环中频繁进行字符串拼接会导致性能开销。改用列表`append`方法收集结果，最后一次性使用`''.join()`将列表转换为字符串，这在处理大量数据时效率更高。
+2. **提前退出循环**：一旦`num`被减至0，我们就可以立即退出循环，避免不必要的迭代，尽管对于给定的问题规模（最大3999），这个优化带来的性能提升可能不明显，但它提高了代码的效率。
+
+```python
+class Solution:
+    def intToRoman(self, num: int) -> str:
+        roman_numerals = [
+            (1000, 'M'), (900, 'CM'), (500, 'D'), (400, 'CD'),
+            (100, 'C'), (90, 'XC'), (50, 'L'), (40, 'XL'),
+            (10, 'X'), (9, 'IX'), (5, 'V'), (4, 'IV'), (1, 'I')
+        ]
+        
+        result = []
+        for value, symbol in roman_numerals:
+            while num >= value:
+                result.append(symbol)
+                num -= value
+            if num == 0:
+                break
+        
+        return ''.join(result)
+```
+
+
+
+LeetCode不支持if else大法，提交下面代码，提示`Result not supported`。题目是 https://leetcode.cn/problems/integer-to-roman/
+
+```python
+class Solution:
+    def intToRoman(self, num: int) -> str:
+        roman = ""
+        while num >= 1000:
+            roman += "M"
+            num -= 1000
+        if num >= 900:
+            roman += "CM"
+            num -= 900
+        if num >= 500:
+            roman += "D"
+            num -= 500
+        if num >= 400:
+            roman += "CD"
+            num -= 400
+        while num >= 100:
+            roman += "C"
+            num -= 100
+        if num >= 90:
+            roman += "XC"
+            num -= 90
+        if num >= 50:
+            roman += "L"
+            num -= 50
+        if num >= 40:
+            roman += "XL"
+            num -= 40
+        while num >= 10:
+            roman += "X"
+            num -= 10
+        if num >= 9:
+            roman += "IX"
+            num -= 9
+        if num >= 5:
+            roman += "V"
+            num -= 5
+        if num >= 4:
+            roman += "IV"
+            num -= 4
+        while num >= 1:
+            roman += "I"
+            num -= 1
+        return roman
+```
+
+
+
+
+
 ## 15.三数之和
 
 two pointers, https://leetcode.cn/problems/3sum/
@@ -3891,8 +4072,6 @@ two pointers, https://leetcode.cn/problems/3sum/
 给你一个整数数组 `nums` ，判断是否存在三元组 `[nums[i], nums[j], nums[k]]` 满足 `i != j`、`i != k` 且 `j != k` ，同时还满足 `nums[i] + nums[j] + nums[k] == 0` 。请你返回所有和为 `0` 且不重复的三元组。
 
 **注意：**答案中不可以包含重复的三元组。
-
- 
 
  
 
@@ -3930,7 +4109,7 @@ nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0 。
 **提示：**
 
 - `3 <= nums.length <= 3000`
-- `-105 <= nums[i] <= 105`
+- `-10^5 <= nums[i] <= 10^5`
 
 
 
