@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1142 GMT+8 Feb 7 2025
+Updated 1157 GMT+8 Feb 7 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -14920,6 +14920,120 @@ class Solution:
 ```
 
 
+
+
+
+## 188.买卖股票的最佳时机IV
+
+dp,https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-iv/
+
+给你一个整数数组 `prices` 和一个整数 `k` ，其中 `prices[i]` 是某支给定的股票在第 `i` 天的价格。
+
+设计一个算法来计算你所能获取的最大利润。你最多可以完成 `k` 笔交易。也就是说，你最多可以买 `k` 次，卖 `k` 次。
+
+**注意：**你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+
+ 
+
+**示例 1：**
+
+```
+输入：k = 2, prices = [2,4,1]
+输出：2
+解释：在第 1 天 (股票价格 = 2) 的时候买入，在第 2 天 (股票价格 = 4) 的时候卖出，这笔交易所能获得利润 = 4-2 = 2 。
+```
+
+**示例 2：**
+
+```
+输入：k = 2, prices = [3,2,6,5,0,3]
+输出：7
+解释：在第 2 天 (股票价格 = 2) 的时候买入，在第 3 天 (股票价格 = 6) 的时候卖出, 这笔交易所能获得利润 = 6-2 = 4 。
+     随后，在第 5 天 (股票价格 = 0) 的时候买入，在第 6 天 (股票价格 = 3) 的时候卖出, 这笔交易所能获得利润 = 3-0 = 3 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= k <= 100`
+- `1 <= prices.length <= 1000`
+- `0 <= prices[i] <= 1000`
+
+
+
+这个问题可以使用 **动态规划（DP）** 解决。
+
+**思路**
+
+1. **定义状态**  
+
+   - `dp[i][j]` 表示 **最多进行 `i` 次交易，在第 `j` 天的最大利润**。
+   - 由于每次交易包含 **买入和卖出**，所以最多有 `2k` 个状态变量。
+
+2. **状态转移方程**  
+
+   - 我们用 `hold[i]` 表示 **第 `i` 次买入后所能获得的最大收益**，用 `sell[i]` 表示 **第 `i` 次卖出后所能获得的最大收益**：
+
+     ```
+     hold[i] = max(hold[i], sell[i-1] - price)
+     sell[i] = max(sell[i], hold[i] + price)
+     ```
+
+   - 其中：
+
+     - `sell[i-1] - price` 表示前 `i-1` 次交易的最大收益后再买入当前股票。
+     - `hold[i] + price` 表示当前持有股票卖出后获取的收益。
+
+3. **边界情况**
+
+   - 如果 `k >= len(prices) // 2`，说明交易次数不受限制，我们可以直接使用 **贪心算法**（类似 "买卖股票的最佳时机 II"）。
+   - 否则，使用动态规划求解。
+
+代码实现
+
+```python
+from typing import List
+
+
+class Solution:
+    def maxProfit(self, k: int, prices: List[int]) -> int:
+        if not prices or k == 0:
+            return 0
+
+        n = len(prices)
+
+        # 如果 k 大于交易所需的最大值，相当于无交易次数限制，直接使用贪心算法
+        if k >= n // 2:
+            return sum(max(prices[i] - prices[i - 1], 0) for i in range(1, n))
+
+        # dp 数组
+        hold = [-float('inf')] * (k + 1)  # 持有股票的最大收益
+        sell = [0] * (k + 1)  # 卖出股票的最大收益
+
+        for price in prices:
+            for i in range(1, k + 1):
+                hold[i] = max(hold[i], sell[i - 1] - price)
+                sell[i] = max(sell[i], hold[i] + price)
+
+        return sell[k]
+
+
+if __name__ == "__main__":
+    s = Solution()
+    print(s.maxProfit(2, [2, 4, 1]))  # 输出 2
+    print(s.maxProfit(2, [3, 2, 6, 5, 0, 3]))  # 输出 7
+    print(s.maxProfit(3, [3, 2, 6, 5, 0, 3, 4, 2, 8]))  # 输出 11
+    print(s.maxProfit(1, [1, 2]))  # 输出 1
+    print(s.maxProfit(2, [1]))  # 输出 0
+```
+
+复杂度分析
+
+- 时间复杂度：O(nk)，两层循环遍历 `prices` 和交易次数 `k`。
+- 空间复杂度：O(k)，只使用了 `O(k)` 的数组来存储 `hold` 和 `sell`。
+
+这个方法可以高效地求解 **最多 `k` 次交易的最大利润**！
 
 
 
