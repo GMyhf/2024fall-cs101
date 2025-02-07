@@ -16639,7 +16639,7 @@ class Solution:
 
 ## 3435.最短公共超序列的字母出现频率
 
-枚举, 图谱排序, https://leetcode.cn/problems/frequencies-of-shortest-supersequences/
+枚举, 拓扑排序, https://leetcode.cn/problems/frequencies-of-shortest-supersequences/
 
 给你一个字符串数组 `words` 。请你找到 `words` 所有 **最短公共超序列** ，且确保它们互相之间无法通过排列得到。
 
