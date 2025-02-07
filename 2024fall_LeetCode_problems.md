@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1157 GMT+8 Feb 7 2025
+Updated 0415 GMT+8 Feb 8 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -5884,6 +5884,118 @@ class Solution:
             else:
                 return roads(m-1,n)+roads(m,n-1)
         return roads(m,n)
+```
+
+
+
+## 63.不同路径II
+
+dp, https://leetcode.cn/problems/unique-paths-ii/
+
+给定一个 `m x n` 的整数数组 `grid`。一个机器人初始位于 **左上角**（即 `grid[0][0]`）。机器人尝试移动到 **右下角**（即 `grid[m - 1][n - 1]`）。机器人每次只能向下或者向右移动一步。
+
+网格中的障碍物和空位置分别用 `1` 和 `0` 来表示。机器人的移动路径中不能包含 **任何** 有障碍物的方格。
+
+返回机器人能够到达右下角的不同路径数量。
+
+测试用例保证答案小于等于 `2 * 109`。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2020/11/04/robot1.jpg)
+
+```
+输入：obstacleGrid = [[0,0,0],[0,1,0],[0,0,0]]
+输出：2
+解释：3x3 网格的正中间有一个障碍物。
+从左上角到右下角一共有 2 条不同的路径：
+1. 向右 -> 向右 -> 向下 -> 向下
+2. 向下 -> 向下 -> 向右 -> 向右
+```
+
+**示例 2：**
+
+![img](https://assets.leetcode.com/uploads/2020/11/04/robot2.jpg)
+
+```
+输入：obstacleGrid = [[0,1],[0,0]]
+输出：1
+```
+
+ 
+
+**提示：**
+
+- `m == obstacleGrid.length`
+- `n == obstacleGrid[i].length`
+- `1 <= m, n <= 100`
+- `obstacleGrid[i][j]` 为 `0` 或 `1`
+
+
+
+需要处理起点或终点被障碍物占据的情况。
+使用动态规划(DP)比广度优先搜索(BFS)更适合解决这个问题，因为DP可以避免重复计算子问题，从而提高效率。
+
+```python
+class Solution:
+    def uniquePathsWithObstacles(self, obstacleGrid: List[List[int]]) -> int:
+        m = len(obstacleGrid)
+        n = len(obstacleGrid[0])
+        
+        # 如果起点或终点是障碍物，则直接返回0
+        if obstacleGrid[0][0] == 1 or obstacleGrid[m-1][n-1] == 1:
+            return 0
+        
+        # 初始化dp数组
+        dp = [[0] * n for _ in range(m)]
+        dp[0][0] = 1
+        
+        for i in range(m):
+            for j in range(n):
+                # 如果当前位置是障碍物，跳过
+                if obstacleGrid[i][j] == 1:
+                    continue
+                
+                # 如果可以从左边到达(i, j)
+                if i > 0:
+                    dp[i][j] += dp[i-1][j]
+                # 如果可以从上边到达(i, j)
+                if j > 0:
+                    dp[i][j] += dp[i][j-1]
+        
+        return dp[m-1][n-1]
+```
+
+
+
+用BFS，28/42超时
+
+```python
+class Solution:
+    def uniquePathsWithObstacles(self, obstacleGrid: List[List[int]]) -> int:
+        m = len(obstacleGrid)
+        n = len(obstacleGrid[0])
+        # 如果起点或终点是障碍物，则直接返回0
+        if obstacleGrid[0][0] == 1 or obstacleGrid[m-1][n-1] == 1:
+            return 0
+        q = deque([(0,0)])
+        cnt = 0
+        while q:
+            x, y = q.popleft()
+            if (x, y) == (m - 1, n - 1):
+                cnt += 1
+                continue
+
+            for dx, dy in ((0,1), (1,0)):
+                next_x = x + dx
+                next_y = y + dy
+                if 0 <= next_x < m and 0 <= next_y < n \
+                    and obstacleGrid[next_x][next_y] != 1:
+                    q.append((next_x, next_y))
+        
+        return cnt
 ```
 
 
