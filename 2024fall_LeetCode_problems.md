@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0946 GMT+8 Feb 7 2025
+Updated 1142 GMT+8 Feb 7 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -14550,6 +14550,153 @@ if __name__ == '__main__':
   - 在栈顶元素出栈时，表示栈顶柱子所能组成的最大矩形已经结束，当前的矩形高度就是栈顶柱子的高度。
   - 宽度 `w` 的计算是当前索引 `i` 减去栈中的下一个元素索引（即 `stack[-1]`），再减去 1，因为栈中的元素代表了一个 **区间**。
   - 例如，如果 `stack[-1]` 是索引 `j`，那么这个矩形的宽度就是 `i - j - 1`。
+
+
+
+## 123.买卖股票的最佳时机III
+
+dp, https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-iii/
+
+给定一个数组，它的第 `i` 个元素是一支给定的股票在第 `i` 天的价格。
+
+设计一个算法来计算你所能获取的最大利润。你最多可以完成 **两笔** 交易。
+
+**注意：**你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+
+ 
+
+**示例 1:**
+
+```
+输入：prices = [3,3,5,0,0,3,1,4]
+输出：6
+解释：在第 4 天（股票价格 = 0）的时候买入，在第 6 天（股票价格 = 3）的时候卖出，这笔交易所能获得利润 = 3-0 = 3 。
+     随后，在第 7 天（股票价格 = 1）的时候买入，在第 8 天 （股票价格 = 4）的时候卖出，这笔交易所能获得利润 = 4-1 = 3 。
+```
+
+**示例 2：**
+
+```
+输入：prices = [1,2,3,4,5]
+输出：4
+解释：在第 1 天（股票价格 = 1）的时候买入，在第 5 天 （股票价格 = 5）的时候卖出, 这笔交易所能获得利润 = 5-1 = 4 。   
+     注意你不能在第 1 天和第 2 天接连购买股票，之后再将它们卖出。   
+     因为这样属于同时参与了多笔交易，你必须在再次购买前出售掉之前的股票。
+```
+
+**示例 3：**
+
+```
+输入：prices = [7,6,4,3,1] 
+输出：0 
+解释：在这个情况下, 没有交易完成, 所以最大利润为 0。
+```
+
+**示例 4：**
+
+```
+输入：prices = [1]
+输出：0
+```
+
+ 
+
+**提示：**
+
+- `1 <= prices.length <= 10^5`
+- `0 <= prices[i] <= 10^5`
+
+
+
+可以使用 **动态规划** 来解决这个问题，定义四个状态变量：
+
+- `buy1`：第一次买入后的最大收益
+- `sell1`：第一次卖出后的最大收益
+- `buy2`：第二次买入后的最大收益
+- `sell2`：第二次卖出后的最大收益
+
+核心思路是：  
+
+1. **第一次买入**：`buy1 = max(buy1, -price)`（越便宜买入越好）
+2. **第一次卖出**：`sell1 = max(sell1, buy1 + price)`（卖出时收益最大化）
+3. **第二次买入**：`buy2 = max(buy2, sell1 - price)`（在第一次卖出的基础上进行第二次买入）
+4. **第二次卖出**：`sell2 = max(sell2, buy2 + price)`（最终的最大收益）
+
+代码实现如下：
+
+```python
+def maxProfit(prices):
+    if not prices:
+        return 0
+
+    buy1, sell1 = float('-inf'), 0
+    buy2, sell2 = float('-inf'), 0
+
+    for price in prices:
+        buy1 = max(buy1, -price)
+        sell1 = max(sell1, buy1 + price)
+        buy2 = max(buy2, sell1 - price)
+        sell2 = max(sell2, buy2 + price)
+
+    return sell2
+
+# 测试用例
+print(maxProfit([3,3,5,0,0,3,1,4]))  # 输出 6
+print(maxProfit([1,2,3,4,5]))  # 输出 4
+print(maxProfit([7,6,4,3,1]))  # 输出 0
+print(maxProfit([1]))  # 输出 0
+```
+
+> **复杂度分析**
+>
+> - 时间复杂度：O(n)，遍历一次数组
+> - 空间复杂度：O(1)，只用了几个变量
+>
+> 这样，你就能高效求解最多两次交易的最大利润！
+
+
+
+```python
+from typing import List
+
+
+class Solution:
+    def maxProfit(self, prices: List[int]) -> int:
+        if not prices:
+            return 0
+
+        n = len(prices)
+
+        # profit_from_day_1_to_i：从第1天到第i天能获得的最大收益
+        # profit_from_day_i_to_n：从第i天到最后一天能获得的最大收益
+        profit_from_day_1_to_i, profit_from_day_i_to_n = [0] * n, [0] * n
+
+        min_price = prices[0]
+        for i in range(1, n):
+            min_price = min(min_price, prices[i])
+            profit_from_day_1_to_i[i] = max(profit_from_day_1_to_i[i - 1], prices[i] - min_price)
+
+        max_price = prices[-1]
+        for i in range(n - 2, -1, -1):
+            max_price = max(max_price, prices[i])
+            profit_from_day_i_to_n[i] = max(profit_from_day_i_to_n[i + 1], max_price - prices[i])
+
+        max_profit = 0
+        for i in range(n):
+            max_profit = max(max_profit, profit_from_day_1_to_i[i] + profit_from_day_i_to_n[i])
+
+        return max_profit
+
+
+if __name__ == "__main__":
+    s = Solution()
+    print(s.maxProfit([3, 3, 5, 0, 0, 3, 1, 4]))  # 输出应该是6
+    print(s.maxProfit([1, 2, 3, 4, 5]))  # 输出应该是4
+    print(s.maxProfit([7, 6, 4, 3, 1]))  # 输出应该是0
+    print(s.maxProfit([1]))  # 输出应该是0
+```
+
+
 
 
 
