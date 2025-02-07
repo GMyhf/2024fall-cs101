@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0513 GMT+8 Feb 8 2025
+Updated 0535 GMT+8 Feb 8 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -4069,6 +4069,151 @@ class Solution:
             roman += "I"
             num -= 1
         return roman
+```
+
+
+
+## 14.最长公共前缀
+
+字符串,字典树, https://leetcode.cn/problems/longest-common-prefix/
+
+编写一个函数来查找字符串数组中的最长公共前缀。
+
+如果不存在公共前缀，返回空字符串 `""`。
+
+ 
+
+**示例 1：**
+
+```
+输入：strs = ["flower","flow","flight"]
+输出："fl"
+```
+
+**示例 2：**
+
+```
+输入：strs = ["dog","racecar","car"]
+输出：""
+解释：输入不存在公共前缀。
+```
+
+ 
+
+**提示：**
+
+- `1 <= strs.length <= 200`
+- `0 <= strs[i].length <= 200`
+- `strs[i]` 如果非空，则仅由小写英文字母组成
+
+
+
+```python
+class Solution:
+    def longestCommonPrefix(self, strs: List[str]) -> str:
+        strs.sort()
+        def count_same(s1, s2):
+            res = []
+            i = 0
+            while i < len(s1) and s1[i] == s2[i]:
+                res.append(s1[i])
+                i += 1
+            return ''.join(res)
+        
+        return count_same(strs[0], strs[-1])
+        
+```
+
+
+
+使用字典树（Trie）解决查找字符串数组中的最长公共前缀问题是一个非常直观的方法。字典树是一种树形数据结构，特别适合用来存储字符串集合，并且能够高效地检索公共前缀。
+
+以下是使用字典树方法来查找字符串数组中所有字符串的最长公共前缀的Python实现：
+
+```python
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end_of_word = False
+
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word: str) -> None:
+        node = self.root
+        for char in word:
+            if char not in node.children:
+                node.children[char] = TrieNode()
+            node = node.children[char]
+        node.is_end_of_word = True
+
+class Solution:
+    def longestCommonPrefix(self, strs: List[str]) -> str:
+        if not strs:
+            return ""
+        
+        trie = Trie()
+        for word in strs:
+            trie.insert(word)
+        
+        prefix = []
+        node = trie.root
+        
+        # 遍历直到节点只有一个子节点或遇到单词结尾
+        while node and len(node.children) == 1 and not node.is_end_of_word:
+            char = list(node.children.keys())[0]
+            prefix.append(char)
+            node = node.children[char]
+        
+        return "".join(prefix)
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.longestCommonPrefix(["flower","flow","flight"]))  # 输出: "fl"
+    print(sol.longestCommonPrefix(["dog","racecar","car"]))     # 输出: ""
+        
+
+```
+
+> 解释：
+>
+> - **TrieNode 类**：表示字典树中的一个节点，每个节点包含一个字典`children`用于存储指向下一个字符的链接和一个布尔值`is_end_of_word`标记是否为某个单词的结尾。
+> - **Trie 类**：提供了插入新单词到字典树的方法。
+> - **longestCommonPrefix 函数**：
+>   - 如果输入为空，直接返回空字符串。
+>   - 构建字典树，并将所有单词插入其中。
+>   - 然后从根节点开始遍历，如果当前节点有且仅有一个子节点并且不是单词的结尾，则该字符属于公共前缀，继续向下遍历；否则停止遍历。
+>   - 最终将收集到的所有字符连接成字符串作为最长公共前缀返回。
+>
+> 这种方法通过构建字典树来寻找最长公共前缀，虽然在某些情况下可能不如直接比较字符串高效，但它提供了一个不同的视角来解决问题，特别是当你需要对大量字符串进行操作时，字典树的优势就更加明显了。
+
+
+
+
+
+```python
+class Solution:
+    def longestCommonPrefix(self, strs: List[str]) -> str:
+        # 假设第一个字符串为当前最长公共前缀
+        prefix = strs[0]
+        
+        for string in strs[1:]:
+            temp_prefix = ""
+            # 比较当前字符串和prefix，更新temp_prefix为新的公共前缀
+            for char1, char2 in zip(prefix, string):
+                if char1 == char2:
+                    temp_prefix += char1
+                else:
+                    break
+            # 更新prefix为新找到的公共前缀
+            prefix = temp_prefix
+            
+            # 如果在任何时候prefix变为空，则直接返回""
+            if not prefix:
+                return ""
+        
+        return prefix
 ```
 
 
