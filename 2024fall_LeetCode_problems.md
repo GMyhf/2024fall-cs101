@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0955 GMT+8 Feb 9 2025
+Updated 1310 GMT+8 Feb 9 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -13615,6 +13615,268 @@ class Solution:
             ans = max(ans, min(i + 1, cand))
         
         return ans
+```
+
+
+
+
+
+## 3446.按对角线进行矩阵排序
+
+implementation, https://leetcode.cn/problems/sort-matrix-by-diagonals/
+
+给你一个大小为 `n x n` 的整数方阵 `grid`。返回一个经过如下调整的矩阵：
+
+- **左下角三角形**（包括中间对角线）的对角线按 **非递增顺序** 排序。
+- **右上角三角形** 的对角线按 **非递减顺序** 排序。
+
+ 
+
+**示例 1：**
+
+**输入：** grid = [[1,7,3],[9,8,2],[4,5,6]]
+
+**输出：** [[8,2,3],[9,6,7],[4,5,1]]
+
+**解释：**
+
+![img](https://assets.leetcode.com/uploads/2024/12/29/4052example1drawio.png)
+
+标有黑色箭头的对角线（左下角三角形）应按非递增顺序排序：
+
+- `[1, 8, 6]` 变为 `[8, 6, 1]`。
+- `[9, 5]` 和 `[4]` 保持不变。
+
+标有蓝色箭头的对角线（右上角三角形）应按非递减顺序排序：
+
+- `[7, 2]` 变为 `[2, 7]`。
+- `[3]` 保持不变。
+
+**示例 2：**
+
+**输入：** grid = [[0,1],[1,2]]
+
+**输出：** [[2,1],[1,0]]
+
+**解释：**
+
+![img](https://assets.leetcode.com/uploads/2024/12/29/4052example2adrawio.png)
+
+标有黑色箭头的对角线必须按非递增顺序排序，因此 `[0, 2]` 变为 `[2, 0]`。其他对角线已经符合要求。
+
+**示例 3：**
+
+**输入：** grid = [[1]]
+
+**输出：** [[1]]
+
+**解释：**
+
+只有一个元素的对角线已经符合要求，因此无需修改。
+
+ 
+
+**提示：**
+
+- `grid.length == grid[i].length == n`
+- `1 <= n <= 10`
+- `-10^5 <= grid[i][j] <= 10^5`
+
+
+
+
+
+```python
+from typing import List
+from collections import defaultdict
+
+class Solution:
+    def sortMatrix(self, grid: List[List[int]]) -> List[List[int]]:
+        n = len(grid)
+        dia_mx = defaultdict(list)
+        for i in range(n):
+            for j in range(n):
+                dia_mx[i - j].append(grid[i][j])
+
+        for key, _ in dia_mx.items():
+            if key < 0:
+                dia_mx[key].sort()
+            else:
+                dia_mx[key].sort(reverse=True)
+
+        for i in range(n):
+            for j in range(n):
+                grid[i][j] = dia_mx[i - j].pop(0)
+
+        return grid
+
+if __name__ == "__main__":
+    sol = Solution()
+    grid = [[1,7,3],[9,8,2],[4,5,6]]
+    print(sol.sortMatrix(grid))
+        
+```
+
+
+
+## 3447.将元素分配给有约束条件的组
+
+https://leetcode.cn/problems/assign-elements-to-groups-with-constraints/
+
+给你一个整数数组 `groups`，其中 `groups[i]` 表示第 `i` 组的大小。另给你一个整数数组 `elements`。
+
+请你根据以下规则为每个组分配 **一个** 元素：
+
+- 如果 `groups[i]` 能被 `elements[j]` 整除，则元素 `j` 可以分配给组 `i`。
+- 如果有多个元素满足条件，则分配下标最小的元素  `j` 。
+- 如果没有元素满足条件，则分配 -1 。
+
+返回一个整数数组 `assigned`，其中 `assigned[i]` 是分配给组 `i` 的元素的索引，若无合适的元素，则为 -1。
+
+**注意：**一个元素可以分配给多个组。
+
+ 
+
+**示例 1：**
+
+**输入：** groups = [8,4,3,2,4], elements = [4,2]
+
+**输出：** [0,0,-1,1,0]
+
+**解释：**
+
+- `elements[0] = 4` 被分配给组 0、1 和 4。
+- `elements[1] = 2` 被分配给组 3。
+- 无法为组 2 分配任何元素，分配 -1 。
+
+**示例 2：**
+
+**输入：** groups = [2,3,5,7], elements = [5,3,3]
+
+**输出：** [-1,1,0,-1]
+
+**解释：**
+
+- `elements[1] = 3` 被分配给组 1。
+- `elements[0] = 5` 被分配给组 2。
+- 无法为组 0 和组 3 分配任何元素，分配 -1 。
+
+**示例 3：**
+
+**输入：** groups = [10,21,30,41], elements = [2,1]
+
+**输出：** [0,1,0,1]
+
+**解释：**
+
+`elements[0] = 2` 被分配给所有偶数值的组，而 `elements[1] = 1` 被分配给所有奇数值的组。
+
+ 
+
+**提示：**
+
+- `1 <= groups.length <= 10^5`
+- `1 <= elements.length <= 10^5`
+- `1 <= groups[i] <= 10^5`
+- `1 <= elements[i] <= 10^5`
+
+
+
+如果 `max_group` 非常大（例如接近 10^5），预处理部分可能会成为性能瓶颈。此时可以考虑以下优化：
+
+1. **限制预处理范围**:
+   - 只预处理 `groups` 中实际出现的数，而不是所有数到 `max_group`。
+   - 使用一个哈希表记录 `groups` 中出现的数，然后只对这些数进行预处理。
+2. **分解因数**:
+   - 对于每个 `groups[i]`，分解其因数，然后检查这些因数是否在 `elements` 中。
+   - 这种方法适合 `groups[i]` 较小的情况。
+
+```python
+from typing import List
+import math
+
+class Solution:
+    def assignElements(self, groups: List[int], elements: List[int]) -> List[int]:
+        # 将 elements 转换为集合，方便快速查找
+        element_set = set(elements)
+        
+        # 记录每个 elements[j] 的最小索引
+        element_index = {}
+        for j, elem in enumerate(elements):
+            if elem not in element_index:
+                element_index[elem] = j
+        
+        assigned = []
+        for group in groups:
+            # 找到 group 的所有因数
+            factors = set()
+            for i in range(1, int(math.sqrt(group)) + 1):
+                if group % i == 0:
+                    factors.add(i)
+                    factors.add(group // i)
+            
+            # 找到满足条件的最小 j
+            min_j = -1
+            for factor in sorted(factors):
+                if factor in element_index:
+                    if min_j == -1 or element_index[factor] < min_j:
+                        min_j = element_index[factor]
+            
+            assigned.append(min_j)
+        
+        return assigned
+
+# 测试代码
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.assignElements([10, 21, 30, 41], [2, 1]))  # [0, 1, 0, 1]
+    print(sol.assignElements([8, 4, 3, 2, 4], [4, 2]))  # [0, 0, -1, 1, 0]
+    print(sol.assignElements([2, 3, 5, 7], [5, 3, 3]))  # [-1, 1, 0, -1]
+```
+
+> 复杂度分析
+>
+> 1. 时间复杂度:
+>    - 分解因数的时间复杂度为 `O(sqrt(group))`。
+>    - 总体时间复杂度为 `O(n * sqrt(group))`，其中 `n` 是 `groups` 的长度。
+> 2. 空间复杂度:
+>    - 使用了一个哈希表记录 `elements` 的索引，空间复杂度为 `O(m)`，其中 `m` 是 `elements` 的长度。
+>
+> 总结
+>
+> - 如果 `groups` 的最大值较小，推荐使用**预处理倍数**的方法。
+> - 如果 `groups` 的最大值较大，推荐使用**分解因数**的方法。
+> - 两种方法都可以有效避免超时问题。
+
+
+
+预处理倍数方法超时了。超出时间限制 ，564/ 572 个通过的测试用例。
+
+```python
+from typing import List
+
+class Solution:
+    def assignElements(self, groups: List[int], elements: List[int]) -> List[int]:
+        max_val = max(groups)  # 只需计算到 `groups` 里的最大值
+        multiple_map = [-1] * (max_val + 1)  # 用数组代替哈希表，初始化为 -1
+        group_set = set(groups)  # 仅处理出现在 `groups` 里的数
+
+        # 预处理 elements 的所有倍数
+        for idx, elem in enumerate(elements):
+            for mul in range(elem, max_val + 1, elem):  
+                if mul in group_set and multiple_map[mul] == -1:  # 只记录最小索引
+                    multiple_map[mul] = idx  
+
+        # 查询 groups[i] 是否有可整除的元素
+        return [multiple_map[num] for num in groups]
+
+# 测试代码
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.assignElements([10, 21, 30, 41], [2, 1]))  # [0, 1, 0, 1]
+    print(sol.assignElements([8, 4, 3, 2, 4], [4, 2]))  # [0, 0, -1, 1, 0]
+    print(sol.assignElements([2, 3, 5, 7], [5, 3, 3]))  # [-1, 1, 0, -1]
+
 ```
 
 
