@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1751 GMT+8 Feb 8 2025
+Updated 0955 GMT+8 Feb 9 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -6851,7 +6851,7 @@ class Solution:
         return slow + 1
 ```
 
-
+如果 nums[fast] == nums[slow - 1]，一定有nums[slow-1] == nums[slow]。
 
 
 
