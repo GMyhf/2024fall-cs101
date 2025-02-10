@@ -1,12 +1,14 @@
 # Problems in leetcode.cn
 
-Updated 1653 GMT+8 Feb 10 2025
+Updated 1731 GMT+8 Feb 10 2025
 
 2024 fall, Complied by Hongfei Yan
 
 
 
 > Logs:
+>
+> 2025/2/10，除了力扣的题目，后面部分也放了几个其他网站的题目，如：洛谷
 >
 > 2025/1/27, 力扣题目难度分数，https://zerotrac.github.io/leetcode_problem_rating/#/
 >
@@ -7766,6 +7768,82 @@ class Solution:
 ```
 
 
+
+## 134.加油站
+
+greedy, https://leetcode.cn/problems/gas-station/
+
+在一条环路上有 `n` 个加油站，其中第 `i` 个加油站有汽油 `gas[i]` 升。
+
+你有一辆油箱容量无限的的汽车，从第 `i` 个加油站开往第 `i+1` 个加油站需要消耗汽油 `cost[i]` 升。你从其中的一个加油站出发，开始时油箱为空。
+
+给定两个整数数组 `gas` 和 `cost` ，如果你可以按顺序绕环路行驶一周，则返回出发时加油站的编号，否则返回 `-1` 。如果存在解，则 **保证** 它是 **唯一** 的。
+
+ 
+
+**示例 1:**
+
+```
+输入: gas = [1,2,3,4,5], cost = [3,4,5,1,2]
+输出: 3
+解释:
+从 3 号加油站(索引为 3 处)出发，可获得 4 升汽油。此时油箱有 = 0 + 4 = 4 升汽油
+开往 4 号加油站，此时油箱有 4 - 1 + 5 = 8 升汽油
+开往 0 号加油站，此时油箱有 8 - 2 + 1 = 7 升汽油
+开往 1 号加油站，此时油箱有 7 - 3 + 2 = 6 升汽油
+开往 2 号加油站，此时油箱有 6 - 4 + 3 = 5 升汽油
+开往 3 号加油站，你需要消耗 5 升汽油，正好足够你返回到 3 号加油站。
+因此，3 可为起始索引。
+```
+
+**示例 2:**
+
+```
+输入: gas = [2,3,4], cost = [3,4,3]
+输出: -1
+解释:
+你不能从 0 号或 1 号加油站出发，因为没有足够的汽油可以让你行驶到下一个加油站。
+我们从 2 号加油站出发，可以获得 4 升汽油。 此时油箱有 = 0 + 4 = 4 升汽油
+开往 0 号加油站，此时油箱有 4 - 3 + 2 = 3 升汽油
+开往 1 号加油站，此时油箱有 3 - 3 + 3 = 3 升汽油
+你无法返回 2 号加油站，因为返程需要消耗 4 升汽油，但是你的油箱只有 3 升汽油。
+因此，无论怎样，你都不可能绕环路行驶一周。
+```
+
+ 
+
+**提示:**
+
+- `gas.length == n`
+- `cost.length == n`
+- `1 <= n <= 10^5`
+- `0 <= gas[i], cost[i] <= 10^4`
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:
+        n = len(gas)
+        total_tank, current_tank = 0, 0
+        starting_station = 0
+        
+        for i in range(n):
+            total_tank += gas[i] - cost[i]
+            current_tank += gas[i] - cost[i]
+            
+            # 如果当前油量小于0，说明从starting_station到i的任何一个站点都不能作为起点
+            if current_tank < 0:
+                # 更新起始站为下一个站
+                starting_station = i + 1
+                # 重置当前油量
+                current_tank = 0
+        
+        # 如果总的油量小于0，说明无法完成一圈
+        return starting_station if total_tank >= 0 else -1
+```
 
 
 
@@ -18705,156 +18783,7 @@ class Solution:
 
 
 
-# 其他编程网站
-
-
-
-## 1115. 取石子游戏
-
-dfs, https://www.acwing.com/problem/content/description/1117/
-
-有两堆石子，两个人轮流去取，每次取的时候，只能从较多的那堆石子里取，并且取的数目必须是较少的那堆石子数目的整数倍（不能不取）。
-
-最后谁能够把一堆石子取空谁就算赢。
-
-比如初始的时候两堆石子的数目是25和7
-
-| 25 7 | →       | 11 7 | →       | 4 7  | →       | 4 3  | →       | 1 3  | →       | 1 0  |
-| :--- | :------ | :--- | :------ | :--- | :------ | :--- | :------ | :--- | :------ | :--- |
-|      | 选手1取 |      | 选手2取 |      | 选手1取 |      | 选手2取 |      | 选手1取 |      |
-
-最后选手1（先取的）获胜，在取的过程中选手2都只有唯一的一种取法。
-
-给定初始时石子的数目，如果两个人都采取最优策略，请问先手能否获胜。
-
-**输入格式**
-
-输入包含多数数据。每组数据一行，包含两个正整数 a 和 b，表示初始时石子的数目。
-
-输入以两个0表示结束。
-
-**输出格式**
-
-如果先手胜，输出”win”，否则输出”lose”。
-
-数据范围：1≤a,b≤10^9
-
-输入样例：
-
-```
-34 12
-15 24
-0 0
-```
-
-输出样例：
-
-```
-win
-lose
-```
-
-提示
-
-假设石子数目为 (a,b) 且 a≥b，如果 [a/b]≥2 则先手必胜,如果 [a/b]<2，那么先手只有唯一的一种取法。
-
-[a/b] 表示 a 除以 b 取整后的值。
-
-
-
-按题目提示递归，函数返回值为布尔变量，取一次石子先后手交换，返回相反的结果。注意边界条件，如果有两堆一样的则“当前先手”胜。
-
-```python
-# 徐至晟 24光华管院
-def f(x,y):
-    if x<y:
-        return f(y,x)
-    if x>=y*2:
-        return True
-    elif x==y:
-        return True
-    else:
-        return not f(x-y,y)
-
-a,b=map(int,input().split())
-while a:
-    if f(a,b):
-        print("win")
-    else:
-        print("lose")
-    a,b=map(int,input().split())
-```
-
-
-
-
-
-思路：遍历先手取完后所有可能的结果，如果后手有必赢策略则lose，反之win
-
-```python
-# 彭凌越 24光华管理学院
-dic = {}
-def dfs(a,b):
-    if (a,b) in dic:
-        return dic[(a,b)]
-    if a==0 or b==0:
-        dic[(a,b)]=True
-        return True
-    if a<b:
-        a,b = b,a
-    if a%b==0:
-        dic[(a,b)]=True
-        return True
-    for i in range(1,a//b+1):
-            if not dfs(a-i*b,b):
-                dic[(a,b)]=True
-                return True
-    dic[(a,b)]=False
-    return False
-while True:
-    a, b = map(int, input().split())
-    if a == 0 and b == 0:
-        break
-    if dfs(a,b):
-        print('win')
-    else:
-        print('lose')
-```
-
-
-
-```python
-from functools import lru_cache
-import sys
-sys.setrecursionlimit(1<<30)
-
-@lru_cache(maxsize=None)
-def can_win(a, b):
-    if a == 0 or b == 0:
-        return False  # 如果有一堆石子为空，则先手输
-    if a > b:
-        for i in range(1, a // b + 1):
-            if not can_win(a - b * i, b):
-                return True
-    else:
-        for i in range(1, b // a + 1):
-            if not can_win(a, b - a * i):
-                return True
-    return False
-
-def main():
-    while True:
-        a, b = map(int, input().split())
-        if a == 0 and b == 0:
-            break
-        if can_win(max(a, b), min(a, b)):
-            print("win")
-        else:
-            print("lose")
-
-if __name__ == "__main__":
-    main()
-```
+# 洛谷
 
 
 
@@ -19334,6 +19263,294 @@ if __name__ == "__main__":
 
 
 
+## P1352 没有上司的舞会
+
+tree dp, https://www.luogu.com.cn/problem/P1352
+
+某大学有 $n$ 个职员，编号为 $1\ldots n$。
+
+他们之间有从属关系，也就是说他们的关系就像一棵以校长为根的树，父结点就是子结点的直接上司。
+
+现在有个周年庆宴会，宴会每邀请来一个职员都会增加一定的快乐指数 $r_i$，但是呢，如果某个职员的直接上司来参加舞会了，那么这个职员就无论如何也不肯来参加舞会了。
+
+所以，请你编程计算，邀请哪些职员可以使快乐指数最大，求最大的快乐指数。
+
+**输入**
+
+输入的第一行是一个整数 $n$。
+
+第 $2$ 到第 $(n + 1)$ 行，每行一个整数，第 $(i+1)$ 行的整数表示 $i$ 号职员的快乐指数 $r_i$。
+
+第 $(n + 2)$ 到第 $2n$ 行，每行输入一对整数 $l, k$，代表 $k$ 是 $l$ 的直接上司。
+
+**输出**
+
+输出一行一个整数代表最大的快乐指数。
+
+## 
+
+样例输入 #1
+
+```
+7
+1
+1
+1
+1
+1
+1
+1
+1 3
+2 3
+6 4
+7 4
+4 5
+3 5
+```
+
+样例输出 #1
+
+```
+5
+```
+
+提示
+
+数据规模与约定
+
+对于 $100\%$ 的数据，保证 $1\leq n \leq 6 \times 10^3$，$-128 \leq r_i\leq 127$，$1 \leq l, k \leq n$，且给出的关系一定是一棵树。
+
+
+
+https://www.cnblogs.com/ifmyt/p/9588872.html
+
+树形dp是一种很优美的动态规划。树形dp的主要实现形式是dfs，在dfs中dp，主要的实现形式是`dp[i][j][0/1]`，i是以i为根的子树，j是表示在以i为根的子树中选择j个子节点，0表示这个节点不选，1表示选择这个节点。有的时候j或0/1这一维可以压掉。
+
+**基本的dp方程**
+
+选择节点类
+$$
+\begin{cases}
+dp[i][0]=dp[j][1] \\
+dp[i][1]=max/min(dp[j][0],dp[j][1])
+\end{cases}
+$$
+
+
+
+树形背包类
+$$
+\begin{cases}
+dp[v][k]=dp[u][k]+val \\
+dp[u][k]=max(dp[u][k],dp[v][k−1])
+\end{cases}
+$$
+
+
+
+因为树形dp没有基本的形式，然后其也没有固定的做法，一般一种题目有一种做法。这道题是一树形dp入门级别的题目，具体方程就用到了上述的选择方程。
+
+```python
+import sys
+sys.setrecursionlimit(1 << 30)
+
+def dfs(x, dp, graph):
+    for y in graph[x]:
+        dfs(y, dp, graph)
+        dp[x][0] += max(dp[y][0], dp[y][1])
+        dp[x][1] += dp[y][0]
+
+n = int(input())
+r = [int(input()) for _ in range(n)]
+dp = [[0, r[i]] for i in range(n)]
+graph = [[] for _ in range(n)]
+check = set()
+for _ in range(n-1):
+    u, v = map(int, input().split())
+    graph[v-1].append(u-1)
+    check.add(u-1)
+boss = next(i for i in range(n) if i not in check)
+
+dfs(boss, dp, graph)
+print(max(dp[boss]))
+```
+
+
+
+## P1528 切蛋糕
+
+https://www.luogu.com.cn/problem/P1528
+
+Facer今天买了 $n$ 块蛋糕，不料被信息组中球球等好吃懒做的家伙发现了，没办法，只好浪费一点来填他们的嘴巴。他答应给每个人留一口，然后量了量每个人口的大小。Facer 有把刀，可以切蛋糕，但他不能把两块蛋糕拼起来，但是他又不会给任何人两块蛋糕。现在问你，facer 怎样切蛋糕，才能满足最多的人。（facer 的刀很强，切的时候不会浪费蛋糕）。
+
+**输入**
+
+第一行 $n$，facer 有 $n$ 个蛋糕。接下来 $n$ 行，每行表示一个蛋糕的大小。再一行一个数 $m$，为信息组的人数，然后 $m$ 行，每行一个数，为一个人嘴的大小。$(1\le n\le 50$，$ 1\le m\le 1024)$
+
+**输出**
+
+一行，facer最多可以填多少张嘴巴。
+
+
+
+Sample Input
+
+```
+4
+30
+40
+50
+25
+10
+15
+16
+17
+18
+19
+20
+21
+25
+24
+30
+```
+
+Sample Output
+
+```
+7
+```
+
+
+
+```python
+import sys
+sys.setrecursionlimit(1000000)
+def sub_DFS(toTest, origin, cake, mouth, totalCake, needCake, wasteCake, MIN_NEED, n):
+    if toTest < 1:
+        return True
+    if totalCake - wasteCake < needCake:
+        return False
+
+    flag = False
+    for i in range(origin, n + 1):
+        if cake[i] >= mouth[toTest]:
+            needCake -= mouth[toTest]
+            totalCake -= mouth[toTest]
+            cake[i] -= mouth[toTest]
+
+            wasted = False
+            if cake[i] < MIN_NEED:
+                wasteCake += cake[i]
+                wasted = True
+
+            if mouth[toTest] == mouth[toTest - 1]:
+                if sub_DFS(toTest - 1, i, cake, mouth, totalCake, needCake, wasteCake, MIN_NEED, n):
+                    flag = True
+            else:
+                if sub_DFS(toTest - 1, 1, cake, mouth, totalCake, needCake, wasteCake, MIN_NEED, n):
+                    flag = True
+
+            if wasted:
+                wasteCake -= cake[i]
+            cake[i] += mouth[toTest]
+            totalCake += mouth[toTest]
+            needCake += mouth[toTest]
+
+            if flag:
+                return True
+
+    return False
+
+
+def DFS(toTest, cake, mouth, allCake, prefixSum):
+    totalCake = allCake
+    needCake = prefixSum[toTest]
+    wasteCake = 0
+    MIN_NEED = mouth[1]
+    n = len(cake) - 1
+
+    return sub_DFS(toTest, 1, cake, mouth, totalCake, needCake, wasteCake, MIN_NEED, n)
+
+
+def main():
+    import sys
+    input = sys.stdin.read
+    data = list(map(int, input().split()))
+
+    n = data[0]
+    cake = [0] + data[1:n + 1]
+    m = data[n + 1]
+    mouth = [0] + data[n + 2:n + 2 + m]
+
+    maxCake = max(cake)
+    allCake = sum(cake)
+
+    mouth.sort()
+    prefixSum = [0] * (m + 1)
+    for i in range(1, m + 1):
+        prefixSum[i] = prefixSum[i - 1] + mouth[i]
+
+    l, r = 1, m
+    while mouth[r] > maxCake and r > 0:
+        r -= 1
+
+    result = 0
+    while l <= r:
+        mid = (l + r) // 2
+        if DFS(mid, cake[:], mouth, allCake, prefixSum):
+            result = mid
+            l = mid + 1
+        else:
+            r = mid - 1
+
+    print(result)
+
+
+if __name__ == "__main__":
+    main()
+
+```
+
+
+
+主要是通过递归深度优先搜索 (DFS) 和二分搜索来解决一个特定的蛋糕分配问题。具体目标是在给定的蛋糕和人群中，找出最大数量的人，使得每个人都至少能得到他们口中大小的蛋糕部分。以下是程序的具体解读：
+
+**主要组件和流程**
+
+1. **输入读取和初始化**：
+   - 首先读取输入数据，包括蛋糕数量、每块蛋糕的大小、人数以及每个人口中的大小。
+   - 初始化蛋糕数组 `cake` 和需求数组 `mouth`，同时计算蛋糕总和 `allCake` 和每块蛋糕的最大值 `maxCake`。
+
+2. **排序和前缀和计算**：
+   - 对需求数组 `mouth` 进行排序，这样可以优先满足较小的需求，提高蛋糕的利用率。
+   - 计算 `mouth` 数组的前缀和 `prefixSum`，用于快速获取前 k 个需求的总和。
+
+3. **二分搜索**：
+   - 使用二分搜索来确定可以被满足的最大人数。搜索范围是从 1 到 m（其中 m 是人数，也是 `mouth` 数组的长度）。
+   - 在每次迭代中，计算中间值 `mid`，并使用 `DFS` 函数来验证是否可以满足 `mid` 个人的需求。
+
+4. **DFS 函数**：
+   - `DFS` 函数尝试满足 `toTest`（即当前二分的中间值 `mid`）个人的需求。它递归地尝试将蛋糕分配给每个人。
+   - 使用 `sub_DFS` 进行实际的递归搜索，它通过改变蛋糕数组和需求来试图找到一个可行的分配方案。
+   - 处理包括浪费蛋糕和递归回溯（即恢复蛋糕和需求状态）。
+
+5. **优化处理**：
+   - 通过判断当前最大蛋糕 `maxCake` 来调整搜索范围，以避免无意义的搜索。如果某人的需求大于任何一块蛋糕，那么直接排除这部分人。
+
+
+
+**关键函数和概念**
+
+- **`sub_DFS`**：核心的递归函数，负责尝试各种分配方案，以满足尽可能多的人。
+- **二分搜索**：在可能的人数范围内使用二分搜索，快速找到可以被满足的最大人数。
+- **优化**：通过前缀和快速计算需求总和，通过排序确保贪心策略的有效性。
+
+
+
+**总结**
+
+这个程序的效率依赖于递归搜索和二分搜索的结合，适用于问题规模较小的情况（蛋糕数量 n <= 50，人数 m <= 1024）。对于更大的数据集，可能需要进一步的优化或改进算法来避免性能瓶颈。
+
 
 
 ## P4390 [BalkanOI2007] Mokia 摩基亚
@@ -19549,19 +19766,152 @@ process_commands(data)
 
 
 
+# 其他网站
 
+## 1115. 取石子游戏
+
+dfs, https://www.acwing.com/problem/content/description/1117/
+
+有两堆石子，两个人轮流去取，每次取的时候，只能从较多的那堆石子里取，并且取的数目必须是较少的那堆石子数目的整数倍（不能不取）。
+
+最后谁能够把一堆石子取空谁就算赢。
+
+比如初始的时候两堆石子的数目是25和7
+
+| 25 7 | →       | 11 7 | →       | 4 7  | →       | 4 3  | →       | 1 3  | →       | 1 0  |
+| :--- | :------ | :--- | :------ | :--- | :------ | :--- | :------ | :--- | :------ | :--- |
+|      | 选手1取 |      | 选手2取 |      | 选手1取 |      | 选手2取 |      | 选手1取 |      |
+
+最后选手1（先取的）获胜，在取的过程中选手2都只有唯一的一种取法。
+
+给定初始时石子的数目，如果两个人都采取最优策略，请问先手能否获胜。
+
+**输入格式**
+
+输入包含多数数据。每组数据一行，包含两个正整数 a 和 b，表示初始时石子的数目。
+
+输入以两个0表示结束。
+
+**输出格式**
+
+如果先手胜，输出”win”，否则输出”lose”。
+
+数据范围：1≤a,b≤10^9
+
+输入样例：
+
+```
+34 12
+15 24
+0 0
+```
+
+输出样例：
+
+```
+win
+lose
+```
+
+提示
+
+假设石子数目为 (a,b) 且 a≥b，如果 [a/b]≥2 则先手必胜,如果 [a/b]<2，那么先手只有唯一的一种取法。
+
+[a/b] 表示 a 除以 b 取整后的值。
+
+
+
+按题目提示递归，函数返回值为布尔变量，取一次石子先后手交换，返回相反的结果。注意边界条件，如果有两堆一样的则“当前先手”胜。
 
 ```python
+# 徐至晟 24光华管院
+def f(x,y):
+    if x<y:
+        return f(y,x)
+    if x>=y*2:
+        return True
+    elif x==y:
+        return True
+    else:
+        return not f(x-y,y)
 
+a,b=map(int,input().split())
+while a:
+    if f(a,b):
+        print("win")
+    else:
+        print("lose")
+    a,b=map(int,input().split())
 ```
 
 
 
 
 
+思路：遍历先手取完后所有可能的结果，如果后手有必赢策略则lose，反之win
+
+```python
+# 彭凌越 24光华管理学院
+dic = {}
+def dfs(a,b):
+    if (a,b) in dic:
+        return dic[(a,b)]
+    if a==0 or b==0:
+        dic[(a,b)]=True
+        return True
+    if a<b:
+        a,b = b,a
+    if a%b==0:
+        dic[(a,b)]=True
+        return True
+    for i in range(1,a//b+1):
+            if not dfs(a-i*b,b):
+                dic[(a,b)]=True
+                return True
+    dic[(a,b)]=False
+    return False
+while True:
+    a, b = map(int, input().split())
+    if a == 0 and b == 0:
+        break
+    if dfs(a,b):
+        print('win')
+    else:
+        print('lose')
+```
+
 
 
 ```python
+from functools import lru_cache
+import sys
+sys.setrecursionlimit(1<<30)
 
+@lru_cache(maxsize=None)
+def can_win(a, b):
+    if a == 0 or b == 0:
+        return False  # 如果有一堆石子为空，则先手输
+    if a > b:
+        for i in range(1, a // b + 1):
+            if not can_win(a - b * i, b):
+                return True
+    else:
+        for i in range(1, b // a + 1):
+            if not can_win(a, b - a * i):
+                return True
+    return False
+
+def main():
+    while True:
+        a, b = map(int, input().split())
+        if a == 0 and b == 0:
+            break
+        if can_win(max(a, b), min(a, b)):
+            print("win")
+        else:
+            print("lose")
+
+if __name__ == "__main__":
+    main()
 ```
 
