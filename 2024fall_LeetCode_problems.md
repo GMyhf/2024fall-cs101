@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1759 GMT+8 Feb 9 2025
+Updated 1100 GMT+8 Feb 10 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -1716,6 +1716,21 @@ class Solution:
 
         return pre
         
+```
+
+
+
+递归的反转写法
+
+```python
+class Solution:
+    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        if head is None or head.next is None:
+            return head  # 基本情况：空链表或只有一个节点的链表直接返回头节点
+        p = self.reverseList(head.next)  # 递归反转剩余链表
+        head.next.next = head  # 反转当前节点的指针
+        head.next = None  # 设置当前节点的next为None
+        return p  # 返回新的头节点
 ```
 
 
