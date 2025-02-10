@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1731 GMT+8 Feb 10 2025
+Updated 1856 GMT+8 Feb 10 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -3842,6 +3842,98 @@ if __name__ == '__main__':
 ```
 
 
+
+## 6.Z字形变换
+
+strings, https://leetcode.cn/problems/zigzag-conversion/
+
+将一个给定字符串 `s` 根据给定的行数 `numRows` ，以从上往下、从左到右进行 Z 字形排列。
+
+比如输入字符串为 `"PAYPALISHIRING"` 行数为 `3` 时，排列如下：
+
+```
+P   A   H   N
+A P L S I I G
+Y   I   R
+```
+
+之后，你的输出需要从左往右逐行读取，产生出一个新的字符串，比如：`"PAHNAPLSIIGYIR"`。
+
+请你实现这个将字符串进行指定行数变换的函数：
+
+```
+string convert(string s, int numRows);
+```
+
+ 
+
+**示例 1：**
+
+```
+输入：s = "PAYPALISHIRING", numRows = 3
+输出："PAHNAPLSIIGYIR"
+```
+
+**示例 2：**
+
+```
+输入：s = "PAYPALISHIRING", numRows = 4
+输出："PINALSIGYAHRPI"
+解释：
+P     I    N
+A   L S  I G
+Y A   H R
+P     I
+```
+
+**示例 3：**
+
+```
+输入：s = "A", numRows = 1
+输出："A"
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 1000`
+- `s` 由英文字母（小写和大写）、`','` 和 `'.'` 组成
+- `1 <= numRows <= 1000`
+
+
+
+实际是反N字形变换。模拟行索引的变化，在遍历 `s` 中把每个字符填到正确的行。
+
+“Z”字形排列指的是以锯齿状的方式填充字符。首先从上往下填满第一列，然后斜向上直到达到最上面一行，接着再次从上往下填充下一列，如此反复。最后，将这些字符按从左到右、从上到下的顺序连接起来形成最终的字符串。
+
+```python
+class Solution:
+    def convert(self, s: str, numRows: int) -> str:
+        if numRows == 1 or numRows >= len(s):
+            return s
+    
+        # 创建一个列表来存储每一行的字符
+        rows = [""] * numRows
+        current_row = 0
+        going_down = False
+        
+        for char in s:
+            # 将字符添加到对应的行
+            rows[current_row] += char
+            
+            # 如果到达了第一行或者最后一行，则改变方向
+            if current_row == 0 or current_row == numRows - 1:
+                going_down = not going_down
+                
+            # 更新当前行号
+            if going_down:
+                current_row += 1
+            else:
+                current_row -= 1
+        
+        return ''.join(rows)
+```
 
 
 
