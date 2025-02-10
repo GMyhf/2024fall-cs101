@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1100 GMT+8 Feb 10 2025
+Updated 1653 GMT+8 Feb 10 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -16131,6 +16131,165 @@ if __name__ == "__main__":
     print(obj.book(25, 55))
     print(obj.book(15, 25))
 ```
+
+
+
+
+
+## 913.猫和老鼠
+
+动态规划 + 拓扑排序,博弈, https://leetcode.cn/problems/cat-and-mouse/
+
+两位玩家分别扮演猫和老鼠，在一张 **无向** 图上进行游戏，两人轮流行动。
+
+图的形式是：`graph[a]` 是一个列表，由满足 `ab` 是图中的一条边的所有节点 `b` 组成。
+
+老鼠从节点 `1` 开始，第一个出发；猫从节点 `2` 开始，第二个出发。在节点 `0` 处有一个洞。
+
+在每个玩家的行动中，他们 **必须** 沿着图中与所在当前位置连通的一条边移动。例如，如果老鼠在节点 `1` ，那么它必须移动到 `graph[1]` 中的任一节点。
+
+此外，猫无法移动到洞中（节点 `0`）。
+
+然后，游戏在出现以下三种情形之一时结束：
+
+- 如果猫和老鼠出现在同一个节点，猫获胜。
+- 如果老鼠到达洞中，老鼠获胜。
+- 如果某一位置重复出现（即，玩家的位置和移动顺序都与上一次行动相同），游戏平局。
+
+给你一张图 `graph` ，并假设两位玩家都都以最佳状态参与游戏：
+
+- 如果老鼠获胜，则返回 `1`；
+- 如果猫获胜，则返回 `2`；
+- 如果平局，则返回 `0` 。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2020/11/17/cat1.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：graph = [[2,5],[3],[0,4,5],[1,4,5],[2,3],[0,2,3]]
+输出：0
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2020/11/17/cat2.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：graph = [[1,3],[0],[3],[0,2]]
+输出：1
+```
+
+ 
+
+**提示：**
+
+- `3 <= graph.length <= 50`
+- `1 <= graph[i].length < graph.length`
+- `0 <= graph[i][j] < graph.length`
+- `graph[i][j] != i`
+- `graph[i]` 互不相同
+- 猫和老鼠在游戏中总是可以移动
+
+
+
+这个问题可以用 **动态规划 + 拓扑排序**（即 **反向 BFS/Karn算法**）来求解。我们可以定义 `dp[mouse][cat][turn]` 来表示当老鼠在 `mouse`，猫在 `cat` 并且当前是 `turn` 的玩家行动时的游戏状态。
+
+状态：
+
+- `dp[mouse][cat][turn] = MOUSE_WIN (1)` 代表老鼠必胜
+- `dp[mouse][cat][turn] = CAT_WIN (2)` 代表猫必胜
+- `dp[mouse][cat][turn] = DRAW (0)` 代表未确定
+
+**主要思路：**
+
+1. 初始化终止状态：
+   - `mouse == 0` （即老鼠进入洞中），老鼠赢（`dp[0][cat][turn] = `MOUSE_WIN）。
+   - `mouse == cat` （即老鼠和猫在同一位置），猫赢（`dp[mouse][mouse][turn] = CAT_WIN`）。
+2. 反向 BFS 进行拓扑排序：
+   - 维护一个 `degree` 数组，表示 `mouse, cat, turn` 这个状态下能走的合法步数（即多少个未确定的状态会转移到它）。
+   - 先从已知的胜利/失败状态开始，推导前驱状态：
+     - 如果某个状态能转移到已知的必败状态，则它是必胜状态。
+     - 如果所有转移动作都指向对手的必胜状态，则当前是必败状态。
+
+```python
+from collections import deque
+from typing import List
+
+MOUSE_TURN = 0
+CAT_TURN = 1
+DRAW = 0
+MOUSE_WIN = 1
+CAT_WIN = 2
+
+class Solution:
+    def catMouseGame(self, graph: List[List[int]]) -> int:
+        N = len(graph)
+
+        # dp[mouse][cat][turn] -> 0: 未确定, 1: 老鼠胜, 2: 猫胜
+        dp = [[[0] * 2 for _ in range(N)] for _ in range(N)]
+        degree = [[[0] * 2 for _ in range(N)] for _ in range(N)]
+
+        # 计算所有状态的度数
+        for m in range(N):
+            for c in range(N):
+                degree[m][c][MOUSE_TURN] = len(graph[m])  # 轮到老鼠
+                degree[m][c][CAT_TURN] = len(graph[c]) - (0 in graph[c])  # 轮到猫，不能去洞
+
+        queue = deque()
+
+        # 初始化已知状态
+        for i in range(1, N):
+            for turn in range(2):
+                dp[0][i][turn] = MOUSE_WIN  # 老鼠到达洞
+                queue.append((0, i, turn, MOUSE_WIN))
+                dp[i][i][turn] = CAT_WIN  # 猫抓到老鼠
+                queue.append((i, i, turn, CAT_WIN))
+
+        # 反向 BFS 处理其他状态
+        while queue:
+            mouse, cat, turn, winner = queue.popleft()
+
+            prev_turn = 1 - turn
+            if turn == MOUSE_TURN:  # 这轮是老鼠走，前一轮是猫走
+                prev_moves = [(mouse, prev) for prev in graph[cat]]  # 猫的前驱状态
+            else:  # 这轮是猫走，前一轮是老鼠走
+                prev_moves = [(prev, cat) for prev in graph[mouse]]  # 老鼠的前驱状态
+
+            for prev_mouse, prev_cat in prev_moves:
+                if prev_cat == 0:  # 猫不能进入洞
+                    continue
+
+                if dp[prev_mouse][prev_cat][prev_turn] == DRAW:  # 还未确定
+                    can_win = (winner == MOUSE_WIN and prev_turn == MOUSE_TURN) or (winner == CAT_WIN and prev_turn == CAT_TURN)
+                    if can_win:
+                        dp[prev_mouse][prev_cat][prev_turn] = winner
+                        queue.append((prev_mouse, prev_cat, prev_turn, winner))
+                    else:
+                        degree[prev_mouse][prev_cat][prev_turn] -= 1
+                        if degree[prev_mouse][prev_cat][prev_turn] == 0:  # 该状态的所有选项都指向对手胜利
+                            dp[prev_mouse][prev_cat][prev_turn] = CAT_WIN if prev_turn == MOUSE_TURN else MOUSE_WIN
+                            queue.append((prev_mouse, prev_cat, prev_turn, CAT_WIN if prev_turn == MOUSE_TURN else MOUSE_WIN))
+
+        return dp[1][2][MOUSE_TURN]  # 初始状态，老鼠在 1，猫在 2，轮到老鼠
+
+if __name__ == "__main__":
+    sol = Solution()
+    # 示例 1
+    graph1 = [[2, 5], [3], [0, 4, 5], [1, 4, 5], [2, 3], [0, 2, 3]]
+    print(sol.catMouseGame(graph1))  # 输出: 应为 0 或 1 根据具体规则
+    graph2 = [[1, 3], [0], [3], [0, 2]]
+    print(sol.catMouseGame(graph2))  # 输出: 1
+    graph3 = [[5,7,9],[3,4,5,6],[3,4,5,8],[1,2,6,7],[1,2,5,7,9],[0,1,2,4,8],[1,3,7,8],[0,3,4,6,8],[2,5,6,7,9],[0,4,8]]
+    print(sol.catMouseGame(graph3))  # 输出: 1
+```
+
+复杂度分析：
+
+- 状态总数：`N * N * 2`，最多 `50 * 50 * 2 = 5000` 种状态。
+- 每个状态最多更新一次，因此时间复杂度 O(N²)。
 
 
 
