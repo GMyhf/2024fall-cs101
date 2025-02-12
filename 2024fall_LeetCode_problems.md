@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2114 GMT+8 Feb 11 2025
+Updated 1351 GMT+8 Feb 12 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -12580,6 +12580,96 @@ class Solution:
 ```
 
 
+
+## 1760.袋子里最少数目的球
+
+binary search, https://leetcode.cn/problems/minimum-limit-of-balls-in-a-bag/
+
+给你一个整数数组 `nums` ，其中 `nums[i]` 表示第 `i` 个袋子里球的数目。同时给你一个整数 `maxOperations` 。
+
+你可以进行如下操作至多 `maxOperations` 次：
+
+- 选择任意一个袋子，并将袋子里的球分到 2 个新的袋子中，每个袋子里都有 **正整数** 个球。
+  - 比方说，一个袋子里有 `5` 个球，你可以把它们分到两个新袋子里，分别有 `1` 个和 `4` 个球，或者分别有 `2` 个和 `3` 个球。
+
+你的开销是单个袋子里球数目的 **最大值** ，你想要 **最小化** 开销。
+
+请你返回进行上述操作后的最小开销。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [9], maxOperations = 2
+输出：3
+解释：
+- 将装有 9 个球的袋子分成装有 6 个和 3 个球的袋子。[9] -> [6,3] 。
+- 将装有 6 个球的袋子分成装有 3 个和 3 个球的袋子。[6,3] -> [3,3,3] 。
+装有最多球的袋子里装有 3 个球，所以开销为 3 并返回 3 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [2,4,8,2], maxOperations = 4
+输出：2
+解释：
+- 将装有 8 个球的袋子分成装有 4 个和 4 个球的袋子。[2,4,8,2] -> [2,4,4,4,2] 。
+- 将装有 4 个球的袋子分成装有 2 个和 2 个球的袋子。[2,4,4,4,2] -> [2,2,2,4,4,2] 。
+- 将装有 4 个球的袋子分成装有 2 个和 2 个球的袋子。[2,2,2,4,4,2] -> [2,2,2,2,2,4,2] 。
+- 将装有 4 个球的袋子分成装有 2 个和 2 个球的袋子。[2,2,2,2,2,4,2] -> [2,2,2,2,2,2,2,2] 。
+装有最多球的袋子里装有 2 个球，所以开销为 2 并返回 2 。
+```
+
+**示例 3：**
+
+```
+输入：nums = [7,17], maxOperations = 2
+输出：7
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 10^5`
+- `1 <= maxOperations, nums[i] <= 10^9`
+
+
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def minimumSize(self, nums: List[int], maxOperations: int) -> int:
+        # 边界情况处理
+        if len(nums) == 1:
+            return (nums[0] + maxOperations) // (maxOperations + 1)
+
+        def check(n):
+            """检查是否可以通过不超过maxOperations次操作将所有数分割为不大于n的块"""
+            operations_needed = 0
+            for num in nums:
+                # 计算需要的操作次数以确保每个数字被分割成最多为n的部分
+                operations_needed += (num - 1) // n
+                if operations_needed > maxOperations:
+                    return False
+            return True
+        
+        # 初始化二分查找的边界
+        left, right = 1, max(nums)
+        while left < right:
+            mid = (left + right) // 2
+            if check(mid):
+                right = mid
+            else:
+                left = mid + 1
+        
+        return left
+```
 
 
 
