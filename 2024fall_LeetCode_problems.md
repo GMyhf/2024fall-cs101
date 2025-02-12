@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1524 GMT+8 Feb 12 2025
+Updated 1643 GMT+8 Feb 12 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -8034,6 +8034,162 @@ class Solution:
         backtracking(0, [])
         return res
 ```
+
+
+
+## 133.克隆图
+
+bfs, dfs, https://leetcode.cn/problems/clone-graph/
+
+给你无向 **[连通](https://baike.baidu.com/item/连通图/6460995?fr=aladdin)** 图中一个节点的引用，请你返回该图的 [**深拷贝**](https://baike.baidu.com/item/深拷贝/22785317?fr=aladdin)（克隆）。
+
+> 在图论中，连通图基于连通的概念。在一个无向图 G 中，若从顶点i到顶点j有路径相连（当然从j到i也一定有路径），则称i和j是连通的。如果 G 是有向图，那么连接i和j的路径中所有的边都必须同向。如果图中任意两点都是连通的，那么图被称作**连通图**。如果此图是有向图，则称为**强连通图**（注意：需要双向都有路径）。图的连通性是图的基本性质。
+>
+> 一个引用对象一般来说由两个部分组成：一个具名的Handle，也就是我们所说的声明（如变量）和一个内部（不具名）的对象，也就是具名Handle的内部对象。它在Manged Heap（托管堆）中分配，一般由新增引用对象的New方法是进行创建。**深拷贝**是指源对象与拷贝对象互相独立，其中任何一个对象的改动都不会对另外一个对象造成影响。比较典型的就是Value（值）对象，如预定义类型Int32，Double，以及结构（struct），枚举（Enum）等。
+
+图中的每个节点都包含它的值 `val`（`int`） 和其邻居的列表（`list[Node]`）。
+
+```
+class Node {
+    public int val;
+    public List<Node> neighbors;
+}
+```
+
+ 
+
+**测试用例格式：**
+
+简单起见，每个节点的值都和它的索引相同。例如，第一个节点值为 1（`val = 1`），第二个节点值为 2（`val = 2`），以此类推。该图在测试用例中使用邻接列表表示。
+
+**邻接列表** 是用于表示有限图的无序列表的集合。每个列表都描述了图中节点的邻居集。
+
+给定节点将始终是图中的第一个节点（值为 1）。你必须将 **给定节点的拷贝** 作为对克隆图的引用返回。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/02/01/133_clone_graph_question.png" alt="img" style="zoom: 33%;" />
+
+```
+输入：adjList = [[2,4],[1,3],[2,4],[1,3]]
+输出：[[2,4],[1,3],[2,4],[1,3]]
+解释：
+图中有 4 个节点。
+节点 1 的值是 1，它有两个邻居：节点 2 和 4 。
+节点 2 的值是 2，它有两个邻居：节点 1 和 3 。
+节点 3 的值是 3，它有两个邻居：节点 2 和 4 。
+节点 4 的值是 4，它有两个邻居：节点 1 和 3 。
+```
+
+**示例 2：**
+
+![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/02/01/graph.png)
+
+```
+输入：adjList = [[]]
+输出：[[]]
+解释：输入包含一个空列表。该图仅仅只有一个值为 1 的节点，它没有任何邻居。
+```
+
+**示例 3：**
+
+```
+输入：adjList = []
+输出：[]
+解释：这个图是空的，它不含任何节点。
+```
+
+ 
+
+**提示：**
+
+- 这张图中的节点数在 `[0, 100]` 之间。
+- `1 <= Node.val <= 100`
+- 每个节点值 `Node.val` 都是唯一的，
+- 图中没有重复的边，也没有自环。
+- 图是连通图，你可以从给定节点访问到所有节点。
+
+
+
+BFS
+
+```python
+"""
+# Definition for a Node.
+class Node:
+    def __init__(self, val = 0, neighbors = None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
+"""
+
+from typing import Optional
+class Solution:
+    def cloneGraph(self, node: Optional['Node']) -> Optional['Node']:
+        if not node:
+            return None
+        
+        queue = deque([node])
+        visited = defaultdict(lambda: None)
+        visited[node] = Node(node.val)
+
+        while queue:
+            current_node = queue.popleft()
+            new_node = Node(current_node.val)
+            for neighbor in current_node.neighbors:
+                if neighbor not in visited:
+                    visited[neighbor] = Node(neighbor.val)
+                    queue.append(neighbor)
+                
+                visited[current_node].neighbors.append(visited[neighbor])
+        
+        return visited[node]
+
+        
+```
+
+
+
+DFS
+
+```python
+from typing import Optional
+from collections import deque
+
+# Definition for a Node.
+class Node:
+    def __init__(self, val = 0, neighbors = None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
+
+class Solution:
+    def cloneGraph(self, node: Optional['Node']) -> Optional['Node']:
+        if not node:
+            return None
+        
+        # 用于存储原节点和克隆节点之间的映射
+        visited = {}
+        
+        def dfs(old_node):
+            if old_node in visited:
+                return visited[old_node]
+            
+            # 创建新节点
+            new_node = Node(old_node.val)
+            # 将原节点与新节点关联起来
+            visited[old_node] = new_node
+            
+            # 遍历邻居并递归复制
+            for neighbor in old_node.neighbors:
+                new_node.neighbors.append(dfs(neighbor))
+            
+            return new_node
+        
+        return dfs(node)
+```
+
+
 
 
 
