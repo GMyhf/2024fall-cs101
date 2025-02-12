@@ -12907,6 +12907,13 @@ binary search, https://leetcode.cn/problems/minimum-limit-of-balls-in-a-bag/
 
 
 
+**为什么 `left == right` 是结束条件？**
+
+我们使用**二分查找**来寻找最小的最大球数 `min_penalty`，在 `check(mid)` 里只是在**检查 `mid` 是否可行**，而**不是要恰好用掉 `maxOperations`**。
+
+- `operations == maxOperations` **并不意味着是最优解**，因为可能存在更小的 `mid` 也满足 `operations <= maxOperations`。
+- `left == right` 表示我们已经**收敛**到最小的可行 `mid`，即满足 `operations <= maxOperations` 且不能再更小。
+
 ```python
 from typing import List
 
