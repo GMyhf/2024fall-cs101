@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1351 GMT+8 Feb 12 2025
+Updated 1524 GMT+8 Feb 12 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -7869,6 +7869,117 @@ if __name__ == "__main__":
     sol = Solution()
     print(sol.rob([2, 1, 1, 2])) # 3
 ```
+
+
+
+## 130.被围绕的区域
+
+dfs, https://leetcode.cn/problems/surrounded-regions/
+
+给你一个 `m x n` 的矩阵 `board` ，由若干字符 `'X'` 和 `'O'` 组成，**捕获** 所有 **被围绕的区域**：
+
+- **连接：**一个单元格与水平或垂直方向上相邻的单元格连接。
+- **区域：连接所有** `'O'` 的单元格来形成一个区域。
+- **围绕：**如果您可以用 `'X'` 单元格 **连接这个区域**，并且区域中没有任何单元格位于 `board` 边缘，则该区域被 `'X'` 单元格围绕。
+
+通过 **原地** 将输入矩阵中的所有 `'O'` 替换为 `'X'` 来 **捕获被围绕的区域**。你不需要返回任何值。
+
+ 
+
+**示例 1：**
+
+**输入：**board = [["X","X","X","X"],["X","O","O","X"],["X","X","O","X"],["X","O","X","X"]]
+
+**输出：**[["X","X","X","X"],["X","X","X","X"],["X","X","X","X"],["X","O","X","X"]]
+
+**解释：**
+
+<img src="https://pic.leetcode.cn/1718167191-XNjUTG-image.png" alt="img" style="zoom:67%;" />
+
+在上图中，底部的区域没有被捕获，因为它在 board 的边缘并且不能被围绕。
+
+**示例 2：**
+
+**输入：**board = [["X"]]
+
+**输出：**[["X"]]
+
+ 
+
+**提示：**
+
+- `m == board.length`
+- `n == board[i].length`
+- `1 <= m, n <= 200`
+- `board[i][j]` 为 `'X'` 或 `'O'`
+
+
+
+```python
+class Solution:
+    def solve(self, board: List[List[str]]) -> None:
+        """
+        Do not return anything, modify board in-place instead.
+        """
+        if not board or not board[0]:
+            return
+
+        m, n = len(board), len(board[0])
+
+        def dfs(x, y):
+            if x < 0 or x >= m or y < 0 or y >= n or board[x][y] != 'O':
+                return
+            board[x][y] = '#'  # 标记与边界相连的 'O'
+            for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:  # 四个方向移动
+                dfs(x + dx, y + dy)
+
+        # 1. 遍历边界上的 'O'，进行 DFS 标记
+        for i in range(m):
+            if board[i][0] == 'O': dfs(i, 0)
+            if board[i][n - 1] == 'O': dfs(i, n - 1)
+        for j in range(n):
+            if board[0][j] == 'O': dfs(0, j)
+            if board[m - 1][j] == 'O': dfs(m - 1, j)
+
+        # 2. 遍历整个矩阵，修改值
+        for i in range(m):
+            for j in range(n):
+                if board[i][j] == 'O':
+                    board[i][j] = 'X'  # 被围绕的区域
+                elif board[i][j] == '#':
+                    board[i][j] = 'O'  # 恢复未被围绕的区域
+```
+
+
+
+```python
+class Solution:
+    def solve(self, board: List[List[str]]) -> None:
+        """
+        Do not return anything, modify board in-place instead.
+        """
+        m, n = len(board), len(board[0])
+        keep = set()
+
+        def dfs(x, y):
+            keep.add((x, y))
+            for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < m and 0 <= ny < n and (nx, ny) not in keep and board[nx][ny] == 'O':
+                    dfs(nx, ny)
+
+        for i in range(m):  # 遍历所有边界，找到'O'并进行DFS
+            for j in range(n):
+                if board[i][j] == 'O' and (i == 0 or i == m - 1 or j == 0 or j == n - 1):
+                    dfs(i, j)
+
+        for i in range(m):  # # 遍历整个板，将不在keep集合中的'O'改为'X'
+            for j in range(n):
+                if board[i][j] == 'O' and (i, j) not in keep:
+                    board[i][j] = 'X'
+```
+
+
 
 
 
