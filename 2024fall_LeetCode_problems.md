@@ -12927,7 +12927,7 @@ class Solution:
             return True
         
         # 初始化二分查找的边界
-        left, right = 1, max(nums)
+        left, right = 1, max(nums) 
         while left < right:
             mid = (left + right) // 2
             if check(mid):
@@ -12937,6 +12937,61 @@ class Solution:
         
         return left
 ```
+
+> **题意解读**
+>
+> 「最小化最大值」说人话就是，尽量均匀地分配小球。
+>
+> **思路**
+>
+> 假设最终每个袋子的球数都至多为 m，那么 m 越小，操作次数就越多，m 越大，操作次数就越少，有单调性，可以二分答案。或者说，看到「最小化最大值」就要先思考二分。
+>
+> 现在问题变成：
+>
+> 根据您提供的图片文字信息，以下是提取的内容：
+>
+> 给定 m ，要求最终每个袋子的球数都至多为  m ，能否在 $ \text{maxOperations} $次操作内完成？
+>
+> 对于 $x = \text{nums}[i] $，假设分成  k  个袋子，每个袋子都至多装  m  个球。 k  不能太小，否则没法一共装  x  个球，所以 km 至少要是 x ，即
+>
+> $ km \geq x $
+>
+> 解得
+>
+> $ k \geq \left\lceil \frac{x}{m} \right\rceil $
+>
+> 所以对于  x ，操作次数为
+>
+> $ \left\lceil \frac{x}{m} \right\rceil - 1 $
+>
+> 减一是因为操作 1 次分出 2 个袋子，操作 2 次分出 3 个袋子……依此类推，操作  k-1  次分出  k  个袋子。
+>
+> 累加操作次数，判断总操作次数与 $ \text{maxOperations} $ 的大小关系。
+>
+> **细节**
+>
+> 1)
+>
+> 下面代码采用闭区间。
+> - 左端点初始值：1。每个袋子的球数至少是 1。
+> - 右端点初始值：$ \max(\text{nums})  $。
+>
+> 2)
+>
+> 关于上取整的计算，当 \( a \) 和 \( b \) 均为正整数时，我们有
+>
+> $ \left\lceil \frac{a}{b} \right\rceil = \left\lfloor \frac{a-1}{b} \right\rfloor + 1 $
+>
+> 讨论  a  被  b  整除，和不被  b  整除两种情况，可以证明上式的正确性。
+>
+> 所以有
+>
+> $ \left\lceil \frac{x}{m} \right\rceil - 1 = \left\lfloor \frac{x-1}{m} \right\rfloor $
+>
+> 作者：灵茶山艾府
+> 链接：https://leetcode.cn/problems/minimum-limit-of-balls-in-a-bag/solutions/3071967/er-fen-da-an-pythonjavaccgojsrust-by-end-g7l7/
+
+
 
 
 
