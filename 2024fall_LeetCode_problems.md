@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2121 GMT+8 Feb 13 2025
+Updated 2148 GMT+8 Feb 13 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -7498,6 +7498,80 @@ if __name__ == '__main__':
     root = solution.buildTree(preorder, inorder)
     # The output tree is [3, 9, 20, None, None, 15, 7]
 
+```
+
+
+
+## 106.从中序与后序遍历序列构造二叉树
+
+dfs, https://leetcode.cn/problems/construct-binary-tree-from-inorder-and-postorder-traversal/
+
+给定两个整数数组 `inorder` 和 `postorder` ，其中 `inorder` 是二叉树的中序遍历， `postorder` 是同一棵树的后序遍历，请你构造并返回这颗 *二叉树* 。
+
+ 
+
+**示例 1:**
+
+<img src="https://assets.leetcode.com/uploads/2021/02/19/tree.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：inorder = [9,3,15,20,7], postorder = [9,15,7,20,3]
+输出：[3,9,20,null,null,15,7]
+```
+
+**示例 2:**
+
+```
+输入：inorder = [-1], postorder = [-1]
+输出：[-1]
+```
+
+ 
+
+**提示:**
+
+- `1 <= inorder.length <= 3000`
+- `postorder.length == inorder.length`
+- `-3000 <= inorder[i], postorder[i] <= 3000`
+- `inorder` 和 `postorder` 都由 **不同** 的值组成
+- `postorder` 中每一个值都在 `inorder` 中
+- `inorder` **保证**是树的中序遍历
+- `postorder` **保证**是树的后序遍历
+
+
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def buildTree(self, inorder: List[int], postorder: List[int]) -> Optional[TreeNode]:
+        if not inorder or not postorder:
+            return None
+
+        # 后序遍历的最后一个元素是当前树的根节点
+        current_node_val = postorder[-1]
+        current_node = TreeNode(current_node_val)
+
+        # 找到中序遍历中的根节点位置
+        idx = inorder.index(current_node_val)
+
+        # 递归构建左右子树
+        # 注意：对于右子树，需要排除postorder的最后一个元素（即当前根节点）
+        left_inorder = inorder[:idx]
+        right_inorder = inorder[idx + 1:]
+
+        # 左子树对应的后序遍历部分长度与中序遍历相同
+        left_postorder = postorder[:len(left_inorder)]
+        right_postorder = postorder[len(left_inorder):-1]  # 排除最后一个元素，即当前根节点
+
+        current_node.left = self.buildTree(left_inorder, left_postorder)
+        current_node.right = self.buildTree(right_inorder, right_postorder)
+
+        return current_node
 ```
 
 
