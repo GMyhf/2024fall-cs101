@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2148 GMT+8 Feb 13 2025
+Updated 0146 GMT+8 Feb 14 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -12859,7 +12859,7 @@ class Solution:
 
 ## 1552.两球之间的磁力
 
-binary search, https://leetcode.cn/problems/magnetic-force-between-two-balls/
+binary search + greedy, https://leetcode.cn/problems/magnetic-force-between-two-balls/
 
 在代号为 C-137 的地球上，Rick 发现如果他将两个球放在他新发明的篮子里，它们之间会形成特殊形式的磁力。Rick 有 `n` 个空的篮子，第 `i` 个篮子的位置在 `position[i]` ，Morty 想把 `m` 个球放到这些篮子里，使得任意两球间 **最小磁力** 最大。
 
@@ -12900,33 +12900,40 @@ binary search, https://leetcode.cn/problems/magnetic-force-between-two-balls/
 
 
 ```python
+from typing import List
+
+
 class Solution:
     def maxDistance(self, position: List[int], m: int) -> int:
+        def check(distance):
+            count = 1
+            pre = position[0]
+            for fast in position[1:]:
+                if fast - pre >= distance:
+                    count += 1
+                    pre = fast
+
+            return count >= m
+
         position.sort()
-
-        def check(x):
-            cnt, pre = 1, position[0]
-            for i in range(1,len(position)):
-                if position[i] - pre >= x:
-                    cnt += 1
-                    pre = position[i]
-            
-            return cnt >= m
-
-        # https://github.com/python/cpython/blob/main/Lib/bisect.py
-        lo = 1
-        hi = position[-1] - position[0] + 1
-        ans = 1
-        while lo < hi:
-            mid = (lo + hi) // 2
-            if check(mid):      #
-                ans = mid       # 如果cnt>=m, mid就是答案
-                lo = mid + 1    # 所以lo可以置为 mid + 1。
+        left, right = 0, position[-1] - position[0] + 1
+        ans = -1
+        while left < right:
+            mid = (left + right) // 2
+            if check(mid):
+                ans = mid
+                left = mid + 1
             else:
-                hi = mid
-
+                right = mid
         return ans
 
+
+if __name__ == "__main__":
+    position = [1, 2, 3, 4, 7]
+    m = 3
+    print(Solution().maxDistance(position, m))
+
+        
 ```
 
 
