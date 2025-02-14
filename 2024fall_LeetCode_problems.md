@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0146 GMT+8 Feb 14 2025
+Updated 1650 GMT+8 Feb 14 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -5346,9 +5346,11 @@ dp, https://leetcode.cn/problems/jump-game-ii/
 
 **提示:**
 
-- `1 <= nums.length <= 104`
+- `1 <= nums.length <= 10^4`
 - `0 <= nums[i] <= 1000`
 - 题目保证可以到达 `nums[n-1]`
+
+
 
 
 
@@ -5356,16 +5358,48 @@ dp, https://leetcode.cn/problems/jump-game-ii/
 class Solution:
     def jump(self, nums: List[int]) -> int:
         n = len(nums)
-        dp = [float('inf')]*(n+1)
+        dp = [float('inf')]*n
         dp[0] = 0
-        for i in range(n):
-            for j in range(1, nums[i]+1):
-                if i + j < n:
-                    dp[i+j] = min(dp[i+j], dp[i] + 1)
+        for i in range(1, n):
+            for j in range(i):
+                if nums[j] + j >= i:
+                    dp[i] = min(dp[i], dp[j] + 1)
         
-        #print(dp)
-        return dp[n-1]
+        return dp[-1]
 ```
+
+复杂度是 O(n^2)
+
+
+
+```python
+class Solution:
+    def jump(self, nums: List[int]) -> int:
+        n = len(nums)
+        # 如果只有一个元素，不需要跳跃
+        if n <= 1:
+            return 0
+
+        jumps = 0         # 记录跳跃次数
+        current_end = 0   # 当前这一步能达到的最远边界
+        farthest = 0      # 所有可选跳跃中能达到的最远位置
+
+        # 不需要遍历到最后一个元素，因为最后一个元素已经在当前边界之内了
+        for i in range(n - 1):
+            # 更新从当前下标能跳到的最远位置
+            farthest = max(farthest, i + nums[i])
+            
+            # 如果到达了当前边界，说明需要一次跳跃才能继续
+            if i == current_end:
+                jumps += 1
+                current_end = farthest  # 更新当前边界为能达到的最远位置
+                if current_end >= n - 1:
+                    break
+
+        return jumps
+```
+
+贪心算法进一步优化至 O(n)
 
 
 
