@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1650 GMT+8 Feb 14 2025
+Updated 1713 GMT+8 Feb 14 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -10536,7 +10536,7 @@ class Solution:
 
 **提示：**
 
-- `2 <= nums.length <= 105`
+- `2 <= nums.length <= 10^5`
 - `-30 <= nums[i] <= 30`
 - **保证** 数组 `nums`之中任意元素的全部前缀元素和后缀的乘积都在 **32 位** 整数范围内
 
@@ -10575,6 +10575,56 @@ class Solution:
         
         return ans
 ```
+
+
+
+使用左右两次遍历来计算每个位置的答案，时间复杂度为 O(n)，且不使用除法：
+
+```python
+class Solution:
+    def productExceptSelf(self, nums: List[int]) -> List[int]:
+        n = len(nums)
+        # 初始化结果数组，每个位置初始为1
+        answer = [1] * n
+
+        # 从左往右遍历，answer[i] 存储的是 nums[0] 到 nums[i-1] 的乘积
+        prefix = 1
+        for i in range(n):
+            answer[i] = prefix
+            prefix *= nums[i]
+
+        # 从右往左遍历，同时维护后缀乘积，将两部分相乘得到最终结果
+        suffix = 1
+        for i in range(n - 1, -1, -1):
+            answer[i] *= suffix
+            suffix *= nums[i]
+
+        return answer
+
+
+# 测试用例
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.productExceptSelf([1, 2, 3, 4]))  # 输出: [24, 12, 8, 6]
+    print(sol.productExceptSelf([-1, 1, 0, -3, 3]))  # 输出: [0, 0, 9, 0, 0]
+```
+
+> **初始化**:
+>
+> - 使用 `answer` 数组保存最终结果，初始值均为 1。
+>
+> **第一次遍历（计算前缀乘积）**:
+>
+> - 定义变量 `prefix` 用来存储从起点到当前下标之前所有数字的乘积。
+> - 在遍历过程中，将当前 `prefix` 值赋给 `answer[i]`，然后更新 `prefix` 为 `prefix * nums[i]`。
+>
+> **第二次遍历（计算后缀乘积并更新结果）**:
+>
+> - 定义变量 `suffix` 用来存储从数组末尾到当前下标之后所有数字的乘积。
+> - 从数组末尾开始遍历，每个位置的最终答案等于前缀乘积（已存储在 `answer[i]` 中）乘以当前的后缀乘积 `suffix`。
+> - 随后更新 `suffix` 为 `suffix * nums[i]`。
+>
+> 这种方法满足 O(n) 的时间复杂度，并且仅使用了常数级额外空间（不计输出数组）。
 
 
 
