@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2313 GMT+8 Feb 14 2025
+Updated 2344 GMT+8 Feb 14 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -2287,6 +2287,135 @@ if __name__ == '__main__':
 ~~~
 
 
+
+## 392.判断子序列
+
+tow pointers, https://leetcode.cn/problems/is-subsequence/
+
+给定字符串 **s** 和 **t** ，判断 **s** 是否为 **t** 的子序列。
+
+字符串的一个子序列是原始字符串删除一些（也可以不删除）字符而不改变剩余字符相对位置形成的新字符串。（例如，`"ace"`是`"abcde"`的一个子序列，而`"aec"`不是）。
+
+**进阶：**
+
+如果有大量输入的 S，称作 S1, S2, ... , Sk 其中 k >= 10亿，你需要依次检查它们是否为 T 的子序列。在这种情况下，你会怎样改变代码？
+
+**致谢：**
+
+特别感谢 [@pbrother ](https://leetcode.com/pbrother/)添加此问题并且创建所有测试用例。
+
+ 
+
+**示例 1：**
+
+```
+输入：s = "abc", t = "ahbgdc"
+输出：true
+```
+
+**示例 2：**
+
+```
+输入：s = "axc", t = "ahbgdc"
+输出：false
+```
+
+ 
+
+**提示：**
+
+- `0 <= s.length <= 100`
+- `0 <= t.length <= 10^4`
+- 两个字符串都只由小写字符组成。
+
+
+
+
+
+```python
+class Solution:
+    def isSubsequence(self, s: str, t: str) -> bool:
+        i, j = 0, 0
+        while i < len(s) and j < len(t):
+            if s[i] == t[j]:
+                i += 1
+            j += 1
+        return i == len(s)
+```
+
+
+
+
+
+如果有大量输入的 S，称作 S1, S2, ... , Sk 其中 k >= 10亿，你需要依次检查它们是否为 T 的子序列。在这种情况下，你会怎样改变代码？
+
+如果有大量的字符串 `S1, S2, ..., Sk` 需要检查是否是 `T` 的子序列，特别是当 `k` 很大时（比如 10 亿），不能再按每个字符串逐一线性扫描 `T`，因为这样会导致非常高的时间复杂度，效率非常低。此时，需要进行优化，尤其是对 `T` 进行预处理，以便对每个 `Si` 进行更高效的查询。
+
+**主要思路**：
+
+1. **预处理 `T`**：我们可以先遍历字符串 `T`，记录每个字符在 `T` 中的所有出现位置。这样对于每个 `Si`，我们可以快速判断字符是否存在，并且通过二分查找来确定字符的位置。
+2. **二分查找**：对于每个 `Si`，可以利用 `bisect` 模块（二分查找）快速定位字符的位置，以便高效判断 `Si` 是否是 `T` 的子序列。
+
+**代码实现**：
+
+```python
+import bisect
+from collections import defaultdict
+
+def preprocess(t: str):
+    # 创建一个字典，存储每个字符在 T 中的位置
+    char_positions = defaultdict(list)
+    for index, char in enumerate(t):
+        char_positions[char].append(index)
+    return char_positions
+
+def is_subsequence(s: str, t: str, char_positions: defaultdict) -> bool:
+    # 定义当前字符的指针，初始为 -1
+    current_position = -1
+    for char in s:
+        if char not in char_positions:
+            return False
+        # 找到字符在 T 中的位置，且位置大于 current_position
+        positions = char_positions[char]
+        idx = bisect.bisect_right(positions, current_position)
+        if idx == len(positions):
+            return False
+        current_position = positions[idx]
+    return True
+
+# 示例
+t = "ahbgdc"
+char_positions = preprocess(t)
+
+# 测试多个 S1, S2, ...
+S = ["abc", "axc", "ahbgd", "bdc"]
+for s in S:
+    print(f"'{s}' is a subsequence of '{t}':", is_subsequence(s, t, char_positions))
+```
+
+> **解释**：
+>
+> 1. 预处理 `T`：
+>    - 使用 `defaultdict(list)` 来存储 `T` 中每个字符的所有出现位置。这样对于每个字符，`char_positions[char]` 就是一个列表，包含了字符 `char` 在 `T` 中所有出现的索引位置。
+> 2. 检查每个 `Si` 是否为 `T` 的子序列：
+>    - 对于每个字符串 `Si`，我们遍历 `Si` 中的每个字符，检查该字符是否存在于 `T` 中（可以通过预处理得到的 `char_positions` 字典快速查询）。
+>    - 对于每个字符 `char`，我们使用 `bisect_right` 找到 `char` 在 `T` 中的最小的索引，该索引必须大于当前字符在 `T` 中的位置（即 `current_position`）。这样保证了 `Si` 中的字符按顺序出现在 `T` 中。
+>    - 如果有任何字符不能满足要求，则返回 `False`，否则返回 `True`。
+>
+> **为什么优化**：
+>
+> 1. **预处理 `T`**：通过预处理 `T`，我们把查询字符位置的时间复杂度从 O(n) 降低到 O(log m)，其中 `m` 是 `T` 的长度。
+> 2. **二分查找**：利用 `bisect_right` 快速找到字符在 `T` 中的位置，使得每次查询的时间复杂度是 O(log n)，其中 `n` 是该字符在 `T` 中出现的位置数量。
+>
+> **时间复杂度**：
+>
+> - **预处理 `T`**：O(n)，其中 `n` 是 `T` 的长度。
+> - **每个 `Si` 的检查**：对于每个 `Si`，如果它的长度是 `m`，检查它是否为 `T` 的子序列的时间复杂度是 O(m log n)，其中 `n` 是 `T` 的长度。
+> - **总体复杂度**：对于 `k` 个字符串，总体时间复杂度是 O(k * m log n)。
+>
+> **总结**：
+>
+> - 这种方法通过预处理 `T` 并使用二分查找，大大减少了每次检查字符串 `Si` 是否是 `T` 的子序列的时间复杂度，使得即使有大量输入字符串也能高效处理。
 
 
 
