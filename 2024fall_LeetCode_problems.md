@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0950 GMT+8 Feb 17 2025
+Updated 1417 GMT+8 Feb 17 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -2716,6 +2716,23 @@ class Solution:
 ```
 
 
+
+```python
+from typing import List
+
+class Solution:
+    def findSpecialInteger(self, arr: List[int]) -> int:
+        # 计算阈值（数组长度的1/4）
+        threshold = len(arr) / 4
+        
+        # 遍历数组，检查每个元素与其后第threshold个元素是否相同
+        for i in range(len(arr)):
+            if arr[i] == arr[i + int(threshold)]:
+                return arr[i]
+        
+        # 如果没有找到（理论上不会到达这里，因为题目保证了存在这样的元素）
+        return -1
+```
 
 
 
