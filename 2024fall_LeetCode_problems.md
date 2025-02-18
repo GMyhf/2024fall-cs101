@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2359 GMT+8 Feb 18 2025
+Updated 0211 GMT+8 Feb 19 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -13662,6 +13662,70 @@ class Solution:
 > 链接：https://leetcode.cn/problems/minimum-limit-of-balls-in-a-bag/solutions/3071967/er-fen-da-an-pythonjavaccgojsrust-by-end-g7l7/
 
 
+
+
+
+## 2080.区间内查询数字的频率
+
+binary search, segment tree, https://leetcode.cn/problems/range-frequency-queries/
+
+
+
+为了解决这个问题，需要设计一个数据结构来高效地查询子数组中某个值的频率。直接对每个查询都遍历一次子数组会导致时间复杂度过高，因此需要优化查询效率。
+
+**思路：**
+
+预处理 `arr` 数组中的每个元素的索引，以便在查询时能够高效地返回频率。具体来说，我们可以：
+
+1. **预处理阶段**：
+   - 使用一个字典 `value_to_indices`，它的键是数组中元素的值，值是一个列表，存储该值在数组中出现的所有下标。
+   - 这样，对于每个查询，我们只需要查找该值的所有出现位置，并通过二分查找来快速计算某个范围内的频率。
+2. **查询阶段**：
+   - 对于每个查询 `(left, right, value)`，我们使用 `value_to_indices` 中存储的该值的所有下标，利用二分查找来找到在给定范围内的元素数量。
+
+这样，查询可以在 `O(log n)` 的时间复杂度内完成，因为我们可以通过二分查找快速找到子数组的范围。
+
+代码实现：
+
+```python
+from bisect import bisect_left, bisect_right
+
+class RangeFreqQuery:
+    def __init__(self, arr):
+        # 预处理：构建值到索引列表的映射
+        self.value_to_indices = {}
+        for i, num in enumerate(arr):
+            if num not in self.value_to_indices:
+                self.value_to_indices[num] = []
+            self.value_to_indices[num].append(i)
+    
+    def query(self, left, right, value):
+        # 如果该值在数组中没有出现，直接返回0
+        if value not in self.value_to_indices:
+            return 0
+        
+        indices = self.value_to_indices[value]
+        
+        # 使用二分查找找到左边界和右边界
+        left_idx = bisect_left(indices, left)
+        right_idx = bisect_right(indices, right)
+        
+        # 返回在区间 [left, right] 内的频率
+        return right_idx - left_idx
+```
+
+**时间复杂度分析**：
+
+- **初始化**：构造 `value_to_indices` 字典的时间复杂度为 `O(n)`，其中 `n` 是数组的长度。
+- **查询**：每次查询的时间复杂度为 `O(log n)`，因为我们使用了二分查找来找到区间内的频率。
+
+因此，整体的时间复杂度对于每次查询都是 `O(log n)`，非常高效。
+
+**空间复杂度**：
+
+- 空间复杂度为 `O(n)`，存储了每个值的索引列表。
+
+这种方法可以处理大规模数据和多次查询，适用于查询频繁的场景。
 
 
 
