@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1417 GMT+8 Feb 17 2025
+Updated 2359 GMT+8 Feb 18 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -4328,7 +4328,7 @@ class Solution:
 
 ## 11.盛最多水的容器
 
-two pointers, https://leetcode.cn/problems/container-with-most-water/
+greedy, two pointers, https://leetcode.cn/problems/container-with-most-water/
 
 给定一个长度为 `n` 的整数数组 `height` 。有 `n` 条垂线，第 `i` 条线的两个端点是 `(i, 0)` 和 `(i, height[i])` 。
 
@@ -4362,33 +4362,52 @@ two pointers, https://leetcode.cn/problems/container-with-most-water/
 **提示：**
 
 - `n == height.length`
-- `2 <= n <= 105`
-- `0 <= height[i] <= 104`
+- `2 <= n <= 10^5`
+- `0 <= height[i] <= 10^4`
 
 
+
+思路是**每次移动较短的边界**：如果移动较长边界的指针，那么新的容器的高度不会超过当前较短边界的长度，因为容器的高度是由较短的一边决定的。因此，为了有机会找到一个面积更大的容器，我们应该移动较短的那一边。
+
+这是一个经典的“容器最大水量”问题，通常使用双指针法来解。思路如下：
+
+**解法：**
+
+1. **双指针法**：我们使用两个指针，一个指向数组的开头，一个指向数组的末尾。计算当前两指针之间的水容量，并根据水量选择移动哪一个指针。
+2. **计算水容量**：容器的水容量由两条线之间的距离（即左右指针的差）和两条线中较短的一条决定。容量的计算公式为：
+    `水容量 = min(height[left], height[right]) * (right - left)`
+3. 移动指针：
+   - 如果 `height[left] < height[right]`，移动左指针向右移动一位。
+   - 如果 `height[left] >= height[right]`，移动右指针向左移动一位。
+4. 每次移动指针时，更新最大水容量。
+
+代码实现：
 
 ```python
 class Solution:
     def maxArea(self, height: List[int]) -> int:
-        left = 0;
-        right = len(height) - 1
-        ma = min(height[left], height[right]) * (right - left)
+        left, right = 0, len(height) - 1
+        max_area = 0
+        
         while left < right:
-            #print(ma,left,right)
+            # 计算当前水容量
+            area = min(height[left], height[right]) * (right - left)
+            max_area = max(max_area, area)
+            
+            # 移动较短的那条线
             if height[left] < height[right]:
                 left += 1
-                ma = max(ma, min(height[left], height[right]) * (right - left))
-                continue
-            if height[right] < height[left]:
+            else:
                 right -= 1
-                ma = max(ma, min(height[left], height[right]) * (right - left))
-                continue
-
-            ma = max(ma, min(height[left], height[right]) * (right - left))
-            left += 1
-
-        return ma
+        
+        return max_area
 ```
+
+**时间复杂度**：`O(n)`，其中 `n` 是数组的长度。我们只需要遍历一遍数组。
+
+**空间复杂度**：`O(1)`，只用了常数的空间。
+
+
 
 
 
