@@ -5173,7 +5173,7 @@ KMP, https://leetcode.cn/problems/find-the-index-of-the-first-occurrence-in-a-st
 ```python
 class Solution:
     def strStr(self, haystack: str, needle: str) -> int:
-        def kmp_next(s):
+        def kmp_next(s):	# 计算最长前缀后缀数组
             n = len(s)
             dp = [0] * n
             length = 0
@@ -5186,8 +5186,8 @@ class Solution:
             return dp
         
         next_ = kmp_next(needle)
-        length = 0
-        for fast in range(len(haystack)):
+        length = 0	# 模式串索引
+        for fast in range(len(haystack)):	# 主串索引
             while length > 0 and haystack[fast] != needle[length]:
                 length = next_[length - 1]
             if haystack[fast] == needle[length]:
