@@ -4785,6 +4785,51 @@ nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0 。
 
 
 
+**避免重复计算**：当找到一个满足条件的三元组时，应该同时移动左右指针以跳过重复元素，而不是仅仅移动左指针或右指针。
+
+```python
+from typing import List
+
+class Solution:
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        nums.sort()  # 升序排列
+        ans = []
+        
+        for i in range(len(nums) - 2):  # 只需要到倒数第三个元素
+            if i > 0 and nums[i] == nums[i-1]:  # 跳过重复元素
+                continue
+            
+            left, right = i + 1, len(nums) - 1
+            while left < right:
+                total = nums[i] + nums[left] + nums[right]
+                if total < 0:
+                    left += 1
+                elif total > 0:
+                    right -= 1
+                else:
+                    ans.append([nums[i], nums[left], nums[right]])
+                    # 跳过重复项
+                    while left < right and nums[left] == nums[left+1]:
+                        left += 1
+                    while left < right and nums[right] == nums[right-1]:
+                        right -= 1
+                    left += 1
+                    right -= 1
+        
+        return ans
+```
+
+主要改进点：
+
+- **排序方式**：改为升序排列，使逻辑更加直观。
+- **跳过重复元素**：在遍历过程中增加对重复元素的检查，确保不会把相同的解加入结果集中。
+- **双指针法**：通过同时调整左右指针的位置来寻找符合条件的三元组，并且在找到一组解后继续寻找其他可能的解。
+- **边界条件处理**：循环仅需遍历至倒数第三个元素，因为至少需要三个数才能构成一个三元组。
+
+
+
+
+
 ```python
 class Solution:
     def threeSum(self, nums: List[int]) -> List[List[int]]:
