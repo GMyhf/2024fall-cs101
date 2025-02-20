@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0211 GMT+8 Feb 19 2025
+Updated 1648 GMT+8 Feb 20 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -2987,6 +2987,102 @@ class Solution:
                 if substring > max_good_integer:
                     max_good_integer = substring
         return max_good_integer
+```
+
+
+
+## 2595.奇偶位数
+
+https://leetcode.cn/problems/number-of-even-and-odd-bits/
+
+给你一个 **正** 整数 `n` 。
+
+用 `even` 表示在 `n` 的二进制形式（下标从 **0** 开始）中值为 `1` 的偶数下标的个数。
+
+用 `odd` 表示在 `n` 的二进制形式（下标从 **0** 开始）中值为 `1` 的奇数下标的个数。
+
+请注意，在数字的二进制表示中，位下标的顺序 **从右到左**。
+
+返回整数数组 `answer` ，其中 `answer = [even, odd]` 。
+
+ 
+
+**示例 1：**
+
+**输入：**n = 50
+
+**输出：**[1,2]
+
+**解释：**
+
+50 的二进制表示是 `110010`。
+
+在下标 1，4，5 对应的值为 1。
+
+**示例 2：**
+
+**输入：**n = 2
+
+**输出：**[0,1]
+
+**解释：**
+
+2 的二进制表示是 `10`。
+
+只有下标 1 对应的值为 1。
+
+ 
+
+**提示：**
+
+- `1 <= n <= 1000`
+
+
+
+```python
+from typing import List
+class Solution:
+    def evenOddBit(self, n: int) -> List[int]:
+        s = bin(n)[2:][::-1]
+        even, odd = 0, 0
+        for i in range(len(s)):
+            if i & 1:
+                if s[i] == '1':
+                    odd += 1
+            else:
+                if s[i] == '1':
+                    even += 1
+
+        return [even, odd]
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.evenOddBit(2))
+```
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def evenOddBit(self, n: int) -> List[int]:
+        even, odd = 0, 0
+        index = 0
+        while n > 0:
+            if n & 1:  # Check if the least significant bit is 1
+                if index % 2 == 0:
+                    even += 1
+                else:
+                    odd += 1
+            n >>= 1  # Shift right to process the next bit
+            index += 1
+        
+        return [even, odd]
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.evenOddBit(2))  # Example input
 ```
 
 
