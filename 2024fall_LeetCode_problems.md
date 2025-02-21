@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1020 GMT+8 Feb 21 2025
+Updated 2146 GMT+8 Feb 21 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -18686,6 +18686,127 @@ class Solution:			# 作者：灵茶山艾府
 ```
 
 
+
+
+
+## 2209.用地毯覆盖后的最少白色砖块
+
+dp, prefix sum, https://leetcode.cn/problems/minimum-white-tiles-after-covering-with-carpets/
+
+给你一个下标从 **0** 开始的 **二进制** 字符串 `floor` ，它表示地板上砖块的颜色。
+
+- `floor[i] = '0'` 表示地板上第 `i` 块砖块的颜色是 **黑色** 。
+- `floor[i] = '1'` 表示地板上第 `i` 块砖块的颜色是 **白色** 。
+
+同时给你 `numCarpets` 和 `carpetLen` 。你有 `numCarpets` 条 **黑色** 的地毯，每一条 **黑色** 的地毯长度都为 `carpetLen` 块砖块。请你使用这些地毯去覆盖砖块，使得未被覆盖的剩余 **白色** 砖块的数目 **最小** 。地毯相互之间可以覆盖。
+
+请你返回没被覆盖的白色砖块的 **最少** 数目。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2022/02/10/ex1-1.png)
+
+```
+输入：floor = "10110101", numCarpets = 2, carpetLen = 2
+输出：2
+解释：
+上图展示了剩余 2 块白色砖块的方案。
+没有其他方案可以使未被覆盖的白色砖块少于 2 块。
+```
+
+**示例 2：**
+
+![img](https://assets.leetcode.com/uploads/2022/02/10/ex2.png)
+
+```
+输入：floor = "11111", numCarpets = 2, carpetLen = 3
+输出：0
+解释：
+上图展示了所有白色砖块都被覆盖的一种方案。
+注意，地毯相互之间可以覆盖。
+```
+
+ 
+
+**提示：**
+
+- `1 <= carpetLen <= floor.length <= 1000`
+- `floor[i]` 要么是 `'0'` ，要么是 `'1'` 。
+- `1 <= numCarpets <= 1000`
+
+
+
+
+
+下面提供一种利用动态规划与前缀和思想的 Python 解法。基本思路是定义  
+
+`dp[i][j]`：表示使用 **i** 条地毯覆盖前 **j** 块砖后，剩余未被覆盖的白色砖块的最小数量。  
+
+当不使用地毯时，可以用前缀和（即累计“1”的个数）来初始化状态；而对于状态转移，针对第 **j** 块砖块，有两种选择：  
+
+1. **不覆盖**：则 `dp[i][j] = dp[i][j-1] + (floor[j-1] 为白色时加 1)`  
+2. **用一条地毯覆盖以 j 为结尾的长度为 carpetLen 的区间**：这样这段区间内的砖块全部被覆盖，不需要额外增加白色砖块数，状态转移为 `dp[i][j] = dp[i-1][max(0, j-carpetLen)]`  
+
+最终答案为 `dp[numCarpets][n]`，其中 n 为砖块总数。  
+
+下面是代码：
+
+```python
+class Solution:
+    def minimumWhiteTiles(self, floor: str, numCarpets: int, carpetLen: int) -> int:
+        n = len(floor)
+        # dp[i][j] 表示使用 i 条地毯覆盖前 j 块砖后，
+        # 剩余未被覆盖的白色砖块的最少数量。
+        dp = [[0] * (n + 1) for _ in range(numCarpets + 1)]
+
+        # 当没有地毯时，dp[0][j] 等于前 j 块砖中白色砖块的数量
+        # 这里利用了前缀和的思想
+        for j in range(1, n + 1):
+            dp[0][j] = dp[0][j - 1] + (1 if floor[j - 1] == '1' else 0)
+
+        # 状态转移：
+        # 对于每一条地毯 i，从 1 到 numCarpets，
+        # 对于每个砖块位置 j，从 1 到 n，
+        # 有两种选择：
+        # 1. 不在 j 处使用新的地毯，则 dp[i][j] = dp[i][j - 1] + (1 if floor[j - 1] == '1' else 0)
+        # 2. 在 j 处使用一条地毯覆盖长度为 carpetLen 的区间，
+        #    此时该区间内的砖块均被覆盖，状态为 dp[i][j] = dp[i - 1][max(0, j - carpetLen)]
+        for i in range(1, numCarpets + 1):
+            for j in range(1, n + 1):
+                option1 = dp[i][j - 1] + (1 if floor[j - 1] == '1' else 0)
+                option2 = dp[i - 1][max(0, j - carpetLen)]
+                dp[i][j] = min(option1, option2)
+
+        return dp[numCarpets][n]
+
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.minimumWhiteTiles("10110101", 2, 2))  # 2
+    print(sol.minimumWhiteTiles("11111", 2, 3))  # 0
+```
+
+**代码说明**
+
+- **前缀和部分**  
+  当没有使用地毯时，我们可以直接统计前 j 块砖中白色砖的数量，即  
+
+  ```python
+  dp[0][j] = dp[0][j - 1] + (1 if floor[j - 1] == '1' else 0)
+  ```
+
+- **状态转移**  
+  对于每个状态 `dp[i][j]`，有两种选项：
+
+  - **不使用地毯覆盖 j 位置**：则白色砖块数量增加（如果当前砖块为白）。
+  - **使用地毯覆盖最后一段**：选择在 j 位置用一条地毯覆盖长度为 carpetLen 的砖块，此时这部分不再计入白色砖的数量，所以直接转移到 `dp[i-1][max(0, j-carpetLen)]`。
+
+- **最终答案**  
+  `dp[numCarpets][n]` 即为使用 numCarpets 条地毯覆盖所有砖块后，剩余未被覆盖的白色砖块的最少数量。
+
+这种解法的时间复杂度为 O(numCarpets * n)，对于题目给出的 n, numCarpets ≤ 1000 是足够的。
 
 
 
