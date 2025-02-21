@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1648 GMT+8 Feb 20 2025
+Updated 1020 GMT+8 Feb 21 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -2672,6 +2672,93 @@ class Solution:
         return nums
 
 ```
+
+
+
+## 1078.Bigram分词
+
+strings, https://leetcode.cn/problems/occurrences-after-bigram/
+
+给出第一个词 `first` 和第二个词 `second`，考虑在某些文本 `text` 中可能以 `"first second third"` 形式出现的情况，其中 `second` 紧随 `first` 出现，`third` 紧随 `second` 出现。
+
+对于每种这样的情况，将第三个词 "`third`" 添加到答案中，并返回答案。
+
+ 
+
+**示例 1：**
+
+```
+输入：text = "alice is a good girl she is a good student", first = "a", second = "good"
+输出：["girl","student"]
+```
+
+**示例 2：**
+
+```
+输入：text = "we will we will rock you", first = "we", second = "will"
+输出：["we","rock"]
+```
+
+ 
+
+**提示：**
+
+- `1 <= text.length <= 1000`
+- `text` 由小写英文字母和空格组成
+- `text` 中的所有单词之间都由 **单个空格字符** 分隔
+- `1 <= first.length, second.length <= 10`
+- `first` 和 `second` 由小写英文字母组成
+- `text` 不包含任何前缀或尾随空格。
+
+
+
+```python
+from typing import List
+class Solution:
+    def findOcurrences(self, text: str, first: str, second: str) -> List[str]:
+        ans = []
+        text = text.split()
+        for i in range(len(text) - 2):
+            if text[i] == first and text[i + 1] == second:
+                ans.append(text[i + 2])
+
+        return ans
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.findOcurrences("alice is a good girl she is a good student", "a", "good"))
+```
+
+
+
+为了优化这段代码，我们可以考虑以下几点：
+
+1. **减少不必要的列表切分和索引操作**：通过使用生成器表达式来直接迭代文本中的单词组合。
+2. **提高可读性和简洁性**：使代码更加直观易懂。
+
+以下是优化后的代码实现：
+
+```python
+from typing import List
+
+class Solution:
+    def findOcurrences(self, text: str, first: str, second: str) -> List[str]:
+        words = text.split()
+        # 使用zip函数配合切片来简化三元组的查找过程
+        return [word for prev, curr, word in zip(words[:-2], words[1:-1], words[2:]) if prev == first and curr == second]
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.findOcurrences("alice is a good girl she is a good student", "a", "good"))  # 示例输入
+```
+
+**优化点解释**：
+
+- **`zip(words[:-2], words[1:-1], words[2:])`**：这个技巧利用了Python的`zip`函数与切片功能，同时遍历三个连续的单词。`words[:-2]`表示除了最后两个元素的所有元素，`words[1:-1]`表示从第二个到倒数第二个的所有元素，而`words[2:]`则是从第三个到最后的所有元素。这样可以一次性获取所有可能的三元组（prev, curr, word）。
+
+- **列表推导式**：在列表推导式中直接检查当前三元组的第一个和第二个元素是否匹配给定的`first`和`second`字符串，如果是，则将第三个元素添加到结果列表中。
+
+这种方法不仅减少了手动管理索引的复杂度，还使得代码更加简洁易读，同时也保持了原有的功能和效率。
 
 
 
