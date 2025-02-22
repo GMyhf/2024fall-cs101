@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2134 GMT+8 Feb 22 2025
+Updated 2252 GMT+8 Feb 22 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -14529,6 +14529,120 @@ class Solution:
 
         return max(bit_counts)
 ```
+
+
+
+## 2906.构造乘积矩阵
+
+matrices, prefix sum, https://leetcode.cn/problems/construct-product-matrix/
+
+给你一个下标从 **0** 开始、大小为 `n * m` 的二维整数矩阵 `grid` ，定义一个下标从 **0** 开始、大小为 `n * m` 的的二维矩阵 `p`。如果满足以下条件，则称 `p` 为 `grid` 的 **乘积矩阵** ：
+
+- 对于每个元素 `p[i][j]` ，它的值等于除了 `grid[i][j]` 外所有元素的乘积。乘积对 `12345` 取余数。
+
+返回 `grid` 的乘积矩阵。
+
+ 
+
+**示例 1：**
+
+```
+输入：grid = [[1,2],[3,4]]
+输出：[[24,12],[8,6]]
+解释：p[0][0] = grid[0][1] * grid[1][0] * grid[1][1] = 2 * 3 * 4 = 24
+p[0][1] = grid[0][0] * grid[1][0] * grid[1][1] = 1 * 3 * 4 = 12
+p[1][0] = grid[0][0] * grid[0][1] * grid[1][1] = 1 * 2 * 4 = 8
+p[1][1] = grid[0][0] * grid[0][1] * grid[1][0] = 1 * 2 * 3 = 6
+所以答案是 [[24,12],[8,6]] 。
+```
+
+**示例 2：**
+
+```
+输入：grid = [[12345],[2],[1]]
+输出：[[2],[0],[0]]
+解释：p[0][0] = grid[0][1] * grid[0][2] = 2 * 1 = 2
+p[0][1] = grid[0][0] * grid[0][2] = 12345 * 1 = 12345. 12345 % 12345 = 0 ，所以 p[0][1] = 0
+p[0][2] = grid[0][0] * grid[0][1] = 12345 * 2 = 24690. 24690 % 12345 = 0 ，所以 p[0][2] = 0
+所以答案是 [[2],[0],[0]] 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= n == grid.length <= 10^5`
+- `1 <= m == grid[i].length <= 10^5`
+- `2 <= n * m <= 10^5`
+- `1 <= grid[i][j] <= 10^9`
+
+
+
+
+
+思路是先将二维矩阵拉平成一维数组，然后利用前缀与后缀乘积数组计算出每个位置除去当前值外所有元素的乘积，最后再还原为二维矩阵。注意计算均在模 12345 意义下进行。
+
+```python
+from typing import List
+
+class Solution:
+    def constructProductMatrix(self, grid: List[List[int]]) -> List[List[int]]:
+        mod = 12345
+        n = len(grid)
+        m = len(grid[0])
+        N = n * m
+        # 将二维矩阵展平成一维数组
+        arr = []
+        for row in grid:
+            arr.extend(row)
+
+        # 计算前缀乘积数组
+        prefix = [0] * N
+        prefix[0] = arr[0] % mod
+        for i in range(1, N):
+            prefix[i] = (prefix[i - 1] * arr[i]) % mod
+
+        # 计算后缀乘积数组
+        suffix = [0] * N
+        suffix[-1] = arr[-1] % mod
+        for i in range(N - 2, -1, -1):
+            suffix[i] = (suffix[i + 1] * arr[i]) % mod
+
+        # 计算结果数组：对于位置 i, 结果为 (前缀[i-1] * 后缀[i+1]) % mod
+        res = [0] * N
+        for i in range(N):
+            left = prefix[i - 1] if i > 0 else 1
+            right = suffix[i + 1] if i < N - 1 else 1
+            res[i] = (left * right) % mod
+
+        # 将结果数组还原成 n*m 的矩阵
+        ans = []
+        idx = 0
+        for i in range(n):
+            row = []
+            for j in range(m):
+                row.append(res[idx])
+                idx += 1
+            ans.append(row)
+        return ans
+
+if __name__ == "__main__":
+    sol = Solution()
+    grid1 = [[1, 2], [3, 4]]
+    grid2 = [[12345], [2], [1]]
+    print(sol.constructProductMatrix(grid1))  # Expected output: [[24, 12], [8, 6]]
+    print(sol.constructProductMatrix(grid2))  # Expected output: [[2], [0], [0]]
+
+```
+
+**说明**
+
+- **思路：**  
+  将二维矩阵拉平成一维数组后，可以用前缀和后缀乘积分别保存当前位置之前和之后所有元素的乘积。对于位置 `i`，其答案就是前缀乘积（不包括当前值）与后缀乘积（不包括当前值）的乘积，最后再取模 12345。
+- **时间复杂度：**  
+  整个过程只需对所有元素进行几次遍历，时间复杂度为 O(n*m)（最多 10^5 个元素）。
+- **注意事项：**  
+  由于模数 12345 不是质数，因此不能直接使用全局乘积再除去当前值（利用模逆元）来计算答案。使用前缀后缀数组可以避免除法问题。
 
 
 
