@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2252 GMT+8 Feb 22 2025
+Updated 1624 GMT+8 Feb 23 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -3967,6 +3967,93 @@ if __name__ == '__main__':
     print(s.maxDifference("aaaaabbc"))
     print(s.maxDifference("abcabcab"))
 
+```
+
+
+
+## 100579.判断操作后字符串中的数字是否相等I
+
+https://leetcode.cn/problems/check-if-digits-are-equal-in-string-after-operations-i/description/
+
+给你一个由数字组成的字符串 `s` 。重复执行以下操作，直到字符串恰好包含 **两个** 数字：
+
+- 从第一个数字开始，对于 `s` 中的每一对连续数字，计算这两个数字的和 **模** 10。
+- 用计算得到的新数字依次替换 `s` 的每一个字符，并保持原本的顺序。
+
+如果 `s` 最后剩下的两个数字 **相同** ，返回 `true` 。否则，返回 `false`。
+
+ 
+
+**示例 1：**
+
+**输入：** s = "3902"
+
+**输出：** true
+
+**解释：**
+
+- 一开始，`s = "3902"`
+- 第一次操作： 
+  - `(s[0] + s[1]) % 10 = (3 + 9) % 10 = 2`
+  - `(s[1] + s[2]) % 10 = (9 + 0) % 10 = 9`
+  - `(s[2] + s[3]) % 10 = (0 + 2) % 10 = 2`
+  - `s` 变为 `"292"`
+- 第二次操作： 
+  - `(s[0] + s[1]) % 10 = (2 + 9) % 10 = 1`
+  - `(s[1] + s[2]) % 10 = (9 + 2) % 10 = 1`
+  - `s` 变为 `"11"`
+- 由于 `"11"` 中的数字相同，输出为 `true`。
+
+**示例 2：**
+
+**输入：** s = "34789"
+
+**输出：** false
+
+**解释：**
+
+- 一开始，`s = "34789"`。
+- 第一次操作后，`s = "7157"`。
+- 第二次操作后，`s = "862"`。
+- 第三次操作后，`s = "48"`。
+- 由于 `'4' != '8'`，输出为 `false`。
+
+ 
+
+**提示：**
+
+- `3 <= s.length <= 100`
+- `s` 仅由数字组成。
+
+
+
+
+
+```python
+class Solution:
+    def hasSameDigits(self, s: str) -> bool:
+        q = [int(i) for i in s]
+        
+        while len(q) > 1:
+            if len(set(q)) == 1:  # 如果所有数字相同，直接返回True
+                return True
+            
+            if len(q) == 2:
+                return q[0] == q[1]
+            
+            new_q = []
+            for i in range(len(q) - 1):
+                tmp = (q[i] + q[i + 1]) % 10
+                new_q.append(tmp)
+            
+            q = new_q
+        
+        return False
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.hasSameDigits("3902"))  # True
+    print(sol.hasSameDigits("34789")) # False
 ```
 
 
@@ -15956,6 +16043,109 @@ if __name__ == "__main__":
     print(sol.assignElements([2, 3, 5, 7], [5, 3, 3]))  # [-1, 1, 0, -1]
 
 ```
+
+
+
+
+
+## 100576.提取至多K个元素的最大总和
+
+data structures, https://leetcode.cn/problems/maximum-sum-with-at-most-k-elements/description/
+
+给你一个大小为 `n x m` 的二维矩阵 `grid` ，以及一个长度为 `n` 的整数数组 `limits` ，和一个整数 `k` 。你的目标是从矩阵 `grid` 中提取出 **至多** `k` 个元素，并计算这些元素的最大总和，提取时需满足以下限制**：**
+
+- 从 `grid` 的第 `i` 行提取的元素数量不超过 `limits[i]` 。
+
+返回最大总和。
+
+ 
+
+**示例 1：**
+
+**输入：**grid = [[1,2],[3,4]], limits = [1,2], k = 2
+
+**输出：**7
+
+**解释：**
+
+- 从第 2 行提取至多 2 个元素，取出 4 和 3 。
+- 至多提取 2 个元素时的最大总和 `4 + 3 = 7` 。
+
+**示例 2：**
+
+**输入：**grid = [[5,3,7],[8,2,6]], limits = [2,2], k = 3
+
+**输出：**21
+
+**解释：**
+
+- 从第 1 行提取至多 2 个元素，取出 7 。
+- 从第 2 行提取至多 2 个元素，取出 8 和 6 。
+- 至多提取 3 个元素时的最大总和 `7 + 8 + 6 = 21` 。
+
+ 
+
+**提示：**
+
+- `n == grid.length == limits.length`
+- `m == grid[i].length`
+- `1 <= n, m <= 500`
+- `0 <= grid[i][j] <= 10^5`
+- `0 <= limits[i] <= m`
+- `0 <= k <= min(n * m, sum(limits))`
+
+
+
+
+
+```python
+from typing import List
+import heapq
+
+class Solution:
+    def maxSum(self, grid: List[List[int]], limits: List[int], k: int) -> int:
+        hqs = []
+        n = len(grid)
+        for i in range(n):
+            row = grid[i]
+            limit = limits[i]
+            largest_k = sorted(row, reverse=True)
+            if limit < len(largest_k):
+                largest_k = largest_k[:limit]
+            hq = [-val for val in largest_k]
+            heapq.heapify(hq)
+
+            if hq:
+                hqs.append(hq)
+
+        print(hqs)
+        sum_v = 0
+        for i in range(k):
+            max_v = float('-inf')
+            max_idx = -1
+
+            for j, hq in enumerate(hqs):
+                if hq and -hq[0] > max_v:
+                    max_v = -hq[0]
+                    max_idx = j
+
+            if max_idx != -1:
+                sum_v += max_v
+                heapq.heappop(hqs[max_idx])
+                if not hqs[max_idx]:
+                    del hqs[max_idx]
+
+        return sum_v
+
+if __name__ == "__main__":
+    sol = Solution()
+    #print(sol.maxSum([[1,2],[3,4]], [1,2], 2))
+    #print(sol.maxSum([[5,3,7],[8,2,6]], [2,2], 3))
+    #print(sol.maxSum([[3],[9],[1]], [1,0,0], 1))
+    print(sol.maxSum([[5,3,7],[8,2,6]], [2,2], 3))
+```
+
+
 
 
 
