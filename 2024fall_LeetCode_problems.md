@@ -14717,6 +14717,133 @@ class Solution:
 
 
 
+## 2502.设计内存分配器
+
+implementation, https://leetcode.cn/problems/design-memory-allocator/
+
+给你一个整数 `n` ，表示下标从 **0** 开始的内存数组的大小。所有内存单元开始都是空闲的。
+
+请你设计一个具备以下功能的内存分配器：
+
+1. **分配** 一块大小为 `size` 的连续空闲内存单元并赋 id `mID` 。
+2. **释放** 给定 id `mID` 对应的所有内存单元。
+
+**注意：**
+
+- 多个块可以被分配到同一个 `mID` 。
+- 你必须释放 `mID` 对应的所有内存单元，即便这些内存单元被分配在不同的块中。
+
+实现 `Allocator` 类：
+
+- `Allocator(int n)` 使用一个大小为 `n` 的内存数组初始化 `Allocator` 对象。
+- `int allocate(int size, int mID)` 找出大小为 `size` 个连续空闲内存单元且位于 **最左侧** 的块，分配并赋 id `mID` 。返回块的第一个下标。如果不存在这样的块，返回 `-1` 。
+- `int freeMemory(int mID)` 释放 id `mID` 对应的所有内存单元。返回释放的内存单元数目。
+
+ 
+
+**示例：**
+
+```
+输入
+["Allocator", "allocate", "allocate", "allocate", "freeMemory", "allocate", "allocate", "allocate", "freeMemory", "allocate", "freeMemory"]
+[[10], [1, 1], [1, 2], [1, 3], [2], [3, 4], [1, 1], [1, 1], [1], [10, 2], [7]]
+输出
+[null, 0, 1, 2, 1, 3, 1, 6, 3, -1, 0]
+
+解释
+Allocator loc = new Allocator(10); // 初始化一个大小为 10 的内存数组，所有内存单元都是空闲的。
+loc.allocate(1, 1); // 最左侧的块的第一个下标是 0 。内存数组变为 [1, , , , , , , , , ]。返回 0 。
+loc.allocate(1, 2); // 最左侧的块的第一个下标是 1 。内存数组变为 [1,2, , , , , , , , ]。返回 1 。
+loc.allocate(1, 3); // 最左侧的块的第一个下标是 2 。内存数组变为 [1,2,3, , , , , , , ]。返回 2 。
+loc.freeMemory(2); // 释放 mID 为 2 的所有内存单元。内存数组变为 [1, ,3, , , , , , , ] 。返回 1 ，因为只有 1 个 mID 为 2 的内存单元。
+loc.allocate(3, 4); // 最左侧的块的第一个下标是 3 。内存数组变为 [1, ,3,4,4,4, , , , ]。返回 3 。
+loc.allocate(1, 1); // 最左侧的块的第一个下标是 1 。内存数组变为 [1,1,3,4,4,4, , , , ]。返回 1 。
+loc.allocate(1, 1); // 最左侧的块的第一个下标是 6 。内存数组变为 [1,1,3,4,4,4,1, , , ]。返回 6 。
+loc.freeMemory(1); // 释放 mID 为 1 的所有内存单元。内存数组变为 [ , ,3,4,4,4, , , , ] 。返回 3 ，因为有 3 个 mID 为 1 的内存单元。
+loc.allocate(10, 2); // 无法找出长度为 10 个连续空闲内存单元的空闲块，所有返回 -1 。
+loc.freeMemory(7); // 释放 mID 为 7 的所有内存单元。内存数组保持原状，因为不存在 mID 为 7 的内存单元。返回 0 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= n, size, mID <= 1000`
+- 最多调用 `allocate` 和 `free` 方法 `1000` 次
+
+
+
+下面是一份不依赖额外库的 Python 实现，使用简单的遍历来模拟内存分配和释放：
+
+```python
+class Allocator:
+    def __init__(self, n: int):
+        """
+        初始化大小为 n 的内存数组，所有单元均为 0 表示空闲。
+        """
+        self.memory = [0] * n
+        self.n = n
+
+    def allocate(self, size: int, mID: int) -> int:
+        """
+        分配一块大小为 size 的连续空闲内存单元，赋值为 mID。
+        找到最左侧满足条件的空闲块后，返回该块第一个下标；
+        若不存在满足条件的空闲块，则返回 -1。
+        """
+        count = 0  # 用于计数连续空闲的内存单元
+        # 从左往右扫描内存数组
+        for i in range(self.n):
+            # 如果当前单元空闲（值为 0），则计数加 1；否则重置计数
+            if self.memory[i] == 0:
+                count += 1
+            else:
+                count = 0
+            # 如果找到连续 size 个空闲单元，则进行分配
+            if count == size:
+                start = i - size + 1  # 记录块的起始下标
+                for j in range(start, start + size):
+                    self.memory[j] = mID
+                return start
+        return -1
+
+    def freeMemory(self, mID: int) -> int:
+        """
+        释放所有值为 mID 的内存单元（设置为 0 表示空闲），
+        返回释放的内存单元数目。
+        """
+        freed = 0
+        for i in range(self.n):
+            if self.memory[i] == mID:
+                self.memory[i] = 0
+                freed += 1
+        return freed
+
+
+# 以下是示例测试代码
+if __name__ == '__main__':
+    loc = Allocator(10)        # 初始化一个大小为 10 的内存数组
+    print(loc.allocate(1, 1))    # 分配 1 个单元给 mID=1，返回 0
+    print(loc.allocate(1, 2))    # 分配 1 个单元给 mID=2，返回 1
+    print(loc.allocate(1, 3))    # 分配 1 个单元给 mID=3，返回 2
+    print(loc.freeMemory(2))     # 释放 mID=2 的单元，返回释放数量 1
+    print(loc.allocate(3, 4))    # 分配 3 个单元给 mID=4，返回 3
+    print(loc.allocate(1, 1))    # 分配 1 个单元给 mID=1，返回 1（最左侧空闲位置）
+    print(loc.allocate(1, 1))    # 分配 1 个单元给 mID=1，返回 6
+    print(loc.freeMemory(1))     # 释放 mID=1 的所有单元，返回释放数量 3
+    print(loc.allocate(10, 2))   # 分配 10 个单元给 mID=2，无法找到连续空闲块返回 -1
+    print(loc.freeMemory(7))     # 释放 mID=7 的单元（没有分配过），返回 0
+```
+
+**代码说明**
+
+- **初始化**：内存数组 `self.memory` 用长度为 `n` 的列表表示，每个单元用 0 表示空闲。
+- **allocate 方法**：遍历内存数组，查找连续 `size` 个空闲单元，一旦找到就将这些单元赋值为 `mID` 并返回起始下标；若未找到，则返回 -1。
+- **freeMemory 方法**：遍历整个内存数组，将所有值为 `mID` 的单元释放（置为 0），并计数返回释放数量。
+
+这种方法的时间复杂度为 O(n)（每次分配和释放均需遍历整个内存数组），对于题目给出的约束（n、调用次数均 ≤ 1000）是足够的。
+
+
+
 ## 2906.构造乘积矩阵
 
 matrices, prefix sum, https://leetcode.cn/problems/construct-product-matrix/
