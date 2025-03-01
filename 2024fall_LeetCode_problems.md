@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2219 GMT+8 Feb 28 2025
+Updated 2223 GMT+8 Mar 1 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -9029,9 +9029,7 @@ class Solution:
 
 backtracking, https://leetcode.cn/problems/palindrome-partitioning/
 
-给你一个字符串 `s`，请你将 `s` 分割成一些子串，使每个子串都是 
-
-**回文串**。返回 `s` 所有可能的分割方案。回文串是指向前和向后读都相同的字符串。
+给你一个字符串 `s`，请你将 `s` 分割成一些子串，使每个子串都是 **回文串**。返回 `s` 所有可能的分割方案。回文串是指向前和向后读都相同的字符串。
 
 
 
@@ -9055,6 +9053,33 @@ backtracking, https://leetcode.cn/problems/palindrome-partitioning/
 
 - `1 <= s.length <= 16`
 - `s` 仅由小写英文字母组成
+
+
+
+
+
+```python
+class Solution:
+    def partition(self, s: str) -> List[List[str]]:
+        def is_palindrome(sub):
+            return sub == sub[::-1]
+
+        def backtrack(start, path):
+            if start == len(s):
+                res.append(path[:])
+                return
+            for end in range(start + 1, len(s) + 1):
+                if is_palindrome(s[start:end]):
+                    path.append(s[start:end])
+                    backtrack(end, path)
+                    path.pop()
+        
+        res = []
+        backtrack(0, [])
+        return res
+```
+
+
 
 
 
