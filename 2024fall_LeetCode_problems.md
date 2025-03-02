@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1417 GMT+8 Mar 2 2025
+Updated 2250 GMT+8 Mar 2 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -18174,6 +18174,97 @@ class Solution:
         
         return 0
 ```
+
+
+
+
+
+## 132.分割回文串II
+
+dp, https://leetcode.cn/problems/palindrome-partitioning-ii/
+
+给你一个字符串 `s`，请你将 `s` 分割成一些子串，使每个子串都是回文串。
+
+回文串是向前和向后读都相同的字符串。
+
+返回符合要求的 **最少分割次数** 。
+
+ 
+
+**示例 1：**
+
+```
+输入：s = "aab"
+输出：1
+解释：只需一次分割就可将 s 分割成 ["aa","b"] 这样两个回文子串。
+```
+
+**示例 2：**
+
+```
+输入：s = "a"
+输出：0
+```
+
+**示例 3：**
+
+```
+输入：s = "ab"
+输出：1
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 2000`
+- `s` 仅由小写英文字母组成
+
+
+
+使用动态规划解决最小回文切割问题：
+
+1. **is_palindrome 表** 用于预计算每个子串是否是回文串。
+2. **dp 表** 存储以每个字符结尾的最小切割次数。
+3. **双层循环**：外层遍历字符串的每个字符，内层反向检查从每个字符到当前字符的子串是否为回文。
+4. **时间复杂度** 是 $O(n^2)$ ，因为两层循环分别遍历了所有子串。
+
+```python
+class Solution:
+    def minCut(self, s: str) -> int:
+
+        n = len(s)
+        is_palindrome = [[False] * n for _ in range(n)]
+        dp = [0] * n
+
+        for i in range(n):
+            min_cuts = i  # max cuts possible is i (cut each character)
+            for j in range(i + 1):
+                if s[j] == s[i] and (i - j <= 2 or is_palindrome[j + 1][i - 1]):
+                    is_palindrome[j][i] = True
+                    min_cuts = 0 if j == 0 else min(min_cuts, dp[j - 1] + 1)
+            dp[i] = min_cuts
+
+        return dp[-1]
+
+if __name__ == "__main__":
+    sol = Solution()
+
+    print(sol.minCut("aab"))  # 输出：1
+    print(sol.minCut("a"))  # 输出：0
+    print(sol.minCut("ab"))  # 输出：1
+
+```
+
+在该算法中，`dp[j - 1] + 1` 的使用是为了计算将字符串 `s` 分割成回文子串所需的最小切割次数。这里的 `+1` 代表在位置 `j-1` 和 `i` 之间进行一次新的切割。
+
+具体来说：
+
+当你发现从 `j` 到 `i` 的子串 `s[j:i+1]` 是一个回文时，你想要知道为了使这个回文成为可能的一部分，前面的子串（即 `s[0:j-1]`）需要多少次切割才能全部变成回文子串。这就是 `dp[j-1]` 所记录的信息：到达索引 `j-1` 之前（包括 `j-1`），最少需要几次切割来使得所有子串都是回文。
+
+一旦你知道了 `dp[j-1]`，如果你决定把当前找到的回文子串 `s[j:i+1]` 看作一个新的不分割的整体，那么你就需要在这个回文子串之前的位置（即在 `j-1` 和 `i` 之间）做一个新的切割。因此，在 `dp[j-1]` 的基础上加 `1`，表示这次新的切割。
+
+所以，`dp[j - 1] + 1` 实际上是在说：“如果我选择将从 `j` 到 `i` 的这部分作为一个回文子串，那么我需要之前的部分 `s[0:j-1]` 达到最少切割状态下的切割次数（即 `dp[j-1]`），再加上这一次新做的切割”。
 
 
 
