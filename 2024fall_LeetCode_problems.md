@@ -10227,9 +10227,9 @@ minStack.getMin();   --> 返回 -2.
 
 **提示：**
 
-- `-231 <= val <= 231 - 1`
+- `-2^31 <= val <= 2^31 - 1`
 - `pop`、`top` 和 `getMin` 操作总是在 **非空栈** 上调用
-- `push`, `pop`, `top`, and `getMin`最多被调用 `3 * 104` 次
+- `push`, `pop`, `top`, and `getMin`最多被调用 `3 * 10^4` 次
 
 
 
