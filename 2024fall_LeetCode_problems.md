@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2223 GMT+8 Mar 1 2025
+Updated 1417 GMT+8 Mar 2 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -14291,6 +14291,36 @@ binary search, https://leetcode.cn/problems/minimum-limit-of-balls-in-a-bag/
 
 
 
+思路：一开始想的不是二分 思路是正着平均拆分最大数 题解的二分法有一点逆向思维的意思 先选定一个数为最大值的最小值 再用maxOperations来判断指针变化。
+
+```python
+from typing import List
+
+
+class Solution:
+    def minimumSize(self, nums: List[int], maxOperations: int) -> int:
+        left, right, ans = 1, max(nums) + 1, 0
+        while left < right:
+            y = (left + right) // 2
+            ops = sum((x - 1) // y for x in nums)
+            if ops <= maxOperations:
+                ans = y
+                right = y
+            else:
+                left = y + 1
+        return ans
+
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.minimumSize([9], 2))  # expect 3
+    print(sol.minimumSize([2, 4, 8, 2], 4))  # expect 2
+```
+
+
+
+
+
 
 
 **为什么 `left == right` 是结束条件？**
@@ -22285,6 +22315,410 @@ class Solution:
 > - 优化点：
 >   - `check(low)` 通过 `左右横跳` 方式减少不必要的操作，保证 `m` 步内的最大化。
 >   - **避免暴力搜索**，将问题缩小到 `O(n log m)` 的范围，提高效率。
+
+
+
+# 力扣周赛双周赛
+
+## 第 439 场周赛-20250302
+
+https://leetcode.cn/contest/weekly-contest-439/
+
+中国时间：2025-03-02 10:30, 1 小时 30 分
+
+
+
+### Q1.找出最大的几近缺失整数
+
+implemetation, 简单，https://leetcode.cn/contest/weekly-contest-439/problems/find-the-largest-almost-missing-integer/
+
+给你一个整数数组 `nums` 和一个整数 `k` 。
+
+如果整数 `x` 恰好仅出现在 `nums` 中的一个大小为 `k` 的子数组中，则认为 `x` 是 `nums` 中的几近缺失（**almost missing**）整数。
+
+返回 `nums` 中 **最大的几近缺失** 整数，如果不存在这样的整数，返回 `-1` 。
+
+**子数组** 是数组中的一个连续元素序列。
+
+ 
+
+**示例 1：**
+
+**输入：**nums = [3,9,2,1,7], k = 3
+
+**输出：**7
+
+**解释：**
+
+- 1 出现在两个大小为 3 的子数组中：`[9, 2, 1]`、`[2, 1, 7]`
+- 2 出现在三个大小为 3 的子数组中：`[3, 9, 2]`、`[9, 2, 1]`、`[2, 1, 7]`
+- 3 出现在一个大小为 3 的子数组中：`[3, 9, 2]`
+- 7 出现在一个大小为 3 的子数组中：`[2, 1, 7]`
+- 9 出现在两个大小为 3 的子数组中：`[3, 9, 2]`、`[9, 2, 1]`
+
+返回 7 ，因为它满足题意的所有整数中最大的那个。
+
+**示例 2：**
+
+**输入：**nums = [3,9,7,2,1,7], k = 4
+
+**输出：**3
+
+**解释：**
+
+- 1 出现在两个大小为 3 的子数组中：`[9, 7, 2, 1]`、`[7, 2, 1, 7]`
+- 2 出现在三个大小为 3 的子数组中：`[3, 9, 7, 2]`、`[9, 7, 2, 1]`、`[7, 2, 1, 7]`
+- 3 出现在一个大小为 3 的子数组中：`[3, 9, 7, 2]`
+- 7 出现在三个大小为 3 的子数组中：`[3, 9, 7, 2]`、`[9, 7, 2, 1]`、`[7, 2, 1, 7]`
+- 9 出现在两个大小为 3 的子数组中：`[3, 9, 7, 2]`、`[9, 7, 2, 1]`
+
+返回 3 ，因为它满足题意的所有整数中最大的那个。
+
+**示例 3：**
+
+**输入：**nums = [0,0], k = 1
+
+**输出：**-1
+
+**解释：**
+
+不存在满足题意的整数。
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 50`
+- `0 <= nums[i] <= 50`
+- `1 <= k <= nums.length`
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def largestInteger(self, nums: List[int], k: int) -> int:
+        ans = -1
+        for start in range(len(nums)):
+            cnt = 0
+            for end in range(k, len(nums)+1):
+                if nums[start] in nums[end-k : end]:
+                    #print(nums[start], nums[end - k: end])
+                    cnt += 1
+                    if cnt > 1:
+                        break
+            if cnt == 1:
+                ans = max(ans, nums[start])
+
+        return ans
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.largestInteger([3, 9, 2, 1, 7], 3))
+    print(sol.largestInteger([3, 9, 7, 2, 1, 7], 4))
+```
+
+
+
+### Q2.至多K次操作后的最长回文子序列
+
+dp, 中等，https://leetcode.cn/contest/weekly-contest-439/problems/longest-palindromic-subsequence-after-at-most-k-operations/
+
+给你一个字符串 `s` 和一个整数 `k`。
+
+在一次操作中，你可以将任意位置的字符替换为字母表中相邻的字符（字母表是循环的，因此 `'z'` 的下一个字母是 `'a'`）。例如，将 `'a'` 替换为下一个字母结果是 `'b'`，将 `'a'` 替换为上一个字母结果是 `'z'`；同样，将 `'z'` 替换为下一个字母结果是 `'a'`，替换为上一个字母结果是 `'y'`。
+
+返回在进行 **最多** `k` 次操作后，`s` 的 **最长回文子序列** 的长度。
+
+**子序列** 是一个 **非空** 字符串，可以通过删除原字符串中的某些字符（或不删除任何字符）并保持剩余字符的相对顺序得到。
+
+**回文** 是正着读和反着读都相同的字符串。
+
+ 
+
+**示例 1：**
+
+**输入:** s = "abced", k = 2
+
+**输出:** 3
+
+**解释:**
+
+- 将 `s[1]` 替换为下一个字母，得到 `"acced"`。
+- 将 `s[4]` 替换为上一个字母，得到 `"accec"`。
+
+子序列 `"ccc"` 形成一个长度为 3 的回文，这是最长的回文子序列。
+
+**示例 2：**
+
+**输入:** s = "aaazzz", k = 4
+
+**输出:** 6
+
+**解释:**
+
+- 将 `s[0]` 替换为上一个字母，得到 `"zaazzz"`。
+- 将 `s[4]` 替换为下一个字母，得到 `"zaazaz"`。
+- 将 `s[3]` 替换为下一个字母，得到 `"zaaaaz"`。
+
+整个字符串形成一个长度为 6 的回文。
+
+ 
+
+**提示:**
+
+- `1 <= s.length <= 200`
+- `1 <= k <= 200`
+- `s` 仅由小写英文字母组成。
+
+
+
+动态规划思路是：
+
+- 预先将每个字母转换为数字（0 到 25），并预计算任意两个字母之间通过允许操作变成相同字符所需的最小操作数（由于字母表是循环的，所以代价为
+  `min(abs(a-b), 26-abs(a-b))`)。
+- 定义三维 DP 数组 `dp[i][j][r]` 表示在子串 `s[i...j]` 中，允许最多使用 `r` 次操作时能得到的最长回文子序列长度。
+- 状态转移：
+  - 若跳过左侧或右侧字符，则有
+    `dp[i][j][r] = max(dp[i+1][j][r], dp[i][j-1][r])`。
+  - 若考虑将 `s[i]` 与 `s[j]` 配对，则所需操作代价为 `c = cost(s[i], s[j])`，如果 `r >= c`，则有
+    `dp[i][j][r] = max(dp[i][j][r], 2 + dp[i+1][j-1][r-c])`。
+- 边界条件：单个字符始终可以构成回文子序列（长度为 1），且不需要操作。
+
+
+
+```python
+class Solution:
+    def longestPalindromicSubsequence(self, s: str, k: int) -> int:
+        n = len(s)
+        # 将字符转为数字 0~25
+        arr = [ord(ch) - ord('a') for ch in s]
+
+        # 预计算两个字符之间的转换代价
+        cost_mat = [[min(abs(i - j), 26 - abs(i - j)) for j in range(26)] for i in range(26)]
+
+        # dp[i][j][r] 表示 s[i..j] 在最多 r 次操作下能获得的最长回文子序列长度
+        # dp 的尺寸为 n x n x (k+1)
+        dp = [[[0] * (k + 1) for _ in range(n)] for _ in range(n)]
+
+        # 基础情况：单个字符构成回文子序列，长度为 1，不需要任何操作
+        for i in range(n):
+            for r in range(k + 1):
+                dp[i][i][r] = 1
+
+        # 逐步考虑区间长度从 2 到 n 的子串
+        for L in range(2, n + 1):
+            for i in range(n - L + 1):
+                j = i + L - 1
+                for r in range(k + 1):
+                    # 跳过一个字符（两边选择一个）：
+                    res = 0
+                    if i + 1 <= j:
+                        res = dp[i + 1][j][r]
+                    if i <= j - 1:
+                        res = max(res, dp[i][j - 1][r])
+                    # 尝试把 s[i] 和 s[j] 配对
+                    c = cost_mat[arr[i]][arr[j]]
+                    if r >= c:
+                        # 如果区间中间为空，dp[i+1][j-1] 就为 0
+                        middle = dp[i + 1][j - 1][r - c] if i + 1 <= j - 1 else 0
+                        res = max(res, 2 + middle)
+                    dp[i][j][r] = res
+
+        return dp[0][n - 1][k]
+```
+
+说明
+
+- **预处理部分**：
+  将字符转换为数字并预先计算转换代价，可以在后续动态规划中快速获得任意两个字符之间的“修改成本”。
+
+- 动态规划状态：我们枚举区间[i, j] 
+
+  以及当前剩余可用操作次数r
+
+  ，状态转移时考虑两种情况：
+
+  - 跳过左端或右端字符（不花费操作），
+  - 将左右两端字符配对（若可承担转换代价，则花费对应的操作数，并加上中间区间的答案）。
+
+- **时间复杂度**：
+  状态数大致为 `O(n^2 * k)`，本题中 `n` 与 `k` 最大均为 200，故总状态约 8×10^6，能够在允许范围内解决。
+
+
+
+
+
+### Q3.长度至少为M的K个子数组之和
+
+dp, 中等，https://leetcode.cn/contest/weekly-contest-439/problems/sum-of-k-subarrays-with-length-at-least-m/
+
+给你一个整数数组 `nums` 和两个整数 `k` 和 `m`。
+
+返回数组 `nums` 中 `k` 个不重叠子数组的 **最大** 和，其中每个子数组的长度 **至少** 为 `m`。
+
+**子数组** 是数组中的一个连续序列。
+
+ 
+
+**示例 1：**
+
+**输入:** nums = [1,2,-1,3,3,4], k = 2, m = 2
+
+**输出:** 13
+
+**解释:**
+
+最优的选择是:
+
+- 子数组 `nums[3..5]` 的和为 `3 + 3 + 4 = 10`（长度为 `3 >= m`）。
+- 子数组 `nums[0..1]` 的和为 `1 + 2 = 3`（长度为 `2 >= m`）。
+
+总和为 `10 + 3 = 13`。
+
+**示例 2：**
+
+**输入:** nums = [-10,3,-1,-2], k = 4, m = 1
+
+**输出:** -10
+
+**解释:**
+
+最优的选择是将每个元素作为一个子数组。输出为 `(-10) + 3 + (-1) + (-2) = -10`。
+
+ 
+
+**提示:**
+
+- `1 <= nums.length <= 2000`
+- `-10^4 <= nums[i] <= 10^4`
+- `1 <= k <= floor(nums.length / m)`
+- `1 <= m <= 3`
+
+
+
+基于动态规划的 Python 实现，其思路如下：
+
+1. 预先计算前缀和数组 `prefix`，方便快速求任意区间和。
+2. 定义二维 dp 数组，其中 `dp[i][j]` 表示前 `i` 个数字中选取 `j` 个不重叠子数组所能获得的最大和。
+3. 状态转移：对于每个位置 `i` 和已经选取了 `j` 个子数组，考虑以位置 `i` 结尾的子数组（子数组长度至少为 `m`），其和为 `prefix[i]-prefix[i-L]`。注意到转移时可以将该表达式改写为 `prefix[i] + (dp[i-L][j-1]-prefix[i-L])`，这样只需维护一个变量记录当前区间内的最大值即可，从而降低复杂度为 `O(n*k)`。
+
+```python
+from typing import List
+
+class Solution:
+    def maxSum(self, nums: List[int], k: int, m: int) -> int:
+        n = len(nums)
+        # 计算前缀和：prefix[i] 表示 nums[0...i-1] 的和
+        prefix = [0] * (n + 1)
+        for i in range(n):
+            prefix[i + 1] = prefix[i] + nums[i]
+
+        # 初始化 dp 数组
+        # dp[i][j] 表示前 i 个数字中选 j 个子数组获得的最大和
+        NEG_INF = -float('inf')
+        dp = [[NEG_INF] * (k + 1) for _ in range(n + 1)]
+        # 选 0 个子数组时，和为 0（任何位置）
+        for i in range(n + 1):
+            dp[i][0] = 0
+
+        # j 表示选取子数组的个数
+        for j in range(1, k + 1):
+            # 对于当前 j，我们维护一个变量 M，记录：
+            # M = max_{t in [0, i-m]} (dp[t][j-1] - prefix[t])
+            M = NEG_INF
+            # i 从 j*m 开始（至少需要 j 个子数组，每个长度 m）
+            for i in range(j * m, n + 1):
+                # 当 i-m 合法时更新 M
+                if i - m >= 0:
+                    M = max(M, dp[i - m][j - 1] - prefix[i - m])
+                # candidate 表示以 i 结尾的新子数组加入后的候选值
+                candidate = prefix[i] + M
+                # dp[i][j] 要么继承 dp[i-1][j]（不在第 i 位结束一个子数组），要么使用 candidate
+                dp[i][j] = candidate if i == j * m else max(dp[i - 1][j], candidate)
+
+        return dp[n][k]
+
+```
+
+
+
+
+
+### Q4.字典序最小的生成字符串
+
+https://leetcode.cn/contest/weekly-contest-439/problems/lexicographically-smallest-generated-string/
+
+给你两个字符串，`str1` 和 `str2`，其长度分别为 `n` 和 `m` 。
+
+如果一个长度为 `n + m - 1` 的字符串 `word` 的每个下标 `0 <= i <= n - 1` 都满足以下条件，则称其由 `str1` 和 `str2` **生成**：
+
+- 如果 `str1[i] == 'T'`，则长度为 `m` 的 **子字符串**（从下标 `i` 开始）与 `str2` 相等，即 `word[i..(i + m - 1)] == str2`。
+- 如果 `str1[i] == 'F'`，则长度为 `m` 的 **子字符串**（从下标 `i` 开始）与 `str2` 不相等，即 `word[i..(i + m - 1)] != str2`。
+
+返回可以由 `str1` 和 `str2` **生成** 的 **字典序最小** 的字符串。如果不存在满足条件的字符串，返回空字符串 `""`。
+
+如果字符串 `a` 在第一个不同字符的位置上比字符串 `b` 的对应字符在字母表中更靠前，则称字符串 `a` 的 **字典序 小于** 字符串 `b`。
+ 如果前 `min(a.length, b.length)` 个字符都相同，则较短的字符串字典序更小。
+
+**子字符串** 是字符串中的一个连续、**非空** 的字符序列。
+
+ 
+
+**示例 1：**
+
+**输入:** str1 = "TFTF", str2 = "ab"
+
+**输出:** "ababa"
+
+**解释:**
+
+下表展示了字符串 `"ababa"` 的生成过程：
+
+| 下标 | T/F   | 长度为 `m` 的子字符串 |
+| ---- | ----- | --------------------- |
+| 0    | `'T'` | "ab"                  |
+| 1    | `'F'` | "ba"                  |
+| 2    | `'T'` | "ab"                  |
+| 3    | `'F'` | "ba"                  |
+
+字符串 `"ababa"` 和 `"ababb"` 都可以由 `str1` 和 `str2` 生成。
+
+返回 `"ababa"`，因为它的字典序更小。
+
+**示例 2：**
+
+**输入:** str1 = "TFTF", str2 = "abc"
+
+**输出:** ""
+
+**解释:**
+
+无法生成满足条件的字符串。
+
+**示例 3：**
+
+**输入:** str1 = "F", str2 = "d"
+
+**输出:** "a"
+
+ 
+
+**提示:**
+
+- `1 <= n == str1.length <= 104`
+- `1 <= m == str2.length <= 500`
+- `str1` 仅由 `'T'` 或 `'F'` 组成。
+- `str2` 仅由小写英文字母组成。
+
+
+
+```python
+
+```
+
+
 
 
 
