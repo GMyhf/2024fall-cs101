@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2250 GMT+8 Mar 2 2025
+Updated 0106 GMT+8 Mar 3 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -5068,6 +5068,102 @@ class Solution:
             num -= 1
         return roman
 ```
+
+
+
+## LCP12. 小张的刷题计划
+
+Binary + greedy, https://leetcode.cn/problems/xiao-zhang-shua-ti-ji-hua/
+
+为了提高自己的代码能力，小张制定了 `LeetCode` 刷题计划，他选中了 `LeetCode` 题库中的 `n` 道题，编号从 `0` 到 `n-1`，并计划在 `m` 天内**按照题目编号顺序**刷完所有的题目（注意，小张不能用多天完成同一题）。
+
+在小张刷题计划中，小张需要用 `time[i]` 的时间完成编号 `i` 的题目。此外，小张还可以使用场外求助功能，通过询问他的好朋友小杨题目的解法，可以省去该题的做题时间。为了防止“小张刷题计划”变成“小杨刷题计划”，小张每天最多使用一次求助。
+
+我们定义 `m` 天中做题时间最多的一天耗时为 `T`（小杨完成的题目不计入做题总时间）。请你帮小张求出最小的 `T`是多少。
+
+**示例 1：**
+
+> 输入：`time = [1,2,3,3], m = 2`
+>
+> 输出：`3`
+>
+> 解释：第一天小张完成前三题，其中第三题找小杨帮忙；第二天完成第四题，并且找小杨帮忙。这样做题时间最多的一天花费了 3 的时间，并且这个值是最小的。
+
+**示例 2：**
+
+> 输入：`time = [999,999,999], m = 4`
+>
+> 输出：`0`
+>
+> 解释：在前三天中，小张每天求助小杨一次，这样他可以在三天内完成所有的题目并不花任何时间。
+
+ 
+
+**限制：**
+
+- `1 <= time.length <= 10^5`
+- `1 <= time[i] <= 10000`
+- `1 <= m <= 1000`
+
+
+
+二分查找逻辑！
+
+**目标**：
+我们在找的是最小的满足条件的时间 `t`，也就是说，我们想找到一个 **最小的最大工作时间**，让任务可以在 `m` 天内完成。
+
+**二分查找调整逻辑**：
+
+- 如果 check(mid) 是 True：
+  - 说明当前的时间上限 `mid` 是可行的，意味着答案可能是 `mid` 本身，也可能更小。
+  - 所以，我们应该**缩小右边界**，继续向更小的值寻找可能的解。
+- 如果 check(mid) 是 False：
+  - 说明当前时间上限 `mid` 太小，不足以在 `m` 天内完成任务。
+  - 所以，我们**增大左边界**，去尝试更大的 `mid`。
+
+```python
+from typing import List
+
+
+class Solution:
+    def minTime(self, time: List[int], m: int) -> int:
+        n = len(time)
+        if m >= n:
+            return 0
+
+        def check(t):
+            days = 1
+            total_time = 0
+            max_time = 0
+            for i in range(n):
+                max_time = max(max_time, time[i])
+                total_time += time[i]
+                # 如果当前累计时间和减去最大单个时间后仍超过t，则开启新一天
+                if total_time - max_time > t:
+                    days += 1
+                    total_time = time[i]  # 新的一天开始，当前任务的时间成为新的累计时间
+                    max_time = time[i]  # 更新最大单个时间为当前任务时间
+            return days <= m
+
+        left, right = 0, sum(time) + 1
+        while left < right:
+            mid = (left + right) // 2
+            if check(mid):
+                right = mid	# 缩小右边界，继续找更小的可能解
+            else:
+                left = mid + 1	# 增大左边界
+
+        return left
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.minTime([1,2,3,3], 2))  # 输出：3
+    print(sol.minTime([999,999,999], 4))  # 输出：0
+    print(sol.minTime([1,2,3], 1))  # 输出：3
+```
+
+💡 **为什么最终返回 `left` 而不是 `right`？**
+因为最终循环结束时，`left` 和 `right` 会收敛到同一个值，即最小满足条件的时间上界。因此返回 `left` 或 `right` 都可以，但习惯上我们返回 `left`，因为它指向的是搜索空间的下界。
 
 
 
