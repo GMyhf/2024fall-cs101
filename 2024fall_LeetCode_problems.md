@@ -7752,9 +7752,11 @@ class Solution:
 
 ## 75.颜色分类
 
-https://leetcode.cn/problems/sort-colors/
+three pointers, https://leetcode.cn/problems/sort-colors/
 
-给定一个包含红色、白色和蓝色、共 `n` 个元素的数组 `nums` ，**[原地](https://baike.baidu.com/item/原地算法)** 对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+给定一个包含红色、白色和蓝色、共 `n` 个元素的数组 `nums` ，**原地** 对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+
+一个原地算法（in-place algorithm）是一种使用小的，固定数量的额外之空间来转换资料的算法。当算法执行时，输入的资料通常会被要输出的部分覆盖掉。
 
 我们使用整数 `0`、 `1` 和 `2` 分别表示红色、白色和蓝色。
 
