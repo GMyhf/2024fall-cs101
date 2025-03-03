@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0106 GMT+8 Mar 3 2025
+Updated 1005 GMT+8 Mar 3 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -22903,6 +22903,3588 @@ https://leetcode.cn/contest/weekly-contest-439/problems/lexicographically-smalle
 
 ```python
 
+```
+
+
+
+## 第 151 场双周赛-20250301
+
+https://leetcode.cn/contest/biweekly-contest-151/
+
+中国时间：2025-03-01 22:30, 1 小时 30 分
+
+
+
+### Q1. 将数组按照奇偶性转化
+
+https://leetcode.cn/contest/biweekly-contest-151/problems/transform-array-by-parity/
+
+给你一个整数数组 `nums`。请你按照以下顺序 **依次** 执行操作，转换 `nums`：
+
+1. 将每个偶数替换为 0。
+2. 将每个奇数替换为 1。
+3. 按 **非递减** 顺序排序修改后的数组。
+
+执行完这些操作后，返回结果数组。
+
+ 
+
+**示例 1:**
+
+**输入：**nums = [4,3,2,1]
+
+**输出：**[0,0,1,1]
+
+**解释：**
+
+- 将偶数（4 和 2）替换为 0，将奇数（3 和 1）替换为 1。现在，`nums = [0, 1, 0, 1]`。
+- 按非递减顺序排序 `nums`，得到 `nums = [0, 0, 1, 1]`。
+
+**示例 2:**
+
+**输入：**nums = [1,5,1,4,2]
+
+**输出：**[0,0,1,1,1]
+
+**解释：**
+
+- 将偶数（4 和 2）替换为 0，将奇数（1, 5 和 1）替换为 1。现在，`nums = [1, 1, 1, 0, 0]`。
+- 按非递减顺序排序 `nums`，得到 `nums = [0, 0, 1, 1, 1]`。
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 100`
+- `1 <= nums[i] <= 1000`
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def transformArray(self, nums: List[int]) -> List[int]:
+        for i in range(len(nums)):
+            if nums[i] & 1:
+                nums[i] = 1
+            else:
+                nums[i] = 0
+        nums.sort()
+        return nums
+
+if __name__ == "__main__":
+    sol = Solution()
+    nums = [0,1,2,3,4,5,6,7,8,9]
+    print(sol.transformArray(nums))
+    print(sol.transformArray([1,5,1,4,2]))
+```
+
+
+
+### Q2. 可行数组的数目
+
+https://leetcode.cn/contest/biweekly-contest-151/problems/find-the-number-of-copy-arrays/
+
+给你一个长度为 `n` 的数组 `original` 和一个长度为 `n x 2` 的二维数组 `bounds`，其中 `bounds[i] = [ui, vi]`。
+
+你需要找到长度为 `n` 且满足以下条件的 **可能的** 数组 `copy` 的数量：
+
+1. 对于 `1 <= i <= n - 1` ，都有 `(copy[i] - copy[i - 1]) == (original[i] - original[i - 1])` 。
+2. 对于 `0 <= i <= n - 1` ，都有 `ui <= copy[i] <= vi` 。
+
+返回满足这些条件的数组数目。
+
+ 
+
+**示例 1**
+
+**输入：**original = [1,2,3,4], bounds = [[1,2],[2,3],[3,4],[4,5]]
+
+**输出：**2
+
+**解释：**
+
+可能的数组为：
+
+- `[1, 2, 3, 4]`
+- `[2, 3, 4, 5]`
+
+**示例 2**
+
+**输入：**original = [1,2,3,4], bounds = [[1,10],[2,9],[3,8],[4,7]]
+
+**输出：**4
+
+**解释：**
+
+可能的数组为：
+
+- `[1, 2, 3, 4]`
+- `[2, 3, 4, 5]`
+- `[3, 4, 5, 6]`
+- `[4, 5, 6, 7]`
+
+**示例 3**
+
+**输入：**original = [1,2,1,2], bounds = [[1,1],[2,3],[3,3],[2,3]]
+
+**输出：**0
+
+**解释：**
+
+没有可行的数组。
+
+ 
+
+**提示：**
+
+- `2 <= n == original.length <= 10^5`
+- `1 <= original[i] <= 10^9`
+- `bounds.length == n`
+- `bounds[i].length == 2`
+- `1 <= bounds[i][0] <= bounds[i][1] <= 10^9`
+
+
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def countArrays(self, original: List[int], bounds: List[List[int]]) -> int:
+        n = len(original)
+        # Difference between consecutive elements in the original array
+        diffs = [original[i] - original[i - 1] for i in range(1, n)]
+
+        # Initialize valid range for copy[0]
+        min_val, max_val = bounds[0]
+
+        for i in range(1, n):
+            diff = diffs[i - 1]
+            # Update bounds for next element in copy based on the previous bounds and the diff
+            min_val = max(min_val + diff, bounds[i][0])
+            max_val = min(max_val + diff, bounds[i][1])
+
+            # If bounds become invalid, no valid array is possible
+            if min_val > max_val:
+                return 0
+
+        # Number of possible arrays is the size of the final valid range
+        # 如果所有元素的取值范围都是有效的（即没有出现min_val > max_val的情况），
+        # 则满足条件的数组数量等于最后一个元素的取值范围大小，
+        return max_val - min_val + 1
+
+
+if __name__ == "__main__":
+    sol = Solution()
+
+    original = [1, 2, 3, 4]
+    bounds = [[1, 2], [2, 3], [3, 4], [4, 5]]
+    print(sol.countArrays(original, bounds))  # Output: 2
+
+    original = [1, 2, 3, 4]
+    bounds = [[1, 10], [2, 9], [3, 8], [4, 7]]
+    print(sol.countArrays(original, bounds))  # Output: 4
+
+    original = [1, 2, 1, 2]
+    bounds = [[1, 1], [2, 3], [3, 3], [2, 3]]
+    print(sol.countArrays(original, bounds))  # Output: 0
+
+```
+
+
+
+
+
+### Q3.移除所有数组的最小代价
+
+https://leetcode.cn/contest/biweekly-contest-151/problems/find-minimum-cost-to-remove-array-elements/
+
+给你一个整数数组 `nums`。你的任务是在每一步中执行以下操作之一，直到 `nums` 为空，从而移除 **所有元素** ：
+
+- 从 `nums` 的前三个元素中选择任意两个元素并移除它们。此操作的成本为移除的两个元素中的 **最大值** 。
+- 如果 `nums` 中剩下的元素少于三个，则一次性移除所有剩余元素。此操作的成本为剩余元素中的 **最大值** 。
+
+返回移除所有元素所需的**最小**成本。
+
+ 
+
+**示例 1**
+
+**输入：**nums = [6,2,8,4]
+
+**输出：**12
+
+**解释：**
+
+初始时，`nums = [6, 2, 8, 4]`。
+
+- 在第一次操作中，移除 `nums[0] = 6` 和 `nums[2] = 8`，操作成本为 `max(6, 8) = 8`。现在，`nums = [2, 4]`。
+- 在第二次操作中，移除剩余元素，操作成本为 `max(2, 4) = 4`。
+
+移除所有元素的成本为 `8 + 4 = 12`。这是移除 `nums` 中所有元素的最小成本。所以输出 12。
+
+**示例 2**
+
+**输入：**nums = [2,1,3,3]
+
+**输出：**5
+
+**解释：**
+
+初始时，`nums = [2, 1, 3, 3]`。
+
+- 在第一次操作中，移除 `nums[0] = 2` 和 `nums[1] = 1`，操作成本为 `max(2, 1) = 2`。现在，`nums = [3, 3]`。
+- 在第二次操作中，移除剩余元素，操作成本为 `max(3, 3) = 3`。
+
+移除所有元素的成本为 `2 + 3 = 5`。这是移除 `nums` 中所有元素的最小成本。因此，输出是 5。
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 1000`
+- `1 <= nums[i] <= 10^6`
+
+
+
+思路是：
+
+- 定义状态为 `dp(i, carry)`，其中 `i` 表示原数组中还未使用的起始位置，`carry` 是一个元组，代表前一步操作留下的“剩余”元素（最多 1 个在非终止状态，但终止状态下可能为 2 个）。
+
+- 每次从当前状态构造出 “可选组” 即 `available = list(carry) + nums[i:i+needed]`，保证其长度恰好为 3。当可用元素不足 3 时（即状态终止），直接返回这些元素的最大值（代表一次性移除它们的成本）。
+
+- 当有 3 个元素时，我们可以有 3 种选择：
+
+  - 移除前 2 个，成本为 `max(a, b)`，新状态为剩下的第三个元素加上后续未处理的部分。
+  - 移除第 1 个和第 3 个，成本为 `max(a, c)`，新状态为 `[b]` 加上后续。
+  - 移除第 2 个和第 3 个，成本为 `max(b, c)`，新状态为 `[a]` 加上后续。
+
+- 最终返回所有操作的最小累计成本。
+
+  
+
+```python
+from typing import List
+from functools import lru_cache
+
+class Solution:
+    def minCost(self, nums: List[int]) -> int:
+        n = len(nums)
+
+        @lru_cache(maxsize=None)
+        def dp(i, carry):
+            """
+            i: 当前在 nums 中还未使用的起始索引
+            carry: 元组，表示上一步留下的剩余元素（顺序不能改变）
+            """
+            # 构造当前可用序列（carry 后跟 nums[i:]中的前几个元素）
+            available = list(carry)
+            needed = 3 - len(available)  # 补满 3 个元素需要从 nums 中取多少个
+            # 如果不足 3 个，则进行一次性移除，成本为可用元素的最大值
+            if i + needed > n:
+                if available or i < n:
+                    return max(available + nums[i:])  # 若非空，返回最大值
+                else:
+                    return 0
+
+            # 否则，补全 3 个元素
+            available.extend(nums[i:i + needed])
+            a, b, c = available[0], available[1], available[2]
+            ans = float('inf')
+            # 情况1：移除 a 和 b，成本为 max(a, b)，剩余元素为 c
+            ans = min(ans, max(a, b) + dp(i + needed, (c,)))
+            # 情况2：移除 a 和 c，成本为 max(a, c)，剩余元素为 b
+            ans = min(ans, max(a, c) + dp(i + needed, (b,)))
+            # 情况3：移除 b 和 c，成本为 max(b, c)，剩余元素为 a
+            ans = min(ans, max(b, c) + dp(i + needed, (a,)))
+            return ans
+
+        return dp(0, ())
+
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.minCost([6, 2, 8, 4]))  # Output: 4
+    print(sol.minCost([2, 1, 3, 3]))  # Output: 5
+    print(sol.minCost([9, 1, 5]))  #
+
+```
+
+
+
+
+
+### Q4.排列IV
+
+https://leetcode.cn/contest/biweekly-contest-151/problems/permutations-iv/
+
+给你两个整数 `n` 和 `k`，一个 **交替排列** 是前 `n` 个正整数的排列，且任意相邻 **两个** 元素不都为奇数或都为偶数。
+
+返回第 **k** 个 **交替排列** ，并按 **字典序** 排序。如果有效的 **交替排列** 少于 `k` 个，则返回一个空列表。
+
+ 
+
+**示例 1**
+
+**输入：**n = 4, k = 6
+
+**输出：**[3,4,1,2]
+
+**解释：**
+
+`[1, 2, 3, 4]` 的交替排列按字典序排序后为：
+
+1. `[1, 2, 3, 4]`
+2. `[1, 4, 3, 2]`
+3. `[2, 1, 4, 3]`
+4. `[2, 3, 4, 1]`
+5. `[3, 2, 1, 4]`
+6. `[3, 4, 1, 2]` ← 第 6 个排列
+7. `[4, 1, 2, 3]`
+8. `[4, 3, 2, 1]`
+
+由于 `k = 6`，我们返回 `[3, 4, 1, 2]`。
+
+**示例 2**
+
+**输入：**n = 3, k = 2
+
+**输出：**[3,2,1]
+
+**解释：**
+
+`[1, 2, 3]` 的交替排列按字典序排序后为：
+
+1. `[1, 2, 3]`
+2. `[3, 2, 1]` ← 第 2 个排列
+
+由于 `k = 2`，我们返回 `[3, 2, 1]`。
+
+**示例 3**
+
+**输入：**n = 2, k = 3
+
+**输出：**[]
+
+**解释：**
+
+`[1, 2]` 的交替排列按字典序排序后为：
+
+1. `[1, 2]`
+2. `[2, 1]`
+
+只有 2 个交替排列，但 `k = 3` 超出了范围。因此，我们返回一个空列表 `[]`。
+
+ 
+
+**提示：**
+
+- `1 <= n <= 100`
+- `1 <= k <= 10^15`
+
+
+
+```python
+
+```
+
+
+
+
+
+## 第 438 场周赛-20250223
+
+中国时间：2025-02-23 10:30 1 小时 30 分 
+
+https://leetcode.cn/contest/weekly-contest-438/
+
+
+
+### 100579.判断操作后字符串中的数字是否相等I
+
+https://leetcode.cn/problems/check-if-digits-are-equal-in-string-after-operations-i/description/
+
+给你一个由数字组成的字符串 `s` 。重复执行以下操作，直到字符串恰好包含 **两个** 数字：
+
+- 从第一个数字开始，对于 `s` 中的每一对连续数字，计算这两个数字的和 **模** 10。
+- 用计算得到的新数字依次替换 `s` 的每一个字符，并保持原本的顺序。
+
+如果 `s` 最后剩下的两个数字 **相同** ，返回 `true` 。否则，返回 `false`。
+
+ 
+
+**示例 1：**
+
+**输入：** s = "3902"
+
+**输出：** true
+
+**解释：**
+
+- 一开始，`s = "3902"`
+- 第一次操作： 
+  - `(s[0] + s[1]) % 10 = (3 + 9) % 10 = 2`
+  - `(s[1] + s[2]) % 10 = (9 + 0) % 10 = 9`
+  - `(s[2] + s[3]) % 10 = (0 + 2) % 10 = 2`
+  - `s` 变为 `"292"`
+- 第二次操作： 
+  - `(s[0] + s[1]) % 10 = (2 + 9) % 10 = 1`
+  - `(s[1] + s[2]) % 10 = (9 + 2) % 10 = 1`
+  - `s` 变为 `"11"`
+- 由于 `"11"` 中的数字相同，输出为 `true`。
+
+**示例 2：**
+
+**输入：** s = "34789"
+
+**输出：** false
+
+**解释：**
+
+- 一开始，`s = "34789"`。
+- 第一次操作后，`s = "7157"`。
+- 第二次操作后，`s = "862"`。
+- 第三次操作后，`s = "48"`。
+- 由于 `'4' != '8'`，输出为 `false`。
+
+ 
+
+**提示：**
+
+- `3 <= s.length <= 100`
+- `s` 仅由数字组成。
+
+
+
+
+
+```python
+class Solution:
+    def hasSameDigits(self, s: str) -> bool:
+        q = [int(i) for i in s]
+        
+        while len(q) > 1:
+            if len(set(q)) == 1:  # 如果所有数字相同，直接返回True
+                return True
+            
+            if len(q) == 2:
+                return q[0] == q[1]
+            
+            new_q = []
+            for i in range(len(q) - 1):
+                tmp = (q[i] + q[i + 1]) % 10
+                new_q.append(tmp)
+            
+            q = new_q
+        
+        return False
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.hasSameDigits("3902"))  # True
+    print(sol.hasSameDigits("34789")) # False
+```
+
+
+
+
+
+### 100576.提取至多K个元素的最大总和
+
+data structures, https://leetcode.cn/problems/maximum-sum-with-at-most-k-elements/description/
+
+给你一个大小为 `n x m` 的二维矩阵 `grid` ，以及一个长度为 `n` 的整数数组 `limits` ，和一个整数 `k` 。你的目标是从矩阵 `grid` 中提取出 **至多** `k` 个元素，并计算这些元素的最大总和，提取时需满足以下限制**：**
+
+- 从 `grid` 的第 `i` 行提取的元素数量不超过 `limits[i]` 。
+
+返回最大总和。
+
+ 
+
+**示例 1：**
+
+**输入：**grid = [[1,2],[3,4]], limits = [1,2], k = 2
+
+**输出：**7
+
+**解释：**
+
+- 从第 2 行提取至多 2 个元素，取出 4 和 3 。
+- 至多提取 2 个元素时的最大总和 `4 + 3 = 7` 。
+
+**示例 2：**
+
+**输入：**grid = [[5,3,7],[8,2,6]], limits = [2,2], k = 3
+
+**输出：**21
+
+**解释：**
+
+- 从第 1 行提取至多 2 个元素，取出 7 。
+- 从第 2 行提取至多 2 个元素，取出 8 和 6 。
+- 至多提取 3 个元素时的最大总和 `7 + 8 + 6 = 21` 。
+
+ 
+
+**提示：**
+
+- `n == grid.length == limits.length`
+- `m == grid[i].length`
+- `1 <= n, m <= 500`
+- `0 <= grid[i][j] <= 10^5`
+- `0 <= limits[i] <= m`
+- `0 <= k <= min(n * m, sum(limits))`
+
+
+
+
+
+```python
+from typing import List
+import heapq
+
+class Solution:
+    def maxSum(self, grid: List[List[int]], limits: List[int], k: int) -> int:
+        hqs = []
+        n = len(grid)
+        for i in range(n):
+            row = grid[i]
+            limit = limits[i]
+            largest_k = sorted(row, reverse=True)
+            if limit < len(largest_k):
+                largest_k = largest_k[:limit]
+            hq = [-val for val in largest_k]
+            heapq.heapify(hq)
+
+            if hq:
+                hqs.append(hq)
+
+        print(hqs)
+        sum_v = 0
+        for i in range(k):
+            max_v = float('-inf')
+            max_idx = -1
+
+            for j, hq in enumerate(hqs):
+                if hq and -hq[0] > max_v:
+                    max_v = -hq[0]
+                    max_idx = j
+
+            if max_idx != -1:
+                sum_v += max_v
+                heapq.heappop(hqs[max_idx])
+                if not hqs[max_idx]:
+                    del hqs[max_idx]
+
+        return sum_v
+
+if __name__ == "__main__":
+    sol = Solution()
+    #print(sol.maxSum([[1,2],[3,4]], [1,2], 2))
+    #print(sol.maxSum([[5,3,7],[8,2,6]], [2,2], 3))
+    #print(sol.maxSum([[3],[9],[1]], [1,0,0], 1))
+    print(sol.maxSum([[5,3,7],[8,2,6]], [2,2], 3))
+```
+
+
+
+
+
+### Q3.判断操作后字符串中的数字是否相等II
+
+https://leetcode.cn/contest/weekly-contest-438/problems/check-if-digits-are-equal-in-string-after-operations-ii/
+
+给你一个由数字组成的字符串 `s` 。重复执行以下操作，直到字符串恰好包含 **两个** 数字：
+
+- 从第一个数字开始，对于 `s` 中的每一对连续数字，计算这两个数字的和 **模** 10。
+- 用计算得到的新数字依次替换 `s` 的每一个字符，并保持原本的顺序。
+
+如果 `s` 最后剩下的两个数字相同，则返回 `true` 。否则，返回 `false`。
+
+ 
+
+**示例 1：**
+
+**输入：** s = "3902"
+
+**输出：** true
+
+**解释：**
+
+- 一开始，`s = "3902"`
+- 第一次操作： 
+  - `(s[0] + s[1]) % 10 = (3 + 9) % 10 = 2`
+  - `(s[1] + s[2]) % 10 = (9 + 0) % 10 = 9`
+  - `(s[2] + s[3]) % 10 = (0 + 2) % 10 = 2`
+  - `s` 变为 `"292"`
+- 第二次操作： 
+  - `(s[0] + s[1]) % 10 = (2 + 9) % 10 = 1`
+  - `(s[1] + s[2]) % 10 = (9 + 2) % 10 = 1`
+  - `s` 变为 `"11"`
+- 由于 `"11"` 中的数字相同，输出为 `true`。
+
+**示例 2：**
+
+**输入：** s = "34789"
+
+**输出：** false
+
+**解释：**
+
+- 一开始，`s = "34789"`。
+- 第一次操作后，`s = "7157"`。
+- 第二次操作后，`s = "862"`。
+- 第三次操作后，`s = "48"`。
+- 由于 `'4' != '8'`，输出为 `false`。
+
+ 
+
+**提示：**
+
+- `3 <= s.length <= 10^5`
+- `s` 仅由数字组成。
+
+
+
+634/683超时，请优化
+
+```python
+class Solution:
+    def hasSameDigits(self, s: str) -> bool:
+        q = [int(i) for i in s]
+
+        while True:
+            if len(set(q)) == 1:
+                return True
+
+            if len(q) == 2:
+                return q[0] == q[1]
+
+            q = [(q[i] + q[i + 1]) % 10 for i in range(len(q) - 1)]
+
+        return False
+
+
+if __name__ == "__main__":
+    sol = Solution()
+    #print(sol.hasSameDigits("3902"))  # True
+    print(sol.hasSameDigits("34789"))  # False
+
+```
+
+
+
+### Q4.正方形上的点之间的最大距离
+
+https://leetcode.cn/contest/weekly-contest-438/problems/maximize-the-distance-between-points-on-a-square/
+
+给你一个整数 `side`，表示一个正方形的边长，正方形的四个角分别位于笛卡尔平面的 `(0, 0)` ，`(0, side)` ，`(side, 0)` 和 `(side, side)` 处。
+
+同时给你一个 **正整数** `k` 和一个二维整数数组 `points`，其中 `points[i] = [xi, yi]` 表示一个点在正方形**边界**上的坐标。
+
+你需要从 `points` 中选择 `k` 个元素，使得任意两个点之间的 **最小** 曼哈顿距离 **最大化** 。
+
+返回选定的 `k` 个点之间的 **最小** 曼哈顿距离的 **最大** 可能值。
+
+两个点 `(xi, yi)` 和 `(xj, yj)` 之间的曼哈顿距离为 `|xi - xj| + |yi - yj|`。
+
+ 
+
+**示例 1：**
+
+**输入：** side = 2, points = [[0,2],[2,0],[2,2],[0,0]], k = 4
+
+**输出：** 2
+
+**解释：**
+
+![img](https://pic.leetcode.cn/1740269079-gtqSpE-4080_example0_revised.png)
+
+选择所有四个点。
+
+**示例 2：**
+
+**输入：** side = 2, points = [[0,0],[1,2],[2,0],[2,2],[2,1]], k = 4
+
+**输出：** 1
+
+**解释：**
+
+![img](https://pic.leetcode.cn/1740269089-KXdOVN-4080_example1_revised.png)
+
+选择点 `(0, 0)` ，`(2, 0)` ，`(2, 2)` 和 `(2, 1)`。
+
+**示例 3：**
+
+**输入：** side = 2, points = [[0,0],[0,1],[0,2],[1,2],[2,0],[2,2],[2,1]], k = 5
+
+**输出：** 1
+
+**解释：**
+
+![img](https://pic.leetcode.cn/1740269096-PNkeev-4080_example2_revised.png)
+
+选择点 `(0, 0)` ，`(0, 1)` ，`(0, 2)` ，`(1, 2)` 和 `(2, 2)`。
+
+ 
+
+**提示：**
+
+- `1 <= side <= 10^9`
+- `4 <= points.length <= min(4 * side, 15 * 10^3)`
+- `points[i] == [xi, yi]`
+- 输入产生方式如下： 
+  - `points[i]` 位于正方形的边界上。
+  - 所有 `points[i]` 都 **互不相同** 。
+- `4 <= k <= min(25, points.length)`
+
+
+
+```python
+
+```
+
+
+
+
+
+## 第 437 场周赛-20250216
+
+中国时间：2025-02-16 10:30 1 小时 30 分 
+
+https://leetcode.cn/contest/weekly-contest-437/
+
+
+
+### Q1.找出长度为K的特殊子字符串
+
+https://leetcode.cn/problems/find-special-substring-of-length-k/
+
+给你一个字符串 `s` 和一个整数 `k`。
+
+判断是否存在一个长度 **恰好** 为 `k` 的子字符串，该子字符串需要满足以下条件：
+
+1. 该子字符串 **只包含一个唯一字符**（例如，`"aaa"` 或 `"bbb"`）。
+2. 如果该子字符串的 **前面** 有字符，则该字符必须与子字符串中的字符不同。
+3. 如果该子字符串的 **后面** 有字符，则该字符也必须与子字符串中的字符不同。
+
+如果存在这样的子串，返回 `true`；否则，返回 `false`。
+
+**子字符串** 是字符串中的连续、非空字符序列。
+
+ 
+
+**示例 1：**
+
+**输入：** s = "aaabaaa", k = 3
+
+**输出：** true
+
+**解释：**
+
+子字符串 `s[4..6] == "aaa"` 满足条件：
+
+- 长度为 3。
+- 所有字符相同。
+- 子串 `"aaa"` 前的字符是 `'b'`，与 `'a'` 不同。
+- 子串 `"aaa"` 后没有字符。
+
+**示例 2：**
+
+**输入：** s = "abc", k = 2
+
+**输出：** false
+
+**解释：**
+
+不存在长度为 2 、仅由一个唯一字符组成且满足所有条件的子字符串。
+
+ 
+
+**提示：**
+
+- `1 <= k <= s.length <= 100`
+- `s` 仅由小写英文字母组成。
+
+
+
+```python
+class Solution:
+    def hasSpecialSubstring(self, s: str, k: int) -> bool:
+        n = len(s)
+
+        for i in range(n - k + 1):
+            if len(set(s[i:i + k])) == 1:
+                if i > 0 and s[i - 1] == s[i]:
+                    continue
+                if i + k < n and s[i + k] == s[i]:
+                    continue
+                return True
+        return False
+
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.hasSpecialSubstring("aaabaaa", 3))
+    print(sol.hasSpecialSubstring("abc", 2))
+
+```
+
+
+
+
+
+### Q2.吃披萨
+
+https://leetcode.cn/problems/eat-pizzas/
+
+给你一个长度为 `n` 的整数数组 `pizzas`，其中 `pizzas[i]` 表示第 `i` 个披萨的重量。每天你会吃 **恰好** 4 个披萨。由于你的新陈代谢能力惊人，当你吃重量为 `W`、`X`、`Y` 和 `Z` 的披萨（其中 `W <= X <= Y <= Z`）时，你只会增加 1 个披萨的重量！体重增加规则如下：
+
+- 在 **奇数天**（按 **1 开始计数**）你会增加 `Z` 的重量。
+- 在 **偶数天**，你会增加 `Y` 的重量。
+
+请你设计吃掉 **所有** 披萨的最优方案，并计算你可以增加的 **最大** 总重量。
+
+**注意：**保证 `n` 是 4 的倍数，并且每个披萨只吃一次。
+
+ 
+
+**示例 1：**
+
+**输入：** pizzas = [1,2,3,4,5,6,7,8]
+
+**输出：** 14
+
+**解释：**
+
+- 第 1 天，你吃掉下标为 `[1, 2, 4, 7] = [2, 3, 5, 8]` 的披萨。你增加的重量为 8。
+- 第 2 天，你吃掉下标为 `[0, 3, 5, 6] = [1, 4, 6, 7]` 的披萨。你增加的重量为 6。
+
+吃掉所有披萨后，你增加的总重量为 `8 + 6 = 14`。
+
+**示例 2：**
+
+**输入：** pizzas = [2,1,1,1,1,1,1,1]
+
+**输出：** 3
+
+**解释：**
+
+- 第 1 天，你吃掉下标为 `[4, 5, 6, 0] = [1, 1, 1, 2]` 的披萨。你增加的重量为 2。
+- 第 2 天，你吃掉下标为 `[1, 2, 3, 7] = [1, 1, 1, 1]` 的披萨。你增加的重量为 1。
+
+吃掉所有披萨后，你增加的总重量为 `2 + 1 = 3`。
+
+ 
+
+**提示：**
+
+- `4 <= n == pizzas.length <= 2 * 10^5`
+- `1 <= pizzas[i] <= 10^5`
+- `n` 是 4 的倍数。
+
+
+
+
+
+我们可以这样思考：  
+
+- 将所有 \(n=4m\) 个披萨分成两类：  
+  - **轻的**：作为每组的“填充披萨”（filler），不贡献体重增加；  
+  - **重的**：作为每组中“计入增重的披萨”。  
+- 每组必定有 4 个披萨，且按从小到大记为  
+  \[
+  W\le X\le Y\le Z\,.
+  \]
+  其中：  
+  - 奇数天的增重取 **Z**（组中最大）；  
+  - 偶数天的增重取 **Y**（组中第二大）。  
+- 因此，对于奇数天，我们只需要一个重披萨；而偶数天必须“牺牲”出两个重披萨：一份作为“大披萨”（不计入增重，仅起“撑场面”作用），另一份才算 bonus。  
+- 设：  
+  - \(m = n/4\) 为天数，  
+  - \(m_{\text{even}} = \lfloor m/2 \rfloor\) 偶数天数，  
+  - \(m_{\text{odd}} = m - m_{\text{even}}\) （也就是 \(\lceil m/2 \rceil\)）。  
+- 每天的披萨数分配要求：  
+  - 奇数天：1 重披萨（计入增重） + 3 填充披萨；  
+  - 偶数天：2 重披萨（其中较小的计入增重，较大的只用于凑组） + 2 填充披萨。  
+- 所以，所有天的填充披萨总数为  
+  \[
+  F = 3m_{\text{odd}} + 2m_{\text{even}}\,,
+  \]
+  而“重披萨”总数为  
+  \[
+  R = n - F = 4m - (3m_{\text{odd}}+2m_{\text{even}}) = m_{\text{odd}}+2m_{\text{even}}\,.
+  \]
+
+由于我们希望获得尽可能多的 bonus（计入增重），自然希望“重披萨”尽可能大，而“填充披萨”尽可能小。因此最佳做法是：
+
+1. **排序后分组**：先将所有披萨按**从小到大**排序。  
+
+2. 取前 \(F=3m_{\text{odd}}+2m_{\text{even}}\) 个作为填充披萨；剩下的 \(R\) 个披萨（必然是较重的）作为“重披萨”集合 \(H\)。
+
+3. 在 \(H\) 中：
+
+   - 奇数天直接取一个 bonus（全取其值）；  
+   - 偶数天需要从 \(H\) 中选出 **一对**，其中较大（support）不计入增重，较小（bonus）计入增重。  
+
+   我们如何选择偶数天的这对？注意：\(H\) 中共有 \(R = m_{\text{odd}}+2m_{\text{even}}\) 个元素，我们必须为偶数天选出 \(m_{\text{even}}\) 对，即共 \(2m_{\text{even}}\) 个元素；而剩下的 \(m_{\text{odd}}\) 个自然分配给奇数天作为 bonus。  
+
+   为了使 bonus 总和最大（等价于使被牺牲的“support”总和尽可能小），一个简单的贪心策略是：  
+
+   - 将 \(H\) 保持**从小到大**的顺序；  
+   - 从 \(H\) 中最小的 \(2m_{\text{even}}\) 个中，**相邻配对**（即 \(H[0]\) 和 \(H[1]\) 为一对，\(H[2]\) 和 \(H[3]\) 为一对，…），在每一对中后者作为 support。  
+
+   那么当天总增重为：  
+   \[
+   \text{bonus} = \Bigl(\text{所有 } H \text{ 中的披萨和}\Bigr) - \Bigl(\text{所有偶数天配对中被牺牲的 support 的和}\Bigr).
+   \]
+
+【
+
+【完整代码如下：】
+
+```python
+from typing import List
+
+
+class Solution:
+    def maxWeight(self, pizzas: List[int]) -> int:
+        """
+        输入：披萨重量数组，长度 n（n 为 4 的倍数）
+        输出：吃完所有披萨后，能够增加的最大总重量
+        """
+        n = len(pizzas)
+        m = n // 4
+        m_even = m // 2  # 偶数天数
+        m_odd = m - m_even  # 奇数天数（等价于 ceil(m/2)）
+
+        # 每个奇数天需要 3 个填充披萨，每个偶数天需要 2 个填充披萨
+        filler_count = 3 * m_odd + 2 * m_even
+
+        # 排序后，最轻的 filler_count 个作为填充披萨，剩下的作为“重披萨”
+        pizzas.sort()  # 从小到大排序
+        heavy = pizzas[filler_count:]  # 这部分披萨用于计入增重（重披萨）
+
+        total_heavy = sum(heavy)
+        # 偶数天需要从 heavy 中配对出 2*m_even 个披萨：
+        # 在每一对中，较大的披萨用于撑场面（不计入增重），较小的披萨计入 bonus
+        # 由于 heavy 已排序，从最小的 2*m_even 个中，每隔一个取出的即为 bonus
+        support_sum = sum(heavy[1:2 * m_even:2])
+
+        return total_heavy - support_sum
+
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.maxWeight([1, 2, 3, 4, 5, 6, 7, 8]))
+    print(sol.maxWeight([2, 1, 1, 1, 1, 1, 1, 1]))
+    print(sol.maxWeight([3,4,2,4,2,4,2,2,4,5,3,2,1,2,1,1]))
+
+```
+
+【说明】  
+
+- 关键在于将披萨分为“填充”与“重披萨”两部分，且保证偶数天配对时“支持披萨”（较大那个）尽可能轻，以便“bonus”能尽可能大。  
+- 时间复杂度：排序 \(O(n\log n)\)，对于 \(n\le 2\times10^5\) 足够。
+
+
+
+
+
+
+
+### Q3.选择K个互不重叠的特殊子字符串
+
+https://leetcode.cn/problems/select-k-disjoint-special-substrings/
+
+给你一个长度为 `n` 的字符串 `s` 和一个整数 `k`，判断是否可以选择 `k` 个互不重叠的 **特殊子字符串** 。
+
+**特殊子字符串** 是满足以下条件的子字符串：
+
+- 子字符串中的任何字符都不应该出现在字符串其余部分中。
+- 子字符串不能是整个字符串 `s`。
+
+**注意：**所有 `k` 个子字符串必须是互不重叠的，即它们不能有任何重叠部分。
+
+如果可以选择 `k` 个这样的互不重叠的特殊子字符串，则返回 `true`；否则返回 `false`。
+
+**子字符串** 是字符串中的连续、**非空**字符序列。
+
+ 
+
+**示例 1：**
+
+**输入：** s = "abcdbaefab", k = 2
+
+**输出：** true
+
+**解释：**
+
+- 我们可以选择两个互不重叠的特殊子字符串：`"cd"` 和 `"ef"`。
+- `"cd"` 包含字符 `'c'` 和 `'d'`，它们没有出现在字符串的其他部分。
+- `"ef"` 包含字符 `'e'` 和 `'f'`，它们没有出现在字符串的其他部分。
+
+**示例 2：**
+
+**输入：** s = "cdefdc", k = 3
+
+**输出：** false
+
+**解释：**
+
+最多可以找到 2 个互不重叠的特殊子字符串：`"e"` 和 `"f"`。由于 `k = 3`，输出为 `false`。
+
+**示例 3：**
+
+**输入：** s = "abeabe", k = 0
+
+**输出：** true
+
+ 
+
+**提示：**
+
+- `2 <= n == s.length <= 5 * 10^4`
+- `0 <= k <= 26`
+- `s` 仅由小写英文字母组成。
+
+
+
+
+
+下面给出一种基于“候选区间”枚举，再贪心选择互不重叠区间的解法。
+
+**思路**
+
+**特殊子字符串的定义：**  
+一个子字符串 T=s[i:j]（记作区间 \([i,j]\)，下标均包含）是特殊的，当且仅当对于其中的每个字符 \(c\)，在整个字符串 \(s\) 中所有的 \(c\) 都出现在区间 \([i,j]\) 内。另外，\(T\) 不能等于整个 \(s\)。
+
+**关键观察：**  
+
+1. 如果某个字符只在 \(s\) 中出现一次，则对应单个字符构成的子字符串一定特殊。  
+2. 如果 \(T\) 中包含重复字符，比如 \(c\) 出现多次，那么为了保证“\(c\) 在 \(s\) 中只出现在 \(T\) 内”，必须包含 \(c\) 在 \(s\) 中的**所有**出现位置。  
+3. 由（2）可知，对于重复字符 \(c\)，如果要构成特殊子字符串，必须选择从 \(c\) 的第一次出现开始的一个区间；因为如果从后面开始，那么前面的 \(c\) 落在 \(T\) 之外。  
+4. 因此，我们考虑这样的候选区间：  
+   - **候选产生方式：** 对于每个下标 \(i\) 满足 \(i==\mathtt{first\_occ}[s[i]]\)（即该位置是字母第一次出现），我们“贪心扩张”得到最小区间 \([i,j]\) 满足：  
+     - 对于区间中任一位置 \(t\in[i,j]\) 都有 \(\mathtt{first\_occ}[s[t]]\ge i\)（也就是说，区间内每个字母的所有出现都在区间内），  
+     - 扩张时令 \(j=\max_{t\in[i,j]}(\mathtt{last\_occ}[s[t]])\)；当 \(j\) 不再增大时停下。  
+   - 如果得到的区间恰好为整个字符串（即 \(i=0\) 且 \(j=n-1\)），则不能选。
+   - 对于只出现一次的字符（例如 \(s[i]\) 唯一），因为 \(i==\mathtt{first\_occ}[s[i]]\) 且 \(\mathtt{last\_occ}[s[i]]=i\)，候选区间即为 \([i,i]\)。
+
+**最后：** 得到候选区间集合后，我们用标准的“区间调度”贪心算法选出最多个不重叠的区间，看是否至少能选出 \(k\) 个。
+
+**代码**
+
+```python
+class Solution:
+    def maxSubstringLength(self, s: str, k: int) -> bool:
+        n = len(s)
+        # k==0 时，不选任何子串，总是满足要求
+        if k == 0:
+            return True
+
+        # 预处理：统计每个字符第一次和最后一次出现的位置
+        first_occ = {}
+        last_occ = {}
+        for i, ch in enumerate(s):
+            if ch not in first_occ:
+                first_occ[ch] = i
+            last_occ[ch] = i
+
+        # 对于下标 i，如果 i 是 s[i] 的第一次出现，
+        # 则尝试扩张得到候选区间 [i, j]（保证区间内每个字符在 s 中首次出现位置均不小于 i）
+        def get_candidate(i: int):
+            j = last_occ[s[i]]
+            while True:
+                new_j = j
+                for t in range(i, j + 1):
+                    # 若区间内某个字符 c 的第一次出现在 i 之前，则该区间无效
+                    if first_occ[s[t]] < i:
+                        return None
+                    new_j = max(new_j, last_occ[s[t]])
+                if new_j == j:
+                    break
+                j = new_j
+            return (i, j)
+
+        candidates = []
+        for i in range(n):
+            if i == first_occ[s[i]]:
+                cand = get_candidate(i)
+                if cand is not None:
+                    # 排除整个 s 作为候选
+                    if not (cand[0] == 0 and cand[1] == n - 1):
+                        candidates.append(cand)
+
+        # 采用贪心区间调度：先按结束位置排序，再依次选取互不重叠的区间
+        candidates.sort(key=lambda interval: interval[1])
+        count = 0
+        current_end = -1
+        for start, end in candidates:
+            if start > current_end:
+                count += 1
+                current_end = end
+
+        return count >= k
+
+
+
+if __name__ == '__main__':
+    sol = Solution()
+    print(sol.maxSubstringLength("abcdbaefab", 2))  # 输出 True
+    print(sol.maxSubstringLength("cdefdc", 3))  # 输出 False
+    print(sol.maxSubstringLength("abeabe", 0))  # 输出 True
+    print(sol.maxSubstringLength("gaixgqpgdrhhxuurgrriwovkbjjbffnlnjcnyzbmblymcmvnftlpaiqepgxgiperurhgduaqpqxqgaxdexur", 6))
+
+```
+
+**说明**
+
+- **预处理阶段**：我们记录了每个字母的首次和最后出现位置。  
+- **候选区间生成**：仅对“首次出现”的位置 \(i\) 进行扩张，过程中检查若遇到区间内某字符 \(c\) 的首次出现位置小于 \(i\)，则说明 \(c\) 在 \(i\) 之前也出现过，故该候选区间不满足特殊子字符串条件。  
+- **贪心调度**：对所有候选区间按结束位置排序，依次选择不重叠的区间，看是否至少有 \(k\) 个。
+
+这种方法时间复杂度主要在预处理 \(O(n)\) 和候选区间扩张上（候选个数至多 26，每个扩张扫描区间长度不超过 \(n\)），整体效率适用于 \(n\le 5\times10^4\) 的规模。
+
+希望这个解法能满足题目要求！
+
+
+
+
+
+
+
+### Q4.最长V形对角线段的长度
+
+https://leetcode.cn/problems/length-of-longest-v-shaped-diagonal-segment/
+
+给你一个大小为 `n x m` 的二维整数矩阵 `grid`，其中每个元素的值为 `0`、`1` 或 `2`。
+
+**V 形对角线段** 定义如下：
+
+- 线段从 `1` 开始。
+- 后续元素按照以下无限序列的模式排列：`2, 0, 2, 0, ...`。
+- 该线段：
+  - 起始于某个对角方向（左上到右下、右下到左上、右上到左下或左下到右上）。
+  - 沿着相同的对角方向继续，保持 **序列模式** 。
+  - 在保持 **序列模式** 的前提下，最多允许 **一次顺时针 90 度转向** 另一个对角方向。
+
+![img](https://pic.leetcode.cn/1739609732-jHpPma-length_of_longest3.jpg)
+
+返回最长的 **V 形对角线段** 的 **长度** 。如果不存在有效的线段，则返回 0。
+
+ 
+
+**示例 1：**
+
+**输入：** grid = [[2,2,1,2,2],[2,0,2,2,0],[2,0,1,1,0],[1,0,2,2,2],[2,0,0,2,2]]
+
+**输出：** 5
+
+**解释：**
+
+![img](https://pic.leetcode.cn/1739609768-rhePxN-matrix_1-2.jpg)
+
+最长的 V 形对角线段长度为 5，路径如下：`(0,2) → (1,3) → (2,4)`，在 `(2,4)` 处进行 **顺时针 90 度转向** ，继续路径为 `(3,3) → (4,2)`。
+
+**示例 2：**
+
+**输入：** grid = [[2,2,2,2,2],[2,0,2,2,0],[2,0,1,1,0],[1,0,2,2,2],[2,0,0,2,2]]
+
+**输出：** 4
+
+**解释：**
+
+![img](https://pic.leetcode.cn/1739609774-nYJElV-matrix_2.jpg)
+
+最长的 V 形对角线段长度为 4，路径如下：`(2,3) → (3,2)`，在 `(3,2)` 处进行 **顺时针 90 度转向** ，继续路径为 `(2,1) → (1,0)`。
+
+**示例 3：**
+
+**输入：** grid = [[1,2,2,2,2],[2,2,2,2,0],[2,0,0,0,0],[0,0,2,2,2],[2,0,0,2,0]]
+
+**输出：** 5
+
+**解释：**
+
+![img](https://pic.leetcode.cn/1739609780-tlkdUW-matrix_3.jpg)
+
+最长的 V 形对角线段长度为 5，路径如下：`(0,0) → (1,1) → (2,2) → (3,3) → (4,4)`。
+
+**示例 4：**
+
+**输入：** grid = [[1]]
+
+**输出：** 1
+
+**解释：**
+
+最长的 V 形对角线段长度为 1，路径如下：`(0,0)`。
+
+ 
+
+**提示：**
+
+- `n == grid.length`
+- `m == grid[i].length`
+- `1 <= n, m <= 500`
+- `grid[i][j]` 的值为 `0`、`1` 或 `2`。
+
+
+
+下面给出一种思路——将一条 V‐形线段拆分为两个“斜线段”，其中第一个“斜线段”必须从一个 1 开始并严格按序列 (1,2,0,2,0,…)延伸（我们用“链”表示），第二个“斜线段”同样必须延续后面的序列。唯一的“转折点”即为两个斜线段的交界处，它既是第一个斜线段的终点，又是（转向后）第二个斜线段前进前的“分界点”（注意：转向时不重复该格）。
+
+具体做法分为两大部分：
+
+1. 【第一段（不转向部分）】  
+   对于任一斜线方向（共有 4 个对角方向），定义“链结束值” ep——即沿该方向上（从某个起点开始，要求第一个数字必须为 1）能够构成的最长【连续】链（链内数字必须依次为：
+
+   - 第1个必须为 1；
+   - 此后交替：奇数位置应为 2，偶数位置（从第2个开始）应为 0）。
+
+   我们用动态规划求出对于每个方向 d，在合适的遍历顺序下，对于每个格子 (r,c) 能否作为【链的末尾】以及该链长度是多少。递推关系为：  
+
+   - 对于 (r,c) 可“单独启动”一个链：若 grid[r][c]==1，则候选长度为 1。  
+
+   - 若 (r,c) 的“前驱格”为 (r–dr, c–dc)（即同一斜线上紧靠前面的格子）存在且已能形成一条链，设其长度为 L，则如果  
+
+     - L 为奇（即链中最后一个数字为 1→2转换后期望为 2），则要求 grid[r][c]==2；
+     - L 为偶（即上一步链为 “…2” 后期望 0），则要求 grid[r][c]==0；  
+
+     满足则 (r,c) 可延长链，其长度为 L+1。
+
+   这样，对于每个方向 d，我们得到一个二维数组 ep_d，记录每个格子能作为该方向链末尾时的链长（若不能构成则为 0）。同时【直链】（不转向）的最大长度即为所有 ep_d 中的最大值。
+
+2. 【转向后第二段】  
+   规定转向“只能顺时针 90°”——即若第一段沿方向 d，则转向后必须沿方向 d2 = (d+1) mod 4。转向时，假设第一段在某格 (r,c)结束，其链长度为 L1，那么下一个格（第二段的起点）必须是 (r+dr2, c+dc2)（注意：不重复 (r,c)），且要求该格的数字应符合序列中下一个数字。观察序列可知：  
+
+   - 若 L1 为奇，则第一段最后数字下标为 L1–1 为奇（例如：链长 3 得到序列 [1,2,0]），下一个位置下标 L1 为偶，期望数字为 2（因为从 1 开始，奇数位置给 2）；  
+   - 若 L1 为偶，则下一个期望数字为 0。  
+
+   同样，我们预先对【第二段】做一个“从起点出发沿某方向走能形成的链长度”动态规划，但这次状态只有两种（因为序列除开第一个固定的 1，其余交替：奇位——2，偶位——0）。设 dp[d][s] 为在方向 d 内，从某格开始（该格即为第二段起点）能走出的最长链，其中 s 表示“当前期望状态”：  
+
+   - s==1 表示期望数字为 2，
+   - s==2 表示期望数字为 0，  
+
+   转换关系为：若当前位置 (r,c) 的数字等于期望值，则 dp[d][s][r][c] = 1 + dp[d][next(s)][r+dr][c+dc]（其中 next(1)=2，next(2)=1），否则为 0。注意，为保证“后继格子”已算好，需要按“逆向遍历”（不同方向的遍历顺序不同）。
+
+3. 【枚举组合】  
+   对每个方向 d（作为第一段方向），对于每个格子 (r,c)（在 ep_d 中值不为 0 的即为一个可能的转折点，第一段长度 L1 = ep_d[r][c]），尝试转向。新方向 d2 = (d+1)%4，新段起点为 (r+dr2, c+dc2)；若该格在范围内，则第二段能走出的长度为 dp_turn[d2][s][...]，其中 s = 1 当 L1 为奇，s = 2 当 L1 为偶。总 V 形长度 candidate = L1 +（第二段长度）。答案取直链最大值与所有 candidate 的最大值。
+
+下面给出完整 Python 代码（代码中注释较详细）： 
+
+---
+
+```python
+def longestVShape(grid):
+    n = len(grid)
+    m = len(grid[0])
+    # 四个对角方向，按顺时针顺序排列
+    # d0: (1,1)  ——从左上到右下
+    # d1: (1,-1) ——从右上到左下
+    # d2: (-1,-1) ——从右下到左上
+    # d3: (-1,1)  ——从左下到右上
+    dirs = [(1, 1), (1, -1), (-1, -1), (-1, 1)]
+    
+    # 预处理第一段：对于每个方向 d，计算 ep_d[r][c] 表示：沿方向 d、以某起点（要求第一个数字为 1）出发，
+    # 能否构成一条满足序列 [1, 2, 0, 2, 0, ...] 的【连续】链，并且 (r,c) 为该链的终点，其链长是多少。
+    def compute_ep(d):
+        dr, dc = d
+        ep = [[0]*m for _ in range(n)]
+        # 根据方向确定遍历顺序
+        if dr == 1 and dc == 1:        # d0
+            r_range = range(n)
+            c_range = range(m)
+        elif dr == 1 and dc == -1:     # d1
+            r_range = range(n)
+            c_range = range(m-1, -1, -1)
+        elif dr == -1 and dc == -1:    # d2
+            r_range = range(n-1, -1, -1)
+            c_range = range(m-1, -1, -1)
+        elif dr == -1 and dc == 1:     # d3
+            r_range = range(n-1, -1, -1)
+            c_range = range(m)
+        else:
+            r_range = range(n)
+            c_range = range(m)
+        for r in r_range:
+            for c in c_range:
+                cand = 1 if grid[r][c] == 1 else 0  # 新起点
+                pr, pc = r - dr, c - dc
+                if 0 <= pr < n and 0 <= pc < m and ep[pr][pc] > 0:
+                    L = ep[pr][pc]
+                    # 若前一段链长度为 L，则其下一位应为：
+                    # 若 L 为奇：期望 2；若 L 为偶：期望 0
+                    if L % 2 == 1:
+                        if grid[r][c] == 2:
+                            cand = max(cand, L + 1)
+                    else:
+                        if grid[r][c] == 0:
+                            cand = max(cand, L + 1)
+                ep[r][c] = cand
+        return ep
+
+    # 预处理第二段：对每个方向 d，我们计算 dp_turn[d][s] (s取值 1或2)
+    # dp_turn[d][s][r][c] 表示：在方向 d 上，从 (r,c) 出发，若当前期望状态为 s，
+    # 能走出的最大链长。这里 s==1 表示期望数字 2；s==2 表示期望数字 0。
+    # 转换关系：若当前位置 (r,c) 的数字等于预期值，则 dp[r][c] = 1 + dp[next_state] 在下一格，否则为 0。
+    # 其中 next_state: next(1)=2, next(2)=1.
+    def compute_dp_turn(d):
+        dr, dc = d
+        dp1 = [[0]*m for _ in range(n)]  # 状态 1：期待 2
+        dp2 = [[0]*m for _ in range(n)]  # 状态 2：期待 0
+        # 根据 d 确定逆向遍历顺序（使得 (r+dr, c+dc) 已经计算好）
+        if dr == 1 and dc == 1:        # d0: 下一格是 (r+1, c+1) ->逆序：r 从 n-1 到 0, c 从 m-1 到 0
+            r_range = range(n-1, -1, -1)
+            c_range = range(m-1, -1, -1)
+        elif dr == 1 and dc == -1:     # d1: 下一格 (r+1, c-1) -> r: n-1->0, c: 0->m-1
+            r_range = range(n-1, -1, -1)
+            c_range = range(m)
+        elif dr == -1 and dc == -1:    # d2: 下一格 (r-1, c-1) -> r: 0->n-1, c: 0->m-1
+            r_range = range(n)
+            c_range = range(m)
+        elif dr == -1 and dc == 1:     # d3: 下一格 (r-1, c+1) -> r: 0->n-1, c: m-1->0
+            r_range = range(n)
+            c_range = range(m-1, -1, -1)
+        else:
+            r_range = range(n-1, -1, -1)
+            c_range = range(m-1, -1, -1)
+        for r in r_range:
+            for c in c_range:
+                # 状态 1：期望数字 2
+                if grid[r][c] == 2:
+                    nr, nc = r + dr, c + dc
+                    if 0 <= nr < n and 0 <= nc < m:
+                        dp1[r][c] = 1 + dp2[nr][nc]
+                    else:
+                        dp1[r][c] = 1
+                else:
+                    dp1[r][c] = 0
+                # 状态 2：期望数字 0
+                if grid[r][c] == 0:
+                    nr, nc = r + dr, c + dc
+                    if 0 <= nr < n and 0 <= nc < m:
+                        dp2[r][c] = 1 + dp1[nr][nc]
+                    else:
+                        dp2[r][c] = 1
+                else:
+                    dp2[r][c] = 0
+        return dp1, dp2
+
+    # 预先计算四个方向的 ep 和 dp_turn
+    ep_list = []      # ep_list[d] 为方向 d 的 ep 数组
+    dp_turn_list = [] # dp_turn_list[d] = (dp1, dp2) 对于方向 d
+    for d in range(4):
+        ep_list.append(compute_ep(dirs[d]))
+        dp_turn_list.append(compute_dp_turn(dirs[d]))
+    
+    ans = 0
+    # 第一，直链（不转向）的最大长度
+    for d in range(4):
+        for r in range(n):
+            # 注意遍历整行
+            cur_max = max(ep_list[d][r])
+            if cur_max > ans:
+                ans = cur_max
+
+    # 第二，枚举转向：对于每个方向 d（第一段方向），对于每个可能的转折点 (r,c)
+    # 设第一段长度 L1 = ep_list[d][r][c] > 0，则转向后的方向 d2 = (d+1)%4，
+    # 转段起点为 (r + dr2, c + dc2)。此时第二段必须从状态：
+    #  if L1 为奇，则下一个应期待 2，对应状态 1；
+    #  if L1 为偶，则下一个应期待 0，对应状态 2.
+    for d in range(4):
+        dr, dc = dirs[d]
+        d2 = (d + 1) % 4
+        dr2, dc2 = dirs[d2]
+        dp1_d2, dp2_d2 = dp_turn_list[d2]  # 对于第二段方向 d2
+        ep_d = ep_list[d]
+        for r in range(n):
+            for c in range(m):
+                L1 = ep_d[r][c]
+                if L1 <= 0:
+                    continue
+                # 转向点：位于 (r, c)；转段起点为 (r2, c2)
+                r2, c2 = r + dr2, c + dc2
+                if not (0 <= r2 < n and 0 <= c2 < m):
+                    continue
+                # 根据 L1 奇偶决定第二段起点所用 dp 状态：
+                # L1 奇 →下一期待为 2 →状态 1；L1 偶 →期待 0 →状态 2.
+                if L1 & 1:
+                    L2 = dp1_d2[r2][c2]
+                else:
+                    L2 = dp2_d2[r2][c2]
+                candidate = L1 + L2
+                if candidate > ans:
+                    ans = candidate
+    return ans
+
+# ------------------ 测试样例 ------------------
+if __name__ == '__main__':
+    # 示例 1
+    grid1 = [
+      [2,2,1,2,2],
+      [2,0,2,2,0],
+      [2,0,1,1,0],
+      [1,0,2,2,2],
+      [2,0,0,2,2]
+    ]
+    print(longestVShape(grid1))  # 预期 5
+
+    # 示例 2
+    grid2 = [
+      [2,2,2,2,2],
+      [2,0,2,2,0],
+      [2,0,1,1,0],
+      [1,0,2,2,2],
+      [2,0,0,2,2]
+    ]
+    print(longestVShape(grid2))  # 预期 4
+
+    # 示例 3
+    grid3 = [
+      [1,2,2,2,2],
+      [2,2,2,2,0],
+      [2,0,0,0,0],
+      [0,0,2,2,2],
+      [2,0,0,2,0]
+    ]
+    print(longestVShape(grid3))  # 预期 5
+
+    # 示例 4
+    grid4 = [[1]]
+    print(longestVShape(grid4))  # 预期 1
+```
+
+---
+
+### 说明
+
+1. **第一段 DP（函数 compute_ep）**  
+   根据当前方向 d，按照能够保证“前驱已算好”的顺序（例如 d0 时 r 从上到下，c 从左到右），递推计算每个格子能作为链尾的最大链长。
+
+2. **第二段 DP（函数 compute_dp_turn）**  
+   同样根据方向 d，按逆向遍历顺序计算。从某格出发，如果格内数字与“当前期望”（状态 1：2，状态 2：0）匹配，则能延伸 1+下一格（状态互换）。
+
+3. **组合枚举**  
+   遍历每个方向 d 的每个格子作为第一段的终点（转折点），如果该处链长 L1>0，则转向（固定为顺时针 90°，即 d2=(d+1)%4）后，在转段起点处查 dp_turn 得到第二段长度 L2，总长度 = L1+L2。同时也考虑不转向（直链）的情况。
+
+这种方法整体时间复杂度大约 O(8×n×m)（每个方向各遍历一次），对于 n,m≤500 足够。
+
+希望这个解法能够满足题目要求！
+
+
+
+## 第 150 场双周赛-20250215
+
+中国时间：2025-02-15 22:30，1 小时 30 分
+
+https://leetcode.cn/contest/biweekly-contest-150/
+
+
+
+
+
+### Q1.好数字之和
+
+https://leetcode.cn/contest/biweekly-contest-150/problems/sum-of-good-numbers/
+
+给定一个整数数组 `nums` 和一个整数 `k`，如果元素 `nums[i]` **严格** 大于下标 `i - k` 和 `i + k` 处的元素（如果这些元素存在），则该元素 `nums[i]` 被认为是 **好** 的。如果这两个下标都不存在，那么 `nums[i]` 仍然被认为是 **好**的。
+
+返回数组中所有 **好** 元素的 **和**。
+
+ 
+
+**示例 1：**
+
+**输入：** nums = [1,3,2,1,5,4], k = 2
+
+**输出：** 12
+
+**解释：**
+
+好的数字包括 `nums[1] = 3`，`nums[4] = 5` 和 `nums[5] = 4`，因为它们严格大于下标 `i - k` 和 `i + k` 处的数字。
+
+**示例 2：**
+
+**输入：** nums = [2,1], k = 1
+
+**输出：** 2
+
+**解释：**
+
+唯一的好数字是 `nums[0] = 2`，因为它严格大于 `nums[1]`。
+
+ 
+
+**提示：**
+
+- `2 <= nums.length <= 100`
+- `1 <= nums[i] <= 1000`
+- `1 <= k <= floor(nums.length / 2)`
+
+
+
+
+
+```python
+from typing import List
+
+
+class Solution:
+    def sumOfGoodNumbers(self, nums: List[int], k: int) -> int:
+        good_sum = 0
+        n = len(nums)
+
+        for i in range(n):
+            is_good = True
+            # Check if the current element is strictly greater than the element at position i-k
+            if 0 <= i - k < n and nums[i] <= nums[i - k]:
+                is_good = False
+            # Check if the current element is strictly greater than the element at position i+k
+            if 0 <= i + k < n and nums[i] <= nums[i + k]:
+                is_good = False
+
+            if is_good:
+                good_sum += nums[i]
+
+        return good_sum
+
+
+if __name__ == "__main__":
+    solution = Solution()
+    print(solution.sumOfGoodNumbers([1, 3, 2, 1, 5, 4], 2))  # Output: 12
+    print(solution.sumOfGoodNumbers([2, 1], 1))  # Output: 2
+```
+
+
+
+
+
+
+
+### Q2.分割正方形I
+
+https://leetcode.cn/contest/biweekly-contest-150/problems/separate-squares-i/
+
+给你一个二维整数数组 `squares` ，其中 `squares[i] = [xi, yi, li]` 表示一个与 x 轴平行的正方形的左下角坐标和正方形的边长。
+
+找到一个**最小的** y 坐标，它对应一条水平线，该线需要满足它以上正方形的总面积 **等于** 该线以下正方形的总面积。
+
+答案如果与实际答案的误差在 `10-5` 以内，将视为正确答案。
+
+**注意**：正方形 **可能会** 重叠。重叠区域应该被 **多次计数** 。
+
+ 
+
+**示例 1：**
+
+**输入：** squares = [[0,0,1],[2,2,1]]
+
+**输出：** 1.00000
+
+**解释：**
+
+![img](https://pic.leetcode.cn/1739609465-UaFzhk-4062example1drawio.png)
+
+任何在 `y = 1` 和 `y = 2` 之间的水平线都会有 1 平方单位的面积在其上方，1 平方单位的面积在其下方。最小的 y 坐标是 1。
+
+**示例 2：**
+
+**输入：** squares = [[0,0,2],[1,1,1]]
+
+**输出：** 1.16667
+
+**解释：**
+
+![img](https://pic.leetcode.cn/1739609527-TWqefZ-4062example2drawio.png)
+
+面积如下：
+
+- 线下的面积：`7/6 * 2 (红色) + 1/6 (蓝色) = 15/6 = 2.5`。
+- 线上的面积：`5/6 * 2 (红色) + 5/6 (蓝色) = 15/6 = 2.5`。
+
+由于线以上和线以下的面积相等，输出为 `7/6 = 1.16667`。
+
+ 
+
+**提示：**
+
+- `1 <= squares.length <= 5 * 10^4`
+- `squares[i] = [xi, yi, li]`
+- `squares[i].length == 3`
+- `0 <= xi, yi <= 10^9`
+- `1 <= li <= 10^9`
+
+
+
+我们可以利用这样的观察：对于每个正方形
+
+- 当 $c \le y_i$ 时，其贡献为 0；
+- 当 $y_i < c < y_i + l_i$ 时，其贡献为 $l_i\,(c - y_i)$；
+- 当 $c \ge y_i + l_i$ 时，其贡献为 $l_i^2$；
+
+记总面积
+$
+T=\sum_i l_i^2,
+$
+设函数
+$
+f(c)=\sum_i \text{贡献}_i(c)
+$
+那么我们要求一条水平线 $y=c$ 使得 $f(c)=T/2$。
+
+注意到每个正方形的贡献函数都是连续的、分段线性的，其导数（即“斜率”）在区间内为
+$
+f'_i(c)=
+\begin{cases}
+0,& c\le y_i,\\[1mm]
+l_i,& y_i < c < y_i+l_i,\\[1mm]
+0,& c\ge y_i+l_i.
+\end{cases}
+$
+因此总函数的导数为
+$
+f'(c)=\sum_{i:\,y_i<c<y_i+l_i} l_i.
+$
+这提示我们可以对所有“变化点”——也就是所有 $y_i$（正方形开始的地方）和 $y_i+l_i$（正方形结束的地方）进行排序，然后利用“扫描线”思路计算从最低点开始到某个 c 处的面积 f(c)（其实就是对斜率积分）。
+
+具体做法如下：
+
+1. 对于每个正方形 $[x_i, y_i, l_i]$ ，我们构造两个事件：
+   - 在 $y=y_i$ 时，“开始事件”增加斜率 $+l_i$；
+   - 在 $y=y_i+l_i$ 时，“结束事件”减少斜率 $-l_i$。
+2. 排序时注意：当多个事件发生在同一 y 坐标时，由于正方形在其下边界处贡献 0（还没开始）而在上边界处贡献已满面积，所以顺序无关紧要（也可以先合并同一坐标的所有变化）。
+3. 设 f(c) 在区间 [p,q] 内为线性函数，斜率为 S（即当前所有处于“激活”状态的正方形贡献的斜率之和），那么从 p 到 q 面积变化为 $S\,(q-p)$；我们从最小事件坐标开始累加，当发现在某个区间内 $f(c)$ 会从小于 $T/2$ 变为大于等于 $T/2$ 时，就可以解出满足
+   $
+   f(p)+S\,(c-p)=T/2
+   $
+   即
+   $
+   c=p+\frac{T/2-f(p)}{S}.
+   $
+   同时题目要求如果有多个答案，输出最小的 c（也就是区间左端点）。
+
+下面给出完整的 Python 代码（使用 Fraction 保证求解时不会因为大数和除法出现精度问题，最后再转换成浮点数输出 5 位小数误差内的答案）：
+
+```python
+from fractions import Fraction
+from typing import List
+
+class Solution:
+    def separateSquares(self, squares: List[List[int]]) -> float:
+        """
+        squares[i] = [x, y, l] 表示一个正方形（左下角坐标 (x, y)，边长 l）。
+        返回使得正方形面积被水平线 y=c 分成“线上”和“线下”面积相等的最小 c。
+        """
+        T = 0  # 总面积 = sum(l^2)
+        events = []  # (y坐标, 斜率变化)
+        for x, y, l in squares:
+            T += l * l
+            events.append((y, l))         # 正方形开始：斜率 +l
+            events.append((y + l, -l))      # 正方形结束：斜率 -l
+    
+        # 目标面积 = T/2（用 Fraction 表示）
+        target = Fraction(T, 2)
+    
+        # 对事件按 y 坐标排序（相同坐标的事件合并）
+        events.sort(key=lambda x: (x[0], x[1]))
+        combined = []
+        i = 0
+        n_events = len(events)
+        while i < n_events:
+            pos = events[i][0]
+            delta = 0
+            while i < n_events and events[i][0] == pos:
+                delta += events[i][1]
+                i += 1
+            combined.append((pos, delta))
+    
+        # 扫描线：f_val 表示当前累积的面积 f(c)，current_slope 表示当前区间的斜率
+        # 注意：当 c 在一个区间内时，有 f(c) = f_val + current_slope*(c - prev)
+        prev = combined[0][0]  # 从最小的事件坐标开始
+        f_val = 0             # 此处 f(prev) = 0（因为对于 c 等于最小 y 坐标，每个正方形贡献 0）
+        current_slope = 0
+    
+        for pos, delta in combined:
+            # 在区间 [prev, pos] 内 f(c) = f_val + current_slope*(c - prev)
+            # 先检查如果 f(prev) 已经正好等于 target，则答案为 prev
+            if f_val == target:
+                return float(prev)
+            if current_slope:
+                f_next = f_val + current_slope * (pos - prev)
+                # 如果在本区间内可以达到 target
+                if f_val < target <= f_next:
+                    # 解出 c: c = prev + (target - f_val) / current_slope
+                    c_sol = Fraction(prev) + Fraction(target - f_val, current_slope)
+                    return float(c_sol)
+                # 否则累加整个区间
+                f_val = f_next
+            # 如果当前斜率为 0，则 f(c) 在 [prev, pos] 上保持不变
+            current_slope += delta
+            prev = pos
+    
+        # 理论上一定能在扫描过程中找到答案
+        return float(prev)
+
+
+if __name__ == '__main__':
+    sol = Solution()
+    # 示例 1
+    squares1 = [[0, 0, 1], [2, 2, 1]]
+    ans1 = sol.separateSquares(squares1)
+    print("{:.5f}".format(ans1))  # 输出 1.00000
+
+    # 示例 2
+    squares2 = [[0, 0, 2], [1, 1, 1]]
+    ans2 = sol.separateSquares(squares2)
+    print("{:.5f}".format(ans2))  # 输出 1.16667
+
+```
+
+> 说明
+>
+> 1. **构造事件**：对于每个正方形，我们在 $y=y_i$ 处加上斜率 $+l_i$（正方形开始后，面积开始线性增加），在 $y=y_i+l_i$ 处减去 $l_i$（正方形“结束”，面积不再增加）。
+>
+> 2. **扫描线求面积**：设当前区间起点为 prev ，在区间内斜率为 S（即 current_slope），则区间内面积增加为 $S \cdot (c - prev)$；累加得到 $f(c)$ 。
+>
+> 3. **求解 c**：当发现在某个区间内 $f(c)$ 从 $f_{prev}$ 增加到 $f_{prev}+S\,(pos-prev)$ 时跨过目标面积 $T/2$ ，就可以解出
+>    $
+>    c = prev + \frac{T/2 - f_{prev}}{S}\,.
+>    $
+>
+> 4. **使用 Fraction**：保证在计算时不会因为大数或除法导致精度问题，最后将结果转换为 float 输出（误差满足 $10^{-5}$）。
+>
+> 这种方法的时间复杂度为 $O(n \log n)$（排序事件），对于最多 $5\times 10^4$个正方形（事件数不超过 \(10^5\) ）足够使用。
+
+
+
+
+
+AI做了个质心的思路，564/914超时了。
+
+```
+[[522261215,954313664,461744743],[628661372,718610752,21844764],[619734768,941310679,91724451],[352367502,656774918,591943726],[860247066,905800565,853111524],[817098516,868361139,817623995],[580894327,654069233,691552059],[182377086,256660052,911357],[151104008,908768329,890809906],[983970552,992192635,462847045]]
+```
+
+代码清晰易懂，可惜超时了。
+
+```python
+from typing import List
+
+class Solution:
+    def separateSquares(self, squares: List[List[int]]) -> float:
+        # 计算总面积（总“质量”）
+        total_area = sum(l * l for (_, y, l) in squares)
+        target = total_area / 2.0
+
+        # f(c) 返回水平线 y=c 以下的总面积
+        def f(c: float) -> float:
+            total = 0.0
+            for (_, y, l) in squares:
+                if c <= y:
+                    # 正方形全部在 y=c 之上
+                    continue
+                elif c >= y + l:
+                    # 正方形全部在 y=c 以下
+                    total += l * l
+                else:
+                    # 正方形被水平线分割，下部面积为 l*(c-y)
+                    total += l * (c - y)
+            return total
+
+        # 搜索区间：至少从所有正方形的最低边界开始，
+        # 最大不超过所有正方形的上边界
+        lo = min(y for (_, y, l) in squares)
+        hi = max(y + l for (_, y, l) in squares)
+
+        # 二分搜索，找到满足 f(c) >= target 的最小 c
+        eps = 1e-7
+        while hi - lo > eps:
+            mid = (lo + hi) / 2.0
+            if f(mid) < target:
+                lo = mid
+            else:
+                hi = mid
+        return hi
+
+
+# ===== 测试样例 =====
+if __name__ == "__main__":
+    sol = Solution()
+    # 示例 1
+    squares1 = [[0, 0, 1], [2, 2, 1]]
+    res1 = sol.separateSquares(squares1)
+    print("{:.5f}".format(res1))  # 预期输出 1.00000
+
+    # 示例 2
+    squares2 = [[0, 0, 2], [1, 1, 1]]
+    res2 = sol.separateSquares(squares2)
+    print("{:.5f}".format(res2))  # 预期输出 1.16667
+
+```
+
+
+
+
+
+### Q3.分割正方形II
+
+https://leetcode.cn/contest/biweekly-contest-150/problems/separate-squares-ii/
+
+
+
+给你一个二维整数数组 `squares` ，其中 `squares[i] = [xi, yi, li]` 表示一个与 x 轴平行的正方形的左下角坐标和正方形的边长。
+
+找到一个**最小的** y 坐标，它对应一条水平线，该线需要满足它以上正方形的总面积 **等于** 该线以下正方形的总面积。
+
+答案如果与实际答案的误差在 `10-5` 以内，将视为正确答案。
+
+**注意**：正方形 **可能会** 重叠。重叠区域只 **统计一次** 。
+
+ 
+
+**示例 1：**
+
+**输入：** squares = [[0,0,1],[2,2,1]]
+
+**输出：** 1.00000
+
+**解释：**
+
+![img](https://pic.leetcode.cn/1739609602-zhNmeC-4065example1drawio.png)
+
+任何在 `y = 1` 和 `y = 2` 之间的水平线都会有 1 平方单位的面积在其上方，1 平方单位的面积在其下方。最小的 y 坐标是 1。
+
+**示例 2：**
+
+**输入：** squares = [[0,0,2],[1,1,1]]
+
+**输出：** 1
+
+**解释：**
+
+![img](https://pic.leetcode.cn/1739609605-ezeVgk-4065example2drawio.png)
+
+由于蓝色正方形和红色正方形有重叠区域且重叠区域只统计一次。所以直线 `y = 1` 将正方形分割成两部分且面积相等。
+
+ 
+
+**提示：**
+
+- `1 <= squares.length <= 5 * 10^4`
+- `squares[i] = [xi, yi, li]`
+- `squares[i].length == 3`
+- `0 <= xi, yi <= 10^9`
+- `1 <= li <= 10^9`
+
+
+
+下面给出一种思路：我们希望对所有正方形求“并集面积”，并设
+
+\[
+f(c)=\text{并集中} \{(x,y):y\le c\} \text{ 的面积}
+\]
+
+显然，当 \(c\) 从最小的 \(y\) 开始不断增大时，\(f(c)\) 单调不减，而且只在正方形边界（也就是所有 \(y_i\) 和 \(y_i+l_i\)）处发生变化。设所有正方形的并集总面积为 \(A\)（注意重叠部分只算一次），我们要求一个最小的 \(c\) 使得
+\[
+f(c)=\frac{A}{2}\,.
+\]
+
+一个常见做法是：先把每个正方形“截取”到 \(y\le c\) 后得到矩形（若 \(c\ge y_i+l_i\) 则取整个正方形，否则取 \([x_i,x_i+l_i]\times [y_i,c]\)），然后对所有“矩形”计算它们的并集面积。直接每次都算并集面积效率不高，我们可以利用扫描线算法沿着 \(y\) 方向求出 \(f(c)\) 的“分段函数”：  
+
+- 横向的“贡献”由各个正方形在 \(x\) 方向投影得到区间；  
+- 固定 \(y\) 时，当前“激活”的正方形给出若干区间的并集，其长度 \(L(y)\) 即为这一行在 \(x\) 方向的总覆盖长度；  
+- 那么 \(f(c)=\int_{y=y_{\min}}^{c}L(y)\,dy\)，而 \(L(y)\) 在每个区间（由正方形的下边界与上边界构成）内保持不变。
+
+为此，我们构造“事件”：对于每个正方形 \([x,y,l]\) ，在 \(y=y\) 时将区间 \([x,x+l]\) 加入，在 \(y=y+l\) 时移除。用“线段树”维护当前所有活动区间在 \(x\) 轴上的并集长度。注意，由于 \(x\) 坐标范围可能很大，我们需要先将所有的 \(x\) 与 \(x+l\) 做离散化。
+
+扫描过程中：
+
+1. 令 \(prev\_y\) 为当前扫描起点，累计面积 \(area=0\)；
+2. 对于每个不同的事件 \(y\) 值（记为 \(cur\_y\)），当前的并集横向长度为 \(L\)（由线段树维护），则在区间 \([prev\_y,cur\_y]\) 上面积增加 \(L\,(cur\_y-prev\_y)\)；
+3. 同时记录下每一“段”信息 \((y_{\rm start},y_{\rm end},L, \text{area\_at\_}y_{\rm start})\)；
+4. 更新线段树（处理所有 \(y=cur\_y\) 的事件），令 \(prev\_y=cur\_y\)。
+
+最后设总面积 \(A\)，目标 \(target=A/2\)。由于在每个区间内 \(f(y)\) 关于 \(y\) 是线性的，我们只需找出落在某个区间上的 \(c\) 满足
+\[
+f(y_{\rm start})+L\,(c-y_{\rm start})=target\,,
+\]
+也就是
+\[
+c=y_{\rm start}+\frac{target-f(y_{\rm start})}{L}\,.
+\]
+若某区间内 \(L=0\)（说明该 \(y\) 段没有新增面积），则只有当 \(f(y_{\rm start})=target\) 时，答案就是 \(y_{\rm start}\)；否则继续往后找。
+
+下面给出完整的 Python 代码：
+
+```python
+from bisect import bisect_left
+from typing import List
+
+class Solution:
+    def separateSquares(self, squares: List[List[int]]) -> float:
+        """
+        squares[i] = [x, y, l] 表示一个正方形（左下角 (x,y)，边长 l），
+        其中重叠区域只统计一次。
+        返回一个最小的 y=c，使得正方形并集中 y<=c 的面积正好为总面积的一半，
+        误差在 1e-5 内。
+        """
+        events = []  # 每个事件： (y, type, x_start, x_end)
+        xs_set = set()
+        for x, y, l in squares:
+            xs_set.add(x)
+            xs_set.add(x + l)
+            events.append((y, 1, x, x + l))  # 在 y 处加入区间 [x, x+l]
+            events.append((y + l, -1, x, x + l))  # 在 y+l 处移除区间 [x, x+l]
+        xs = sorted(xs_set)
+        m = len(xs) - 1  # 分段数
+    
+        # 辅助函数：将坐标转换为离散化后下标
+        def get_index(val):
+            return bisect_left(xs, val)
+    
+        events.sort(key=lambda e: e[0])
+    
+        # 构造线段树，用于维护 x 轴上当前活动区间的并集长度
+        size = m * 4
+        cover = [0] * (size)
+        seg_length = [0] * (size)
+    
+        def update(idx, l, r, ql, qr, delta):
+            if ql >= r or qr <= l:
+                return
+            if ql <= l and r <= qr:
+                cover[idx] += delta
+            else:
+                mid = (l + r) // 2
+                update(idx * 2, l, mid, ql, qr, delta)
+                update(idx * 2 + 1, mid, r, ql, qr, delta)
+            if cover[idx] > 0:
+                seg_length[idx] = xs[r] - xs[l]
+            else:
+                if r - l == 1:
+                    seg_length[idx] = 0
+                else:
+                    seg_length[idx] = seg_length[idx * 2] + seg_length[idx * 2 + 1]
+    
+        # 扫描线：分段记录 f(y) = 累计面积，及区间 [y_start, y_end) 上横向长度 L
+        segments = []  # 每个元组：(y_start, y_end, L, area_at_y_start)
+        n_events = len(events)
+        i = 0
+        prev_y = events[0][0]
+        cum_area = 0.0  # 累计面积 f(y)
+        while i < n_events:
+            cur_y = events[i][0]
+            if cur_y != prev_y:
+                L = seg_length[1]  # 当前 x 轴并集总长度
+                segments.append((prev_y, cur_y, L, cum_area))
+                cum_area += L * (cur_y - prev_y)
+                prev_y = cur_y
+            # 同一 y 上可能有多个事件，一并处理
+            while i < n_events and events[i][0] == cur_y:
+                _, typ, x1, x2 = events[i]
+                l_idx = get_index(x1)
+                r_idx = get_index(x2)
+                update(1, 0, m, l_idx, r_idx, typ)
+                i += 1
+    
+        total_area = cum_area
+        target = total_area / 2.0
+    
+        # 在 segments 中寻找满足 f(y) = target 的最小 y
+        ans = None
+        for y_start, y_end, L, area_start in segments:
+            # 若该段上 f(y) 恒定
+            if abs(area_start - target) < 1e-12:
+                ans = y_start
+                break
+            if area_start < target <= area_start + L * (y_end - y_start):
+                if L == 0:
+                    # 区间内面积不增加，只有当 f(y)==target 时才成立
+                    if abs(area_start - target) < 1e-12:
+                        ans = y_start
+                        break
+                else:
+                    ans = y_start + (target - area_start) / L
+                    break
+        if ans is None:
+            ans = prev_y
+        return ans
+
+
+# ===== 测试样例 =====
+if __name__ == '__main__':
+    sol = Solution()
+    # 示例 1
+    squares1 = [[0, 0, 1], [2, 2, 1]]
+    res1 = sol.separateSquares(squares1)
+    print("{:.5f}".format(res1))  # 预期 1.00000
+
+    # 示例 2
+    # 注意：对于 squares = [[0,0,2],[1,1,1]]，
+    # 若重叠部分只算一次，则并集就是一个 [0,2]×[0,2] 的正方形，总面积 4，
+    # 分割线应当为 y = 1（即面积下部2，上部2）。
+    squares2 = [[0, 0, 2], [1, 1, 1]]
+    res2 = sol.separateSquares(squares2)
+    print("{:.5f}".format(res2))  # 预期 1.00000
+
+```
+
+说明
+
+1. **离散化与事件**  
+   每个正方形产生两类事件：在 $y=y_i$ 时“加入”区间 $[x_i,x_i+l_i]$，在 $y=y_i+l_i$ 时“移除”。同时离散化所有涉及的 \(x\) 坐标，构造线段树区间 \([x, x+l]\) 的离散下标。
+
+2. **线段树维护并集长度**  
+   线段树数组中，若某结点的覆盖计数大于 0，则该区间在 \(x\) 轴上已被完全覆盖（贡献长度为该区间真实长度）；否则递归从子结点求和。这样可以在 \(O(\log m)\) 内更新区间。
+
+3. **扫描线求“面积函数”**  
+   扫描过程中，每经过一段 \([prev_y, cur_y]\) ，当前 \(x\) 轴上的并集长度 \(L\) 保持不变，面积增加 \(L\,(cur_y-prev_y)\)。记录下每一段信息，最后得到 \(f(y)\) 的分段表示。
+
+4. **求解分割线 \(c\)**  
+   设总面积为 \(A\)，目标面积 $target=A/2$。在某段 $[y_{\rm start}, y_{\rm end}]$ 上，若 $f(y)$ 从 $area_{start}$ 增加到 $area_{start}+L\,(y_{\rm end}-y_{\rm start})$ 且目标在此区间内，则直接解线性方程得：
+   $
+   c=y_{\rm start}+\frac{target-area_{start}}{L}\,.
+   $
+
+这样就能得到“重叠部分只统计一次”的分割线，且若有多个满足要求的 \(c\) ，返回最小的一个。
+
+
+
+
+
+### Q4.最短匹配子字符串
+
+https://leetcode.cn/contest/biweekly-contest-150/problems/shortest-matching-substring/
+
+给你一个字符串 `s` 和一个模式字符串 `p`，其中 `p` **恰好** 包含 **两个** `'*'` 字符。
+
+
+
+`p` 中的 `'*'` 匹配零个或多个字符的任何序列。
+
+返回 `s` 中与 `p` 匹配的 **最短** 子字符串的长度。如果没有这样的子字符串，返回 -1。
+
+**子字符串** 是字符串中的一个连续字符序列（空子字符串也被认为是合法字符串）。
+
+ 
+
+**示例 1：**
+
+**输入：** s = "abaacbaecebce", p = "ba*c*ce"
+
+**输出：** 8
+
+**解释：**
+
+在 `s` 中，`p` 的最短匹配子字符串是 `"**ba**e**c**eb**ce**"`。
+
+**示例 2：**
+
+**输入：** s = "baccbaadbc", p = "cc*baa*adb"
+
+**输出：** -1
+
+**解释：**
+
+在 `s` 中没有匹配的子字符串。
+
+**示例 3：**
+
+**输入：** s = "a", p = "**"
+
+**输出：** 0
+
+**解释：**
+
+空子字符串是最短的匹配子字符串。
+
+**示例 4：**
+
+**输入：** s = "madlogic", p = "*adlogi*"
+
+**输出：** 6
+
+**解释：**
+
+在 `s` 中，`p` 的最短匹配子字符串是 `"**adlogi**"`。
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 10^5`
+- `2 <= p.length <= 10^5`
+- `s` 仅包含小写英文字母。
+- `p` 仅包含小写英文字母，并且恰好包含两个 `'*'`。
+
+
+
+
+
+下面给出一种思路。注意到模式字符串 \(p\) 恰好包含两个星号，我们可以将其分割成三个字串：
+
+- \(p_1\)：星号之前的部分  
+- \(p_2\)：两个星号之间的部分  
+- \(p_3\)：第二个星号之后的部分
+
+对于一个待选的子串 \(T\)（连续的一段 \(s[i:j]\)），其匹配要求（因为星号可以匹配任意序列，包括空串）等价于：
+
+1. \(T\) 的开头必须以 \(p_1\) 开始（如果 \(p_1\) 非空）；  
+2. \(T\) 内存在一个位置可以匹配 \(p_2\)（要求 \(p_2\) 出现在 \(T\) 中，并且出现在 \(p_1\) 之后）；  
+3. \(T\) 的结尾必须以 \(p_3\) 结束（如果 \(p_3\) 非空）。
+
+为了快速判断某个字串是否出现，我们可以预处理：利用 KMP 算法分别在 \(s\) 中找出 \(p_1,\, p_2,\, p_3\) 的所有出现位置（若某个非空字串在 \(s\) 中没有出现，则无匹配，答案返回 -1）。  
+
+然后，对于一个候选的匹配子串 \(T\) 如果其起始位置确定为 \(i\)（对于非空 \(p_1\) 必须保证 \(s[i:i+|p_1|]=p_1\)；如果 \(p_1\) 为空，我们可以认为任意 \(i\) 都可以作为起点），  
+
+- 首先设“匹配 \(p_1\) 后的位置”为 \(i_0=i+|p_1|\)（如果 \(p_1\) 为空，则 \(i_0=i\)）；  
+- 如果 \(p_2\) 非空，则在 \(s\) 中寻找最早出现的 \(p_2\)（利用二分查找）其起始位置 \(i_1\) 满足 \(i_1\ge i_0\)；如果 \(p_2\) 为空，则可以认为“匹配 \(p_2\)”发生在位置 \(i_0\)；
+- 接下来，如果 \(p_3\) 非空，则在 \(s\) 中寻找最早出现的 \(p_3\)（利用二分查找）其起始位置 \(i_2\) 满足 \(i_2\ge i_1+|p_2|\)（注意：当 \(p_2\) 为空时，则要求 \(i_2\ge i_0\)）；此时 \(T\) 必须至少延伸到位置 \(i_2+|p_3|-1\)；  
+- 如果 \(p_3\) 为空，则可以认为 \(T\) 在匹配完 \(p_2\) 后结束，即 \(T\) 至少延伸到位置 \(i_1+|p_2|-1\)（当 \(p_2\) 也为空时，则仅需匹配 \(p_1\)）。
+
+候选子串的长度即为  
+$$
+\text{len}(T)=
+\begin{cases}
+i_2+|p_3|-i,&\text{若 } p_3 \neq "",\\[1mm]
+(i_1+|p_2|)-i,&\text{若 } p_2 \neq "",\\[1mm]
+|p_1|,&\text{否则.}
+\end{cases}
+$$
+我们枚举所有“合法”的候选起点（对于 \(p_1\) 非空，就枚举 KMP 求出的出现位置；否则枚举 \(s\) 中的所有位置），利用二分查找分别在 \(p_2\) 与 \(p_3\) 出现位置的列表中找出满足条件的最早位置，然后更新最短子串的长度。若没有任何候选能构成合法匹配，则返回 -1。
+
+下面给出完整 Python 代码： 
+
+
+
+```python
+from bisect import bisect_left
+from typing import List
+
+class Solution:
+    def shortestMatchingSubstring(self, s: str, p: str) -> int:
+        def kmp_search(text: str, pattern: str) -> List[int]:
+            """
+            返回 pattern 在 text 中所有出现的起始位置（若 pattern 为空，则返回 [0,1,...,len(text)]）
+            """
+            if pattern == "":
+                return list(range(len(text) + 1))
+            # 构造 lps 数组
+            m = len(pattern)
+            lps = [0] * m
+            j = 0
+            for i in range(1, m):
+                while j > 0 and pattern[i] != pattern[j]:
+                    j = lps[j - 1]
+                if pattern[i] == pattern[j]:
+                    j += 1
+                    lps[i] = j
+            res = []
+            j = 0
+            for i in range(len(text)):
+                while j > 0 and text[i] != pattern[j]:
+                    j = lps[j - 1]
+                if text[i] == pattern[j]:
+                    j += 1
+                if j == m:
+                    res.append(i - m + 1)
+                    j = lps[j - 1]
+            return res
+
+
+        # 将 p 分成三个部分：p1, p2, p3（恰有两个 '*' ）
+        star_indices = [i for i, ch in enumerate(p) if ch == '*']
+        if len(star_indices) != 2:
+            raise ValueError("模式 p 必须恰好包含两个 '*'")
+        star1, star2 = star_indices
+        p1 = p[:star1]
+        p2 = p[star1 + 1:star2]
+        p3 = p[star2 + 1:]
+
+        # 特殊情况：若三个部分均为空，则 p="**"，空子串匹配，答案 0
+        if p1 == "" and p2 == "" and p3 == "":
+            return 0
+
+        n = len(s)
+        # 预处理：利用 KMP 找出各部分在 s 中出现的所有位置
+        occ1 = kmp_search(s, p1) if p1 != "" else list(range(n))  # 若 p1 为空，则起点可以选 s 中任意位置
+        occ2 = kmp_search(s, p2) if p2 != "" else None
+        occ3 = kmp_search(s, p3) if p3 != "" else None
+
+        # 若某个非空部分在 s 中没有出现，则不可能匹配
+        if p1 != "" and len(occ1) == 0:
+            return -1
+        if p2 != "" and len(occ2) == 0:
+            return -1
+        if p3 != "" and len(occ3) == 0:
+            return -1
+
+        ans = None
+        # 枚举候选的子串起始位置 i
+        for i in occ1:
+            # 对于 p1 非空，i 已保证 s[i:i+|p1|]==p1；若 p1 为空，则从 i 开始
+            i0 = i + len(p1)  # 匹配完 p1 后的位置
+            # 处理 p2：
+            if p2 != "":
+                # 寻找 occ2 中第一个 >= i0 的位置
+                pos = bisect_left(occ2, i0)
+                if pos == len(occ2):
+                    continue  # 从 i 出发无法匹配到 p2
+                i1 = occ2[pos]  # p2 在 s 中的起始位置
+            else:
+                i1 = i0  # p2 为空，认为匹配发生在 i0
+
+            # p2 匹配后结束的位置
+            i1_end = i1 + len(p2) if p2 != "" else i1
+
+            # 处理 p3：
+            if p3 != "":
+                # p3 必须出现在 T 中，且起始位置至少不早于 i1_end
+                pos2 = bisect_left(occ3, i1_end)
+                if pos2 == len(occ3):
+                    continue
+                i2 = occ3[pos2]  # p3 在 s 中的起始位置
+                # 子串 T 从 i 到 i2 + |p3| - 1
+                cur_len = (i2 + len(p3)) - i
+            else:
+                # 若 p3 为空，则 T 在匹配完 p2 后结束
+                # 注意：若 p2 也为空，则 T 仅需要匹配 p1，即 T = s[i : i+|p1|]
+                if p2 != "":
+                    cur_len = (i1 + len(p2)) - i
+                else:
+                    cur_len = len(p1)  # p1 非空时
+            if ans is None or cur_len < ans:
+                ans = cur_len
+        return ans if ans is not None else -1
+
+
+# ===== 测试样例 =====
+if __name__ == '__main__':
+    sol = Solution()
+    # 示例 1
+    s1 = "abaacbaecebce"
+    p1 = "ba*c*ce"
+    res1 = sol.shortestMatchingSubstring(s1, p1)
+    print("{:.5f}".format(res1))  # 预期 8.00000
+
+    # 示例 2
+    s2 = "baccbaadbc"
+    p2 = "cc*baa*adb"
+    res2 = sol.shortestMatchingSubstring(s2, p2)
+    print(res2)  # 预期 -1
+
+    # 示例 3
+    s3 = "a"
+    p3 = "**"
+    res3 = sol.shortestMatchingSubstring(s3, p3)
+    print("{:.5f}".format(res3))  # 预期 0.00000
+
+    # 示例 4
+    s4 = "madlogic"
+    p4 = "*adlogi*"
+    res4 = sol.shortestMatchingSubstring(s4, p4)
+    print("{:.5f}".format(res4))  # 预期 6.00000
+
+```
+
+
+
+> 说明
+>
+> 1. **分解模式**  
+>    先找出 \(p\) 中两个 `'*'` 的位置，将 p 分为 $p_1,\, p_2,\, p_3$。
+>
+> 2. **KMP 预处理**  
+>    分别利用 KMP 算法在 s 中查找 $p_1,\, p_2,\, p_3$ 的所有出现位置（若某非空部分未出现，则无法匹配）。
+>
+> 3. **枚举候选起点**  
+>    对于候选起点 i（如果 $p_1$ 非空，候选 i 必须满足 $s[i:i+|p_1|]=p_1$；否则可枚举所有 i），  
+>    利用二分查找依次找到：
+>
+>    - 最早在 $i+|p_1|$ 处出现 $p_2$ 的位置（若 $p_2$ 为空则认为匹配在 $i+|p_1|$）；  
+>    - 再在 $p_2$ 匹配后的位置寻找 $p_3$ 的出现（若 $p_3$ 为空则 T 结束在 $p_2$ 匹配结束处）。
+>
+>    计算得到候选子串的长度，并取最小值。
+>
+> 这样就可以在 $O(n\log n)$ 的时间内求出答案。
+
+
+
+
+
+
+
+
+
+## 第 436 场周赛-20250209
+
+中国时间：2025-02-09 10:30，1 小时 30 分
+
+https://leetcode.cn/contest/weekly-contest-436/
+
+
+
+
+
+### 3446.按对角线进行矩阵排序
+
+implementation, https://leetcode.cn/problems/sort-matrix-by-diagonals/
+
+给你一个大小为 `n x n` 的整数方阵 `grid`。返回一个经过如下调整的矩阵：
+
+- **左下角三角形**（包括中间对角线）的对角线按 **非递增顺序** 排序。
+- **右上角三角形** 的对角线按 **非递减顺序** 排序。
+
+ 
+
+**示例 1：**
+
+**输入：** grid = [[1,7,3],[9,8,2],[4,5,6]]
+
+**输出：** [[8,2,3],[9,6,7],[4,5,1]]
+
+**解释：**
+
+![img](https://assets.leetcode.com/uploads/2024/12/29/4052example1drawio.png)
+
+标有黑色箭头的对角线（左下角三角形）应按非递增顺序排序：
+
+- `[1, 8, 6]` 变为 `[8, 6, 1]`。
+- `[9, 5]` 和 `[4]` 保持不变。
+
+标有蓝色箭头的对角线（右上角三角形）应按非递减顺序排序：
+
+- `[7, 2]` 变为 `[2, 7]`。
+- `[3]` 保持不变。
+
+**示例 2：**
+
+**输入：** grid = [[0,1],[1,2]]
+
+**输出：** [[2,1],[1,0]]
+
+**解释：**
+
+![img](https://assets.leetcode.com/uploads/2024/12/29/4052example2adrawio.png)
+
+标有黑色箭头的对角线必须按非递增顺序排序，因此 `[0, 2]` 变为 `[2, 0]`。其他对角线已经符合要求。
+
+**示例 3：**
+
+**输入：** grid = [[1]]
+
+**输出：** [[1]]
+
+**解释：**
+
+只有一个元素的对角线已经符合要求，因此无需修改。
+
+ 
+
+**提示：**
+
+- `grid.length == grid[i].length == n`
+- `1 <= n <= 10`
+- `-10^5 <= grid[i][j] <= 10^5`
+
+
+
+
+
+```python
+from typing import List
+from collections import defaultdict
+
+class Solution:
+    def sortMatrix(self, grid: List[List[int]]) -> List[List[int]]:
+        n = len(grid)
+        dia_mx = defaultdict(list)
+        for i in range(n):
+            for j in range(n):
+                dia_mx[i - j].append(grid[i][j])
+
+        for key, _ in dia_mx.items():
+            if key < 0:
+                dia_mx[key].sort()
+            else:
+                dia_mx[key].sort(reverse=True)
+
+        for i in range(n):
+            for j in range(n):
+                grid[i][j] = dia_mx[i - j].pop(0)
+
+        return grid
+
+if __name__ == "__main__":
+    sol = Solution()
+    grid = [[1,7,3],[9,8,2],[4,5,6]]
+    print(sol.sortMatrix(grid))
+        
+```
+
+
+
+
+
+
+
+### 3447.将元素分配给有约束条件的组
+
+https://leetcode.cn/problems/assign-elements-to-groups-with-constraints/
+
+给你一个整数数组 `groups`，其中 `groups[i]` 表示第 `i` 组的大小。另给你一个整数数组 `elements`。
+
+请你根据以下规则为每个组分配 **一个** 元素：
+
+- 如果 `groups[i]` 能被 `elements[j]` 整除，则元素 `j` 可以分配给组 `i`。
+- 如果有多个元素满足条件，则分配下标最小的元素  `j` 。
+- 如果没有元素满足条件，则分配 -1 。
+
+返回一个整数数组 `assigned`，其中 `assigned[i]` 是分配给组 `i` 的元素的索引，若无合适的元素，则为 -1。
+
+**注意：**一个元素可以分配给多个组。
+
+ 
+
+**示例 1：**
+
+**输入：** groups = [8,4,3,2,4], elements = [4,2]
+
+**输出：** [0,0,-1,1,0]
+
+**解释：**
+
+- `elements[0] = 4` 被分配给组 0、1 和 4。
+- `elements[1] = 2` 被分配给组 3。
+- 无法为组 2 分配任何元素，分配 -1 。
+
+**示例 2：**
+
+**输入：** groups = [2,3,5,7], elements = [5,3,3]
+
+**输出：** [-1,1,0,-1]
+
+**解释：**
+
+- `elements[1] = 3` 被分配给组 1。
+- `elements[0] = 5` 被分配给组 2。
+- 无法为组 0 和组 3 分配任何元素，分配 -1 。
+
+**示例 3：**
+
+**输入：** groups = [10,21,30,41], elements = [2,1]
+
+**输出：** [0,1,0,1]
+
+**解释：**
+
+`elements[0] = 2` 被分配给所有偶数值的组，而 `elements[1] = 1` 被分配给所有奇数值的组。
+
+ 
+
+**提示：**
+
+- `1 <= groups.length <= 10^5`
+- `1 <= elements.length <= 10^5`
+- `1 <= groups[i] <= 10^5`
+- `1 <= elements[i] <= 10^5`
+
+
+
+如果 `max_group` 非常大（例如接近 10^5），预处理部分可能会成为性能瓶颈。此时可以考虑以下优化：
+
+1. **限制预处理范围**:
+   - 只预处理 `groups` 中实际出现的数，而不是所有数到 `max_group`。
+   - 使用一个哈希表记录 `groups` 中出现的数，然后只对这些数进行预处理。
+2. **分解因数**:
+   - 对于每个 `groups[i]`，分解其因数，然后检查这些因数是否在 `elements` 中。
+   - 这种方法适合 `groups[i]` 较小的情况。
+
+```python
+from typing import List
+import math
+
+class Solution:
+    def assignElements(self, groups: List[int], elements: List[int]) -> List[int]:
+        # 将 elements 转换为集合，方便快速查找
+        element_set = set(elements)
+        
+        # 记录每个 elements[j] 的最小索引
+        element_index = {}
+        for j, elem in enumerate(elements):
+            if elem not in element_index:
+                element_index[elem] = j
+        
+        assigned = []
+        for group in groups:
+            # 找到 group 的所有因数
+            factors = set()
+            for i in range(1, int(math.sqrt(group)) + 1):
+                if group % i == 0:
+                    factors.add(i)
+                    factors.add(group // i)
+            
+            # 找到满足条件的最小 j
+            min_j = -1
+            for factor in sorted(factors):
+                if factor in element_index:
+                    if min_j == -1 or element_index[factor] < min_j:
+                        min_j = element_index[factor]
+            
+            assigned.append(min_j)
+        
+        return assigned
+
+# 测试代码
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.assignElements([10, 21, 30, 41], [2, 1]))  # [0, 1, 0, 1]
+    print(sol.assignElements([8, 4, 3, 2, 4], [4, 2]))  # [0, 0, -1, 1, 0]
+    print(sol.assignElements([2, 3, 5, 7], [5, 3, 3]))  # [-1, 1, 0, -1]
+```
+
+> 复杂度分析
+>
+> 1. 时间复杂度:
+>    - 分解因数的时间复杂度为 `O(sqrt(group))`。
+>    - 总体时间复杂度为 `O(n * sqrt(group))`，其中 `n` 是 `groups` 的长度。
+> 2. 空间复杂度:
+>    - 使用了一个哈希表记录 `elements` 的索引，空间复杂度为 `O(m)`，其中 `m` 是 `elements` 的长度。
+>
+> 总结
+>
+> - 如果 `groups` 的最大值较小，推荐使用**预处理倍数**的方法。
+> - 如果 `groups` 的最大值较大，推荐使用**分解因数**的方法。
+> - 两种方法都可以有效避免超时问题。
+
+
+
+预处理倍数方法超时了。超出时间限制 ，564/ 572 个通过的测试用例。
+
+```python
+from typing import List
+
+class Solution:
+    def assignElements(self, groups: List[int], elements: List[int]) -> List[int]:
+        max_val = max(groups)  # 只需计算到 `groups` 里的最大值
+        multiple_map = [-1] * (max_val + 1)  # 用数组代替哈希表，初始化为 -1
+        group_set = set(groups)  # 仅处理出现在 `groups` 里的数
+
+        # 预处理 elements 的所有倍数
+        for idx, elem in enumerate(elements):
+            for mul in range(elem, max_val + 1, elem):  
+                if mul in group_set and multiple_map[mul] == -1:  # 只记录最小索引
+                    multiple_map[mul] = idx  
+
+        # 查询 groups[i] 是否有可整除的元素
+        return [multiple_map[num] for num in groups]
+
+# 测试代码
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.assignElements([10, 21, 30, 41], [2, 1]))  # [0, 1, 0, 1]
+    print(sol.assignElements([8, 4, 3, 2, 4], [4, 2]))  # [0, 0, -1, 1, 0]
+    print(sol.assignElements([2, 3, 5, 7], [5, 3, 3]))  # [-1, 1, 0, -1]
+
+```
+
+
+
+
+
+### 3448.统计可以被最后一个数位整除的子字符串数目
+
+dp, https://leetcode.cn/problems/count-substrings-divisible-by-last-digit/
+
+给你一个只包含数字的字符串 `s` 。
+
+请你返回 `s` 的最后一位 **不是** 0 的子字符串中，可以被子字符串最后一位整除的数目。
+
+**子字符串** 是一个字符串里面一段连续 **非空** 的字符序列。
+
+**注意：**子字符串可以有前导 0 。
+
+ 
+
+**示例 1：**
+
+**输入：**s = "12936"
+
+**输出：**11
+
+**解释：**
+
+子字符串 `"29"` ，`"129"` ，`"293"` 和 `"2936"` 不能被它们的最后一位整除，总共有 15 个子字符串，所以答案是 `15 - 4 = 11` 。
+
+**示例 2：**
+
+**输入：**s = "5701283"
+
+**输出：**18
+
+**解释：**
+
+子字符串 `"01"` ，`"12"` ，`"701"` ，`"012"` ，`"128"` ，`"5701"` ，`"7012"` ，`"0128"` ，`"57012"` ，`"70128"` ，`"570128"` 和 `"701283"` 都可以被它们最后一位数字整除。除此以外，所有长度为 1 且不为 0 的子字符串也可以被它们的最后一位整除。有 6 个这样的子字符串，所以答案为 `12 + 6 = 18` 。
+
+**示例 3：**
+
+**输入：**s = "1010101010"
+
+**输出：**25
+
+**解释：**
+
+只有最后一位数字为 `'1'` 的子字符串可以被它们的最后一位整除，总共有 25 个这样的字符串。
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 10^5`
+- `s` 只包含数字。
+
+
+
+主要思想：
+
+优化： 由于直接遍历所有子字符串会导致时间复杂度过高，使用余数来优化，只需要关注每个子字符串的余数是否能被它的最后一位整除，从而避免了计算整个数的整除问题。
+
+作者：灵茶山艾府
+链接：https://leetcode.cn/problems/count-substrings-divisible-by-last-digit/solutions/3068623/gong-shi-tui-dao-dong-tai-gui-hua-python-iw4a/
+
+```python
+class Solution:
+    def countSubstrings(self, s: str) -> int:
+        ans = 0
+        f = [[0] * 9 for _ in range(10)]
+        for d in map(int, s):
+            for m in range(1, 10):  # 枚举模数 m
+                # 滚动数组计算 f
+                nf = [0] * m
+                nf[d % m] = 1
+                for rem in range(m):  # 枚举模 m 的余数 rem
+                    nf[(rem * 10 + d) % m] += f[m][rem]  # 刷表法
+                f[m] = nf
+            # 以 s[i] 结尾的，模 s[i] 余数为 0 的子串个数
+            ans += f[d][0]
+        return ans
+
+```
+
+
+
+
+
+超出时间限制683 / 699 个通过的测试用例
+
+```python
+class Solution:
+    def countSubstrings(self, s: str) -> int:
+        n = len(s)
+        count = 0
+
+        # 遍历所有可能的最后一位
+        for j in range(n):
+            last_digit = int(s[j])
+            if last_digit == 0:
+                continue
+            # 遍历所有可能的起点
+            num = 0
+            for i in range(j, -1, -1):
+                num += int(s[i]) * (10 ** (j - i))
+                if num % last_digit == 0:
+                    count += 1
+
+        return count
+
+# 测试代码
+if __name__ == '__main__':
+    s = Solution()
+    print(s.countSubstrings("12936"))  # 输出: 11
+    print(s.countSubstrings("5701283"))  # 输出: 18
+    print(s.countSubstrings("1010101010"))  # 输出: 25
+```
+
+
+
+
+
+### 3449.最大化游戏分数的最小值
+
+binary search + greedy, https://leetcode.cn/problems/maximize-the-minimum-game-score/
+
+给你一个长度为 `n` 的数组 `points` 和一个整数 `m` 。同时有另外一个长度为 `n` 的数组 `gameScore` ，其中 `gameScore[i]` 表示第 `i` 个游戏得到的分数。一开始对于所有的 `i` 都有 `gameScore[i] == 0` 。
+
+你开始于下标 -1 处，该下标在数组以外（在下标 0 前面一个位置）。你可以执行 **至多** `m` 次操作，每一次操作中，你可以执行以下两个操作之一：
+
+- 将下标增加 1 ，同时将 `points[i]` 添加到 `gameScore[i]` 。
+- 将下标减少 1 ，同时将 `points[i]` 添加到 `gameScore[i]` 。
+
+**注意**，在第一次移动以后，下标必须始终保持在数组范围以内。
+
+请你返回 **至多** `m` 次操作以后，`gameScore` 里面最小值 **最大** 为多少。
+
+ 
+
+**示例 1：**
+
+**输入：**points = [2,4], m = 3
+
+**输出：**4
+
+**解释：**
+
+一开始，下标 `i = -1` 且 `gameScore = [0, 0]`.
+
+| 移动     | 下标 | gameScore |
+| -------- | ---- | --------- |
+| 增加 `i` | 0    | `[2, 0]`  |
+| 增加 `i` | 1    | `[2, 4]`  |
+| 减少 `i` | 0    | `[4, 4]`  |
+
+`gameScore` 中的最小值为 4 ，这是所有方案中可以得到的最大值，所以返回 4 。
+
+**示例 2：**
+
+**输入：**points = [1,2,3], m = 5
+
+**输出：**2
+
+**解释：**
+
+一开始，下标 `i = -1` 且 `gameScore = [0, 0, 0]` 。
+
+| 移动     | 下标 | gameScore   |
+| -------- | ---- | ----------- |
+| 增加 `i` | 0    | `[1, 0, 0]` |
+| 增加 `i` | 1    | `[1, 2, 0]` |
+| 减少 `i` | 0    | `[2, 2, 0]` |
+| 增加 `i` | 1    | `[2, 4, 0]` |
+| 增加 `i` | 2    | `[2, 4, 3]` |
+
+`gameScore` 中的最小值为 2 ，这是所有方案中可以得到的最大值，所以返回 2 。
+
+ 
+
+**提示：**
+
+- `2 <= n == points.length <= 5 * 10^4`
+- `1 <= points[i] <= 10^6`
+- `1 <= m <= 10^9`
+
+
+
+
+
+
+
+**问题解读**
+
+题目要求我们在最多 `m` 次操作内，通过移动下标并累加 `points` 数组中的值到 `gameScore` 数组中，使得最终 `gameScore` 数组中的最小值最大化。
+
+
+
+代码作者：灵茶山艾府
+链接：https://leetcode.cn/problems/maximize-the-minimum-game-score/solutions/3068672/er-fen-da-an-cong-zuo-dao-you-tan-xin-py-3bhl/
+
+```python
+class Solution:
+    def maxScore(self, points: List[int], m: int) -> int:
+        def check(low: int) -> bool:
+            n = len(points)
+            rem = m
+            pre = 0
+            for i, p in enumerate(points):
+                k = (low - 1) // p + 1 - pre  # 还需要操作的次数
+                if i == n - 1 and k <= 0:  # 最后一个数已经满足要求
+                    break
+                if k < 1:
+                    k = 1  # 至少要走 1 步
+                rem -= k * 2 - 1  # 左右横跳
+                if rem < 0:
+                    return False
+                pre = k - 1  # 右边那个数顺带操作了 k-1 次
+            return True
+
+        left = 0
+        right = (m + 1) // 2 * min(points) + 1
+        while left + 1 < right:
+            mid = (left + right) // 2
+            if check(mid):
+                left = mid
+            else:
+                right = mid
+        return left
+
+```
+
+> **时间复杂度分析**
+>
+> 1. 二分查找部分
+>    - `left` 和 `right` 的范围是 `O(m * min(points))`，但 `二分查找` 让搜索减少为 `O(log(m * min(points)))`。
+> 2. `check(low)` 的执行
+>    - 需要遍历 `points` 一遍，复杂度 `O(n)`。
+>
+> **总复杂度：**
+>
+> O(nlog(m⋅min(points)))
+>
+> 这比暴力枚举所有可能的 `low` 值 **快很多**，特别是当 `m` 很大时。
+>
+> ------
+>
+> 总结
+>
+> - 该算法使用 **二分查找 + 贪心** 。
+> - **二分查找** 用于寻找最大可能的 `maxScore` 。
+> - **贪心策略 (`check`)** 用于判断在 `m` 步内是否能让 `points` 中的最小值达到 `low`。
+> - 优化点：
+>   - `check(low)` 通过 `左右横跳` 方式减少不必要的操作，保证 `m` 步内的最大化。
+>   - **避免暴力搜索**，将问题缩小到 `O(n log m)` 的范围，提高效率。
+
+
+
+
+
+## 第 435 场周赛-20250202
+
+中国时间：2025-02-02 10:30 1 小时 30 分
+
+https://leetcode.cn/contest/weekly-contest-435/
+
+
+
+### 3442.奇偶频次间的最大差值I
+
+https://leetcode.cn/problems/maximum-difference-between-even-and-odd-frequency-i/
+
+给你一个由小写英文字母组成的字符串 `s` 。请你找出字符串中两个字符的出现频次之间的 **最大** 差值，这两个字符需要满足：
+
+- 一个字符在字符串中出现 **偶数次** 。
+- 另一个字符在字符串中出现 **奇数次** 。
+
+返回 **最大** 差值，计算方法是出现 **奇数次** 字符的次数 **减去** 出现 **偶数次** 字符的次数。
+
+ 
+
+**示例 1：**
+
+**输入：**s = "aaaaabbc"
+
+**输出：**3
+
+**解释：**
+
+- 字符 `'a'` 出现 **奇数次** ，次数为 `5` ；字符 `'b'` 出现 **偶数次** ，次数为 `2` 。
+- 最大差值为 `5 - 2 = 3` 。
+
+**示例 2：**
+
+**输入：**s = "abcabcab"
+
+**输出：**1
+
+**解释：**
+
+- 字符 `'a'` 出现 **奇数次** ，次数为 `3` ；字符 `'c'` 出现 **偶数次** ，次数为 2 。
+- 最大差值为 `3 - 2 = 1` 。
+
+ 
+
+**提示：**
+
+- `3 <= s.length <= 100`
+- `s` 仅由小写英文字母组成。
+- `s` 至少由一个出现奇数次的字符和一个出现偶数次的字符组成。
+
+
+
+```python
+from collections import Counter
+class Solution:
+    def maxDifference(self, s: str) -> int:
+        count = Counter(s)
+        odd, even = [], []
+        for key,value in count.items():
+            if value % 2 == 1:
+                odd.append((value, key))
+            else:
+                even.append((value, key))
+        odd.sort(reverse = True)
+        even.sort()
+        #print(odd, even)
+        return odd[0][0] - even[0][0]
+
+if __name__ == '__main__':
+    s = Solution()
+    print(s.maxDifference("aaaaabbc"))
+    print(s.maxDifference("abcabcab"))
+
+```
+
+
+
+### 3443.K次修改后的最大曼哈顿距离
+
+greedy, https://leetcode.cn/problems/maximum-manhattan-distance-after-k-changes/
+
+给你一个由字符 `'N'`、`'S'`、`'E'` 和 `'W'` 组成的字符串 `s`，其中 `s[i]` 表示在无限网格中的移动操作：
+
+- `'N'`：向北移动 1 个单位。
+- `'S'`：向南移动 1 个单位。
+- `'E'`：向东移动 1 个单位。
+- `'W'`：向西移动 1 个单位。
+
+初始时，你位于原点 `(0, 0)`。你 **最多** 可以修改 `k` 个字符为任意四个方向之一。
+
+请找出在 **按顺序** 执行所有移动操作过程中的 **任意时刻** ，所能达到的离原点的 **最大曼哈顿距离** 。
+
+**曼哈顿距离** 定义为两个坐标点 `(xi, yi)` 和 `(xj, yj)` 的横向距离绝对值与纵向距离绝对值之和，即 `|xi - xj| + |yi - yj|`。
+
+ 
+
+**示例 1：**
+
+**输入：**s = "NWSE", k = 1
+
+**输出：**3
+
+**解释：**
+
+将 `s[2]` 从 `'S'` 改为 `'N'` ，字符串 `s` 变为 `"NWNE"` 。
+
+| 移动操作    | 位置 (x, y) | 曼哈顿距离 | 最大值 |
+| ----------- | ----------- | ---------- | ------ |
+| s[0] == 'N' | (0, 1)      | 0 + 1 = 1  | 1      |
+| s[1] == 'W' | (-1, 1)     | 1 + 1 = 2  | 2      |
+| s[2] == 'N' | (-1, 2)     | 1 + 2 = 3  | 3      |
+| s[3] == 'E' | (0, 2)      | 0 + 2 = 2  | 3      |
+
+执行移动操作过程中，距离原点的最大曼哈顿距离是 3 。
+
+**示例 2：**
+
+**输入：**s = "NSWWEW", k = 3
+
+**输出：**6
+
+**解释：**
+
+将 `s[1]` 从 `'S'` 改为 `'N'` ，将 `s[4]` 从 `'E'` 改为 `'W'` 。字符串 `s` 变为 `"NNWWWW"` 。
+
+执行移动操作过程中，距离原点的最大曼哈顿距离是 6 。
+
+ 
+
+**示例 3：**
+
+输入：s ="SN", k =0
+
+输出:  1
+
+解释：
+
+因为SN两个方向会互相抵消，所以最大是1。此外，WE也会互相抵消。
+
+
+
+**提示：**
+
+- `1 <= s.length <= 10^5`
+- `0 <= k <= s.length`
+- `s` 仅由 `'N'`、`'S'`、`'E'` 和 `'W'` 。
+
+
+
+
+
+思路：贪心法，是尽量修改K次为两个方向不能互相抵消的两个字符。
+
+
+
+思路：统计每个方向出现频次，找出最大两个频次。如果这两个不是互相抵消的方向，就尽量修改其他方向K次为这两个方向。如果这两个方向是互相抵消的，就修改次小频次的方向为频次大的方向，即每次距离+2;如果K还没有用完，再考虑修改其他方向。
+
+
+
+```python
+class Solution:
+    def maxDistance(self, s: str, k: int) -> int:
+        # 初始化计数器和答案
+        ce = cw = cn = cs = ans = 0
+        
+        for i, ch in enumerate(s):
+            # 更新对应方向的计数
+            if ch == "N": cn += 1
+            elif ch == "S": cs += 1
+            elif ch == "E": ce += 1
+            else: cw += 1
+            
+            # 计算东西向和南北向的净位移
+            bx = abs(ce - cw)
+            by = abs(cn - cs)
+            
+            # 可抵消的最小步数
+            px = min(ce, cw)
+            py = min(cn, cs)
+            
+            # 计算基础距离加上最多k次转换后能增加的距离
+            base = bx + by
+            additional = min(k, px + py) * 2
+            cand = base + additional
+            
+            # 更新最大距离，同时考虑当前索引i+1（因为enumerate从0开始）
+            ans = max(ans, min(i + 1, cand))
+        
+        return ans
+```
+
+
+
+```python
+class Solution:
+    def maxDistance(self, s: str, k: int) -> int:
+        ans = 0
+        ce = cw = cn = cs = 0
+        for i, ch in enumerate(s, 1):
+            if ch == "N":
+                cn += 1
+            elif ch == "S":
+                cs += 1
+            elif ch == "E":
+                ce += 1
+            else:
+                cw += 1
+            bx = abs(ce - cw)
+            px = min(ce, cw)
+            by = abs(cn - cs)
+            py = min(cn, cs)
+            base = bx + by
+            cand = base + 2 * min(k, px + py)
+            cand = min(i, cand)
+            ans = max(ans, cand)
+        return ans
+```
+
+> 这个`Solution`类中的`maxDistance`方法是用于计算给定字符串`s`和最多可修改次数`k`情况下，所能达到的最大曼哈顿距离。下面是对这段代码的详细解读：
+>
+> ### 变量解释
+>
+> - `ans`: 存储目前为止找到的最大曼哈顿距离。
+> - `ce`, `cw`, `cn`, `cs`: 分别记录到当前位置为止，向东（East）、向西（West）、向北（North）、向南（South）移动的次数。
+>
+> ### 逻辑流程
+>
+> 1. **遍历字符串**：使用`enumerate(s, 1)`来遍历字符串`s`，同时获取当前字符的位置索引`i`（从1开始）和字符`ch`。
+> 2. **更新方向计数**：根据当前字符`ch`的方向（`N`, `S`, `E`, `W`），相应地增加对应的计数器（`cn`, `cs`, `ce`, `cw`）。
+> 3. **计算基础曼哈顿距离**：
+>    - `bx = abs(ce - cw)`: 计算当前东西方向上的净位移绝对值。
+>    - `px = min(ce, cw)`: 计算可以抵消的东西方向步数最小值。
+>    - `by = abs(cn - cs)`: 计算当前南北方向上的净位移绝对值。
+>    - `py = min(cn, cs)`: 计算可以抵消的南北方向步数最小值。
+> 4. **计算候选最大距离**：
+>    - `base = bx + by`: 基础曼哈顿距离为东西方向与南北方向净位移绝对值之和。
+>    - `cand = base + 2 * min(k, px + py)`: 候选最大距离通过基础距离加上最多`k`次转换后能增加的距离。这里假设每次转换都能最大化地增加距离，即每次转换都能抵消一对相反方向的移动，并将其改为相同方向，从而每次增加2个单位距离。
+> 5. **限制条件**：`cand = min(i, cand)`确保了候选距离不会超过当前已经走过的步数`i`。
+> 6. **更新答案**：如果当前的候选距离`cand`大于已知的最大距离`ans`，则更新`ans`。
+>
+> ### 总结
+>
+> 该算法的核心思想在于通过遍历字符串，实时计算并更新能够达到的最大曼哈顿距离。它利用了每个方向上的净位移以及可以通过`k`次变换消除的步数来估算最大可能的距离。这种方法巧妙地避免了直接尝试所有可能的`k`次变换组合，从而提高了效率。不过需要注意的是，这里的策略是基于一种贪心的思想，即尽可能地利用`k`次机会来增加净位移，而不是考虑所有可能的情况，这在大多数情况下是有效的，但在特定输入下可能不是全局最优解。
+
+
+
+### 3444.使数组包含目标值倍数的最少增量
+
+动态规划（DP）+ 最小公倍数（LCM）+ 位掩码（Bitmasking），https://leetcode.cn/problems/minimum-increments-for-target-multiples-in-an-array/
+
+给你两个数组 `nums` 和 `target` 。
+
+在一次操作中，你可以将 `nums` 中的任意一个元素递增 1 。
+
+返回要使 `target` 中的每个元素在 `nums` 中 **至少** 存在一个倍数所需的 **最少操作次数** 。
+
+ 
+
+**示例 1：**
+
+**输入：**nums = [1,2,3], target = [4]
+
+**输出：**1
+
+**解释：**
+
+满足题目条件的最少操作次数是 1 。
+
+- 将 3 增加到 4 ，需要 1 次操作，4 是目标值 4 的倍数。
+
+**示例 2：**
+
+**输入：**nums = [8,4], target = [10,5]
+
+**输出：**2
+
+**解释：**
+
+满足题目条件的最少操作次数是 2 。
+
+- 将 8 增加到 10 ，需要 2 次操作，10 是目标值 5 和 10 的倍数。
+
+**示例 3：**
+
+**输入：**nums = [7,9,10], target = [7]
+
+**输出：**0
+
+**解释：**
+
+数组中已经包含目标值 7 的一个倍数，不需要执行任何额外操作。
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 5 * 10^4`
+- `1 <= target.length <= 4`
+- `target.length <= nums.length`
+- `1 <= nums[i], target[i] <= 10^4`
+
+
+
+有两个列表 `nums` 和 `target`，要求通过对 `nums` 中的元素增加一些数值，使得它们符合目标的倍数要求。我们最终的目标是计算最少的增量，使得每个目标的倍数都得到满足。
+
+解题思路：
+
+1. **目标描述**：对于每个目标 `target[i]`，我们需要通过对 `nums` 中的元素进行一些增量操作，使得它们满足某种倍数关系。
+2. **位运算与子集组合**：使用位掩码 (`mask`) 来表示各个目标的组合情况。`mask` 表示一个目标子集，这样就可以通过动态规划 (DP) 遍历所有的目标组合。
+3. **最小公倍数（LCM）计算**：通过计算每个子集目标的最小公倍数（LCM），来帮助确定每次增量操作所需要的最小值。
+
+详细分析：
+
+1. **子集遍历**：
+
+   - 对于目标 `target` 中的每一个子集，我们计算其对应的最小公倍数（LCM）。
+   - `lcm_map` 是一个字典，用来存储每个子集对应的 LCM 值。使用位掩码（从 `1` 到 `full`）来遍历所有子集。
+
+2. **动态规划（DP）**：
+
+   - `dp[s]` 表示从 `nums` 中选取的元素的增量之和，使得已经满足了 `target` 中子集 `s` 的倍数条件。
+   - 我们通过逐个更新 `dp` 数组，来得到每个可能的子集满足的最小增量值。
+
+3. **LCM 计算**：
+
+   - 对于每个目标子集，首先计算该子集的 LCM，然后对每个 `nums` 中的元素，计算将其增加到满足 LCM 倍数的最小增量。
+
+代码解读：
+
+```python
+from math import gcd
+from typing import List
+
+class Solution:
+    def minimumIncrements(self, nums: List[int], target: List[int]) -> int:
+        m = len(target)
+        full = (1 << m) - 1  # 计算全子集的掩码
+
+        # 计算每个子集的最小公倍数 (LCM)
+        lcm_map = {}
+        for mask in range(1, full + 1):  # 从1开始，表示不为空的子集
+            l = 1
+            i = 0
+            tmp = mask
+            while tmp:
+                if tmp & 1:
+                    t = target[i]
+                    l = l * t // gcd(l, t)  # 计算LCM
+                tmp //= 2  # 移除最低有效位
+                i += 1
+            lcm_map[mask] = l
+
+        # 动态规划：dp[s]表示达到子集s的最小增量
+        inf = float('inf')
+        dp = [inf] * (full + 1)
+        dp[0] = 0  # 初始状态，子集为空时，增量为0
+
+        # 遍历nums数组
+        for a in nums:
+            new_dp = dp[:]
+            for s in range(full + 1):
+                if dp[s] == inf:
+                    continue  # 如果当前子集不可能达到，跳过
+
+                # 对于每个子集和LCM，计算增量
+                for sub, L in lcm_map.items():
+                    cost = (L - (a % L)) % L  # 计算使a满足L倍数的增量
+                    ns = s | sub  # 更新子集
+                    if new_dp[ns] > dp[s] + cost:
+                        new_dp[ns] = dp[s] + cost  # 更新最小增量
+            dp = new_dp
+
+        return dp[full]  # 返回全子集的最小增量
+
+```
+
+> 关键部分解释：
+>
+> - **`full = (1 << m) - 1`**：这表示 `target` 数组的所有子集掩码，即 `m` 个目标的全组合（即所有目标的集合）。
+> - **`lcm_map`**：通过位掩码和目标数组 `target` 的组合计算每个子集的最小公倍数（LCM）。
+> - **动态规划数组 `dp`**：`dp[s]` 记录了使得目标子集 `s` 满足倍数条件的最小增量，初始时为 `inf`，表示尚未达到该状态。
+>
+> 优化建议：
+>
+> 1. **减小空间复杂度**：
+>    - `dp` 和 `new_dp` 每次只依赖于上一轮的结果，可以直接修改 `dp` 数组，避免多次复制。
+>
+> 2. **提前终止**：
+>    - 如果发现某个子集的增量已经达到最小值，可以提前结束进一步的计算，避免不必要的计算。
+>
+> 总结：
+>
+> 这个解法利用了位运算表示子集组合和动态规划，时间复杂度较高，尤其是涉及 LCM 和子集的遍历（`2^m` 的子集），适用于中等规模的输入数据。如果要进一步优化，可能需要减少不必要的状态更新和优化 LCM 的计算。
+
+
+
+### 3445.奇偶频次间的最大差值II
+
+前缀和 + 哈希表（字典）+ 二分查找 组合的 优化滑动窗口，https://leetcode.cn/problems/maximum-difference-between-even-and-odd-frequency-ii/
+
+给你一个字符串 `s` 和一个整数 `k` 。请你找出 `s` 的子字符串 `subs` 中两个字符的出现频次之间的 **最大** 差值，`freq[a] - freq[b]` ，其中：
+
+- `subs` 的长度 **至少** 为 `k` 。
+- 字符 `a` 在 `subs` 中出现奇数次。
+- 字符 `b` 在 `subs` 中出现偶数次。
+
+返回 **最大** 差值。
+
+**注意** ，`subs` 可以包含超过 2 个 **互不相同** 的字符。.
+
+**子字符串** 是字符串中的一个连续字符序列。
+
+ 
+
+**示例 1：**
+
+**输入：**s = "12233", k = 4
+
+**输出：**-1
+
+**解释：**
+
+对于子字符串 `"12233"` ，`'1'` 的出现次数是 1 ，`'3'` 的出现次数是 2 。差值是 `1 - 2 = -1` 。
+
+**示例 2：**
+
+**输入：**s = "1122211", k = 3
+
+**输出：**1
+
+**解释：**
+
+对于子字符串 `"11222"` ，`'2'` 的出现次数是 3 ，`'1'` 的出现次数是 2 。差值是 `3 - 2 = 1` 。
+
+**示例 3：**
+
+**输入：**s = "110", k = 3
+
+**输出：**-1
+
+ 
+
+**提示：**
+
+- `3 <= s.length <= 3 * 10^4`
+- `s` 仅由数字 `'0'` 到 `'4'` 组成。
+- 输入保证至少存在一个子字符串是由一个出现奇数次的字符和一个出现偶数次的字符组成。
+- `1 <= k <= s.length`
+
+
+
+
+
+
+
+这个问题的核心是 **前缀和 + 哈希表（字典）+ 二分查找** 组合的 **优化滑动窗口** 方法。
+
+**解题思路**
+
+1. **前缀和计算频次**
+   - 使用 **二维前缀和数组 `P[i][d]`** 统计 **前 `i` 个字符中 `d` 出现的次数**（`d` 代表 `0-4`）。
+   - 计算每个 `P[i][a]` 和 `P[i][b]`，并用 `P[i][a] - P[i][b]` 作为关键值进行优化。
+
+2. **分组存储不同的奇偶性**
+   - 记录 `P[i][a]` 和 `P[i][b]` **的奇偶性组合**，存入 `groups[(pa, pb)]`，即：
+     - `pa = P[i][a] % 2`，表示 `a` 的奇偶性。
+     - `pb = P[i][b] % 2`，表示 `b` 的奇偶性。
+   - 这可以帮助我们 **快速查找某个 `a` 和 `b` 的奇偶性匹配的子串**。
+
+3. **二分查找优化**
+   - **存储前缀最小值**，用于计算 `P[i][a] - P[i][b]` 的最优子串。
+   - **二分查找 `bisect_right`** 快速找到满足 `k` 长度的最小索引 `j`，加速 `O(n^2)` 的暴力解法到 `O(n log n)`。
+
+**代码优化**
+
+- **减少 `O(n^2)` 的冗余计算**：
+  - **使用 `defaultdict(list)`** 代替普通字典手动初始化 `groups`。
+  - **去除不必要的 `if` 判断**，简化代码逻辑。
+  - **优化 `bisect_right` 查询**，减少 `O(n log n)` 复杂度的查询次数。
+
+
+
+**优化后的代码**
+
+```python
+from bisect import bisect_right
+from collections import defaultdict
+
+class Solution:
+    def maxDifference(self, s: str, k: int) -> int:
+        n = len(s)
+
+        # 计算前缀和 P[i][d]，其中 d ∈ {0,1,2,3,4}
+        P = [[0] * 5 for _ in range(n + 1)]
+        for i, ch in enumerate(s):
+            d = ord(ch) - ord("0")
+            for j in range(5):
+                P[i + 1][j] = P[i][j]  # 继承前一个前缀和
+            P[i + 1][d] += 1  # 当前字符出现次数+1
+
+        ans = float('-inf')
+
+        # 遍历所有 a, b 的组合（a != b）
+        for a in range(5):
+            for b in range(5):
+                if a == b:
+                    continue
+
+                # 存储 (pa, pb) 奇偶性的索引和差值
+                groups = defaultdict(list)
+                for i in range(n + 1):
+                    pa, pb = P[i][a] & 1, P[i][b] & 1
+                    d_val = P[i][a] - P[i][b]
+                    groups[(pa, pb)].append((i, d_val, P[i][b]))
+
+                # 预处理前缀最小值（前缀和单调队列优化）
+                proc = {}
+                for key, lst in groups.items():
+                    idx_arr, d_arr, pb_arr = zip(*lst)  # 解包三列数据
+                    pre_min = list(d_arr)  # 复制 `d_arr` 作为最小值数组
+
+                    # 构造前缀最小值数组
+                    min_val = float('inf')
+                    for j in range(len(pre_min)):
+                        min_val = min(min_val, pre_min[j])
+                        pre_min[j] = min_val
+
+                    proc[key] = (idx_arr, pb_arr, pre_min)
+
+                # 遍历所有可能的右端点 pos
+                for pos in range(k, n + 1):
+                    pa, pb = P[pos][a] & 1, P[pos][b] & 1
+                    key = (1 - pa, pb)
+
+                    if key not in proc:
+                        continue  # 如果没有对应奇偶性的组合，跳过
+
+                    idx_arr, pb_arr, pre_min = proc[key]
+
+                    # 使用二分查找找到符合 k 限制的最小 j
+                    j1 = bisect_right(idx_arr, pos - k) - 1
+                    j2 = bisect_right(pb_arr, P[pos][b] - 2) - 1
+                    j = min(j1, j2)
+
+                    if j >= 0:
+                        cur = (P[pos][a] - P[pos][b]) - pre_min[j]
+                        ans = max(ans, cur)
+
+        return ans
+```
+
+
+
+> **优化点**
+>
+> **1. 使用 `defaultdict(list)` 简化 `groups` 结构**
+>
+> 原代码手动创建 `groups`：
+>
+> ```python
+> groups = {}
+> for pa in (0, 1):
+>  for pb in (0, 1):
+>      groups[(pa, pb)] = []
+> ```
+>
+> 优化为：
+>
+> ```python
+> groups = defaultdict(list)
+> ```
+>
+> 这样在 `groups[(pa, pb)].append(...)` 时 **自动初始化**，减少了手动赋值的复杂度。
+>
+> ---
+>
+> **2. `zip(*lst)` 直接提取列，减少循环次数**
+>
+> 原代码：
+>
+> ```python
+> idx_arr = [t[0] for t in lst]
+> pb_arr = [t[2] for t in lst]
+> d_arr = [t[1] for t in lst]
+> ```
+>
+> 优化为：
+>
+> ```python
+> idx_arr, d_arr, pb_arr = zip(*lst)
+> ```
+>
+> 直接从 `lst` 提取 **所有列数据**，提高可读性，避免 `O(n)` 额外循环。
+>
+> ---
+>
+> **3. 预计算 `pre_min` 直接更新**
+>
+> 原代码：
+>
+> ```python
+> pre_min = []
+> cur = 10**9
+> for d in d_arr:
+>  if d < cur:
+>      cur = d
+>  pre_min.append(cur)
+> ```
+>
+> 优化为：
+>
+> ```python
+> pre_min = list(d_arr)
+> min_val = float('inf')
+> for j in range(len(pre_min)):
+>  min_val = min(min_val, pre_min[j])
+>  pre_min[j] = min_val
+> ```
+>
+> - 直接用 `list(d_arr)` **减少一次数组拷贝**。
+> - 使用 `min_val` **单调更新**，简洁高效。
+>
+> ---
+>
+> **4. 避免不必要的 `continue` 和 `if`**
+>
+> 原代码：
+>
+> ```python
+> if key not in proc:
+>     continue
+> ```
+>
+> 优化：
+>
+> ```python
+> proc.get(key, None)  # 直接返回 None，避免 continue 逻辑跳跃
+> ```
+>
+> 不过这个优化 **可选**，因为 `continue` 仍然可以有效减少循环嵌套深度。
+>
+> ---
+>
+> **时间复杂度分析**
+>
+> | 操作                  | 复杂度       |
+> | --------------------- | ------------ |
+> | 计算前缀和 `P`        | `O(n)`       |
+> | 遍历 `a, b` 组合      | `O(25)`      |
+> | 分组存储前缀          | `O(n)`       |
+> | 预处理前缀最小值      | `O(n log n)` |
+> | 遍历 `pos` 并二分查找 | `O(n log n)` |
+>
+> **最终时间复杂度**：
+> $
+> O(25 \times (n + n \log n)) = O(n \log n)
+> $
+> 由于 `25` 是常数，这个解法对于 `n ≤ 30,000` **可以接受**。
+>
+> ---
+>
+> **最终优化结果**
+>
+> 1. **`defaultdict(list)` 替代手动字典初始化**
+> 2. **`zip(*lst)` 直接提取列数据**
+> 3. **预计算 `pre_min` 使用 `min_val` 直接更新**
+> 4. **减少 `if` 和 `continue`**
+> 5. **`O(n log n)` 复杂度，高效处理大数据**
+>
+> 这样优化后，代码更清晰、执行速度更快，能够顺利通过 `LeetCode` 的测试用例！
+
+
+
+
+
+```python
+class Solution:
+    def maxDifference(self, s: str, k: int) -> int:
+        n = len(s)
+
+        P = [[0] * 5 for _ in range(n + 1)]
+        for i, ch in enumerate(s):
+            d = ord(ch) - ord("0")
+            for j in range(5):
+                P[i + 1][j] = P[i][j]
+            P[i + 1][d] += 1
+
+        ans = -(10**9)
+
+        for a in range(5):
+            for b in range(5):
+                if a == b:
+                    continue
+
+                groups = {}
+                for pa in (0, 1):
+                    for pb in (0, 1):
+                        groups[(pa, pb)] = []
+                for i in range(n + 1):
+                    pa = P[i][a] & 1
+                    pb = P[i][b] & 1
+                    d_val = P[i][a] - P[i][b]
+                    groups[(pa, pb)].append((i, d_val, P[i][b]))
+
+                proc = {}
+                for key, lst in groups.items():
+
+                    idx_arr = [t[0] for t in lst]
+                    pb_arr = [t[2] for t in lst]
+                    d_arr = [t[1] for t in lst]
+
+                    pre_min = []
+                    cur = 10**9
+                    for d in d_arr:
+                        if d < cur:
+                            cur = d
+                        pre_min.append(cur)
+                    proc[key] = (idx_arr, pb_arr, pre_min, d_arr)
+
+                for pos in range(k, n + 1):
+                    pa = P[pos][a] & 1
+                    pb = P[pos][b] & 1
+
+                    key = (1 - pa, pb)
+                    idx_arr, pb_arr, pre_min, _ = proc[key]
+
+                    j1 = bisect_right(idx_arr, pos - k) - 1
+                    j2 = bisect_right(pb_arr, P[pos][b] - 2) - 1
+                    j = min(j1, j2)
+                    if j >= 0:
+                        cur = (P[pos][a] - P[pos][b]) - pre_min[j]
+                        if cur > ans:
+                            ans = cur
+        return ans
 ```
 
 
