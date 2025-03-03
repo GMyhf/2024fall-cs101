@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1005 GMT+8 Mar 3 2025
+Updated 2236 GMT+8 Mar 3 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -19808,6 +19808,135 @@ if __name__ == "__main__":
 除了问AI解读程序，这个可视化工具也很好用，https://pythontutor.com/
 
 ![image-20250223231732389](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20250223231732389.png)
+
+
+
+## 1278.分割回文串III
+
+dp, https://leetcode.cn/problems/palindrome-partitioning-iii/
+
+给你一个由小写字母组成的字符串 `s`，和一个整数 `k`。
+
+请你按下面的要求分割字符串：
+
+- 首先，你可以将 `s` 中的部分字符修改为其他的小写英文字母。
+- 接着，你需要把 `s` 分割成 `k` 个非空且不相交的子串，并且每个子串都是回文串。
+
+请返回以这种方式分割字符串所需修改的最少字符数。
+
+ 
+
+**示例 1：**
+
+```
+输入：s = "abc", k = 2
+输出：1
+解释：你可以把字符串分割成 "ab" 和 "c"，并修改 "ab" 中的 1 个字符，将它变成回文串。
+```
+
+**示例 2：**
+
+```
+输入：s = "aabbc", k = 3
+输出：0
+解释：你可以把字符串分割成 "aa"、"bb" 和 "c"，它们都是回文串。
+```
+
+**示例 3：**
+
+```
+输入：s = "leetcode", k = 8
+输出：0
+```
+
+ 
+
+**提示：**
+
+- `1 <= k <= s.length <= 100`
+- `s` 中只含有小写英文字母。
+
+
+
+思路分为两步：
+
+1. **预处理子串转换为回文所需的修改数**  
+   用二维数组 `cost[i][j]` 表示将子串 `s[i:j+1]` 修改为回文所需的最少修改数。可以利用动态规划，从两端向中间比较字符，若两端字符不同则需要修改。
+
+2. **动态规划求分割方案**  
+   定义 `dp[i][t]` 表示将 `s[0:i]` 分割为 `t` 个回文串所需的最少修改数。转移时枚举最后一个回文串的起点位置 `p`，即  
+
+   ```
+   dp[i][t] = min_{p from t-1 to i-1} { dp[p][t-1] + cost[p][i-1] }
+   ```
+
+   初始时 `dp[i][1] = cost[0][i-1]`（即把整个子串当作一个回文串修改）。
+
+下面是完整代码：
+
+```python
+class Solution:
+    def palindromePartition(self, s: str, k: int) -> int:
+        n = len(s)
+        # 如果 k 等于 s 长度，每个字符单独为回文，无需修改
+        if k == n:
+            return 0
+
+        # 预处理：cost[i][j] 表示将 s[i:j+1] 修改为回文的最小修改数
+        cost = [[0] * n for _ in range(n)]
+        # 注意：单个字符天然回文，cost[i][i]=0
+        # 从下标 i 从 n-1 递减，这样可以确保计算 cost[i+1][j-1] 时已被处理
+        for i in range(n - 1, -1, -1):
+            for j in range(i + 1, n):
+                if s[i] == s[j]:
+                    cost[i][j] = cost[i + 1][j - 1] if j - i > 1 else 0
+                else:
+                    cost[i][j] = (cost[i + 1][j - 1] if j - i > 1 else 0) + 1
+
+        # dp[i][t] 表示 s[0:i] 分割为 t 个回文子串所需的最少修改数
+        # 注意：i 的范围 0...n，t 的范围 0...k
+        dp = [[float('inf')] * (k + 1) for _ in range(n + 1)]
+        dp[0][0] = 0
+
+        # 初始化，当分割成 1 个回文串时
+        for i in range(1, n + 1):
+            dp[i][1] = cost[0][i - 1]
+
+        # 动态规划
+        for i in range(1, n + 1):  # i 表示 s[0:i]
+            for t in range(2, min(k, i) + 1):  # t 从 2 到 k，且 t<=i
+                # 枚举最后一个回文串的起点 p, 保证前面至少有 t-1 个字符
+                for p in range(t - 1, i):
+                    dp[i][t] = min(dp[i][t], dp[p][t - 1] + cost[p][i - 1])
+
+        return dp[n][k]
+
+
+# 测试用例
+if __name__ == "__main__":
+    tests = [
+        ("abc", 2, 1),
+        ("aabbc", 3, 0),
+        ("leetcode", 8, 0)
+    ]
+    sol = Solution()
+    for s, k, expected in tests:
+        result = sol.palindromePartition(s, k)
+        print(f"s = {s}, k = {k}, 最少修改数 = {result}, 预期 = {expected}")
+
+```
+
+说明
+
+- **预处理 cost 数组**  
+  对于每个区间 `[i, j]`，如果 `s[i] == s[j]`，则 `cost[i][j] = cost[i+1][j-1]`；否则需要增加 1 的修改量。注意边界处理，当区间长度为 2 时直接比较即可。
+
+- **动态规划转移**  
+  对于分割成多个回文串，枚举最后一个分割点 `p`，保证前面部分已经被正确分割为 `t-1` 个回文串，后面部分 `s[p:i]` 转换为回文的代价为 `cost[p][i-1]`。
+
+运行测试代码可以验证示例情况的输出是否正确。
+
+
 
 
 
