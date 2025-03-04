@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2236 GMT+8 Mar 3 2025
+Updated 2133 GMT+8 Mar 4 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -16721,7 +16721,7 @@ def findMedianSortedArrays(nums1, nums2):
             left = partition1 + 1
 ```
 
-### 解释：
+**解释：**
 
 1. 确保二分查找在较小的数组上进行：
    - 我们首先确保 `nums1` 是较小的数组，这样可以减少二分查找的次数。
@@ -20125,6 +20125,70 @@ class Solution:			# 作者：灵茶山艾府
         # 判断是否鼠赢
         return self.catMouseGame(g_mouse, g_cat, mx * n + my, cx * n + cy, fx * n + fy) == 1
 
+```
+
+
+
+## 1745.分割回文串IV
+
+dp, https://leetcode.cn/problems/palindrome-partitioning-iv/
+
+给你一个字符串 `s` ，如果可以将它分割成三个 **非空** 回文子字符串，那么返回 `true` ，否则返回 `false` 。
+
+当一个字符串正着读和反着读是一模一样的，就称其为 **回文字符串** 。
+
+ 
+
+**示例 1：**
+
+```
+输入：s = "abcbdd"
+输出：true
+解释："abcbdd" = "a" + "bcb" + "dd"，三个子字符串都是回文的。
+```
+
+**示例 2：**
+
+```
+输入：s = "bcbddxy"
+输出：false
+解释：s 没办法被分割成 3 个回文子字符串。
+```
+
+ 
+
+**提示：**
+
+- `3 <= s.length <= 2000`
+- `s` 只包含小写英文字母。
+
+
+
+```python
+class Solution:
+    def checkPartitioning(self, s: str) -> bool:
+        n = len(s)
+        # dp[i][j] 表示 s[i:j+1] 是否是回文串
+        dp = [[False] * n for _ in range(n)]
+
+        # 预计算所有子串的回文情况
+        for j in range(n):
+            for i in range(j + 1):
+                if s[i] == s[j] and (j - i <= 2 or dp[i + 1][j - 1]):
+                    dp[i][j] = True
+
+        # 检查是否可以分成三个回文子串
+        for i in range(1, n - 1):  # 第一个分割点
+            if dp[0][i - 1]:
+                for j in range(i, n - 1):  # 第二个分割点
+                    if dp[i][j] and dp[j + 1][n - 1]:
+                        return True
+        return False
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.checkPartitioning("abcbdd"))
+    print(sol.checkPartitioning("bcbddxy"))
 ```
 
 
