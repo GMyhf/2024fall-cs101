@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0008 GMT+8 Mar 7 2025
+Updated 1134 GMT+8 Mar 7 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -15271,6 +15271,90 @@ if __name__ == "__main__":
 - 哈希表记录了每种 `mask` 出现的次数，用于快速计算美丽子数组的数量。
 
 这个方法高效且易于实现，适合处理大规模数据。
+
+
+
+## 2597.美丽子集的数目
+
+combination, backtracking, https://leetcode.cn/problems/the-number-of-beautiful-subsets/
+
+给你一个由正整数组成的数组 `nums` 和一个 **正** 整数 `k` 。
+
+如果 `nums` 的子集中，任意两个整数的绝对差均不等于 `k` ，则认为该子数组是一个 **美丽** 子集。
+
+返回数组 `nums` 中 **非空** 且 **美丽** 的子集数目。
+
+`nums` 的子集定义为：可以经由 `nums` 删除某些元素（也可能不删除）得到的一个数组。只有在删除元素时选择的索引不同的情况下，两个子集才会被视作是不同的子集。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [2,4,6], k = 2
+输出：4
+解释：数组 nums 中的美丽子集有：[2], [4], [6], [2, 6] 。
+可以证明数组 [2,4,6] 中只存在 4 个美丽子集。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1], k = 1
+输出：1
+解释：数组 nums 中的美丽数组有：[1] 。
+可以证明数组 [1] 中只存在 1 个美丽子集。 
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 18`
+- `1 <= nums[i], k <= 1000`
+
+
+
+
+
+```python
+from itertools import chain, combinations
+from typing import List
+
+class Solution:
+    def beautifulSubsets(self, nums: List[int], k: int) -> int:
+        def powerset(iterable):
+            "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+            s = list(iterable)
+            return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+
+        cnt = 0
+        all_subsets = list(powerset(nums))
+        
+        for subset in all_subsets:
+            if len(subset) == 0:
+                continue
+            
+            is_beautiful = True
+            for i in range(len(subset)):
+                for j in range(i + 1, len(subset)):
+                    if abs(subset[i] - subset[j]) == k:
+                        is_beautiful = False
+                        break
+                if not is_beautiful:
+                    break
+            
+            if is_beautiful:
+                cnt += 1
+
+        return cnt
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.beautifulSubsets([2, 4, 6], 2))  # 示例调用
+```
+
+
 
 
 
