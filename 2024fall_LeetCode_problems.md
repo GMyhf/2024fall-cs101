@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1134 GMT+8 Mar 7 2025
+Updated 1111 GMT+8 Mar 8 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -20696,6 +20696,155 @@ if __name__ == '__main__':
 >
 >    - 不选择当前堆的硬币，`dp[i-1][j]`；
 >    - 选择 `x` 个硬币时的值，`dp[i-1][j-x] + current_sum`。
+
+
+
+## 2234.花园的最大总美丽值
+
+prefix sum, suffix sum, binary search, greedy, https://leetcode.cn/problems/maximum-total-beauty-of-the-gardens/
+
+Alice 是 `n` 个花园的园丁，她想通过种花，最大化她所有花园的总美丽值。
+
+给你一个下标从 **0** 开始大小为 `n` 的整数数组 `flowers` ，其中 `flowers[i]` 是第 `i` 个花园里已经种的花的数目。已经种了的花 **不能** 移走。同时给你 `newFlowers` ，表示 Alice 额外可以种花的 **最大数目** 。同时给你的还有整数 `target` ，`full` 和 `partial` 。
+
+如果一个花园有 **至少** `target` 朵花，那么这个花园称为 **完善的** ，花园的 **总美丽值** 为以下分数之 **和** ：
+
+- **完善** 花园数目乘以 `full`.
+- 剩余 **不完善** 花园里，花的 **最少数目** 乘以 `partial` 。如果没有不完善花园，那么这一部分的值为 `0` 。
+
+请你返回 Alice 种最多 `newFlowers` 朵花以后，能得到的 **最大** 总美丽值。
+
+ 
+
+**示例 1：**
+
+```
+输入：flowers = [1,3,1,1], newFlowers = 7, target = 6, full = 12, partial = 1
+输出：14
+解释：Alice 可以按以下方案种花
+- 在第 0 个花园种 2 朵花
+- 在第 1 个花园种 3 朵花
+- 在第 2 个花园种 1 朵花
+- 在第 3 个花园种 1 朵花
+花园里花的数目为 [3,6,2,2] 。总共种了 2 + 3 + 1 + 1 = 7 朵花。
+只有 1 个花园是完善的。
+不完善花园里花的最少数目是 2 。
+所以总美丽值为 1 * 12 + 2 * 1 = 12 + 2 = 14 。
+没有其他方案可以让花园总美丽值超过 14 。
+```
+
+**示例 2：**
+
+```
+输入：flowers = [2,4,5,3], newFlowers = 10, target = 5, full = 2, partial = 6
+输出：30
+解释：Alice 可以按以下方案种花
+- 在第 0 个花园种 3 朵花
+- 在第 1 个花园种 0 朵花
+- 在第 2 个花园种 0 朵花
+- 在第 3 个花园种 2 朵花
+花园里花的数目为 [5,4,5,5] 。总共种了 3 + 0 + 0 + 2 = 5 朵花。
+有 3 个花园是完善的。
+不完善花园里花的最少数目为 4 。
+所以总美丽值为 3 * 2 + 4 * 6 = 6 + 24 = 30 。
+没有其他方案可以让花园总美丽值超过 30 。
+注意，Alice可以让所有花园都变成完善的，但这样她的总美丽值反而更小。
+```
+
+ 
+
+**提示：**
+
+- `1 <= flowers.length <= 10^5`
+- `1 <= flowers[i], target <= 10^5`
+- `1 <= newFlowers <= 10^10`
+- `1 <= full, partial <= 10^5`
+
+
+
+
+
+```python
+from typing import List
+import bisect
+
+
+class Solution:
+    def maximumBeauty(self, flowers: List[int], newFlowers: int, target: int, full: int, partial: int) -> int:
+        n = len(flowers)
+        not_full = []
+        full_count = 0
+        for f in flowers:
+            if f >= target:
+                full_count += 1
+            else:
+                not_full.append(f)
+
+        not_full.sort()
+        m = len(not_full)
+
+        # Precompute prefix sums for the incomplete gardens.
+        prefix = [0] * (m + 1)
+        for i in range(m):
+            prefix[i + 1] = prefix[i] + not_full[i]
+
+        # Precompute suffix sums.
+        # suffix[i] is the cost to raise gardens[i...m-1] to 'target'
+        suffix = [0] * (m + 1)
+        for i in range(m - 1, -1, -1):
+            suffix[i] = suffix[i + 1] + (target - not_full[i])
+
+        ans = 0
+        # x = number of gardens (from not_full) that we convert to full.
+        for x in range(m + 1):
+            # Cost to make the last x gardens full.
+            if suffix[m - x] > newFlowers:
+                continue  # Not enough flowers to convert these x gardens.
+
+            remain = newFlowers - suffix[m - x]
+            candidate = 0  # candidate for the minimum among incomplete gardens.
+            if m - x > 0:
+                lo, hi = not_full[0], target - 1
+                while lo <= hi:
+                    mid = (lo + hi) // 2
+                    # Only consider the first m - x gardens (which remain incomplete).
+                    pos = bisect.bisect_right(not_full, mid, 0, m - x)
+                    # Cost to raise all these pos gardens to mid.
+                    cost_needed = mid * pos - prefix[pos]
+                    if cost_needed <= remain:
+                        candidate = mid
+                        lo = mid + 1
+                    else:
+                        hi = mid - 1
+
+            total_beauty = (full_count + x) * full + candidate * partial
+            ans = max(ans, total_beauty)
+
+        # Only update the answer for the all-full scenario if we can convert all.
+        if m == 0 or newFlowers >= suffix[0]:
+            ans = max(ans, n * full)
+
+        return ans
+if __name__ == '__main__':
+    sol = Solution()
+    print(sol.maximumBeauty([1, 3, 1, 1], 7, 6, 12, 1))  # Output: 14
+    print(sol.maximumBeauty([2, 4, 5, 3], 10, 5, 2, 6))  # Output: 30
+```
+
+Explanation
+
+1. **Preprocessing:**  
+   - We count how many gardens are already full (i.e. having at least `target` flowers) and separate the incomplete ones.
+   - The incomplete gardens are sorted, and we precompute both prefix and suffix sums. The suffix array helps us quickly compute the cost to convert a block of gardens to full.
+
+2. **Main Loop:**  
+   - For each possible number `x` (from 0 to `m`) of incomplete gardens to upgrade to full, we first check if converting these `x` gardens is feasible with the available `newFlowers`.
+   - Then with the remaining flowers, we binary search on the first `m - x` gardens (which remain incomplete) to determine the maximum achievable minimum number (capped by `target - 1`).
+
+3. **All-Full Scenario:**  
+   - Finally, we update the answer with the all-full scenario **only if** we can afford to make every incomplete garden full (i.e. when `newFlowers >= suffix[0]`).
+
+
 
 
 
