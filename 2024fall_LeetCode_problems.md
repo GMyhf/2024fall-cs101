@@ -23230,9 +23230,9 @@ https://leetcode.cn/contest/weekly-contest-440
 
 
 
-### Q1.将水果放入篮子II
+### 3477.将水果放入篮子II
 
-简单，implementation, https://leetcode.cn/contest/weekly-contest-440/problems/fruits-into-baskets-ii/
+简单，implementation, https://leetcode.cn/problems/fruits-into-baskets-ii/
 
 给你两个长度为 `n` 的整数数组，`fruits` 和 `baskets`，其中 `fruits[i]` 表示第 `i` 种水果的 **数量**，`baskets[j]` 表示第 `j` 个篮子的 **容量**。
 
@@ -23315,9 +23315,9 @@ if __name__ == "__main__":
 
 
 
-### Q2.选出和最大的K个元素
+### 3478.选出和最大的K个元素
 
-中等，heap, https://leetcode.cn/contest/weekly-contest-440/problems/choose-k-elements-with-maximum-sum/
+中等，heap, https://leetcode.cn/problems/choose-k-elements-with-maximum-sum/
 
 给你两个整数数组，`nums1` 和 `nums2`，长度均为 `n`，以及一个正整数 `k` 。
 
