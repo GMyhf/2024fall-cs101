@@ -1593,8 +1593,8 @@ https://leetcode.cn/problems/intersection-of-two-linked-lists/
 
 - `listA` 中节点数目为 `m`
 - `listB` 中节点数目为 `n`
-- `1 <= m, n <= 3 * 104`
-- `1 <= Node.val <= 105`
+- `1 <= m, n <= 3 * 10^4`
+- `1 <= Node.val <= 10^5`
 - `0 <= skipA <= m`
 - `0 <= skipB <= n`
 - 如果 `listA` 和 `listB` 没有交点，`intersectVal` 为 `0`
@@ -1737,7 +1737,7 @@ class Solution:
 
 ## 206.反转链表
 
-linked-list, https://leetcode.cn/problems/reverse-linked-list/
+linked list, https://leetcode.cn/problems/reverse-linked-list/
 
 给你单链表的头节点 `head` ，请你反转链表，并返回反转后的链表。
 
