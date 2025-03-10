@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1930 GMT+8 Mar 9 2025
+Updated 1139 GMT+8 Mar 10 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -1375,7 +1375,7 @@ class Solution:
 
 ## 136.只出现一次的数字
 
-https://leetcode.cn/problems/single-number/
+bit manipulation, https://leetcode.cn/problems/single-number/
 
 给你一个 **非空** 整数数组 `nums` ，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
 
@@ -1408,11 +1408,22 @@ https://leetcode.cn/problems/single-number/
 
 **提示：**
 
-- `1 <= nums.length <= 3 * 104`
-- `-3 * 104 <= nums[i] <= 3 * 104`
+- `1 <= nums.length <= 3 * 10^4`
+- `-3 * 10^4 <= nums[i] <= 3 * 10^4`
 - 除了某个元素只出现一次以外，其余每个元素均出现两次。
 
 
+
+```python
+class Solution:
+    def singleNumber(self, nums: List[int]) -> int:
+        n = len(nums)
+        ans = nums[0]
+        for i in range(1,n):
+            ans ^= nums[i]
+        
+        return ans
+```
 
 
 
