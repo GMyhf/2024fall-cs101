@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2259 GMT+8 Mar 10 2025
+Updated 1237 GMT+8 Mar 11 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -14198,6 +14198,52 @@ browserHistory.back(7);                   // 你原本在浏览 "google.com"， 
 - `1 <= steps <= 100`
 - `homepage` 和 `url` 都只包含 '.' 或者小写英文字母。
 - 最多调用 `5000` 次 `visit`， `back` 和 `forward` 函数。
+
+
+
+```python
+class ListNode:
+    def __init__(self, url: str):
+        self.url = url
+        self.prev = None
+        self.next = None
+
+class BrowserHistory:
+    def __init__(self, homepage: str):
+        self.current = ListNode(homepage)
+
+    def visit(self, url: str) -> None:
+        new_node = ListNode(url)
+        self.current.next = new_node
+        new_node.prev = self.current
+        self.current = new_node
+
+    def back(self, steps: int) -> str:
+        while steps > 0 and self.current.prev is not None:
+            self.current = self.current.prev
+            steps -= 1
+        return self.current.url
+
+    def forward(self, steps: int) -> str:
+        while steps > 0 and self.current.next is not None:
+            self.current = self.current.next
+            steps -= 1
+        return self.current.url
+
+if __name__ == "__main__":
+    browserHistory = BrowserHistory("leetcode.com")
+    browserHistory.visit("google.com")
+    browserHistory.visit("facebook.com")
+    browserHistory.visit("youtube.com")
+    print(browserHistory.back(1))  # facebook.com
+    print(browserHistory.back(1))  # google.com
+    print(browserHistory.forward(1))  # facebook.com
+    browserHistory.visit("linkedin.com")
+    print(browserHistory.forward(2))  # linkedin.com
+    print(browserHistory.back(2))  # google.com
+    print(browserHistory.back(7))  # leetcode.com
+
+```
 
 
 
