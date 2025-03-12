@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2309 GMT+8 Mar 11 2025
+Updated 11349 GMT+8 Mar 12 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -16207,6 +16207,89 @@ class Solution:
 
         return res
 ```
+
+
+
+## 3305.元音辅音字符串计数I
+
+sliding window, https://leetcode.cn/problems/count-of-substrings-containing-every-vowel-and-k-consonants-i/
+
+给你一个字符串 `word` 和一个 **非负** 整数 `k`。
+
+返回 `word` 的 子字符串 中，每个元音字母（`'a'`、`'e'`、`'i'`、`'o'`、`'u'`）**至少** 出现一次，并且 **恰好** 包含 `k` 个辅音字母的子字符串的总数。
+
+ 
+
+**示例 1：**
+
+**输入：**word = "aeioqq", k = 1
+
+**输出：**0
+
+**解释：**
+
+不存在包含所有元音字母的子字符串。
+
+**示例 2：**
+
+**输入：**word = "aeiou", k = 0
+
+**输出：**1
+
+**解释：**
+
+唯一一个包含所有元音字母且不含辅音字母的子字符串是 `word[0..4]`，即 `"aeiou"`。
+
+**示例 3：**
+
+**输入：**word = "ieaouqqieaouqq", k = 1
+
+**输出：**3
+
+**解释：**
+
+包含所有元音字母并且恰好含有一个辅音字母的子字符串有：
+
+- `word[0..5]`，即 `"ieaouq"`。
+- `word[6..11]`，即 `"qieaou"`。
+- `word[7..12]`，即 `"ieaouq"`。
+
+ 
+
+**提示：**
+
+- `5 <= word.length <= 250`
+- `word` 仅由小写英文字母组成。
+- `0 <= k <= word.length - 5`
+
+
+
+```python
+class Solution:
+    def countOfSubstrings(self, word: str, k: int) -> int:
+        vowels = set('aeiou')
+        n = len(word)
+        count = 0
+
+        for start in range(n):
+            vowel_count = {v: 0 for v in vowels}
+            consonants = 0
+
+            for end in range(start, n):
+                if word[end] in vowels:
+                    vowel_count[word[end]] += 1
+                else:
+                    consonants += 1
+
+                if all(vowel_count[v] > 0 for v in vowels) and consonants == k:
+                    count += 1
+                if consonants > k:
+                    break
+
+        return count
+```
+
+
 
 
 
