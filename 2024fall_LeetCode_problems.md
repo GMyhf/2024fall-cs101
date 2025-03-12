@@ -29208,7 +29208,7 @@ process_commands(data)
 
 
 
-### U534853 被五步蛇咬了怎么办？
+## U534853 被五步蛇咬了怎么办？
 
 https://www.luogu.com.cn/problem/U534853
 
@@ -29282,7 +29282,7 @@ https://www.luogu.com.cn/problem/U534853
 1
 ```
 
-### 输出 #2
+输出 #2
 
 ```
 0
