@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2003 GMT+8 Mar 12 2025
+Updated 20543 GMT+8 Mar 13 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -13406,7 +13406,7 @@ greedy, https://leetcode.cn/problems/maximum-distance-in-arrays/
 
 考虑到每个数组都是排序好的，我们可以利用这一点来优化查找过程。具体来说，我们只需要关注每个数组的最大值和最小值，因为这些值决定了该数组与其他数组之间可能产生的最大距离。
 
-### 解决方案
+解决方案
 
 1. **初始化**：我们需要跟踪当前遇到的最小值`min_val`、最大值`max_val`以及最大距离`max_distance`。开始时，可以从第一个数组中选取最小值和最大值作为初始值。
 
@@ -16373,6 +16373,8 @@ sliding window, https://leetcode.cn/problems/count-of-substrings-containing-ever
 
 
 
+暴力双循环
+
 ```python
 class Solution:
     def countOfSubstrings(self, word: str, k: int) -> int:
@@ -16399,6 +16401,119 @@ class Solution:
 ```
 
 
+
+## 3306.元音辅音字符串计数II
+
+sliding window, https://leetcode.cn/problems/count-of-substrings-containing-every-vowel-and-k-consonants-ii/
+
+给你一个字符串 `word` 和一个 **非负** 整数 `k`。
+
+返回 `word` 的 **子字符串** 中，每个元音字母（`'a'`、`'e'`、`'i'`、`'o'`、`'u'`）**至少** 出现一次，并且 **恰好** 包含 `k` 个辅音字母的子字符串的总数。
+
+子字符串是字符串中连续的非空字序列。
+
+ 
+
+**示例 1：**
+
+**输入：**word = "aeioqq", k = 1
+
+**输出：**0
+
+**解释：**
+
+不存在包含所有元音字母的子字符串。
+
+**示例 2：**
+
+**输入：**word = "aeiou", k = 0
+
+**输出：**1
+
+**解释：**
+
+唯一一个包含所有元音字母且不含辅音字母的子字符串是 `word[0..4]`，即 `"aeiou"`。
+
+**示例 3：**
+
+**输入：**word = "ieaouqqieaouqq", k = 1
+
+**输出：**3
+
+**解释：**
+
+包含所有元音字母并且恰好含有一个辅音字母的子字符串有：
+
+- `word[0..5]`，即 `"ieaouq"`。
+- `word[6..11]`，即 `"qieaou"`。
+- `word[7..12]`，即 `"ieaouq"`。
+
+ 
+
+**提示：**
+
+- `5 <= word.length <= 2 * 10^5`
+- `word` 仅由小写英文字母组成。
+- `0 <= k <= word.length - 5`
+
+
+
+
+
+用滑动窗口法，时间复杂度 O(n)。
+
+```python
+class Solution:
+    def countOfSubstrings(self, word: str, k: int) -> int:
+        vowels = set('aeiou')
+
+        def count(target_consonants: int) -> int:
+            n = len(word)
+            res = 0
+            consonants = 0
+            vowel_count = 0
+            occur = {'a': 0, 'e': 0, 'i': 0, 'o': 0, 'u': 0}
+            j = 0
+
+            for i in range(n):
+                while j < n and (consonants < target_consonants or vowel_count < 5):
+                    if word[j] in vowels:
+                        if occur[word[j]] == 0:
+                            vowel_count += 1
+                        occur[word[j]] += 1
+                    else:
+                        consonants += 1
+                    j += 1
+
+                if consonants >= target_consonants and vowel_count == 5:
+                    res += n - j + 1
+
+                if word[i] in vowels:
+                    occur[word[i]] -= 1
+                    if occur[word[i]] == 0:
+                        vowel_count -= 1
+                else:
+                    consonants -= 1
+
+            return res
+
+        return count(k) - count(k + 1)
+
+```
+
+> `count(k) - count(k + 1)` 的逻辑是巧妙运用了滑动窗口计数的思路，用来计算**恰好包含 `k` 个辅音字母**的子字符串个数：
+>
+> ✨ 原理解析：
+>
+> - **`count(m)`** 函数返回的是**至少**包含 `m` 个辅音字母且所有元音字母（`a, e, i, o, u`）至少各出现一次的子字符串的个数。
+> - 因此：
+>   - `count(k)`：计算**至少**包含 `k` 个辅音的子字符串数。
+>   - `count(k + 1)`：计算**至少**包含 `k + 1` 个辅音的子字符串数。
+> - **两者的差值**：
+>   恰好包含 `k` 个辅音字母的子字符串数 =
+>   **至少 `k` 个辅音的子字符串数** - **至少 `k + 1` 个辅音的子字符串数**。
+>
+> 因为计算“恰好”条件往往更复杂，但我们可以通过计算“至少”的情况，然后取差值来简化逻辑，避免直接计算子字符串个数时反复检查条件。这是一种**前缀和+滑动窗口+容斥原理**的巧妙结合！
 
 
 
