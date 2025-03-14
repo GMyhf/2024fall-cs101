@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 20543 GMT+8 Mar 13 2025
+Updated 0942 GMT+8 Mar 14 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -17576,6 +17576,33 @@ class Solution:
                     cur -= heapq.heappop(heap)
         return  list(map(lambda x: res[x], nums1))
 ```
+
+
+
+思路：观察数据范围得知复杂度为$O(n\log n)$，故考虑使用堆维护最大的$k$个元素，另外还需要维护和值，否则有无法接受的$O(n k)$额外开销。初始对`nums1`排序之后就只需要遍历一遍就可以解决。
+
+发现`heappushpop`似乎会比先`heappush`再`heappop`快。
+
+```python
+# 张景天 物理学院
+class Solution:
+    def findMaxSum(self, nums1: List[int], nums2: List[int], k: int) -> List[int]:
+        import heapq
+        indexs = sorted(enumerate(nums1), key=lambda x: x[1])
+        heap = [0] * k
+        max_sum = [0] * len(nums1)
+        j = 0
+        s = 0
+        for i in range(len(indexs)):
+            while indexs[j][1] < indexs[i][1]:
+                s += nums2[indexs[j][0]]
+                s -= heapq.heappushpop(heap, nums2[indexs[j][0]])
+                j += 1
+            max_sum[indexs[i][0]] = s
+        return max_sum
+```
+
+
 
 
 
