@@ -2745,6 +2745,25 @@ graph, hash table, https://leetcode.cn/problems/find-the-town-judge/
 
 
 ```python
+class Solution:
+    def findJudge(self, n: int, trust: List[List[int]]) -> int:
+        out_degrees = [0] * (n + 1)
+        in_degrees = [0] * (n + 1) 
+
+        for u, v in trust:
+            out_degrees[u] += 1 
+            in_degrees[v] += 1 
+
+        for v in range(1, n + 1):
+            if out_degrees[v] == 0 and in_degrees[v] == n - 1:
+                return v
+
+        return -1
+```
+
+
+
+```python
         if n == 1 and not trust:
             return 1
         
