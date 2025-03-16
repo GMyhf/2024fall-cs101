@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1107 GMT+8 Mar 15 2025
+Updated 1020 GMT+8 Mar 16 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -21906,13 +21906,171 @@ Explanation
 
 
 
+## 2272.最大波动的子字符串
+
+dp, Kadane, https://leetcode.cn/problems/substring-with-largest-variance/
+
+字符串的 **波动** 定义为子字符串中出现次数 **最多** 的字符次数与出现次数 **最少** 的字符次数之差。
+
+给你一个字符串 `s` ，它只包含小写英文字母。请你返回 `s` 里所有 **子字符串的** **最大波动** 值。
+
+**子字符串** 是一个字符串的一段连续字符序列。
+
+ 
+
+**示例 1：**
+
+```
+输入：s = "aababbb"
+输出：3
+解释：
+所有可能的波动值和它们对应的子字符串如以下所示：
+- 波动值为 0 的子字符串："a" ，"aa" ，"ab" ，"abab" ，"aababb" ，"ba" ，"b" ，"bb" 和 "bbb" 。
+- 波动值为 1 的子字符串："aab" ，"aba" ，"abb" ，"aabab" ，"ababb" ，"aababbb" 和 "bab" 。
+- 波动值为 2 的子字符串："aaba" ，"ababbb" ，"abbb" 和 "babb" 。
+- 波动值为 3 的子字符串 "babbb" 。
+所以，最大可能波动值为 3 。
+```
+
+**示例 2：**
+
+```
+输入：s = "abcde"
+输出：0
+解释：
+s 中没有字母出现超过 1 次，所以 s 中每个子字符串的波动值都是 0 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 10^4`
+- `s` 只包含小写英文字母。
+
+
+
+基于“对每一对不同字符做 Kadane 算法变形”的方法。思路如下：
+
+1. 预先统计字符串中每个字符出现的总次数。
+2. 对于每一对不同的字符 \(a\) 和 \(b\)：
+   - 扫描字符串时，当遇到 \(a\) 时加 1，遇到 \(b\) 时减 1（同时更新剩余的 \(b\) 数量）。
+   - 只有当子串中至少出现过一次 \(b\) 时，才能更新答案。
+   - 如果当前累计值变为负数且后面仍可能遇到 \(b\)（剩余的 \(b\) 大于 0），则重置当前计数。
+3. 最终答案即所有字符对中得到的最大值。
+
+下面给出完整代码示例：
+
+```python
+from collections import Counter
+
+class Solution:
+    def largestVariance(self, s: str) -> int:
+        freq = Counter(s)
+        ans = 0
+
+        # 遍历所有不同的字符对 (a, b)
+        for a in freq:
+            for b in freq:
+                if a == b:
+                    continue
+                count_a = 0
+                count_b = 0
+                remaining_b = freq[b]  # 剩余未遍历到的 b 的个数
+                for ch in s:
+                    if ch == a:
+                        count_a += 1
+                    if ch == b:
+                        count_b += 1
+                        remaining_b -= 1
+                    # 只有 b 至少出现过一次才更新答案
+                    if count_b > 0:
+                        ans = max(ans, count_a - count_b)
+                    # 如果当前累计变负，并且后面还有 b 可用，则重置计数
+                    if count_a < count_b and remaining_b > 0:
+                        count_a, count_b = 0, 0
+        return ans
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.largestVariance("aababbb"))  # 输出应为 3
+    print(sol.largestVariance("abcde"))  # 输出应为 0
+```
+
+代码说明
+
+- 使用 `Counter` 统计每个字符出现次数，方便在遍历过程中计算剩余的 \(b\) 数量。
+- 对于每一对字符 \(a\) 和 \(b\)，用类似 Kadane 算法的思想来计算当前子串中 \(a\) 与 \(b\) 的差值，同时确保子串中至少出现过 \(b\)。
+- 当累计值为负且后续还有 \(b\) 出现时，重置计数，保证后续能获得更大的差值。
+
+这样就能求得所有子串中的最大波动值。
+
+> <mark>不考虑b比a出现次数多的情况？</mark>
+>
+> 考虑了 `b` 出现次数比 `a` 多的情况，因为算法是**对每一对 `(a, b)` 计算 `count_a - count_b`**，同时也会计算 `(b, a)`，确保**所有可能的字符关系都考虑到**。
+
+
+
+> <mark>Kadane 是dp?</mark>
+>
+> 是的，**Kadane’s Algorithm 是动态规划（DP）的一种优化形式**，通常用于解决最大子数组和问题。尽管它通常被归类为贪心算法，但它实际上也符合**动态规划的基本思想**：  
+>
+> 1. **子问题最优解**：当前子数组的最优解可以由前一个子数组的最优解推导出来。  
+> 2. **状态转移**：使用 `max(当前元素, 之前最优解 + 当前元素)` 递推。  
+> 3. **最优子结构**：每一步都依赖于前面的计算结果。  
+>
+> ---
+>
+> **Kadane’s Algorithm 作为 DP**
+>
+> Kadane 算法的核心是维护一个**前缀最优状态**，然后利用它不断更新全局最优解。  
+> **标准的 Kadane’s Algorithm (最大子数组和)：**
+>
+> ```python
+> def maxSubArray(nums):
+>     max_sum = float('-inf')  
+>     curr_sum = 0  # DP 状态
+>     for num in nums:
+>         curr_sum = max(num, curr_sum + num)  # 状态转移
+>         max_sum = max(max_sum, curr_sum)  # 更新最优解
+>     return max_sum
+> ```
+>
+> 这里：
+>
+> - `curr_sum` 维护到当前位置的最优解（如果变负，则丢弃，从当前 `num` 重新计算）。
+> - `max_sum` 记录全局最优解。
+>
+> 这个过程和**动态规划的「滚动数组优化」形式**非常相似，因此 Kadane 算法可以被视为 DP 的一种。
+>
+> ---
+>
+> **Kadane 在「字符串波动问题」中的应用**
+>
+> 在 **字符串波动问题** 里，我们希望求出 `count_a - count_b` 的最大值，相当于一个变形的「最大子数组和问题」：
+>
+> - **把 `a` 视为 +1，`b` 视为 -1**
+> - **求整个数组的最大和**
+> - **如果 `count_a - count_b` 变负，则重置**
+>
+> 这种方法与 Kadane’s Algorithm 是**完全一致**的！  
+> 所以我们可以认为**本题的解法是 Kadane’s Algorithm 的变体**，本质上仍是 **动态规划（DP）+ 贪心优化**。
+>
+> ---
+>
+> **总结**
+>
+> ✅ **Kadane’s Algorithm 本质是 DP（状态转移 + 最优子结构）**  
+> ✅ **贪心优化 Kadane 使其在 `O(N)` 内求解**  
+> ✅ **「字符串波动问题」本质上是 Kadane 在字符映射下的应用** 🚀
+
+
+
 
 
 ## 2296.设计一个文本编辑器
 
 栈，双向链表，模拟，https://leetcode.cn/problems/design-a-text-editor/
-
-
 
 请你设计一个带光标的文本编辑器，它可以实现以下功能：
 
