@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1020 GMT+8 Mar 16 2025
+Updated 1937 GMT+8 Mar 16 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -4305,7 +4305,7 @@ if __name__ == '__main__':
 
 
 
-## 100579.判断操作后字符串中的数字是否相等I
+## 3461.判断操作后字符串中的数字是否相等I
 
 https://leetcode.cn/problems/check-if-digits-are-equal-in-string-after-operations-i/description/
 
@@ -4388,6 +4388,195 @@ if __name__ == "__main__":
     sol = Solution()
     print(sol.hasSameDigits("3902"))  # True
     print(sol.hasSameDigits("34789")) # False
+```
+
+
+
+## 3477.将水果放入篮子II
+
+implementation, https://leetcode.cn/problems/fruits-into-baskets-ii/
+
+给你两个长度为 `n` 的整数数组，`fruits` 和 `baskets`，其中 `fruits[i]` 表示第 `i` 种水果的 **数量**，`baskets[j]` 表示第 `j` 个篮子的 **容量**。
+
+你需要对 `fruits` 数组从左到右按照以下规则放置水果：
+
+- 每种水果必须放入第一个 **容量大于等于** 该水果数量的 **最左侧可用篮子** 中。
+- 每个篮子只能装 **一种** 水果。
+- 如果一种水果 **无法放入** 任何篮子，它将保持 **未放置**。
+
+返回所有可能分配完成后，剩余未放置的水果种类的数量。
+
+ 
+
+**示例 1**
+
+**输入：** fruits = [4,2,5], baskets = [3,5,4]
+
+**输出：** 1
+
+**解释：**
+
+- `fruits[0] = 4` 放入 `baskets[1] = 5`。
+- `fruits[1] = 2` 放入 `baskets[0] = 3`。
+- `fruits[2] = 5` 无法放入 `baskets[2] = 4`。
+
+由于有一种水果未放置，我们返回 1。
+
+**示例 2**
+
+**输入：** fruits = [3,6,1], baskets = [6,4,7]
+
+**输出：** 0
+
+**解释：**
+
+- `fruits[0] = 3` 放入 `baskets[0] = 6`。
+- `fruits[1] = 6` 无法放入 `baskets[1] = 4`（容量不足），但可以放入下一个可用的篮子 `baskets[2] = 7`。
+- `fruits[2] = 1` 放入 `baskets[1] = 4`。
+
+由于所有水果都已成功放置，我们返回 0。
+
+ 
+
+**提示：**
+
+- `n == fruits.length == baskets.length`
+- `1 <= n <= 100`
+- `1 <= fruits[i], baskets[i] <= 1000`
+
+
+
+
+
+```python
+from typing import List
+class Solution:
+    def numOfUnplacedFruits(self, fruits: List[int], baskets: List[int]) -> int:
+        cnt = 0
+        used_baskets = [False] * len(baskets)
+        for fruit in fruits:
+            for i, basket in enumerate(baskets):
+                if not used_baskets[i] and fruit <= basket:
+                    used_baskets[i] = True
+                    break
+            else:
+                cnt += 1
+
+        return cnt
+
+if __name__ == "__main__":
+    sol = Solution()
+    #print(sol.numOfUnplacedFruits([4,2,5], [3,5,4])) # 0
+    #print(sol.numOfUnplacedFruits([3,6,1], [6,4,7]))
+    #print(sol.numOfUnplacedFruits([8, 5], [1, 8]))# 1
+    print(sol.numOfUnplacedFruits([7,4,2,9,7], [5,2,6,7,7])) # 0
+
+```
+
+
+
+
+
+## 3487.删除后的最大子数组元素和
+
+https://leetcode.cn/problems/maximum-unique-subarray-sum-after-deletion/
+
+给你一个整数数组 `nums` 。
+
+你可以从数组 `nums` 中删除任意数量的元素，但不能将其变为 **空** 数组。执行删除操作后，选出 `nums` 中满足下述条件的一个子数组：
+
+1. 子数组中的所有元素 **互不相同** 。
+2. **最大化** 子数组的元素和。
+
+返回子数组的 **最大元素和** 。
+
+**子数组** 是数组的一个连续、**非空** 的元素序列。
+
+ 
+
+**示例 1：**
+
+**输入：**nums = [1,2,3,4,5]
+
+**输出：**15
+
+**解释：**
+
+不删除任何元素，选中整个数组得到最大元素和。
+
+**示例 2：**
+
+**输入：**nums = [1,1,0,1,1]
+
+**输出：**1
+
+**解释：**
+
+删除元素 `nums[0] == 1`、`nums[1] == 1`、`nums[2] == 0` 和 `nums[3] == 1` 。选中整个数组 `[1]` 得到最大元素和。
+
+**示例 3：**
+
+**输入：**nums = [1,2,-1,-2,1,0,-1]
+
+**输出：**3
+
+**解释：**
+
+删除元素 `nums[2] == -1` 和 `nums[3] == -2` ，从 `[1, 2, 1, 0, -1]` 中选中子数组 `[2, 1]` 以获得最大元素和。
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 100`
+- `-100 <= nums[i] <= 100`
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def maxSum(self, nums: List[int]) -> int:
+        # 筛选正数（删除重复只保留一个即可）
+        pos = {x for x in nums if x > 0}
+        if pos:
+            # 如果有正数，选取所有正数（每个数只保留一次）的和最大
+            return sum(pos)
+        # 如果没有正数但存在 0，0 的和不会降低，所以答案为 0
+        if 0 in nums:
+            return 0
+        # 如果全部为负数，必须选一个，所以选最大的（即负值中最大的那一个）
+        return max(nums)
+```
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def maxSum(self, nums: List[int]) -> int:
+        ans = nums[0]
+        visited = set()
+        visited.add(nums[0])
+        for num in nums[1:]:
+            if num < 0 and num > ans:
+                ans = num
+                visited = set()
+                visited.add(num)
+                continue
+            if num not in visited and num>=0:
+                visited.add(num)
+                ans = max(num, ans + num)
+
+        return ans
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.maxSum([1,2,3,4,5])) # 15
+    print(sol.maxSum([1,1,0,1,1])) # 11
+    print(sol.maxSum([-17,-15]))
 ```
 
 
@@ -17709,7 +17898,7 @@ if __name__ == "__main__":
 
 ## 3478.选出和最大的K个元素
 
-中等，heap, https://leetcode.cn/problems/choose-k-elements-with-maximum-sum/
+heap, https://leetcode.cn/problems/choose-k-elements-with-maximum-sum/
 
 给你两个整数数组，`nums1` 和 `nums2`，长度均为 `n`，以及一个正整数 `k` 。
 
@@ -17944,7 +18133,360 @@ if __name__ == "__main__":
 
 
 
+## 3479.将水果放入篮子III
 
+segment tree，https://leetcode.cn/problems/fruits-into-baskets-iii/
+
+给你两个长度为 `n` 的整数数组，`fruits` 和 `baskets`，其中 `fruits[i]` 表示第 `i` 种水果的 **数量**，`baskets[j]` 表示第 `j` 个篮子的 **容量**。
+
+你需要对 `fruits` 数组从左到右按照以下规则放置水果：
+
+- 每种水果必须放入第一个 **容量大于等于** 该水果数量的 **最左侧可用篮子** 中。
+- 每个篮子只能装 **一种** 水果。
+- 如果一种水果 **无法放入** 任何篮子，它将保持 **未放置**。
+
+返回所有可能分配完成后，剩余未放置的水果种类的数量。
+
+ 
+
+**示例 1**
+
+**输入：** fruits = [4,2,5], baskets = [3,5,4]
+
+**输出：** 1
+
+**解释：**
+
+- `fruits[0] = 4` 放入 `baskets[1] = 5`。
+- `fruits[1] = 2` 放入 `baskets[0] = 3`。
+- `fruits[2] = 5` 无法放入 `baskets[2] = 4`。
+
+由于有一种水果未放置，我们返回 1。
+
+**示例 2**
+
+**输入：** fruits = [3,6,1], baskets = [6,4,7]
+
+**输出：** 0
+
+**解释：**
+
+- `fruits[0] = 3` 放入 `baskets[0] = 6`。
+- `fruits[1] = 6` 无法放入 `baskets[1] = 4`（容量不足），但可以放入下一个可用的篮子 `baskets[2] = 7`。
+- `fruits[2] = 1` 放入 `baskets[1] = 4`。
+
+由于所有水果都已成功放置，我们返回 0。
+
+ 
+
+**提示：**
+
+- `n == fruits.length == baskets.length`
+- `1 <= n <= 10^5`
+- `1 <= fruits[i], baskets[i] <= 10^9`
+
+
+
+基于线段树的解法，可以在 O(nlog⁡n)O(nlogn) 的时间内完成查询和更新操作，满足 n≤105n≤105 的要求。
+
+代码说明
+
+- **线段树构造：** 用一个数组构造线段树，每个叶子节点对应一个篮子的容量，内部节点存储该区间的最大容量。
+- **查询操作：** 对于每个水果，利用线段树查询第一个（最左侧）可用且容量大于等于该水果数量的篮子。如果整个树的最大值都小于当前水果的数量，则该水果无法放置。
+- **更新操作：** 当一个篮子被使用后，将其容量更新为 0（因所有篮子容量均 ≥1）。
+
+代码
+
+```python
+from typing import List
+
+class Solution:
+    def numOfUnplacedFruits(self, fruits: List[int], baskets: List[int]) -> int:
+        class SegmentTree:
+            def __init__(self, arr):
+                self.n = len(arr)
+                self.size = 1
+                while self.size < self.n:
+                    self.size *= 2
+
+                # 构造一个大小为 2*size 的树，初始值均为 0
+                self.tree = [0] * (2 * self.size)
+                # 将原始数组填入叶子节点
+                for i in range(self.n):
+                    self.tree[self.size + i] = arr[i]
+                # 从下往上构造内部节点：节点存储其两个子节点的最大值
+                for i in range(self.size - 1, 0, -1):
+                    self.tree[i] = max(self.tree[2 * i], self.tree[2 * i + 1])
+
+            def update(self, idx, value):
+                """将索引 idx 处的值更新为 value，并更新所有祖先节点。"""
+                i = idx + self.size
+                self.tree[i] = value
+                while i > 1:
+                    i //= 2
+                    self.tree[i] = max(self.tree[2 * i], self.tree[2 * i + 1])
+
+            def find_first_ge(self, x):
+                """
+                查找最左侧的篮子，其容量 >= x。
+                如果不存在则返回 -1。
+                """
+                if self.tree[1] < x:
+                    return -1
+                i = 1
+                while i < self.size:
+                    if self.tree[2 * i] >= x:
+                        i = 2 * i
+                    else:
+                        i = 2 * i + 1
+                return i - self.size
+
+        """
+        对 fruits 中的每种水果，按照规则找出第一个可放置的篮子（左侧且容量满足条件）。
+        每个篮子只能装一种水果，若无法找到，则记为未放置。
+        返回未放置水果的种类数。
+        """
+        st = SegmentTree(baskets)
+        unplaced = 0
+        for fruit in fruits:
+            idx = st.find_first_ge(fruit)
+            if idx == -1:
+                unplaced += 1
+            else:
+                # 使用该篮子，将其更新为0表示不可再用
+                st.update(idx, 0)
+        return unplaced
+
+if __name__ == "__main__":
+    sol = Solution()
+    #print(sol.numOfUnplacedFruits([4,2,5], [3,5,4])) # 0
+    #print(sol.numOfUnplacedFruits([3,6,1], [6,4,7]))
+    #print(sol.numOfUnplacedFruits([8, 5], [1, 8]))# 1
+    #print(sol.numOfUnplacedFruits([7,4,2,9,7], [5,2,6,7,7])) # 0
+    print(sol.numOfUnplacedFruits([4,2,5], [3,5,4])) # 1
+```
+
+说明
+
+- 对于每个水果，调用 `find_first_ge` 方法在 O(log⁡n)O(logn) 的时间内找到合适的篮子。
+- 当找到篮子后，通过 `update` 方法将该篮子的容量置 0，从而使其后续不再被选用。
+- 最后返回未放置水果的计数。
+
+
+
+
+
+## 3488.距离最小相等元素查询
+
+Binary search，https://leetcode.cn/problems/closest-equal-element-queries/
+
+给你一个 **循环** 数组 `nums` 和一个数组 `queries` 。
+
+对于每个查询 `i` ，你需要找到以下内容：
+
+- 数组 `nums` 中下标 `queries[i]` 处的元素与 **任意** 其他下标 `j`（满足 `nums[j] == nums[queries[i]]`）之间的 **最小** 距离。如果不存在这样的下标 `j`，则该查询的结果为 `-1` 。
+
+返回一个数组 `answer`，其大小与 `queries` 相同，其中 `answer[i]` 表示查询`i`的结果。
+
+ 
+
+**示例 1：**
+
+**输入：** nums = [1,3,1,4,1,3,2], queries = [0,3,5]
+
+**输出：** [2,-1,3]
+
+**解释：**
+
+- 查询 0：下标 `queries[0] = 0` 处的元素为 `nums[0] = 1` 。最近的相同值下标为 2，距离为 2。
+- 查询 1：下标 `queries[1] = 3` 处的元素为 `nums[3] = 4` 。不存在其他包含值 4 的下标，因此结果为 -1。
+- 查询 2：下标 `queries[2] = 5` 处的元素为 `nums[5] = 3` 。最近的相同值下标为 1，距离为 3（沿着循环路径：`5 -> 6 -> 0 -> 1`）。
+
+**示例 2：**
+
+**输入：** nums = [1,2,3,4], queries = [0,1,2,3]
+
+**输出：** [-1,-1,-1,-1]
+
+**解释：**
+
+数组 `nums` 中的每个值都是唯一的，因此没有下标与查询的元素值相同。所有查询的结果均为 -1。
+
+ 
+
+**提示：**
+
+- `1 <= queries.length <= nums.length <= 10^5`
+- `1 <= nums[i] <= 10^6`
+- `0 <= queries[i] < nums.length`
+
+
+
+```python
+from typing import List
+from collections import defaultdict
+import bisect
+
+class Solution:
+    def solveQueries(self, nums: List[int], queries: List[int]) -> List[int]:
+        n = len(nums)
+
+        def min_circular_distance(a, b, n):
+            diff = abs(a - b)
+            return min(diff, n - diff)
+
+        # Build a mapping from value to all its indices (sorted)
+        indices = defaultdict(list)
+        for i, num in enumerate(nums):
+            indices[num].append(i)
+
+        # for num in indices:
+        #     indices[num].sort()
+
+
+        answer = []
+        for idx in queries:
+            value = nums[idx]
+            pos_list = indices[value]
+
+            # If there's only one occurrence, no valid index exists.
+            if len(pos_list) == 1:
+                answer.append(-1)
+                continue
+
+            # Find the position of idx in the sorted list using binary search.
+            pos = bisect.bisect_left(pos_list, idx)
+
+            # Since the array is circular, check both left and right neighbors.
+            # Using modulo to wrap around.
+            left_neighbor = pos_list[(pos - 1) % len(pos_list)]
+            right_neighbor = pos_list[(pos + 1) % len(pos_list)]
+
+            # Compute circular distances.
+            dist_left = min_circular_distance(idx, left_neighbor, n)
+            dist_right = min_circular_distance(idx, right_neighbor, n)
+
+            answer.append(min(dist_left, dist_right))
+        return answer
+
+if __name__ == "__main__":
+    sol = Solution()
+    #print(sol.solveQueries([2, 10, 20, 20, 20], [1, 4, 2]))  # [-1, -1, 1]
+    print(sol.solveQueries([14,14,4,2,19,19,14,19,14], [2,4,8,6,3])) # [0,0,0,0]
+
+```
+
+
+
+
+
+## 3489.零数组变换IV
+
+dp, bit manipulation, https://leetcode.cn/problems/zero-array-transformation-iv/
+
+给你一个长度为 `n` 的整数数组 `nums` 和一个二维数组 `queries` ，其中 `queries[i] = [li, ri, vali]`。
+
+每个 `queries[i]` 表示以下操作在 `nums` 上执行：
+
+- 从数组 `nums` 中选择范围 `[li, ri]` 内的一个下标子集。
+- 将每个选中下标处的值减去 **正好** `vali`。
+
+**零数组** 是指所有元素都等于 0 的数组。
+
+返回使得经过前 `k` 个查询（按顺序执行）后，`nums` 转变为 **零数组** 的最小可能 **非负** 值 `k`。如果不存在这样的 `k`，返回 -1。
+
+数组的 **子集** 是指从数组中选择的一些元素（可能为空）。
+
+ 
+
+**示例 1：**
+
+**输入：** nums = [2,0,2], queries = [[0,2,1],[0,2,1],[1,1,3]]
+
+**输出：** 2
+
+**解释：**
+
+- 对于查询 0 （l = 0, r = 2, val = 1）：
+  - 将下标 `[0, 2]` 的值减 1。
+  - 数组变为 `[1, 0, 1]`。
+- 对于查询 1 （l = 0, r = 2, val = 1）：
+  - 将下标 `[0, 2]` 的值减 1。
+  - 数组变为 `[0, 0, 0]`，这就是一个零数组。因此，最小的 `k` 值为 2。
+
+**示例 2：**
+
+**输入：** nums = [4,3,2,1], queries = [[1,3,2],[0,2,1]]
+
+**输出：** -1
+
+**解释：**
+
+即使执行完所有查询，也无法使 `nums` 变为零数组。
+
+**示例 3：**
+
+**输入：** nums = [1,2,3,2,1], queries = [[0,1,1],[1,2,1],[2,3,2],[3,4,1],[4,4,1]]
+
+**输出：** 4
+
+**解释：**
+
+- 对于查询 0 （l = 0, r = 1, val = 1）：
+  - 将下标 `[0, 1]` 的值减 1。
+  - 数组变为 `[0, 1, 3, 2, 1]`。
+- 对于查询 1 （l = 1, r = 2, val = 1）：
+  - 将下标 `[1, 2]` 的值减 1。
+  - 数组变为 `[0, 0, 2, 2, 1]`。
+- 对于查询 2 （l = 2, r = 3, val = 2）：
+  - 将下标 `[2, 3]` 的值减 2。
+  - 数组变为 `[0, 0, 0, 0, 1]`。
+- 对于查询 3 （l = 3, r = 4, val = 1）：
+  - 将下标 `4` 的值减 1。
+  - 数组变为 `[0, 0, 0, 0, 0]`。因此，最小的 `k` 值为 4。
+
+**示例 4：**
+
+**输入：** nums = [1,2,3,2,6], queries = [[0,1,1],[0,2,1],[1,4,2],[4,4,4],[3,4,1],[4,4,5]]
+
+**输出：** 4
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 10`
+- `0 <= nums[i] <= 1000`
+- `1 <= queries.length <= 1000`
+- `queries[i] = [li, ri, vali]`
+- `0 <= li <= ri < nums.length`
+- `1 <= vali <= 10`
+
+
+
+
+
+```python
+class Solution:
+    def minZeroArray(self, nums: List[int], queries: List[List[int]]) -> int:
+        n = len(nums)
+        # dp[i] 的二进制位 s 为 1 表示下标 i 可累积减去的和包含 s
+        dp = [1] * n  # 初始时仅能达到 0（即二进制 1）
+        
+        # 如果初始状态就是零数组，则直接返回 0
+        if all((dp[i] >> nums[i]) & 1 for i in range(n)):
+            return 0
+        
+        for k, (l, r, v) in enumerate(queries):
+            for i in range(l, r + 1):
+                dp[i] |= (dp[i] << v)
+                dp[i] &= (1 << (nums[i] + 1)) - 1  # 只保留低 nums[i]+1 位
+            # 检查所有位置是否都能精确达到 nums[i]
+            if all((dp[i] >> nums[i]) & 1 for i in range(n)):
+                return k + 1  # k 为 0-indexed，故返回 k+1
+        
+        return -1
+```
 
 
 
@@ -24342,6 +24884,80 @@ class Solution:
 
 
 
+## 第 441 场周赛-20250316
+
+https://leetcode.cn/contest/weekly-contest-441
+
+中国时间：2025-03-16 10:30, 1 小时 30 分
+
+
+
+### 3487.删除后的最大子数组元素和
+
+https://leetcode.cn/problems/maximum-unique-subarray-sum-after-deletion/
+
+
+
+
+
+### 3488.距离最小相等元素查询
+
+Binary search，https://leetcode.cn/problems/closest-equal-element-queries/
+
+
+
+### 3489.零数组变换IV
+
+dp, bit manipulation, https://leetcode.cn/problems/zero-array-transformation-iv/
+
+
+
+### 3490.统计美丽整数的数目
+
+困难，https://leetcode.cn/problems/count-beautiful-numbers/
+
+给你两个正整数 `l` 和 `r` 。如果正整数每一位上的数字的乘积可以被这些数字之和整除，则认为该整数是一个 **美丽整数** 。
+
+统计并返回 `l` 和 `r` 之间（包括 `l` 和 `r` ）的 **美丽整数** 的数目。
+
+ 
+
+**示例 1：**
+
+**输入：**l = 10, r = 20
+
+**输出：**2
+
+**解释：**
+
+范围内的美丽整数为 10 和 20 。
+
+**示例 2：**
+
+**输入：**l = 1, r = 15
+
+**输出：**10
+
+**解释：**
+
+范围内的美丽整数为 1、2、3、4、5、6、7、8、9 和 10 。
+
+ 
+
+**提示：**
+
+- `1 <= l <= r < 10^9`
+
+
+
+```python
+
+```
+
+
+
+
+
 ## 第 440 场周赛-20250309
 
 https://leetcode.cn/contest/weekly-contest-440
@@ -24352,84 +24968,7 @@ https://leetcode.cn/contest/weekly-contest-440
 
 ### 3477.将水果放入篮子II
 
-简单，implementation, https://leetcode.cn/problems/fruits-into-baskets-ii/
-
-给你两个长度为 `n` 的整数数组，`fruits` 和 `baskets`，其中 `fruits[i]` 表示第 `i` 种水果的 **数量**，`baskets[j]` 表示第 `j` 个篮子的 **容量**。
-
-你需要对 `fruits` 数组从左到右按照以下规则放置水果：
-
-- 每种水果必须放入第一个 **容量大于等于** 该水果数量的 **最左侧可用篮子** 中。
-- 每个篮子只能装 **一种** 水果。
-- 如果一种水果 **无法放入** 任何篮子，它将保持 **未放置**。
-
-返回所有可能分配完成后，剩余未放置的水果种类的数量。
-
- 
-
-**示例 1**
-
-**输入：** fruits = [4,2,5], baskets = [3,5,4]
-
-**输出：** 1
-
-**解释：**
-
-- `fruits[0] = 4` 放入 `baskets[1] = 5`。
-- `fruits[1] = 2` 放入 `baskets[0] = 3`。
-- `fruits[2] = 5` 无法放入 `baskets[2] = 4`。
-
-由于有一种水果未放置，我们返回 1。
-
-**示例 2**
-
-**输入：** fruits = [3,6,1], baskets = [6,4,7]
-
-**输出：** 0
-
-**解释：**
-
-- `fruits[0] = 3` 放入 `baskets[0] = 6`。
-- `fruits[1] = 6` 无法放入 `baskets[1] = 4`（容量不足），但可以放入下一个可用的篮子 `baskets[2] = 7`。
-- `fruits[2] = 1` 放入 `baskets[1] = 4`。
-
-由于所有水果都已成功放置，我们返回 0。
-
- 
-
-**提示：**
-
-- `n == fruits.length == baskets.length`
-- `1 <= n <= 100`
-- `1 <= fruits[i], baskets[i] <= 1000`
-
-
-
-
-
-```python
-from typing import List
-class Solution:
-    def numOfUnplacedFruits(self, fruits: List[int], baskets: List[int]) -> int:
-        cnt = 0
-        used_baskets = [False] * len(baskets)
-        for fruit in fruits:
-            for i, basket in enumerate(baskets):
-                if not used_baskets[i] and fruit <= basket:
-                    used_baskets[i] = True
-                    break
-            else:
-                cnt += 1
-
-        return cnt
-
-if __name__ == "__main__":
-    sol = Solution()
-    #print(sol.numOfUnplacedFruits([4,2,5], [3,5,4])) # 0
-    #print(sol.numOfUnplacedFruits([3,6,1], [6,4,7]))
-    #print(sol.numOfUnplacedFruits([8, 5], [1, 8]))# 1
-    print(sol.numOfUnplacedFruits([7,4,2,9,7], [5,2,6,7,7])) # 0
-
-```
+implementation, https://leetcode.cn/problems/fruits-into-baskets-ii/
 
 
 
@@ -24437,156 +24976,21 @@ if __name__ == "__main__":
 
 ### 3478.选出和最大的K个元素
 
-中等，heap, https://leetcode.cn/problems/choose-k-elements-with-maximum-sum/
+heap, https://leetcode.cn/problems/choose-k-elements-with-maximum-sum/
 
 
 
 
 
-### Q3.将水果放入篮子III
+### 3479.将水果放入篮子III
 
-中等，线段树，https://leetcode.cn/contest/weekly-contest-440/problems/fruits-into-baskets-iii/
-
-给你两个长度为 `n` 的整数数组，`fruits` 和 `baskets`，其中 `fruits[i]` 表示第 `i` 种水果的 **数量**，`baskets[j]` 表示第 `j` 个篮子的 **容量**。
-
-你需要对 `fruits` 数组从左到右按照以下规则放置水果：
-
-- 每种水果必须放入第一个 **容量大于等于** 该水果数量的 **最左侧可用篮子** 中。
-- 每个篮子只能装 **一种** 水果。
-- 如果一种水果 **无法放入** 任何篮子，它将保持 **未放置**。
-
-返回所有可能分配完成后，剩余未放置的水果种类的数量。
-
- 
-
-**示例 1**
-
-**输入：** fruits = [4,2,5], baskets = [3,5,4]
-
-**输出：** 1
-
-**解释：**
-
-- `fruits[0] = 4` 放入 `baskets[1] = 5`。
-- `fruits[1] = 2` 放入 `baskets[0] = 3`。
-- `fruits[2] = 5` 无法放入 `baskets[2] = 4`。
-
-由于有一种水果未放置，我们返回 1。
-
-**示例 2**
-
-**输入：** fruits = [3,6,1], baskets = [6,4,7]
-
-**输出：** 0
-
-**解释：**
-
-- `fruits[0] = 3` 放入 `baskets[0] = 6`。
-- `fruits[1] = 6` 无法放入 `baskets[1] = 4`（容量不足），但可以放入下一个可用的篮子 `baskets[2] = 7`。
-- `fruits[2] = 1` 放入 `baskets[1] = 4`。
-
-由于所有水果都已成功放置，我们返回 0。
-
- 
-
-**提示：**
-
-- `n == fruits.length == baskets.length`
-- `1 <= n <= 10^5`
-- `1 <= fruits[i], baskets[i] <= 10^9`
+segment tree，https://leetcode.cn/problems/fruits-into-baskets-iii/
 
 
 
-基于线段树的解法，可以在 O(nlog⁡n)O(nlogn) 的时间内完成查询和更新操作，满足 n≤105n≤105 的要求。
+### 3480.删除一个冲突对后最大子数组数目
 
-代码说明
-
-- **线段树构造：** 用一个数组构造线段树，每个叶子节点对应一个篮子的容量，内部节点存储该区间的最大容量。
-- **查询操作：** 对于每个水果，利用线段树查询第一个（最左侧）可用且容量大于等于该水果数量的篮子。如果整个树的最大值都小于当前水果的数量，则该水果无法放置。
-- **更新操作：** 当一个篮子被使用后，将其容量更新为 0（因所有篮子容量均 ≥1）。
-
-代码
-
-```python
-from typing import List
-
-class Solution:
-    def numOfUnplacedFruits(self, fruits: List[int], baskets: List[int]) -> int:
-        class SegmentTree:
-            def __init__(self, arr):
-                self.n = len(arr)
-                self.size = 1
-                while self.size < self.n:
-                    self.size *= 2
-
-                # 构造一个大小为 2*size 的树，初始值均为 0
-                self.tree = [0] * (2 * self.size)
-                # 将原始数组填入叶子节点
-                for i in range(self.n):
-                    self.tree[self.size + i] = arr[i]
-                # 从下往上构造内部节点：节点存储其两个子节点的最大值
-                for i in range(self.size - 1, 0, -1):
-                    self.tree[i] = max(self.tree[2 * i], self.tree[2 * i + 1])
-
-            def update(self, idx, value):
-                """将索引 idx 处的值更新为 value，并更新所有祖先节点。"""
-                i = idx + self.size
-                self.tree[i] = value
-                while i > 1:
-                    i //= 2
-                    self.tree[i] = max(self.tree[2 * i], self.tree[2 * i + 1])
-
-            def find_first_ge(self, x):
-                """
-                查找最左侧的篮子，其容量 >= x。
-                如果不存在则返回 -1。
-                """
-                if self.tree[1] < x:
-                    return -1
-                i = 1
-                while i < self.size:
-                    if self.tree[2 * i] >= x:
-                        i = 2 * i
-                    else:
-                        i = 2 * i + 1
-                return i - self.size
-
-        """
-        对 fruits 中的每种水果，按照规则找出第一个可放置的篮子（左侧且容量满足条件）。
-        每个篮子只能装一种水果，若无法找到，则记为未放置。
-        返回未放置水果的种类数。
-        """
-        st = SegmentTree(baskets)
-        unplaced = 0
-        for fruit in fruits:
-            idx = st.find_first_ge(fruit)
-            if idx == -1:
-                unplaced += 1
-            else:
-                # 使用该篮子，将其更新为0表示不可再用
-                st.update(idx, 0)
-        return unplaced
-
-if __name__ == "__main__":
-    sol = Solution()
-    #print(sol.numOfUnplacedFruits([4,2,5], [3,5,4])) # 0
-    #print(sol.numOfUnplacedFruits([3,6,1], [6,4,7]))
-    #print(sol.numOfUnplacedFruits([8, 5], [1, 8]))# 1
-    #print(sol.numOfUnplacedFruits([7,4,2,9,7], [5,2,6,7,7])) # 0
-    print(sol.numOfUnplacedFruits([4,2,5], [3,5,4])) # 1
-```
-
-说明
-
-- 对于每个水果，调用 `find_first_ge` 方法在 O(log⁡n)O(logn) 的时间内找到合适的篮子。
-- 当找到篮子后，通过 `update` 方法将该篮子的容量置 0，从而使其后续不再被选用。
-- 最后返回未放置水果的计数。
-
-
-
-### Q4.删除一个冲突对后最大子数组数目
-
-https://leetcode.cn/contest/weekly-contest-440/problems/maximize-subarrays-after-removing-one-conflicting-pair/
+https://leetcode.cn/problems/maximize-subarrays-after-removing-one-conflicting-pair/
 
 给你一个整数 `n`，表示一个包含从 `1` 到 `n` 按顺序排列的整数数组 `nums`。此外，给你一个二维数组 `conflictingPairs`，其中 `conflictingPairs[i] = [a, b]` 表示 `a` 和 `b` 形成一个冲突对。
 
