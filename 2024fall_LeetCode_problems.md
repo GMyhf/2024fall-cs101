@@ -24956,6 +24956,372 @@ dp, bit manipulation, https://leetcode.cn/problems/zero-array-transformation-iv/
 
 
 
+## 第 151 场双周赛-20250315
+
+https://leetcode.cn/contest/biweekly-contest-152/
+
+中国时间：2025-03-15 22:30, 1 小时 30 分
+
+
+
+### 3483. 不同三位偶数的数目
+
+https://leetcode.cn/problems/unique-3-digit-even-numbers/description/
+
+给你一个数字数组 `digits`，你需要从中选择三个数字组成一个三位偶数，你的任务是求出 **不同** 三位偶数的数量。
+
+**注意**：每个数字在三位偶数中都只能使用 **一次** ，并且 **不能** 有前导零。
+
+ 
+
+**示例 1：**
+
+**输入：** digits = [1,2,3,4]
+
+**输出：** 12
+
+**解释：** 可以形成的 12 个不同的三位偶数是 124，132，134，142，214，234，312，314，324，342，412 和 432。注意，不能形成 222，因为数字 2 只有一个。
+
+**示例 2：**
+
+**输入：** digits = [0,2,2]
+
+**输出：** 2
+
+**解释：** 可以形成的三位偶数是 202 和 220。注意，数字 2 可以使用两次，因为数组中有两个 2 。
+
+**示例 3：**
+
+**输入：** digits = [6,6,6]
+
+**输出：** 1
+
+**解释：** 只能形成 666。
+
+**示例 4：**
+
+**输入：** digits = [1,3,5]
+
+**输出：** 0
+
+**解释：** 无法形成三位偶数。
+
+ 
+
+**提示：**
+
+- `3 <= digits.length <= 10`
+- `0 <= digits[i] <= 9`
+
+
+
+
+
+```python
+from typing import List
+from itertools import permutations
+
+class Solution:
+    def totalNumbers(self, digits: List[int]) -> int:
+        perms = permutations(digits, 3)
+        ans = set()
+        for perm in perms:
+            if perm[0] == 0:
+                continue
+            if perm[-1] % 2 == 0:
+                ans.add(perm)
+        #print(ans)
+        return len(ans)
+
+if __name__ == "__main__":
+    sol = Solution()
+    #print(sol.totalNumbers([1, 2, 3, 4]))  # 3
+    print(sol.totalNumbers([0, 2, 2]))  # 6
+    #print(sol.totalNumbers([6, 6, 6]))  # 0
+
+```
+
+
+
+
+
+### 3484. 设计电子表格
+
+中等，https://leetcode.cn/contest/biweekly-contest-152/problems/design-spreadsheet/
+
+电子表格是一个网格，它有 26 列（从 `'A'` 到 `'Z'`）和指定数量的 `rows`。每个单元格可以存储一个 0 到 105 之间的整数值。
+
+请你实现一个 `Spreadsheet` 类：
+
+- `Spreadsheet(int rows)` 初始化一个具有 26 列（从 `'A'` 到 `'Z'`）和指定行数的电子表格。所有单元格最初的值都为 0 。
+- `void setCell(String cell, int value)` 设置指定单元格的值。单元格引用以 `"AX"` 的格式提供（例如，`"A1"`，`"B10"`），其中字母表示列（从 `'A'` 到 `'Z'`），数字表示从 **1** 开始的行号。
+- `void resetCell(String cell)` 重置指定单元格的值为 0 。
+- `int getValue(String formula)` 计算一个公式的值，格式为 `"=X+Y"`，其中 `X` 和 `Y` **要么** 是单元格引用，要么非负整数，返回计算的和。
+
+**注意：** 如果 `getValue` 引用一个未通过 `setCell` 明确设置的单元格，则该单元格的值默认为 0 。
+
+ 
+
+**示例 1：**
+
+**输入：**
+ ["Spreadsheet", "getValue", "setCell", "getValue", "setCell", "getValue", "resetCell", "getValue"]
+ [[3], ["=5+7"], ["A1", 10], ["=A1+6"], ["B2", 15], ["=A1+B2"], ["A1"], ["=A1+B2"]]
+
+**输出：**
+ [null, 12, null, 16, null, 25, null, 15] 
+
+**解释**
+
+Spreadsheet spreadsheet = new Spreadsheet(3); // 初始化一个具有 3 行和 26 列的电子表格
+ spreadsheet.getValue("=5+7"); // 返回 12 (5+7)
+ spreadsheet.setCell("A1", 10); // 设置 A1 为 10
+ spreadsheet.getValue("=A1+6"); // 返回 16 (10+6)
+ spreadsheet.setCell("B2", 15); // 设置 B2 为 15
+ spreadsheet.getValue("=A1+B2"); // 返回 25 (10+15)
+ spreadsheet.resetCell("A1"); // 重置 A1 为 0
+ spreadsheet.getValue("=A1+B2"); // 返回 15 (0+15)
+
+ 
+
+**提示：**
+
+- `1 <= rows <= 10^3`
+- `0 <= value <= 10^5`
+- 公式保证采用 `"=X+Y"` 格式，其中 `X` 和 `Y` 要么是有效的单元格引用，要么是小于等于 `105` 的 **非负** 整数。
+- 每个单元格引用由一个大写字母 `'A'` 到 `'Z'` 和一个介于 `1` 和 `rows` 之间的行号组成。
+- **总共** 最多会对 `setCell`、`resetCell` 和 `getValue` 调用 `104` 次。
+
+
+
+```python
+import re
+
+class Spreadsheet:
+    def __init__(self, rows: int):
+        self.grid = [[0] * 26 for _ in range(rows)]
+    
+    def setCell(self, cell: str, value: int):
+        col, row = self._parse_cell(cell)
+        self.grid[row][col] = value
+    
+    def resetCell(self, cell: str):
+        col, row = self._parse_cell(cell)
+        self.grid[row][col] = 0
+    
+    def getValue(self, formula: str) -> int:
+        if not formula.startswith("="):
+            return int(formula)
+        
+        tokens = formula[1:].split("+")
+        total = 0
+        for token in tokens:
+            if token.isdigit():
+                total += int(token)
+            else:
+                col, row = self._parse_cell(token)
+                total += self.grid[row][col]
+        return total
+    
+    def _parse_cell(self, cell: str):
+        match = re.match(r'([A-Z])(\d+)', cell)
+        if not match:
+            raise ValueError("Invalid cell format")
+        col = ord(match.group(1)) - ord('A')
+        row = int(match.group(2)) - 1
+        return col, row
+```
+
+
+
+```python
+class Spreadsheet:
+
+    def __init__(self, rows: int):
+        self.rows = rows
+        self.cells = [[0] * 26 for _ in range(rows)]
+
+    def setCell(self, cell: str, value: int) -> None:
+        row = int(cell[1:]) - 1
+        col = ord(cell[0]) - ord('A')
+        self.cells[row][col] = value
+
+    def resetCell(self, cell: str) -> None:
+        row = int(cell[1:]) - 1
+        col = ord(cell[0]) - ord('A')
+        self.cells[row][col] = 0
+
+    def getValue(self, formula: str) -> int:
+        first, second = formula[1:].split('+')
+        part1, part2 = 0, 0
+        if first[0].isdigit() == False:
+            row = int(first[1:]) - 1
+            col = ord(first[0]) - ord('A')
+            part1 = self.cells[row][col]
+        else:
+            part1 = int(first)
+
+        if second[0].isdigit() == False:
+            row = int(second[1:]) - 1
+            col = ord(second[0]) - ord('A')
+            part2 = self.cells[row][col]
+        else:
+            part2 = int(second)
+
+
+        return part1 + part2
+
+if __name__ == "__main__":
+    sol = Spreadsheet(576)
+    print(sol.setCell('H45', 88383))
+    print(sol.getValue("=992+H45"))
+    # print(sol)
+    # print(sol.getValue("=5+7"))
+    # print(sol.setCell('A1', 10))
+    # print(sol.getValue("=A1+6"))
+    # print(sol.setCell("B2",15))
+    # print(sol.getValue("=A1+B2"))
+    # print(sol.resetCell('A1'))
+    # print(sol.getValue("=A1+B2"))
+
+# Your Spreadsheet object will be instantiated and called as such:
+# obj = Spreadsheet(rows)
+# obj.setCell(cell,value)
+# obj.resetCell(cell)
+# param_3 = obj.getValue(formula)
+```
+
+
+
+
+
+### Q3.删除元素后K个字符串的最长公共前缀
+
+困难，https://leetcode.cn/contest/biweekly-contest-152/problems/longest-common-prefix-of-k-strings-after-removal/
+
+给你一个字符串数组 `words` 和一个整数 `k`。
+
+对于范围 `[0, words.length - 1]` 中的每个下标 `i`，在移除第 `i` 个元素后的剩余数组中，找到任意 `k` 个字符串（`k` 个下标 **互不相同**）的 **最长公共前缀** 的 **长度**。
+
+返回一个数组 `answer`，其中 `answer[i]` 是 `i` 个元素的答案。如果移除第 `i` 个元素后，数组中的字符串少于 `k` 个，`answer[i]` 为 0。
+
+一个字符串的 **前缀** 是一个从字符串的开头开始并延伸到字符串内任何位置的子字符串。
+
+一个 **子字符串** 是字符串中一段连续的字符序列。
+
+ 
+
+**示例 1：**
+
+**输入：** words = ["jump","run","run","jump","run"], k = 2
+
+**输出：** [3,4,4,3,4]
+
+**解释：**
+
+- 移除下标 0 处的元素 "jump"： 	
+  - `words` 变为： `["run", "run", "jump", "run"]`。 `"run"` 出现了 3 次。选择任意两个得到的最长公共前缀是 `"run"` （长度为 3）。
+- 移除下标 1 处的元素 "run" ： 
+  - `words` 变为： `["jump", "run", "jump", "run"]`。 `"jump"` 出现了 2 次。选择这两个得到的最长公共前缀是 `"jump"` （长度为 4）。
+- 移除下标 2 处的元素 "run"： 
+  - `words` 变为： `["jump", "run", "jump", "run"]`。 `"jump"` 出现了 2 次。选择这两个得到的最长公共前缀是 `"jump"` （长度为 4）。
+- 移除下标 3 处的元素 "jump"： 
+  - `words` 变为： `["jump", "run", "run", "run"]`。 `"run"` 出现了 3 次。选择任意两个得到的最长公共前缀是 `"run"` （长度为 3）。
+- 移除下标 4 处的元素 "run"： 
+  - `words` 变为： `["jump", "run", "run", "jump"]`。 `"jump"` 出现了 2 次。选择这两个得到的最长公共前缀是 `"jump"` （长度为 4）。
+
+**示例 2：**
+
+**输入：** words = ["dog","racer","car"], k = 2
+
+**输出：** [0,0,0]
+
+**解释：**
+
+- 移除任何元素的结果都是 0。
+
+ 
+
+**提示：**
+
+- `1 <= k <= words.length <= 10^5`
+- `1 <= words[i].length <= 10^4`
+- `words[i]` 由小写英文字母组成。
+- `words[i].length` 的总和小于等于 `10^5`。
+
+
+
+```python
+
+```
+
+
+
+
+
+### Q4.最长特殊路径II
+
+困难，https://leetcode.cn/contest/biweekly-contest-152/problems/longest-special-path-ii/
+
+给你一棵无向树，根节点为 `0`，树有 `n` 个节点，节点编号从 `0` 到 `n - 1`。这个树由一个长度为 `n - 1` 的二维数组 `edges` 表示，其中 `edges[i] = [ui, vi, lengthi]` 表示节点 `ui` 和 `vi` 之间有一条长度为 `lengthi` 的边。同时给你一个整数数组 `nums`，其中 `nums[i]` 表示节点 `i` 的值。
+
+一条 **特殊路径** 定义为一个从祖先节点到子孙节点的 **向下** 路径，路径中所有节点值都是唯一的，最多允许有一个值出现两次。
+
+返回一个大小为 2 的数组 `result`，其中 `result[0]` 是 **最长** 特殊路径的 **长度** ，`result[1]` 是所有 **最长** 特殊路径中的 **最少** 节点数。
+
+ 
+
+**示例 1：**
+
+**输入：** edges = [[0,1,1],[1,2,3],[1,3,1],[2,4,6],[4,7,2],[3,5,2],[3,6,5],[6,8,3]], nums = [1,1,0,3,1,2,1,1,0]
+
+**输出：** [9,3]
+
+**解释：**
+
+在下图中，节点的颜色代表它们在 `nums` 中的对应值。
+
+![img](https://assets.leetcode.com/uploads/2025/02/18/e1.png)
+
+最长的特殊路径是 `1 -> 2 -> 4` 和 `1 -> 3 -> 6 -> 8`，两者的长度都是 9。所有最长特殊路径中最小的节点数是 3 。
+
+**示例 2：**
+
+**输入：** edges = [[1,0,3],[0,2,4],[0,3,5]], nums = [1,1,0,2]
+
+**输出：** [5,2]
+
+**解释：**
+
+![img](https://assets.leetcode.com/uploads/2025/02/18/e2.png)
+
+最长路径是 `0 -> 3`，由 2 个节点组成，长度为 5。
+
+ 
+
+**提示：**
+
+- `2 <= n <= 5 * 104`
+- `edges.length == n - 1`
+- `edges[i].length == 3`
+- `0 <= ui, vi < n`
+- `1 <= lengthi <= 103`
+- `nums.length == n`
+- `0 <= nums[i] <= 5 * 104`
+- 输入保证 `edges` 是一棵有效的树。
+
+
+
+
+
+```python
+
+```
+
+
+
+
+
 
 
 ## 第 440 场周赛-20250309
