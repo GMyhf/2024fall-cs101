@@ -19078,7 +19078,7 @@ if __name__ == "__main__":
 
 ## 37.解数独
 
-backtracking, https://leetcode.cn/problems/sudoku-solver/
+backtracking, set, https://leetcode.cn/problems/sudoku-solver/
 
 编写一个程序，通过填充空格来解决数独问题。
 
@@ -19116,129 +19116,159 @@ backtracking, https://leetcode.cn/problems/sudoku-solver/
 这个代码超时了，如何优化
 
 ```python
-class Solution(object):
-    def solveSudoku(self, board):
+from typing import List
+
+class Solution:
+    def solveSudoku(self, board: List[List[str]]) -> None:
         """
-        :type board: List[List[str]]
-        :rtype: void Do not return anything, modify board in-place instead.
+        填充数独的解法（原地修改 board）
         """
-        def is_valid(row, col, val, board):
-            for i in range(9):
-                if board[row][i] == val or board[i][col] == val:
-                    return False
-            start_row, start_col = row - row % 3, col - col % 3
-            for i in range(3):
-                for j in range(3):
-                    if board[start_row + i][start_col + j] == val:
-                        return False
-            return True
+        self.solve(board)
 
-        def backtrack(board):
-            for i in range(9):
-                for j in range(9):
-                    if board[i][j] == '.':
-                        for k in range(1, 10):
-                            val = str(k)
-                            if is_valid(i, j, val, board):
-                                board[i][j] = val
-                                if backtrack(board):
-                                    return True
-                                board[i][j] = '.'
-                        return False
-            return True
-
-        backtrack(board)
-```
-
-
-
-
-
-你提供的代码是一个典型的数独解法，使用了回溯法。对于超时问题，可以从以下几个方向进行优化：
-
-**1. 提前检查列、行和3x3宫内的合法性**
-
-每次调用 `is_valid` 时，都会遍历整个行、列和3x3宫，检查是否合法。这是导致超时的主要原因之一。我们可以通过缓存这些信息来减少冗余计算。
-
-**2. 使用集合来存储已使用的数字**
-
-我们可以使用三个集合来分别跟踪每行、每列和每个3x3宫内的已用数字，从而避免每次都进行完全的遍历。
-
-**3. 选择最优的空格进行回溯**
-
-在回溯过程中，可以尝试优先填充空格数量最少的地方（即空格周围已填数字最少的地方）。这将减少回溯的次数。
-
-**代码优化：**
-
-```python
-class Solution(object):
-    def solveSudoku(self, board):
-        """
-        :type board: List[List[str]]
-        :rtype: void Do not return anything, modify board in-place instead.
-        """
-        
-        # 记录行、列、3x3宫中已经使用的数字
-        rows = [set() for _ in range(9)]
-        cols = [set() for _ in range(9)]
-        boxes = [set() for _ in range(9)]
-        
-        # 初始化已经填入的数字
+    def solve(self, board: List[List[str]]) -> bool:
         for i in range(9):
             for j in range(9):
-                if board[i][j] != '.':
-                    val = board[i][j]
-                    rows[i].add(val)
-                    cols[j].add(val)
-                    boxes[(i // 3) * 3 + (j // 3)].add(val)
-        
-        # 回溯函数
-        def backtrack(i, j):
-            if i == 9:  # 如果行遍历完成，说明已解答完毕
-                return True
-            if j == 9:  # 如果列遍历完成，跳到下一行
-                return backtrack(i + 1, 0)
-            if board[i][j] != '.':  # 已经填充过的格子，跳过
-                return backtrack(i, j + 1)
+                if board[i][j] == '.':  # 发现空格
+                    for num in map(str, range(1, 10)):  # 依次尝试填入 '1' - '9'
+                        if self.isValid(board, i, j, num):  # 检查是否满足规则
+                            board[i][j] = num
+                            if self.solve(board):  # 递归求解
+                                return True
+                            board[i][j] = '.'  # 回溯
+                    return False  # 没有可填的数，返回 False（触发回溯）
+        return True  # 填完所有格子，返回 True
 
-            # 尝试填充每个数字 1-9
-            for num in range(1, 10):
-                num_str = str(num)
-                box_idx = (i // 3) * 3 + (j // 3)
-                if num_str not in rows[i] and num_str not in cols[j] and num_str not in boxes[box_idx]:
-                    # 填充数字
-                    board[i][j] = num_str
-                    rows[i].add(num_str)
-                    cols[j].add(num_str)
-                    boxes[box_idx].add(num_str)
+    def isValid(self, board: List[List[str]], row: int, col: int, num: str) -> bool:
+        """
+        检查在 (row, col) 位置填入 num 是否符合数独规则
+        """
+        block_x, block_y = (row // 3) * 3, (col // 3) * 3  # 计算 3x3 宫格的起始位置
+        for i in range(9):
+            if board[row][i] == num or board[i][col] == num:  # 检查行列
+                return False
+            if board[block_x + i // 3][block_y + i % 3] == num:  # 检查 3x3 宫格
+                return False
+        return True
 
-                    # 继续回溯
-                    if backtrack(i, j + 1):
-                        return True
-
-                    # 回溯时撤销选择
-                    board[i][j] = '.'
-                    rows[i].remove(num_str)
-                    cols[j].remove(num_str)
-                    boxes[box_idx].remove(num_str)
-
-            return False
-        
-        # 从(0,0)开始回溯
-        backtrack(0, 0)
 ```
 
-**关键优化点：**
 
-1. **缓存行、列和宫内的数字**： 使用三个 `set` 列表（`rows`, `cols`, `boxes`）来缓存每个行、列和宫中已经填入的数字，避免在每次回溯时重新遍历。
-2. **减少 `is_valid` 的调用**： 通过使用 `set` 来检查数字是否已经在当前行、列或宫内，这样比遍历整个行、列和宫要高效得多。
-3. **回溯的条件优化**：
-   - 每次处理一个格子时，只有在格子为空 (`.`) 时才会进行数字填充和回溯。
-   - 用行、列和宫的限制条件来提前剪枝，避免不必要的回溯。
 
-**时间复杂度：**
 
-通过使用 `set` 来进行快速查询，减少了每次合法性检查的时间复杂度。整体的时间复杂度接近 `O(9^(N^2))`，但由于回溯过程中有效的剪枝和预处理，实际表现会更快。
+
+如果超时了，可以优化 **数独搜索的效率**，主要思路如下：
+
+**优化思路**
+
+1. **使用哈希表（Set）存储已填入的数字**
+   - 维护 `row_sets`、`col_sets` 和 `box_sets` 记录已填入的数字，避免 `isValid` 的重复遍历。
+2. **优先填充最少可选项的位置**
+   - 预处理所有空格，优先选择候选数最少的空格填充（**最小剩余值原则 MRV**）。
+
+> 最小剩余值（Minimum Remaining Values, MRV）是一种用于解决约束满足问题（Constraint Satisfaction Problems, CSPs）的启发式策略。在CSP中，我们有一组变量，每个变量都必须被赋予一个值，同时还要满足一组约束条件，这些约束限制了哪些值可以合法地分配给变量。
+>
+> MRV 的概念
+>
+> MRV 启发式方法用于选择下一个要赋值的变量，具体来说，它会选择具有最少合法值（即剩余值最少）的变量进行赋值。这种策略背后的直觉是，如果一个变量的合法值较少，那么我们应该尽早处理它，因为如果不这样做，可能会导致后面的选择更加困难或者无解。
+
+1. **回溯剪枝**
+   - 一旦发现无解，立即返回 `False`，减少不必要的搜索。
+
+---
+
+**优化代码**
+
+```python
+from typing import List
+
+class Solution:
+    def solveSudoku(self, board: List[List[str]]) -> None:
+        """
+        解决数独问题，原地修改 board
+        """
+        self.rows = [set() for _ in range(9)]  # 每行已填数字集合
+        self.cols = [set() for _ in range(9)]  # 每列已填数字集合
+        self.boxes = [set() for _ in range(9)]  # 每个 3x3 宫格已填数字集合
+        self.empty_cells = []  # 记录所有待填充的位置
+        
+        # 初始化状态
+        for i in range(9):
+            for j in range(9):
+                if board[i][j] == '.':
+                    self.empty_cells.append((i, j))  # 记录空格
+                else:
+                    num = board[i][j]
+                    self.rows[i].add(num)
+                    self.cols[j].add(num)
+                    self.boxes[(i // 3) * 3 + (j // 3)].add(num)
+
+        # **排序空格：优先填充候选数最少的位置**
+        self.empty_cells.sort(key=lambda pos: self.get_candidates_count(board, pos))
+        
+        self.solve(board, 0)  # 开始回溯填充
+
+    def solve(self, board: List[List[str]], index: int) -> bool:
+        """
+        回溯填充数独
+        """
+        if index == len(self.empty_cells):
+            return True  # 终止条件：所有空格填完
+        
+        row, col = self.empty_cells[index]
+        box_index = (row // 3) * 3 + (col // 3)
+        
+        for num in map(str, range(1, 10)):  # 依次尝试 '1'-'9'
+            if num not in self.rows[row] and num not in self.cols[col] and num not in self.boxes[box_index]:
+                # 选择
+                board[row][col] = num
+                self.rows[row].add(num)
+                self.cols[col].add(num)
+                self.boxes[box_index].add(num)
+
+                if self.solve(board, index + 1):  # 递归填充下一个
+                    return True
+
+                # 回溯
+                board[row][col] = '.'
+                self.rows[row].remove(num)
+                self.cols[col].remove(num)
+                self.boxes[box_index].remove(num)
+
+        return False  # 触发回溯
+
+    def get_candidates_count(self, board: List[List[str]], pos: tuple) -> int:
+        """
+        获取某个空格的可选数字数目（用于排序优化）
+        """
+        row, col = pos
+        box_index = (row // 3) * 3 + (col // 3)
+        used_numbers = self.rows[row] | self.cols[col] | self.boxes[box_index]
+        return 9 - len(used_numbers)  # 可能的候选数
+```
+
+---
+
+**优化点**
+
+1. **`self.rows`、`self.cols`、`self.boxes`**
+   - 直接记录已填数字，避免每次 `isValid` 进行 `O(9)` 遍历，查询复杂度变为 `O(1)`。
+
+2. **`self.empty_cells.sort(key=lambda pos: self.get_candidates_count(board, pos))`**
+   - 预排序所有空格，使得最少候选数的位置优先填充，大大减少回溯次数。
+
+3. **回溯剪枝**
+   - 如果当前数字不满足约束，直接跳过，减少不必要的递归调用。
+
+---
+
+**时间复杂度分析**
+
+- 由于 `get_candidates_count` 优化了搜索顺序，回溯的搜索空间大幅减少。
+- 平均情况下复杂度从 `O(9^n)` 降低到 **接近 `O(9^m)`**，其中 `m << n`。
+
+
+
+
 
 
 
