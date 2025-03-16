@@ -18274,6 +18274,154 @@ if __name__ == "__main__":
 
 
 
+### 3484. 设计电子表格
+
+OOP, RE, https://leetcode.cn/contest/biweekly-contest-152/problems/design-spreadsheet/
+
+电子表格是一个网格，它有 26 列（从 `'A'` 到 `'Z'`）和指定数量的 `rows`。每个单元格可以存储一个 0 到 105 之间的整数值。
+
+请你实现一个 `Spreadsheet` 类：
+
+- `Spreadsheet(int rows)` 初始化一个具有 26 列（从 `'A'` 到 `'Z'`）和指定行数的电子表格。所有单元格最初的值都为 0 。
+- `void setCell(String cell, int value)` 设置指定单元格的值。单元格引用以 `"AX"` 的格式提供（例如，`"A1"`，`"B10"`），其中字母表示列（从 `'A'` 到 `'Z'`），数字表示从 **1** 开始的行号。
+- `void resetCell(String cell)` 重置指定单元格的值为 0 。
+- `int getValue(String formula)` 计算一个公式的值，格式为 `"=X+Y"`，其中 `X` 和 `Y` **要么** 是单元格引用，要么非负整数，返回计算的和。
+
+**注意：** 如果 `getValue` 引用一个未通过 `setCell` 明确设置的单元格，则该单元格的值默认为 0 。
+
+ 
+
+**示例 1：**
+
+**输入：**
+ ["Spreadsheet", "getValue", "setCell", "getValue", "setCell", "getValue", "resetCell", "getValue"]
+ [[3], ["=5+7"], ["A1", 10], ["=A1+6"], ["B2", 15], ["=A1+B2"], ["A1"], ["=A1+B2"]]
+
+**输出：**
+ [null, 12, null, 16, null, 25, null, 15] 
+
+**解释**
+
+Spreadsheet spreadsheet = new Spreadsheet(3); // 初始化一个具有 3 行和 26 列的电子表格
+ spreadsheet.getValue("=5+7"); // 返回 12 (5+7)
+ spreadsheet.setCell("A1", 10); // 设置 A1 为 10
+ spreadsheet.getValue("=A1+6"); // 返回 16 (10+6)
+ spreadsheet.setCell("B2", 15); // 设置 B2 为 15
+ spreadsheet.getValue("=A1+B2"); // 返回 25 (10+15)
+ spreadsheet.resetCell("A1"); // 重置 A1 为 0
+ spreadsheet.getValue("=A1+B2"); // 返回 15 (0+15)
+
+ 
+
+**提示：**
+
+- `1 <= rows <= 10^3`
+- `0 <= value <= 10^5`
+- 公式保证采用 `"=X+Y"` 格式，其中 `X` 和 `Y` 要么是有效的单元格引用，要么是小于等于 `105` 的 **非负** 整数。
+- 每个单元格引用由一个大写字母 `'A'` 到 `'Z'` 和一个介于 `1` 和 `rows` 之间的行号组成。
+- **总共** 最多会对 `setCell`、`resetCell` 和 `getValue` 调用 `104` 次。
+
+
+
+```python
+import re
+
+class Spreadsheet:
+    def __init__(self, rows: int):
+        self.grid = [[0] * 26 for _ in range(rows)]
+    
+    def setCell(self, cell: str, value: int):
+        col, row = self._parse_cell(cell)
+        self.grid[row][col] = value
+    
+    def resetCell(self, cell: str):
+        col, row = self._parse_cell(cell)
+        self.grid[row][col] = 0
+    
+    def getValue(self, formula: str) -> int:
+        if not formula.startswith("="):
+            return int(formula)
+        
+        tokens = formula[1:].split("+")
+        total = 0
+        for token in tokens:
+            if token.isdigit():
+                total += int(token)
+            else:
+                col, row = self._parse_cell(token)
+                total += self.grid[row][col]
+        return total
+    
+    def _parse_cell(self, cell: str):
+        match = re.match(r'([A-Z])(\d+)', cell)
+        if not match:
+            raise ValueError("Invalid cell format")
+        col = ord(match.group(1)) - ord('A')
+        row = int(match.group(2)) - 1
+        return col, row
+```
+
+
+
+```python
+class Spreadsheet:
+
+    def __init__(self, rows: int):
+        self.rows = rows
+        self.cells = [[0] * 26 for _ in range(rows)]
+
+    def setCell(self, cell: str, value: int) -> None:
+        row = int(cell[1:]) - 1
+        col = ord(cell[0]) - ord('A')
+        self.cells[row][col] = value
+
+    def resetCell(self, cell: str) -> None:
+        row = int(cell[1:]) - 1
+        col = ord(cell[0]) - ord('A')
+        self.cells[row][col] = 0
+
+    def getValue(self, formula: str) -> int:
+        first, second = formula[1:].split('+')
+        part1, part2 = 0, 0
+        if first[0].isdigit() == False:
+            row = int(first[1:]) - 1
+            col = ord(first[0]) - ord('A')
+            part1 = self.cells[row][col]
+        else:
+            part1 = int(first)
+
+        if second[0].isdigit() == False:
+            row = int(second[1:]) - 1
+            col = ord(second[0]) - ord('A')
+            part2 = self.cells[row][col]
+        else:
+            part2 = int(second)
+
+
+        return part1 + part2
+
+if __name__ == "__main__":
+    sol = Spreadsheet(576)
+    print(sol.setCell('H45', 88383))
+    print(sol.getValue("=992+H45"))
+    # print(sol)
+    # print(sol.getValue("=5+7"))
+    # print(sol.setCell('A1', 10))
+    # print(sol.getValue("=A1+6"))
+    # print(sol.setCell("B2",15))
+    # print(sol.getValue("=A1+B2"))
+    # print(sol.resetCell('A1'))
+    # print(sol.getValue("=A1+B2"))
+
+# Your Spreadsheet object will be instantiated and called as such:
+# obj = Spreadsheet(rows)
+# obj.setCell(cell,value)
+# obj.resetCell(cell)
+# param_3 = obj.getValue(formula)
+```
+
+
+
 
 
 ## 3488.距离最小相等元素查询
@@ -25047,149 +25195,7 @@ if __name__ == "__main__":
 
 ### 3484. 设计电子表格
 
-中等，https://leetcode.cn/contest/biweekly-contest-152/problems/design-spreadsheet/
-
-电子表格是一个网格，它有 26 列（从 `'A'` 到 `'Z'`）和指定数量的 `rows`。每个单元格可以存储一个 0 到 105 之间的整数值。
-
-请你实现一个 `Spreadsheet` 类：
-
-- `Spreadsheet(int rows)` 初始化一个具有 26 列（从 `'A'` 到 `'Z'`）和指定行数的电子表格。所有单元格最初的值都为 0 。
-- `void setCell(String cell, int value)` 设置指定单元格的值。单元格引用以 `"AX"` 的格式提供（例如，`"A1"`，`"B10"`），其中字母表示列（从 `'A'` 到 `'Z'`），数字表示从 **1** 开始的行号。
-- `void resetCell(String cell)` 重置指定单元格的值为 0 。
-- `int getValue(String formula)` 计算一个公式的值，格式为 `"=X+Y"`，其中 `X` 和 `Y` **要么** 是单元格引用，要么非负整数，返回计算的和。
-
-**注意：** 如果 `getValue` 引用一个未通过 `setCell` 明确设置的单元格，则该单元格的值默认为 0 。
-
- 
-
-**示例 1：**
-
-**输入：**
- ["Spreadsheet", "getValue", "setCell", "getValue", "setCell", "getValue", "resetCell", "getValue"]
- [[3], ["=5+7"], ["A1", 10], ["=A1+6"], ["B2", 15], ["=A1+B2"], ["A1"], ["=A1+B2"]]
-
-**输出：**
- [null, 12, null, 16, null, 25, null, 15] 
-
-**解释**
-
-Spreadsheet spreadsheet = new Spreadsheet(3); // 初始化一个具有 3 行和 26 列的电子表格
- spreadsheet.getValue("=5+7"); // 返回 12 (5+7)
- spreadsheet.setCell("A1", 10); // 设置 A1 为 10
- spreadsheet.getValue("=A1+6"); // 返回 16 (10+6)
- spreadsheet.setCell("B2", 15); // 设置 B2 为 15
- spreadsheet.getValue("=A1+B2"); // 返回 25 (10+15)
- spreadsheet.resetCell("A1"); // 重置 A1 为 0
- spreadsheet.getValue("=A1+B2"); // 返回 15 (0+15)
-
- 
-
-**提示：**
-
-- `1 <= rows <= 10^3`
-- `0 <= value <= 10^5`
-- 公式保证采用 `"=X+Y"` 格式，其中 `X` 和 `Y` 要么是有效的单元格引用，要么是小于等于 `105` 的 **非负** 整数。
-- 每个单元格引用由一个大写字母 `'A'` 到 `'Z'` 和一个介于 `1` 和 `rows` 之间的行号组成。
-- **总共** 最多会对 `setCell`、`resetCell` 和 `getValue` 调用 `104` 次。
-
-
-
-```python
-import re
-
-class Spreadsheet:
-    def __init__(self, rows: int):
-        self.grid = [[0] * 26 for _ in range(rows)]
-    
-    def setCell(self, cell: str, value: int):
-        col, row = self._parse_cell(cell)
-        self.grid[row][col] = value
-    
-    def resetCell(self, cell: str):
-        col, row = self._parse_cell(cell)
-        self.grid[row][col] = 0
-    
-    def getValue(self, formula: str) -> int:
-        if not formula.startswith("="):
-            return int(formula)
-        
-        tokens = formula[1:].split("+")
-        total = 0
-        for token in tokens:
-            if token.isdigit():
-                total += int(token)
-            else:
-                col, row = self._parse_cell(token)
-                total += self.grid[row][col]
-        return total
-    
-    def _parse_cell(self, cell: str):
-        match = re.match(r'([A-Z])(\d+)', cell)
-        if not match:
-            raise ValueError("Invalid cell format")
-        col = ord(match.group(1)) - ord('A')
-        row = int(match.group(2)) - 1
-        return col, row
-```
-
-
-
-```python
-class Spreadsheet:
-
-    def __init__(self, rows: int):
-        self.rows = rows
-        self.cells = [[0] * 26 for _ in range(rows)]
-
-    def setCell(self, cell: str, value: int) -> None:
-        row = int(cell[1:]) - 1
-        col = ord(cell[0]) - ord('A')
-        self.cells[row][col] = value
-
-    def resetCell(self, cell: str) -> None:
-        row = int(cell[1:]) - 1
-        col = ord(cell[0]) - ord('A')
-        self.cells[row][col] = 0
-
-    def getValue(self, formula: str) -> int:
-        first, second = formula[1:].split('+')
-        part1, part2 = 0, 0
-        if first[0].isdigit() == False:
-            row = int(first[1:]) - 1
-            col = ord(first[0]) - ord('A')
-            part1 = self.cells[row][col]
-        else:
-            part1 = int(first)
-
-        if second[0].isdigit() == False:
-            row = int(second[1:]) - 1
-            col = ord(second[0]) - ord('A')
-            part2 = self.cells[row][col]
-        else:
-            part2 = int(second)
-
-
-        return part1 + part2
-
-if __name__ == "__main__":
-    sol = Spreadsheet(576)
-    print(sol.setCell('H45', 88383))
-    print(sol.getValue("=992+H45"))
-    # print(sol)
-    # print(sol.getValue("=5+7"))
-    # print(sol.setCell('A1', 10))
-    # print(sol.getValue("=A1+6"))
-    # print(sol.setCell("B2",15))
-    # print(sol.getValue("=A1+B2"))
-    # print(sol.resetCell('A1'))
-    # print(sol.getValue("=A1+B2"))
-
-# Your Spreadsheet object will be instantiated and called as such:
-# obj = Spreadsheet(rows)
-# obj.setCell(cell,value)
-# obj.resetCell(cell)
-# param_3 = obj.getValue(formula)
-```
+OOP, RE，https://leetcode.cn/contest/biweekly-contest-152/problems/design-spreadsheet/
 
 
 
