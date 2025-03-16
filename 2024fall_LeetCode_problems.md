@@ -25056,9 +25056,9 @@ https://leetcode.cn/contest/weekly-contest-439/
 
 
 
-### Q1.找出最大的几近缺失整数
+### 3471.找出最大的几近缺失整数
 
-implemetation, 简单，https://leetcode.cn/contest/weekly-contest-439/problems/find-the-largest-almost-missing-integer/
+implemetation, https://leetcode.cn/problems/find-the-largest-almost-missing-integer/description/
 
 给你一个整数数组 `nums` 和一个整数 `k` 。
 
@@ -25149,9 +25149,9 @@ if __name__ == "__main__":
 
 
 
-### Q2.至多K次操作后的最长回文子序列
+### 3472.至多K次操作后的最长回文子序列
 
-dp, 中等，https://leetcode.cn/contest/weekly-contest-439/problems/longest-palindromic-subsequence-after-at-most-k-operations/
+dp, 中等，https://leetcode.cn/problems/longest-palindromic-subsequence-after-at-most-k-operations/
 
 给你一个字符串 `s` 和一个整数 `k`。
 
@@ -25278,9 +25278,9 @@ class Solution:
 
 
 
-### Q3.长度至少为M的K个子数组之和
+### 3473.长度至少为M的K个子数组之和
 
-dp, 中等，https://leetcode.cn/contest/weekly-contest-439/problems/sum-of-k-subarrays-with-length-at-least-m/
+dp, 中等，https://leetcode.cn/problems/sum-of-k-subarrays-with-length-at-least-m/
 
 给你一个整数数组 `nums` 和两个整数 `k` 和 `m`。
 
@@ -25456,9 +25456,9 @@ https://leetcode.cn/contest/biweekly-contest-151/
 
 
 
-### Q1. 将数组按照奇偶性转化
+### 3467. 将数组按照奇偶性转化
 
-https://leetcode.cn/contest/biweekly-contest-151/problems/transform-array-by-parity/
+https://leetcode.cn/problems/transform-array-by-parity/description/
 
 给你一个整数数组 `nums`。请你按照以下顺序 **依次** 执行操作，转换 `nums`：
 
@@ -25844,9 +25844,9 @@ https://leetcode.cn/contest/weekly-contest-438/
 
 
 
-### 100579.判断操作后字符串中的数字是否相等I
+### 3461.判断操作后字符串中的数字是否相等I
 
-https://leetcode.cn/problems/check-if-digits-are-equal-in-string-after-operations-i/description/
+https://leetcode.cn/problems/check-if-digits-are-equal-in-string-after-operations-i/
 
 给你一个由数字组成的字符串 `s` 。重复执行以下操作，直到字符串恰好包含 **两个** 数字：
 
@@ -25933,9 +25933,9 @@ if __name__ == "__main__":
 
 
 
-### 100576.提取至多K个元素的最大总和
+### 3462.提取至多K个元素的最大总和
 
-data structures, https://leetcode.cn/problems/maximum-sum-with-at-most-k-elements/description/
+data structures, https://leetcode.cn/problems/maximum-sum-with-at-most-k-elements/
 
 给你一个大小为 `n x m` 的二维矩阵 `grid` ，以及一个长度为 `n` 的整数数组 `limits` ，和一个整数 `k` 。你的目标是从矩阵 `grid` 中提取出 **至多** `k` 个元素，并计算这些元素的最大总和，提取时需满足以下限制**：**
 
@@ -26200,7 +26200,7 @@ https://leetcode.cn/contest/weekly-contest-437/
 
 
 
-### Q1.找出长度为K的特殊子字符串
+### 3456.找出长度为K的特殊子字符串
 
 https://leetcode.cn/problems/find-special-substring-of-length-k/
 
@@ -26278,7 +26278,7 @@ if __name__ == "__main__":
 
 
 
-### Q2.吃披萨
+### 3457.吃披萨
 
 https://leetcode.cn/problems/eat-pizzas/
 
@@ -26337,51 +26337,51 @@ https://leetcode.cn/problems/eat-pizzas/
   - **轻的**：作为每组的“填充披萨”（filler），不贡献体重增加；  
   - **重的**：作为每组中“计入增重的披萨”。  
 - 每组必定有 4 个披萨，且按从小到大记为  
-  \[
+  $
   W\le X\le Y\le Z\,.
-  \]
+  $
   其中：  
   - 奇数天的增重取 **Z**（组中最大）；  
   - 偶数天的增重取 **Y**（组中第二大）。  
 - 因此，对于奇数天，我们只需要一个重披萨；而偶数天必须“牺牲”出两个重披萨：一份作为“大披萨”（不计入增重，仅起“撑场面”作用），另一份才算 bonus。  
 - 设：  
-  - \(m = n/4\) 为天数，  
-  - \(m_{\text{even}} = \lfloor m/2 \rfloor\) 偶数天数，  
-  - \(m_{\text{odd}} = m - m_{\text{even}}\) （也就是 \(\lceil m/2 \rceil\)）。  
+  - $m = n/4$ 为天数，  
+  - $m_{\text{even}} = \lfloor m/2 \rfloor$ 偶数天数，  
+  - $m_{\text{odd}} = m - m_{\text{even}}$ （也就是 $\lceil m/2 \rceil$）。  
 - 每天的披萨数分配要求：  
   - 奇数天：1 重披萨（计入增重） + 3 填充披萨；  
   - 偶数天：2 重披萨（其中较小的计入增重，较大的只用于凑组） + 2 填充披萨。  
 - 所以，所有天的填充披萨总数为  
-  \[
+  $
   F = 3m_{\text{odd}} + 2m_{\text{even}}\,,
-  \]
+  $
   而“重披萨”总数为  
-  \[
+  $
   R = n - F = 4m - (3m_{\text{odd}}+2m_{\text{even}}) = m_{\text{odd}}+2m_{\text{even}}\,.
-  \]
+  $
 
 由于我们希望获得尽可能多的 bonus（计入增重），自然希望“重披萨”尽可能大，而“填充披萨”尽可能小。因此最佳做法是：
 
 1. **排序后分组**：先将所有披萨按**从小到大**排序。  
 
-2. 取前 \(F=3m_{\text{odd}}+2m_{\text{even}}\) 个作为填充披萨；剩下的 \(R\) 个披萨（必然是较重的）作为“重披萨”集合 \(H\)。
+2. 取前 $F=3m_{\text{odd}}+2m_{\text{even}}$ 个作为填充披萨；剩下的 \(R\) 个披萨（必然是较重的）作为“重披萨”集合 \(H\)。
 
 3. 在 \(H\) 中：
 
    - 奇数天直接取一个 bonus（全取其值）；  
    - 偶数天需要从 \(H\) 中选出 **一对**，其中较大（support）不计入增重，较小（bonus）计入增重。  
 
-   我们如何选择偶数天的这对？注意：\(H\) 中共有 \(R = m_{\text{odd}}+2m_{\text{even}}\) 个元素，我们必须为偶数天选出 \(m_{\text{even}}\) 对，即共 \(2m_{\text{even}}\) 个元素；而剩下的 \(m_{\text{odd}}\) 个自然分配给奇数天作为 bonus。  
+   我们如何选择偶数天的这对？注意：\(H\) 中共有 $R = m_{\text{odd}}+2m_{\text{even}}$个元素，我们必须为偶数天选出 $m_{\text{even}}$ 对，即共 $2m_{\text{even}}$ 个元素；而剩下的 $m_{\text{odd}}$ 个自然分配给奇数天作为 bonus。  
 
    为了使 bonus 总和最大（等价于使被牺牲的“support”总和尽可能小），一个简单的贪心策略是：  
 
    - 将 \(H\) 保持**从小到大**的顺序；  
-   - 从 \(H\) 中最小的 \(2m_{\text{even}}\) 个中，**相邻配对**（即 \(H[0]\) 和 \(H[1]\) 为一对，\(H[2]\) 和 \(H[3]\) 为一对，…），在每一对中后者作为 support。  
+   - 从 \(H\) 中最小的 $2m_{\text{even}}$个中，**相邻配对**（即 \(H[0]\) 和 \(H[1]\) 为一对，\(H[2]\) 和 \(H[3]\) 为一对，…），在每一对中后者作为 support。  
 
    那么当天总增重为：  
-   \[
+   $
    \text{bonus} = \Bigl(\text{所有 } H \text{ 中的披萨和}\Bigr) - \Bigl(\text{所有偶数天配对中被牺牲的 support 的和}\Bigr).
-   \]
+   $
 
 【
 
@@ -26437,7 +26437,7 @@ if __name__ == "__main__":
 
 
 
-### Q3.选择K个互不重叠的特殊子字符串
+### 3458.选择K个互不重叠的特殊子字符串
 
 https://leetcode.cn/problems/select-k-disjoint-special-substrings/
 
@@ -26588,7 +26588,7 @@ if __name__ == '__main__':
 - **候选区间生成**：仅对“首次出现”的位置 \(i\) 进行扩张，过程中检查若遇到区间内某字符 \(c\) 的首次出现位置小于 \(i\)，则说明 \(c\) 在 \(i\) 之前也出现过，故该候选区间不满足特殊子字符串条件。  
 - **贪心调度**：对所有候选区间按结束位置排序，依次选择不重叠的区间，看是否至少有 \(k\) 个。
 
-这种方法时间复杂度主要在预处理 \(O(n)\) 和候选区间扩张上（候选个数至多 26，每个扩张扫描区间长度不超过 \(n\)），整体效率适用于 \(n\le 5\times10^4\) 的规模。
+这种方法时间复杂度主要在预处理 \(O(n)\) 和候选区间扩张上（候选个数至多 26，每个扩张扫描区间长度不超过 \(n\)），整体效率适用于 $n\le 5\times10^4$的规模。
 
 希望这个解法能满足题目要求！
 
@@ -26598,7 +26598,7 @@ if __name__ == '__main__':
 
 
 
-### Q4.最长V形对角线段的长度
+### 3459.最长V形对角线段的长度
 
 https://leetcode.cn/problems/length-of-longest-v-shaped-diagonal-segment/
 
@@ -26928,9 +26928,9 @@ https://leetcode.cn/contest/biweekly-contest-150/
 
 
 
-### Q1.好数字之和
+### 3452.好数字之和
 
-https://leetcode.cn/contest/biweekly-contest-150/problems/sum-of-good-numbers/
+https://leetcode.cn/problems/sum-of-good-numbers/
 
 给定一个整数数组 `nums` 和一个整数 `k`，如果元素 `nums[i]` **严格** 大于下标 `i - k` 和 `i + k` 处的元素（如果这些元素存在），则该元素 `nums[i]` 被认为是 **好** 的。如果这两个下标都不存在，那么 `nums[i]` 仍然被认为是 **好**的。
 
