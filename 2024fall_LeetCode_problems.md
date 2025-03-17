@@ -14591,7 +14591,7 @@ class Solution:
 
 ## 1472.设计浏览器历史记录
 
-双向链表，https://leetcode.cn/problems/design-browser-history/
+doubly-linked list，https://leetcode.cn/problems/design-browser-history/
 
 你有一个只支持单个标签页的 **浏览器** ，最开始你浏览的网页是 `homepage` ，你可以访问其他的网站 `url` ，也可以在浏览历史中后退 `steps` 步或前进 `steps` 步。
 
