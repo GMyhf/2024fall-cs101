@@ -18127,22 +18127,31 @@ heap, https://leetcode.cn/problems/choose-k-elements-with-maximum-sum/
 
 
 
+【叶靖 信管系】
+
 ```python
-# 焦玮宸 数学科学学院
+import heapq
+
 class Solution:
     def findMaxSum(self, nums1: List[int], nums2: List[int], k: int) -> List[int]:
-        combined = defaultdict(list)
-        for num1, num2 in zip(nums1, nums2):
-            combined[num1].append(num2)
-        heap, cur, res = [], 0, {}
-        for num1 in sorted(combined.keys()):
-            res[num1] = cur
-            for num2 in combined[num1]:
-                heapq.heappush(heap, num2)
-                cur += num2
-                if len(heap) > k:
-                    cur -= heapq.heappop(heap)
-        return  list(map(lambda x: res[x], nums1))
+        n = len(nums1)
+        result = [0] * n
+        pairs = sorted((num, i) for i, num in enumerate(nums1))
+        min_heap = []
+        total_sum = 0
+        j = 0
+        
+        for value, i in pairs:
+            while j < n and pairs[j][0] < value:
+                _, idx = pairs[j]
+                heapq.heappush(min_heap, nums2[idx])
+                total_sum += nums2[idx]
+                if len(min_heap) > k:
+                    total_sum -= heapq.heappop(min_heap)
+                j += 1
+            result[i] = total_sum
+        
+        return result
 ```
 
 
