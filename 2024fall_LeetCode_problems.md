@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1125 GMT+8 Mar 17 2025
+Updated 1007 GMT+8 Mar 18 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -3569,6 +3569,90 @@ if __name__ == "__main__":
     sol = Solution()
     print(sol.evenOddBit(2))  # Example input
 ```
+
+
+
+## 2614.对角线上的质数
+
+matrix, https://leetcode.cn/problems/prime-in-diagonal/
+
+给你一个下标从 **0** 开始的二维整数数组 `nums` 。
+
+返回位于 `nums` 至少一条 **对角线** 上的最大 **质数** 。如果任一对角线上均不存在质数，返回 *0 。*
+
+注意：
+
+- 如果某个整数大于 `1` ，且不存在除 `1` 和自身之外的正整数因子，则认为该整数是一个质数。
+- 如果存在整数 `i` ，使得 `nums[i][i] = val` 或者 `nums[i][nums.length - i - 1]= val` ，则认为整数 `val` 位于 `nums` 的一条对角线上。
+
+![img](https://assets.leetcode.com/uploads/2023/03/06/screenshot-2023-03-06-at-45648-pm.png)
+
+在上图中，一条对角线是 **[1,5,9]** ，而另一条对角线是 **[3,5,7]** 。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [[1,2,3],[5,6,7],[9,10,11]]
+输出：11
+解释：数字 1、3、6、9 和 11 是所有 "位于至少一条对角线上" 的数字。由于 11 是最大的质数，故返回 11 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [[1,2,3],[5,17,7],[9,11,10]]
+输出：17
+解释：数字 1、3、9、10 和 17 是所有满足"位于至少一条对角线上"的数字。由于 17 是最大的质数，故返回 17 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 300`
+- `nums.length == numsi.length`
+- `1 <= nums[i][j] <= 4*10^6`
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def diagonalPrime(self, nums: List[List[int]]) -> int:
+        def sieve(max_num):
+            primes = [True] * (max_num + 1)
+            primes[0], primes[1] = False, False
+            for i in range(2, int(max_num**0.5) + 1):
+                if primes[i]:
+                    for j in range(i * i, max_num + 1, i):
+                        primes[j] = False
+            return primes
+        
+        # 找到nums中的最大值以确定筛选范围
+        max_val = max(max(row) for row in nums)
+        primes = sieve(max_val)
+        
+        res = 0
+        n = len(nums)
+        for i in range(n):
+            # 主对角线元素
+            if primes[nums[i][i]]:
+                res = max(res, nums[i][i])
+            # 副对角线元素
+            if primes[nums[i][n - 1 - i]]:
+                res = max(res, nums[i][n - 1 - i])
+                
+        return res
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.diagonalPrime([[1,2,3],[5,6,7],[9,10,11]]))  # 应该输出 7，因为 5 和 7 都是质数，但 7 更大
+```
+
+
 
 
 
