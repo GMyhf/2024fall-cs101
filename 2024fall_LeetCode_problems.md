@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1658 GMT+8 Mar 19 2025
+Updated 1838 GMT+8 Mar 19 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -2025,6 +2025,36 @@ class Solution:
         return True
 
 ```
+
+
+
+递归算法：currentNode 指针是先到尾节点，由于递归的特性再从后往前进行比较。frontPointer 是递归函数外的指针。若 currentNode.val != frontPointer.val 则返回 false。反之，frontPointer 向前移动并返回 true。
+
+算法的正确性在于递归处理节点的顺序是相反的，而我们在函数外又记录了一个变量，因此从本质上，我们同时在正向和逆向迭代匹配。
+
+作者：力扣官方题解
+
+```python
+class Solution:
+    def isPalindrome(self, head: ListNode) -> bool:
+
+        self.front_pointer = head
+
+        def recursively_check(current_node=head):
+            if current_node is not None:
+                if not recursively_check(current_node.next):
+                    return False
+                if self.front_pointer.val != current_node.val:
+                    return False
+                self.front_pointer = self.front_pointer.next
+            return True
+
+        return recursively_check()
+
+
+```
+
+
 
 
 
