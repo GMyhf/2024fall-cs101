@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1838 GMT+8 Mar 19 2025
+Updated 2032 GMT+8 Mar 19 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -16327,6 +16327,70 @@ class Solution:
 if __name__ == "__main__":
     sol = Solution()
     print(sol.beautifulSubsets([2, 4, 6], 2))  # 示例调用
+```
+
+
+
+## 2610.转换二维数组
+
+hash table, https://leetcode.cn/problems/convert-an-array-into-a-2d-array-with-conditions/
+
+给你一个整数数组 `nums` 。请你创建一个满足以下条件的二维数组：
+
+- 二维数组应该 **只** 包含数组 `nums` 中的元素。
+- 二维数组中的每一行都包含 **不同** 的整数。
+- 二维数组的行数应尽可能 **少** 。
+
+返回结果数组。如果存在多种答案，则返回其中任何一种。
+
+请注意，二维数组的每一行上可以存在不同数量的元素。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,3,4,1,2,3,1]
+输出：[[1,3,4,2],[1,3],[1]]
+解释：根据题目要求可以创建包含以下几行元素的二维数组：
+- 1,3,4,2
+- 1,3
+- 1
+nums 中的所有元素都有用到，并且每一行都由不同的整数组成，所以这是一个符合题目要求的答案。
+可以证明无法创建少于三行且符合题目要求的二维数组。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,2,3,4]
+输出：[[4,3,2,1]]
+解释：nums 中的所有元素都不同，所以我们可以将其全部保存在二维数组中的第一行。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 200`
+- `1 <= nums[i] <= nums.length`
+
+
+
+```python
+from collections import Counter
+
+class Solution:
+    def findMatrix(self, nums: List[int]) -> List[List[int]]:
+        count = Counter(nums)  # 统计每个数字的出现次数
+        max_freq = max(count.values())  # 找到最大出现次数
+        res = [[] for _ in range(max_freq)]  # 创建二维数组
+        
+        for num, freq in count.items():
+            for i in range(freq):  # 把每个数字分配到不同的行
+                res[i].append(num)
+        
+        return res
 ```
 
 
