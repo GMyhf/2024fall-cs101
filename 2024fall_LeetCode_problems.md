@@ -1783,6 +1783,8 @@ linked list, https://leetcode.cn/problems/reverse-linked-list/
 
 
 
+使用三个指针（prev, current, next_node）迭代整个链表，将当前节点的 next 指针指向前一个节点，从而实现链表反转，最后返回 prev 作为新的头节点。
+
 ```python
 # Definition for singly-linked list.
 # class ListNode:
