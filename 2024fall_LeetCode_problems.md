@@ -23659,6 +23659,198 @@ if __name__ == "__main__":
 
 
 
+## 2612.最少翻转操作数
+
+bfs, https://leetcode.cn/problems/minimum-reverse-operations/
+
+给你一个整数 `n` 和一个在范围 `[0, n - 1]` 以内的整数 `p` ，它们表示一个长度为 `n` 且下标从 **0** 开始的数组 `arr` ，数组中除了下标为 `p` 处是 `1` 以外，其他所有数都是 `0` 。
+
+同时给你一个整数数组 `banned` ，它包含数组中的一些位置。`banned` 中第 **i** 个位置表示 `arr[banned[i]] = 0` ，题目保证 `banned[i] != p` 。
+
+你可以对 `arr` 进行 **若干次** 操作。一次操作中，你选择大小为 `k` 的一个 **子数组** ，并将它 **翻转** 。在任何一次翻转操作后，你都需要确保 `arr` 中唯一的 `1` 不会到达任何 `banned` 中的位置。换句话说，`arr[banned[i]]` 始终 **保持** `0` 。
+
+请你返回一个数组 `ans` ，对于 `[0, n - 1]` 之间的任意下标 `i` ，`ans[i]` 是将 `1` 放到位置 `i` 处的 **最少** 翻转操作次数，如果无法放到位置 `i` 处，此数为 `-1` 。
+
+- **子数组** 指的是一个数组里一段连续 **非空** 的元素序列。
+- 对于所有的 `i` ，`ans[i]` 相互之间独立计算。
+- 将一个数组中的元素 **翻转** 指的是将数组中的值变成 **相反顺序** 。
+
+ 
+
+**示例 1：**
+
+```
+输入：n = 4, p = 0, banned = [1,2], k = 4
+输出：[0,-1,-1,1]
+解释：k = 4，所以只有一种可行的翻转操作，就是将整个数组翻转。一开始 1 在位置 0 处，所以将它翻转到位置 0 处需要的操作数为 0 。
+我们不能将 1 翻转到 banned 中的位置，所以位置 1 和 2 处的答案都是 -1 。
+通过一次翻转操作，可以将 1 放到位置 3 处，所以位置 3 的答案是 1 。
+```
+
+**示例 2：**
+
+```
+输入：n = 5, p = 0, banned = [2,4], k = 3
+输出：[0,-1,-1,-1,-1]
+解释：这个例子中 1 一开始在位置 0 处，所以此下标的答案为 0 。
+翻转的子数组长度为 k = 3 ，1 此时在位置 0 处，所以我们可以翻转子数组 [0, 2]，但翻转后的下标 2 在 banned 中，所以不能执行此操作。
+由于 1 没法离开位置 0 ，所以其他位置的答案都是 -1 。
+```
+
+**示例 3：**
+
+```
+输入：n = 4, p = 2, banned = [0,1,3], k = 1
+输出：[-1,-1,0,-1]
+解释：这个例子中，我们只能对长度为 1 的子数组执行翻转操作，所以 1 无法离开初始位置。
+```
+
+ 
+
+**提示：**
+
+- `1 <= n <= 10^5`
+- `0 <= p <= n - 1`
+- `0 <= banned.length <= n - 1`
+- `0 <= banned[i] <= n - 1`
+- `1 <= k <= n `
+- `banned[i] != p`
+- `banned` 中的值 **互不相同** 。
+
+
+
+
+
+思路：
+
+对于当前位置  $i$ （当前 1 的位置），如果选取下标为 $ l $ 的子数组，长度为 $ k $，则该子数组为 $[l, l+k-1]$。
+
+- 要保证 $i$ 在子数组内，则 $l$ 必须满足  
+  $l \in [\max(0,\, i-k+1),\, \min(i,\, n-k)]$
+- 翻转操作后，新位置为  
+  $
+  j = l + (l+k-1) - i = 2l + k - 1 - i.
+  $
+- 当  $l$  变化时，每次 $ l $ 增加 1，$ j $ 增加 2。所以 $ j $ 值都具有相同的奇偶性。
+
+代码：
+
+```python
+from typing import List
+from collections import deque
+import bisect
+
+class Solution:
+    def minReverseOperations(self, n: int, p: int, banned: List[int], k: int) -> List[int]:
+        ans = [-1] * n
+        ans[p] = 0
+        banned_set = set(banned)
+
+        # 把所有不在 banned 且不是起点 p 的下标根据奇偶性存入有序数组
+        even = []
+        odd = []
+        for i in range(n):
+            if i in banned_set or i == p:
+                continue
+            if i % 2 == 0:
+                even.append(i)
+            else:
+                odd.append(i)
+        even.sort()
+        odd.sort()
+
+        dq = deque([p])
+        steps = 0
+        while dq:
+            size = len(dq)
+            steps += 1
+            for _ in range(size):
+                i = dq.popleft()
+                # 合法的子数组起点 l 的范围：必须保证子数组 [l, l+k-1] 包含 i
+                l_low = max(0, i - k + 1)
+                l_high = min(i, n - k)
+                if l_low > l_high:
+                    continue  # 没有合法的子数组
+                # 翻转后的位置 j = 2*l + k - 1 - i，当 l 在 [l_low, l_high] 变化时，j 按 2 递增
+                L = 2 * l_low + k - 1 - i
+                R = 2 * l_high + k - 1 - i
+
+                # 根据 j 的奇偶性选择对应数组：L 的奇偶性就是候选下标的奇偶性
+                parity = L & 1  # L % 2
+                candidate = even if parity == 0 else odd
+
+                # 在 candidate 这个有序数组中找到所有位于 [L, R] 的下标
+                left_idx = bisect.bisect_left(candidate, L)
+                remove_start = left_idx
+                while left_idx < len(candidate) and candidate[left_idx] <= R:
+                    j = candidate[left_idx]
+                    ans[j] = steps
+                    dq.append(j)
+                    left_idx += 1
+                # 删除已经访问的下标，防止重复访问
+                del candidate[remove_start:left_idx]
+
+        return ans
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.minReverseOperations(4, 0, [1,2], 4))
+    print(sol.minReverseOperations(5, 0, [2,4], 3))
+    print(sol.minReverseOperations(4, 2, [0,1,3], 1))
+```
+
+**代码说明：**
+
+1. **预处理：**  
+   - 将 `banned` 转为集合 `banned_set`，便于判断下标是否被禁止。  
+   - 遍历所有下标，将既不在 `banned_set` 中且不是起点 `p` 的下标，根据奇偶性存入 `even` 和 `odd` 列表，并排序。
+
+2. **BFS 主循环：**  
+   - 从起点 `p` 开始，每一步增加 `steps`。  
+   - 对于当前 1 在位置 $ i $，计算合法子数组起点的范围  
+     $
+     l \in [\max(0, i-k+1), \min(i, n-k)]
+     $
+   - 根据公式 $ j = 2l + k - 1 - i $ 得到翻转后可能的位置区间 [L, R]。  
+   - 利用二分查找从对应的有序数组（`even` 或 `odd`）中找到所有位于 [L, R] 的下标，更新答案并加入 BFS 队列，同时将这些下标删除以防重复访问。
+
+3. **返回结果：**  
+   - 最后返回数组 `ans`，其中每个位置的值表示最少需要的翻转操作次数，无法到达的位置记为 `-1`。
+
+
+
+> 当你翻转一个子数组时，实际上就是将该子数组内所有元素的位置都颠倒过来。设子数组的起始下标为 \(l\)，长度为 \(k\)，那么这个子数组的结束下标为  
+> $r = l + k - 1$
+>
+> 对于子数组中原来处于位置 $i$（要求 $l \le i \le r$）的元素，翻转后的新位置计算方法如下：
+>
+> 1. **计算相对位置**：  
+>    在子数组内，位置 $i$ 距离起点的偏移量为 $i - l$。  
+>    翻转后，它距离子数组末尾的距离应保持不变，即也为 $i - l$。
+>
+> 2. **确定新位置**：  
+>    子数组末尾的下标是 $r$，所以新位置 $j$ 应该满足  
+>    $r - j = i - l$
+>    由此解得  
+>    $j = r - (i - l) = (l + k - 1) - (i - l)$
+>
+> 3. **整理公式**：  
+>    将上式展开，可以得到  
+>    $j = l + k - 1 - i + l = 2l + k - 1 - i$
+>
+> 所以，**翻转后的位置公式为**  
+> $j = 2l + k - 1 - i$
+>
+> **直观理解**
+>
+> - 想象子数组从 $l$ 到 $r$ 是一排物品，翻转就像把这一排物品倒过来。
+> - 如果某个物品离左边缘 $i - l$ 个位置，倒过来后它就会离右边缘 $i - l$ 个位置，而右边缘的下标是 $r = l+k-1$。
+> - 因此，新下标就是 $r - (i - l)$，整理后正是公式 $2l+k-1-i$。
+>
+> 这种方式能确保翻转操作对所有元素都成立，且每个元素的位置变化都符合对称的性质。
+
+
+
 
 
 ## 2920.收集所有金币可获得的最大积分
