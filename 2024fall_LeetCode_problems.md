@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2032 GMT+8 Mar 19 2025
+Updated 0832 GMT+8 Mar 20 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -276,7 +276,7 @@ class Solution:
 
 ## 21.合并两个有序链表
 
-https://leetcode.cn/problems/merge-two-sorted-lists/
+linked list, recursion, https://leetcode.cn/problems/merge-two-sorted-lists/
 
 将两个升序链表合并为一个新的 **升序** 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
 
@@ -315,6 +315,8 @@ https://leetcode.cn/problems/merge-two-sorted-lists/
 
 
 
+用`dummy`节点，遍历两个链表，每次选择较小的加入链表。
+
 ```python
 # Definition for singly-linked list.
 # class ListNode:
@@ -344,6 +346,33 @@ class Solution:
         # 返回合并后的链表，跳过哨兵节点
         return prehead.next
 ```
+
+
+
+递归，判断两个链表的节点哪个较小，较小的节点指向剩余链表合并后的结果，当两个链表都为空，终止递归。
+
+```python
+# Definition for singly-linked list.
+# class ListNode:
+# def __init__(self, val=0, next=None):
+# self.val = val
+# self.next = next
+class Solution:
+    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
+        if not list1: return list2
+        if not list2: return list1
+        
+        if list1.val <= list2.val:
+            list1.next = self.mergeTwoLists(list1.next,list2)
+            return list1
+        else:
+            list2.next = self.mergeTwoLists(list1,list2.next)
+            return list2
+```
+
+
+
+
 
 
 
