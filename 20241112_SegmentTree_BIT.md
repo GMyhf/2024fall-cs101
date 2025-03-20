@@ -1,6 +1,6 @@
 # 20241112-Week10 Nov月考、DFS模版/栈模拟 、NaraPan算法 & 线段树、树状数组
 
-Updated 2359 GMT+8 Nov 12 2023
+Updated 1548 GMT+8 Mar 20 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -1815,98 +1815,38 @@ if __name__ == '__main__':
 
 ## A.2 树状数组（Binary Indexed Tree）
 
-树状数组或二叉索引树（英语：Binary Indexed Tree），又以其发明者命名为Fenwick树，最早由Peter M. Fenwick于1994年以A New Data Structure for Cumulative Frequency Tables为题发表。其初衷是解决数据压缩里的累积频率（Cumulative Frequency）的计算问题，现多用于高效计算数列的前缀和， 区间和。
+树状数组或二叉索引树（英语：Binary Indexed Tree），又以其发明者命名为Fenwick树，最早由Peter M. Fenwick于1994年以A New Data Structure for Cumulative Frequency Tables为题发表。其初衷是解决数据压缩里的累积频率（Cumulative Frequency）的计算问题，现多用于高效计算数列的<mark>前缀和， 区间和</mark>。
+
+一般来说，如果在查询的过程中元素可能发生改变（例如插入、修改或删除），就称这种查询为<mark>在线查询</mark>;如果在查询过程中元素不发生改变，就称为**离线查询**。
 
 
 
-**Binary Indexed Tree or Fenwick Tree**
-
-https://www.geeksforgeeks.org/binary-indexed-tree-or-fenwick-tree-2/
-
-让我们考虑以下问题来理解二叉索引树（Binary Indexed Tree, BIT）：
-我们有一个数组 $arr[0 . . . n-1]$。我们希望实现两个操作：
-
-1. 计算前i个元素的和。
-2. 修改数组中指定位置的值，即设置 $arr[i] = x$，其中 $0 \leq i \leq n-1$。
-
-一个简单的解决方案是从0到i-1遍历并计算这些元素的总和。要更新一个值，只需执行 $arr[i] = x$。第一个操作的时间复杂度为O(n)，而第二个操作的时间复杂度为O(1)。另一种简单的解决方案是创建一个额外的数组，并在这个新数组的第i个位置存储前i个元素的总和。这样，给定范围的和可以在O(1)时间内计算出来，但是更新操作现在需要O(n)时间。当查询操作非常多而更新操作非常少时，这种方法表现良好。
-
-**我们能否在O(log n)时间内同时完成查询和更新操作呢？**
-一种高效的解决方案是使用段树（Segment Tree），它能够在O(log n)时间内完成这两个操作。
-另一种解决方案是二叉索引树（Binary Indexed Tree，也称作Fenwick Tree），同样能够以O(log n)的时间复杂度完成查询和更新操作。与段树相比，二叉索引树所需的空间更少，且实现起来更加简单。
-
-> Let us consider the following problem to understand Binary Indexed Tree.
-> We have an array $arr[0 . . . n-1]$. We would like to 
-> **1** Compute the sum of the first i elements. 
-> **2** Modify the value of a specified element of the array arr[i] = x where $0 \leq i \leq n-1$.
-> A **simple solution** is to run a loop from 0 to i-1 and calculate the sum of the elements. To update a value, simply do arr[i] = x. The first operation takes O(n) time and the second operation takes O(1) time. Another simple solution is to create an extra array and store the sum of the first i-th elements at the i-th index in this new array. The sum of a given range can now be calculated in O(1) time, but the update operation takes O(n) time now. This works well if there are a large number of query operations but a very few number of update operations.
-> **Could we perform both the query and update operations in O(log n) time?** 
-> One efficient solution is to use [Segment Tree](https://www.geeksforgeeks.org/segment-tree-set-1-sum-of-given-range/) that performs both operations in O(Logn) time.
-> An alternative solution is Binary Indexed Tree, which also achieves O(Logn) time complexity for both operations. Compared with Segment Tree, Binary Indexed Tree requires less space and is easier to implement.
-
-
-
-
-
-<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231031141452788.png" alt="image-20231031141452788" style="zoom:50%;" />
-
-
-
-<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231031141531597.png" alt="image-20231031141531597" style="zoom:50%;" />
-
-
-
-<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231031141548736.png" alt="image-20231031141548736" style="zoom:50%;" />
-
-**表示方式**
-二叉索引树用数组形式表示。设该数组为BITree[]。二叉索引树的每个节点存储了输入数组某些元素的和。二叉索引树的大小等于输入数组的大小，记为n。在下面的代码中，为了便于实现，我们使用n+1的大小。
-
-> **Representation** 
-> Binary Indexed Tree is represented as an array. Let the array be BITree[]. Each node of the Binary Indexed Tree stores the sum of some elements of the input array. The size of the Binary Indexed Tree is equal to the size of the input array, denoted as n. In the code below, we use a size of n+1 for ease of implementation.
-
-<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231031141831067.png" alt="image-20231031141831067" style="zoom:50%;" />
-
-
-
-<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231031141629059.png" alt="image-20231031141629059" style="zoom:50%;" />
-
-
-
-**构建**
-我们首先将BITree[]中的所有值初始化为0。然后对所有的索引调用update()函数，下面将讨论update()操作的具体内容。
-
-> **Construction** 
-> We initialize all the values in BITree[] as 0. Then we call update() for all the indexes, the update() operation is discussed below.
-
-**Operations** 
-
-
-> ***getSum(x): Returns the sum of the sub-array arr[0,…,x]*** 
-> // Returns the sum of the sub-array arr[0,…,x] using BITree[0..n], which is constructed from arr[0..n-1] 
+> 二叉索引树（树状数组）用于处理对固定大小的数组进行以下多种操作的这类问题。
 >
-> 1) Initialize the output sum as 0, the current index as x+1. 
-> 2) Do following while the current index is greater than 0. 
+> - 前缀操作（求和、求积、异或、按位或等）。注意，区间操作也可以通过前缀来解决。例如，从索引L到R的区间和等于到R（包含R）的前缀和减去到L - 1的前缀和。
+> - 更新数组中的一个元素
 >
-> …a) Add BITree[index] to sum 
-> …b) Go to the parent of BITree[index]. The parent can be obtained by removing the last set bit from the current index, i.e., index = index – (index & (-index)) 
+> 这两种操作的时间复杂度均为$O(logN)$。注意，我们需要$O(NlogN)$的预处理时间和$O(N)$的辅助空间。
+>
 > 
->3) Return sum.
-
- 
-
-<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/BITSum.png" alt="BITSum" style="zoom: 67%;" />
-
-
-
-getsum(7)
-
-<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231031142037881.png" alt="image-20231031142037881" style="zoom:50%;" />
-
-getsum(8)
-
-<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231031142146355.png" alt="image-20231031142146355" style="zoom:50%;" />
+>
+> 让我们考虑以下问题来理解二叉索引树（Binary Indexed Tree, BIT）：
+> 我们有一个数组 $arr[0 . . . n-1]$。我们希望实现两个操作：
+>
+> 1. 计算前i个元素的和。
+> 2. 修改数组中指定位置的值，即设置 $arr[i] = x$，其中 $0 \leq i \leq n-1$。
+>
+> 一个简单的解决方案是从 0 到 i-1 遍历并计算这些元素的总和。要更新一个值，只需执行 $arr[i] = x$。第一个操作的时间复杂度为$O(N)$，而第二个操作的时间复杂度为$O(1)$。另一种简单的解决方案是创建一个额外的数组，并在这个新数组的第i个位置存储前i个元素的总和。这样，给定范围的和可以在$O(1)$时间内计算出来，但是更新操作现在需要$O(N)$时间。当查询操作非常多而更新操作非常少时，这种方法表现良好。
+>
+> **我们能否在$O(log N)$时间内同时完成查询和更新操作呢？**
+> 一种高效的解决方案是使用段树（Segment Tree），它能够在$O(logN)$时间内完成这两个操作。
+> 另一种解决方案是二叉索引树（Binary Indexed Tree，也称作Fenwick Tree），同样能够以$O(logN)$的时间复杂度完成查询和更新操作。与段树相比，二叉索引树所需的空间更少，且实现起来更加简单。
 
 
+
+### lowbit 运算
+
+二进制中一个经典应用是 lowbit 运算，即 `lowbit(x) = x & (-x)`。
 
 **整数的二进制表示常用的方式之一是使用补码**
 
@@ -1917,167 +1857,276 @@ getsum(8)
 具体将一个整数转换为补码的步骤如下：
 
 1. 如果整数是正数，则补码等于二进制表示本身。
-2. 如果整数是负数，则需要先将其绝对值转换为二进制，然后取反，最后加1。
+2. 如果整数是负数，则需要先将其绝对值转换为二进制，然后取反，最后加1。等价于<mark>把二进制最右边的1的左边的每一位都取反</mark>。
 
-例如，假设要将-5转换为补码：
+例如，假设要将 -12 转换为补码：
 
-1. 5的二进制表示为00000101。
+1. 12的二进制表示为00001100。
 
-2. 将其取反得到11111010。
+2. 将其取反得到11110011。
 
-3. 加1得到11111011，这就是-5的补码表示。
-
-   
-
-<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231031142210011.png" alt="image-20231031142210011" style="zoom:50%;" />
+3. 加1得到11110100，这就是 -12 的补码表示。
 
 
+通过`lowbit(x) = x & (-x)`就是取 x 的二进制最右边的1和它右边所有的0，因此它一定是2的幂次，即1、2、4、8等。
 
-上图提供了一个getSum()如何工作的例子。这里有一些重要的观察点：
+对 x = 12 = $(00001100)_2$，有 -x = $(11110100)_2$ ，x & (-x) = 4
 
-- BITree[0]是一个虚拟节点。
-- 如果仅通过从x的二进制表示中移除最后一个设置位（即最右边的1）可以得到y，则BITree[y]是BITree[x]的父节点，这可以表示为 `y = x – (x & (-x))`。
-- 节点`BITree[y]`的子节点`BITree[x]`存储了从y（包括y）到x（不包括x）之间元素的和：arr[y,...,x)。
-
-> The diagram above provides an example of how getSum() is working. Here are some important observations.
-> BITree[0] is a dummy node. 
-> BITree[y] is the parent of BITree[x], if and only if y can be obtained by removing the last set bit from the binary representation of x, that is y = x – (x & (-x)).
-> The child node BITree[x] of the node BITree[y] stores the sum of the elements between y(inclusive) and x(exclusive): arr[y,…,x). 
-
-
-> ***update(x, val): Updates the Binary Indexed Tree (BIT) by performing arr[index] += val*** 
-> // Note that the update(x, val) operation will not change arr[]. It only makes changes to BITree[] 
->
-> 1) Initialize the current index as x+1. 
-> 2) Do the following while the current index is smaller than or equal to n. 
->
-> …a) Add the val to BITree[index] 
-> …b) Go to next element of BITree[index]. The next element can be obtained by incrementing the last set bit of the current index, i.e., index = index + (index & (-index))
-
- 
-
-<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/BITUpdate12.png" alt="BITUpdate1" style="zoom:67%;" />
-
-update(4, 10)
-
-<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231031142428708.png" alt="image-20231031142428708" style="zoom:50%;" />
+对 x= 6 = $(110)_2$，有 -x = $(010)_2$，x & (-x) = 2
 
 
 
-The update function needs to make sure that all the BITree nodes which contain arr[i] within their ranges being updated. We loop over such nodes in the BITree by repeatedly adding the decimal number corresponding to the last set bit of the current index.
-**How does Binary Indexed Tree work?** 
-The idea is based on the fact that all positive integers can be represented as the sum of powers of 2. For example 19 can be represented as 16 + 2 + 1. Every node of the BITree stores the sum of n elements where n is a power of 2. For example, in the first diagram above (the diagram for getSum()), the sum of the first 12 elements can be obtained by the sum of the last 4 elements (from 9 to 12) plus the sum of 8 elements (from 1 to 8). The number of set bits in the binary representation of a number n is O(Logn). Therefore, we traverse at-most O(Logn) nodes in both getSum() and update() operations. The time complexity of the construction is O(nLogn) as it calls update() for all n elements. 
-**Implementation:** 
-Following are the implementations of Binary Indexed Tree.
+### 表示方式
 
-> 更新函数需要确保所有包含arr[i]在其范围内的BITree节点都被更新。我们通过不断向当前索引添加其最后一位设置位对应的十进制数，在BITree中循环遍历这些节点。
-> **二叉索引树是如何工作的？**
-> 这个想法基于所有正整数都可以表示为2的幂的和这一事实。例如，19可以表示为16 + 2 + 1。BITree的每个节点都存储n个元素的和，其中n是2的幂。例如，在上面的第一个图（getSum()的图示）中，前12个元素的和可以通过最后4个元素（从9到12）的和加上前8个元素（从1到8）的和得到。一个数n的二进制表示中设置位的数量是O(Logn)。因此，在getSum()和update()操作中，我们最多遍历O(Logn)个节点。构建的时间复杂度为O(nLogn)，因为它为所有n个元素调用了update()。
-> **实现：**
-> 以下是二叉索引树的实现。
+树状数组（Binary Indexed Tree，BIT）用数组形式表示。它其实仍然是一个数组，并且与 sum 数组类似，是一个用来记录和的数组，只不过它存放的不是前 i 个整数之和，而是在 <mark>i 号位之前（含i号位）lowbit(i) 个整数之和</mark>。树状数组的大小等于输入数组的大小，记为n。在下面的代码中，为了便于实现，使用n+1的大小。
+
+如下图 所示，数组A是原始数组，有 A[1]~ A[16]共 16个元素；数组 C是树状数组，其中 C[i]存放数组 A 中i号位之前 lowbit(i) 个元素之和。显然，<mark>C[i]的覆盖长度是 lowbit(i)（也可以理解成管辖范围）</mark>，它是2的幂次，即 1、2、4、8等。
+
+需要注意的是，树状数组仍旧是一个平坦的数组，画成树形是为了让存储的元素更容易观察。
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20250320134426632.png" alt="image-20250320134426632" style="zoom: 67%;" />
+
+<center>图 树状数组定义图</center>
+
+
+
+```
+C[1] = A[1]  													(长度为 lowbit(1) = 1) 
+C[2] = A[1] + A[2]  									(长度为 lowbit(2) = 2) 
+C[3] = A[3]  													(长度为 lowbit(3) = 1) 
+C[4] = A[1] + A[2] + A[3] + A[4]  		(长度为 lowbit(4) = 4) 
+C[5] = A[5]  													(长度为 lowbit(5) = 1) 
+C[6] = A[5] + A[6]  									(长度为 lowbit(6) = 2) 
+C[7] = A[7]  													(长度为 lowbit(7) = 1) 
+C[8] = A[1] + A[2] + A[3] + A[4] + A[5] + A[6] + A[7] + A[8]  (长度为 lowbit(8) = 8) 
+```
+
+<mark>树状数组的定义非常重要，特别是“C[i]的覆盖长度是 lowbit(i)”这点；另外，树状数组的下标必须从1开始</mark>。接下来思考一下，在这样的定义下，
+怎样解决下面两个问题：
+
+① 设计函数 get_sum(x)，返回前x个数之和 A[1]+...+ A[x]。
+
+② 设计函数 update_bit(x,v)，实现将第x个数加上一个数v的功能，即 A[x]+= v。
+
+先来看第一个问题，即如何设计函数 get_sum(x)，返回前x个数之和。不妨先看个例子。假设想要查询 A[1]+…+A[14]，那么从树状数组的定义出发，它实际是什么东西呢? 回到上图，很容易发现 A[1]+…+A[14] = C[8]+C[12]+ C[14]。又比如要査询 A[1]+…A[11]，从图中同样可以得到 A[1]+…+A[11] = C[8]+C[10]+ C[11]。那么怎样知道 A[1]+…+ A[x]对应的是树状数组中的哪些项呢？事实上这很简单。记 SUM(1,x) = A[1]+……+A[x]，由于 C[x]的覆盖长度是 lowbit(x)，因此
+
+C[x] = A[x-lowbit(x)+1]+...+ A[x]
+
+于是可以得到
+
+```
+SUM(1,x) = A[1] +···+ A[x]
+				=A[1] +···+ A[x-lowbit(x)] + A[x-lowbit(x)+1] +···+ A[x]
+				=SUM(1,x-lowbit(x)) + C[x]
+```
+
+这样就把 SUM(1,x)转换为 SUM(1,x-lowbit(x))了。
+
+接着就能写出 get_sum 函数了，其中BITTree是树状数组。
 
 ```python
-# Python implementation of Binary Indexed Tree 
+def bit_sum(BIT, i):
+    s = 0
+    i += 1  # index in BIT[] is 1 more than the index in arr[]
 
-# Returns sum of arr[0..index]. This function assumes 
-# that the array is preprocessed and partial sums of 
-# array elements are stored in BITree[]. 
-def getsum(BITTree,i): 
-	s = 0 #initialize result 
+    while i > 0:  # Traverse ancestors of BIT[index]
+        s += BIT[i]
+        i -= i & (-i)  # Move index to parent node
+    return s
+```
 
-	# index in BITree[] is 1 more than the index in arr[] 
-	i = i+1
-
-	# Traverse ancestors of BITree[index] 
-	while i > 0: 
-
-		# Add current element of BITree to sum 
-		s += BITTree[i] 
-
-		# Move index to parent node in getSum View 
-		i -= i & (-i) 
-	return s 
-
-# Updates a node in Binary Index Tree (BITree) at given index 
-# in BITree. The given value 'val' is added to BITree[i] and 
-# all of its ancestors in tree. 
-def updatebit(BITTree , n , i ,v): 
-
-	# index in BITree[] is 1 more than the index in arr[] 
-	i += 1
-
-	# Traverse all ancestors and add 'val' 
-	while i <= n: 
-
-		# Add 'val' to current node of BI Tree 
-		BITTree[i] += v 
-
-		# Update index to that of parent in update View 
-		i += i & (-i) 
+由于 lowbit(i)的作用是定位i的二进制中最右边的1，因此 `i = i- lowbit(i)` 事实上是不断把i的二进制中最右边的1置为0的过程。所以 get_sum 函数的 for 循环执行次数为x的二进制中1的个数。一个数n的二进制表示中设置位的数量是O(logn)。也就是说，get_sum 函数的时间复杂度为 $O(logN)$。从另一个角度理解,结合图会发现，get_sum 函数的过程实际上是在沿着一条不断左上的路径行进（可以想一想 get_sum(14)跟 get_sum(11)的过程）。于是由于“树”高是 $O(logN)$级别,因此可以同样得到 get_sum 函数的时间复杂度就是 $O(logN)$。另外，<mark>如果要求数组下标在区间[x,y]内的数之和，即 A[x] + A[x+1] +…+ A[y]，可以转换成 get_sum(y) - get_sum(x-1)来解决，这是一个很重要的技巧</mark>。
 
 
-# Constructs and returns a Binary Indexed Tree for given 
-# array of size n. 
-def construct(arr, n): 
 
-	# Create and initialize BITree[] as 0 
-	BITTree = [0]*(n+1) 
+接着来看第二个问题，即如何设计函数 update(x,v)，实现将第x个数加上一个数v的功
+能。
+来看两个例子。假如要让 A[6]加上一个数 v，那么就要寻找树状数组C中能覆盖了 A[6]的元素，让它们都加上 v。也就是说，如果要让 A[6]加上 v，实际上是要让C[6]、C[8]、C[16]都加上 v。同样，如果要将 A[9]加上一个数 v,实际上就是要让 C[9]、C[10]、C[12]、C[16]都加上 v。于是问题又来了——想要给 A[x]加上v时，怎样去寻找树状数组中的对应项呢?
 
-	# Store the actual values in BITree[] using update() 
-	for i in range(n): 
-		updatebit(BITTree, n, i, arr[i]) 
+要让 A[x]加上 v，就是要寻找树状数组 C 中能覆盖 A[x]的那些元素，让它们都加上 v。而从图 1中直观地看，只需要总是寻找离当前的“矩形”C[x]最近的“矩形”C[y]，使得 C[y]能够覆盖 C[x]即可。例如要让 A[6]加上 v，就从 C[6]开始找起：离 C[6]最近的能覆盖 C[6]的“矩形”是 C[8]，离 C[8]最近的能覆盖 C[8]的“矩形”是 C[16]，于是只要把 C[6]、C[8]、C[16]都加上v即可。
 
-	# Uncomment below lines to see contents of BITree[] 
-	#for i in range(1,n+1): 
-	#	 print BITTree[i], 
-	return BITTree 
+那么，如何找到距离当前的 C[x]最近的能覆盖 C[x]的 C[y]呢？首先，可以得到一个显然的结论：lowbit(y)必须大于 lowbit(x)（不然怎么覆盖呢……）。于是问题等价于求一个尽可能小的整数 a，使得 lowbit(x+a)>lowbit(x)。显然，由于 lowbit(x)是取x的二进制最右边的1的位置，因此如果 lowbit(a) < lowbit(x)，lowbit(x+ a)就会小于 lowbit(x)。为此 lowbit(a)必须不小于 lowbit(x)。接着发现，当a取 lowbit(x)时，由于x和a的二进制最右边的1的位置相同,因此x+a会在这个1的位置上产生进位，使得进位过程中的所有连续的1变成0，直到把它们左边第一个0置为1时结束。于是lowbit(x+a)>lowbit(x)显然成立,最小的a就是lowbit(x)。于是 update 函数的做法就很明确了，只要让x不断加上 lowbit(x)，并让每步的 C[x]都加上 v，直到x超过给定的数据范围为止。代码如下：
+
+```python
+def bit_update(BIT, n, i, v):
+    i += 1  # index in BITree[] is 1 more than the index in arr[]
+
+    while i <= n:  # Traverse all ancestors and add 'val'
+        BIT[i] += v
+        i += i & (-i)  # Update index to that of parent
+```
+
+更新函数需要确保所有包含arr[i]在其范围内的BIT节点都被更新。我们通过不断向当前索引添加其最后一位设置位对应的十进制数，在BIT中循环遍历这些节点。
 
 
-# Driver code to test above methods 
-freq = [2, 1, 1, 3, 2, 3, 4, 5, 6, 7, 8, 9] 
-BITTree = construct(freq,len(freq)) 
-print("Sum of elements in arr[0..5] is " + str(getsum(BITTree,5))) 
-freq[3] += 6
-updatebit(BITTree, len(freq), 3, 6) 
-print("Sum of elements in arr[0..5]"+
-					" after update is " + str(getsum(BITTree,5))) 
 
-# This code is contributed by Raju Varshney 
- 
+### **实现** 
+
+首先将BIT[]中的所有值初始化为0。然后对所有的索引调用bit_update()函数。
+
+```python
+# Binary Indexed Tree
+
+def bit_sum(BIT, i):
+    """计算树状数组 BIT 从索引 1 到 i 的前缀和"""
+    s = 0
+    while i > 0:
+        s += BIT[i]
+        i -= i & (-i)  # 回溯至祖先节点
+    return s
+
+
+def bit_update(BIT, i, v):
+    """在树状数组 BIT 中更新索引 i 处的值 v"""
+    while i < len(BIT):
+        BIT[i] += v
+        i += i & (-i)  # 回溯至祖先节点
+
+
+# Constructs and returns a Binary Indexed Tree for given array of size n.
+def construct(arr, n):
+    BIT = [0] * (n + 1)
+    for i in range(n):  # Store the actual values in BIT[] using bit_update()
+        bit_update(BIT, i + 1, arr[i])
+
+    return BIT
+
+
+arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+BIT = construct(arr, len(arr))
+print(f'BIT: ', *BIT)
+print("Sum of elements in arr[0..5] is " + str(bit_sum(BIT, 5)))
+arr[3] += 6
+bit_update(BIT, 3, 6)
+print(f'BIT: ', *BIT)
+print("Sum of elements in arr[0..5]" +
+      " after update is " + str(bit_sum(BIT, 5)))
+
 ```
 
 **Output**
 
 ```
-Sum of elements in arr[0..5] is 12
-Sum of elements in arr[0..5] after update is 18
+BIT:  0 1 3 3 10 5 11 7 36 9 19 11 42 13 27 15 136
+Sum of elements in arr[0..5] is 15
+BIT:  0 1 3 9 16 5 11 7 42 9 19 11 42 13 27 15 142
+Sum of elements in arr[0..5] after update is 21
 ```
 
-**Time Complexity:** O(NLogN)
-**Auxiliary Space:** O(N)
+**Time Complexity:** $O(NlogN)$
+**Auxiliary Space:** $O(N)$
 
 **Can we extend the Binary Indexed Tree to computing the sum of a range in O(Logn) time?** 
-Yes. rangeSum(l, r) = getSum(r) – getSum(l-1).
-**Applications:** 
-The implementation of the arithmetic coding algorithm. The development of the Binary Indexed Tree was primarily motivated by its application in this case. See [this ](http://en.wikipedia.org/wiki/Fenwick_tree#Applications)for more details.
-**Example Problems:** 
-[Count inversions in an array | Set 3 (Using BIT)](https://www.geeksforgeeks.org/count-inversions-array-set-3-using-bit/) 
-[Two Dimensional Binary Indexed Tree or Fenwick Tree](https://www.geeksforgeeks.org/two-dimensional-binary-indexed-tree-or-fenwick-tree/) 
-[Counting Triangles in a Rectangular space using BIT](https://www.geeksforgeeks.org/counting-triangles-in-a-rectangular-space-using-2d-bit/)
+Yes. rangeSum(l, r) = get_sum(r) – get_sum(l-1).
 
 **References:** 
 http://en.wikipedia.org/wiki/Fenwick_tree 
-http://community.topcoder.com/tc?module=Static&d1=tutorials&d2=binaryIndexedTrees
 
 
 
-[力扣307] 线段树&树状数组，https://zhuanlan.zhihu.com/p/126539401
+## 示例20018:蚂蚁王国的越野跑
+
+BIT, http://cs101.openjudge.cn/practice/20018/
+
+为了促进蚂蚁家族身体健康，提高蚁族健身意识，蚂蚁王国举行了越野跑。假设越野跑共有N个蚂蚁参加，在一条笔直的道路上进行。N个蚂蚁在起点处站成一列，相邻两个蚂蚁之间保持一定的间距。比赛开始后，N个蚂蚁同时沿着道路向相同的方向跑去。换句话说，这N个蚂蚁可以看作x轴上的N个点，在比赛开始后，它们同时向X轴正方向移动。假设越野跑的距离足够远，这N个蚂蚁的速度有的不相同有的相同且保持匀速运动，那么会有多少对参赛者之间发生“赶超”的事件呢？此题结果比较大，需要定义long long类型。请看备注。
+
+<img src="http://media.openjudge.cn/images/upload/1576506586.jpg" alt="img" style="zoom:50%;" />
 
 
 
-## 示例LeetCode307.区域和检索 - 数组可修改
+**输入**
 
-https://leetcode.cn/problems/range-sum-query-mutable/
+第一行1个整数N。
+第2… N +1行：N 个非负整数，按从前到后的顺序给出每个蚂蚁的跑步速度。对于50%的数据，2<=N<=1000。对于100%的数据，2<=N<=100000。
+
+输出
+
+一个整数，表示有多少对参赛者之间发生赶超事件。
+
+样例输入
+
+```
+5
+1
+5
+10
+7
+6
+
+5
+1
+5
+5
+7
+6
+```
+
+样例输出
+
+```
+7
+
+8
+```
+
+提示
+
+我们把这5个蚂蚁依次编号为A,B,C,D,E，假设速度分别为1,5,5,7,6。在跑步过程中：B,C,D,E均会超过A，因为他们的速度都比A快；D,E都会超过B,C，因为他们的速度都比B,C快；D,E之间不会发生赶超，因为速度快的起跑时就在前边；B,C之间不会发生赶超，因为速度一样，在前面的就一直在前面。
+
+考虑归并排序的思想。
+
+此题结果比较大，需要定义long long类型，其输出格式为printf("%lld",x);
+long long，有符号 64位整数，所占8个字节(Byte)
+-9,223,372,036,854,775,808 to 9,223,372,036,854,775,807
+
+
+
+```python
+# 张清州 24化学学院
+def bit_sum(BIT, i):
+    """计算树状数组 BIT 从索引 1 到 i 的前缀和"""
+    s = 0
+    while i > 0:
+        s += BIT[i]
+        i -= i & (-i)  # 回溯至祖先节点
+    return s
+
+
+def bit_update(BIT, i, v):
+    """在树状数组 BIT 中更新索引 i 处的值 v"""
+    while i < len(BIT):
+        BIT[i] += v
+        i += i & (-i)  # 回溯至祖先节点
+
+
+# 读取输入并进行离散化
+n = int(input())
+values = [int(input()) for _ in range(n)]
+
+# 离散化：建立值到索引的映射
+sorted_vals = sorted(set(values))
+value_to_index = {v: i + 1 for i, v in enumerate(sorted_vals)}
+
+# 初始化树状数组
+BIT = [0] * (len(sorted_vals) + 1)
+count = 0
+
+# 计算逆序对
+for v in values:
+    index = value_to_index[v]
+    count += bit_sum(BIT, index - 1)  # 查询比当前值小的元素个数
+    bit_update(BIT, index, 1)  # 在树状数组中记录当前值出现次数
+
+print(count)
+```
+
+
+
+
+
+## 示例LC307.区域和检索 - 数组可修改
+
+线段树&树状数组，https://leetcode.cn/problems/range-sum-query-mutable/
 
 给你一个数组 `nums` ，请你完成两类查询。
 
