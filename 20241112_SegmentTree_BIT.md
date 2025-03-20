@@ -1823,27 +1823,28 @@ if __name__ == '__main__':
 
 https://www.geeksforgeeks.org/binary-indexed-tree-or-fenwick-tree-2/
 
-Let us consider the following problem to understand Binary Indexed Tree.
-We have an array $arr[0 . . . n-1]$. We would like to 
-**1** Compute the sum of the first i elements. 
-**2** Modify the value of a specified element of the array arr[i] = x where $0 \leq i \leq n-1$.
-A **simple solution** is to run a loop from 0 to i-1 and calculate the sum of the elements. To update a value, simply do arr[i] = x. The first operation takes O(n) time and the second operation takes O(1) time. Another simple solution is to create an extra array and store the sum of the first i-th elements at the i-th index in this new array. The sum of a given range can now be calculated in O(1) time, but the update operation takes O(n) time now. This works well if there are a large number of query operations but a very few number of update operations.
-**Could we perform both the query and update operations in O(log n) time?** 
-One efficient solution is to use [Segment Tree](https://www.geeksforgeeks.org/segment-tree-set-1-sum-of-given-range/) that performs both operations in O(Logn) time.
-An alternative solution is Binary Indexed Tree, which also achieves O(Logn) time complexity for both operations. Compared with Segment Tree, Binary Indexed Tree requires less space and is easier to implement.
+让我们考虑以下问题来理解二叉索引树（Binary Indexed Tree, BIT）：
+我们有一个数组 $arr[0 . . . n-1]$。我们希望实现两个操作：
+
+1. 计算前i个元素的和。
+2. 修改数组中指定位置的值，即设置 $arr[i] = x$，其中 $0 \leq i \leq n-1$。
+
+一个简单的解决方案是从0到i-1遍历并计算这些元素的总和。要更新一个值，只需执行 $arr[i] = x$。第一个操作的时间复杂度为O(n)，而第二个操作的时间复杂度为O(1)。另一种简单的解决方案是创建一个额外的数组，并在这个新数组的第i个位置存储前i个元素的总和。这样，给定范围的和可以在O(1)时间内计算出来，但是更新操作现在需要O(n)时间。当查询操作非常多而更新操作非常少时，这种方法表现良好。
+
+**我们能否在O(log n)时间内同时完成查询和更新操作呢？**
+一种高效的解决方案是使用段树（Segment Tree），它能够在O(log n)时间内完成这两个操作。
+另一种解决方案是二叉索引树（Binary Indexed Tree，也称作Fenwick Tree），同样能够以O(log n)的时间复杂度完成查询和更新操作。与段树相比，二叉索引树所需的空间更少，且实现起来更加简单。
+
+> Let us consider the following problem to understand Binary Indexed Tree.
+> We have an array $arr[0 . . . n-1]$. We would like to 
+> **1** Compute the sum of the first i elements. 
+> **2** Modify the value of a specified element of the array arr[i] = x where $0 \leq i \leq n-1$.
+> A **simple solution** is to run a loop from 0 to i-1 and calculate the sum of the elements. To update a value, simply do arr[i] = x. The first operation takes O(n) time and the second operation takes O(1) time. Another simple solution is to create an extra array and store the sum of the first i-th elements at the i-th index in this new array. The sum of a given range can now be calculated in O(1) time, but the update operation takes O(n) time now. This works well if there are a large number of query operations but a very few number of update operations.
+> **Could we perform both the query and update operations in O(log n) time?** 
+> One efficient solution is to use [Segment Tree](https://www.geeksforgeeks.org/segment-tree-set-1-sum-of-given-range/) that performs both operations in O(Logn) time.
+> An alternative solution is Binary Indexed Tree, which also achieves O(Logn) time complexity for both operations. Compared with Segment Tree, Binary Indexed Tree requires less space and is easier to implement.
 
 
-
-> 让我们考虑以下问题来理解二叉索引树（Binary Indexed Tree, BIT）：
-> 我们有一个数组 $arr[0 . . . n-1]$。我们希望实现两个操作：
-> 1. 计算前i个元素的和。
-> 2. 修改数组中指定位置的值，即设置 $arr[i] = x$，其中 $0 \leq i \leq n-1$。
->
-> 一个简单的解决方案是从0到i-1遍历并计算这些元素的总和。要更新一个值，只需执行 $arr[i] = x$。第一个操作的时间复杂度为O(n)，而第二个操作的时间复杂度为O(1)。另一种简单的解决方案是创建一个额外的数组，并在这个新数组的第i个位置存储前i个元素的总和。这样，给定范围的和可以在O(1)时间内计算出来，但是更新操作现在需要O(n)时间。当查询操作非常多而更新操作非常少时，这种方法表现良好。
->
-> **我们能否在O(log n)时间内同时完成查询和更新操作呢？**
-> 一种高效的解决方案是使用段树（Segment Tree），它能够在O(log n)时间内完成这两个操作。
-> 另一种解决方案是二叉索引树（Binary Indexed Tree，也称作Fenwick Tree），同样能够以O(log n)的时间复杂度完成查询和更新操作。与段树相比，二叉索引树所需的空间更少，且实现起来更加简单。
 
 
 
@@ -1857,11 +1858,11 @@ An alternative solution is Binary Indexed Tree, which also achieves O(Logn) time
 
 <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231031141548736.png" alt="image-20231031141548736" style="zoom:50%;" />
 
-**Representation** 
-Binary Indexed Tree is represented as an array. Let the array be BITree[]. Each node of the Binary Indexed Tree stores the sum of some elements of the input array. The size of the Binary Indexed Tree is equal to the size of the input array, denoted as n. In the code below, we use a size of n+1 for ease of implementation.
+**表示方式**
+二叉索引树用数组形式表示。设该数组为BITree[]。二叉索引树的每个节点存储了输入数组某些元素的和。二叉索引树的大小等于输入数组的大小，记为n。在下面的代码中，为了便于实现，我们使用n+1的大小。
 
-> **表示方式**
-> 二叉索引树用数组形式表示。设该数组为BITree[]。二叉索引树的每个节点存储了输入数组某些元素的和。二叉索引树的大小等于输入数组的大小，记为n。在下面的代码中，为了便于实现，我们使用n+1的大小。
+> **Representation** 
+> Binary Indexed Tree is represented as an array. Let the array be BITree[]. Each node of the Binary Indexed Tree stores the sum of some elements of the input array. The size of the Binary Indexed Tree is equal to the size of the input array, denoted as n. In the code below, we use a size of n+1 for ease of implementation.
 
 <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231031141831067.png" alt="image-20231031141831067" style="zoom:50%;" />
 
@@ -1871,11 +1872,11 @@ Binary Indexed Tree is represented as an array. Let the array be BITree[]. Each 
 
 
 
-**Construction** 
-We initialize all the values in BITree[] as 0. Then we call update() for all the indexes, the update() operation is discussed below.
+**构建**
+我们首先将BITree[]中的所有值初始化为0。然后对所有的索引调用update()函数，下面将讨论update()操作的具体内容。
 
-> **构建**
-> 我们首先将BITree[]中的所有值初始化为0。然后对所有的索引调用update()函数，下面将讨论update()操作的具体内容。
+> **Construction** 
+> We initialize all the values in BITree[] as 0. Then we call update() for all the indexes, the update() operation is discussed below.
 
 **Operations** 
 
@@ -1887,10 +1888,9 @@ We initialize all the values in BITree[] as 0. Then we call update() for all the
 > 2) Do following while the current index is greater than 0. 
 >
 > …a) Add BITree[index] to sum 
-> …b) Go to the parent of BITree[index]. The parent can be obtained by removing 
-> the last set bit from the current index, i.e., index = index – (index & (-index)) 
->
-> 3) Return sum.
+> …b) Go to the parent of BITree[index]. The parent can be obtained by removing the last set bit from the current index, i.e., index = index – (index & (-index)) 
+> 
+>3) Return sum.
 
  
 
@@ -1933,15 +1933,16 @@ getsum(8)
 
 
 
-The diagram above provides an example of how getSum() is working. Here are some important observations.
-BITree[0] is a dummy node. 
-BITree[y] is the parent of BITree[x], if and only if y can be obtained by removing the last set bit from the binary representation of x, that is y = x – (x & (-x)).
-The child node BITree[x] of the node BITree[y] stores the sum of the elements between y(inclusive) and x(exclusive): arr[y,…,x). 
+上图提供了一个getSum()如何工作的例子。这里有一些重要的观察点：
 
-> 上图提供了一个getSum()如何工作的例子。这里有一些重要的观察点：
-> - BITree[0]是一个虚拟节点。
-> - 如果仅通过从x的二进制表示中移除最后一个设置位（即最右边的1）可以得到y，则BITree[y]是BITree[x]的父节点，这可以表示为 y = x – (x & (-x))。
-> - 节点BITree[y]的子节点BITree[x]存储了从y（包括y）到x（不包括x）之间元素的和：arr[y,...,x)。
+- BITree[0]是一个虚拟节点。
+- 如果仅通过从x的二进制表示中移除最后一个设置位（即最右边的1）可以得到y，则BITree[y]是BITree[x]的父节点，这可以表示为 `y = x – (x & (-x))`。
+- 节点`BITree[y]`的子节点`BITree[x]`存储了从y（包括y）到x（不包括x）之间元素的和：arr[y,...,x)。
+
+> The diagram above provides an example of how getSum() is working. Here are some important observations.
+> BITree[0] is a dummy node. 
+> BITree[y] is the parent of BITree[x], if and only if y can be obtained by removing the last set bit from the binary representation of x, that is y = x – (x & (-x)).
+> The child node BITree[x] of the node BITree[y] stores the sum of the elements between y(inclusive) and x(exclusive): arr[y,…,x). 
 
 
 > ***update(x, val): Updates the Binary Indexed Tree (BIT) by performing arr[index] += val*** 
