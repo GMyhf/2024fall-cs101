@@ -372,7 +372,81 @@ class Solution:
 
 
 
+Q. leetcode上链表题的代码该怎么在本地运行？
 
+> 你可以补全 `ListNode` 类，并添加一个辅助函数来构造和打印链表，这样代码可以在本地运行和测试。例如：  
+>
+> ```python
+> from typing import Optional, List
+> 
+> # 定义链表节点
+> class ListNode:
+>     def __init__(self, val=0, next=None):
+>         self.val = val
+>         self.next = next
+> 
+> # 解决方案类
+> class Solution:
+>     def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
+>         # 创建一个哨兵节点（dummy node），简化边界条件处理
+>         prehead = ListNode(-200)
+>         prev = prehead
+> 
+>         # 遍历两个链表直到其中一个为空
+>         while list1 and list2:
+>             if list1.val <= list2.val:
+>                 prev.next = list1
+>                 list1 = list1.next
+>             else:
+>                 prev.next = list2
+>                 list2 = list2.next            
+>             prev = prev.next
+> 
+>         # 连接还未遍历完的那个链表
+>         prev.next = list1 if list1 is not None else list2
+> 
+>         # 返回合并后的链表，跳过哨兵节点
+>         return prehead.next
+> 
+> # 辅助函数：将列表转换为链表
+> def list_to_linked_list(lst: List[int]) -> Optional[ListNode]:
+>     if not lst:
+>         return None
+>     head = ListNode(lst[0])
+>     current = head
+>     for val in lst[1:]:
+>         current.next = ListNode(val)
+>         current = current.next
+>     return head
+> 
+> # 辅助函数：打印链表
+> def print_linked_list(head: Optional[ListNode]) -> None:
+>     values = []
+>     while head:
+>         values.append(str(head.val))
+>         head = head.next
+>     print(" -> ".join(values) if values else "Empty List")
+> 
+> # 测试代码
+> l1 = list_to_linked_list([1, 2, 4])
+> l2 = list_to_linked_list([1, 3, 4])
+> solution = Solution()
+> merged_list = solution.mergeTwoLists(l1, l2)
+> print_linked_list(merged_list)
+> ```
+>
+> 运行步骤：
+>
+> 1. `list_to_linked_list([1, 2, 4])` 和 `list_to_linked_list([1, 3, 4])` 创建两个链表。
+> 2. `mergeTwoLists(l1, l2)` 合并两个链表。
+> 3. `print_linked_list(merged_list)` 以可读格式输出结果。
+>
+> 示例输出：
+>
+> ```
+> 1 -> 1 -> 2 -> 3 -> 4 -> 4
+> ```
+> 这样，你可以在本地直接运行并调试代码！ 🚀
 
 
 
