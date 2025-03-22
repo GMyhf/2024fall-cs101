@@ -9842,7 +9842,7 @@ class Solution:
 
 ## 131.分割回文串
 
-backtracking, https://leetcode.cn/problems/palindrome-partitioning/
+dp, backtracking, https://leetcode.cn/problems/palindrome-partitioning/
 
 给你一个字符串 `s`，请你将 `s` 分割成一些子串，使每个子串都是 **回文串**。返回 `s` 所有可能的分割方案。回文串是指向前和向后读都相同的字符串。
 
