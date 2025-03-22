@@ -10499,7 +10499,7 @@ class Solution:
 
 ## 146.LRU缓存
 
-OOP, https://leetcode.cn/problems/lru-cache/
+hash table, doubly-linked list, https://leetcode.cn/problems/lru-cache/
 
 请你设计并实现一个满足 [LRU (最近最少使用) 缓存](https://baike.baidu.com/item/LRU) 约束的数据结构。
 
