@@ -9919,6 +9919,38 @@ class Solution:
 
 
 
+```python
+class Solution:
+    def partition(self, s: str) -> List[List[str]]:
+        n = len(s)
+        # 预处理回文子串
+        is_palindrome = [[False] * n for _ in range(n)]
+        for right in range(n):
+            for left in range(right + 1):
+                if s[left] == s[right] and (right - left <= 1 or is_palindrome[left + 1][right - 1]):
+                    is_palindrome[left][right] = True
+
+        res = []
+        path = []
+
+        def backtrack(start):
+            if start == n:
+                res.append(path[:])  # 复制当前路径
+                return
+            for end in range(start, n):
+                if is_palindrome[start][end]:  # 只在是回文的地方切割
+                    path.append(s[start:end + 1])
+                    backtrack(end + 1)
+                    path.pop()  # 撤销选择
+
+        backtrack(0)
+        return res
+
+        
+```
+
+
+
 ## 133.克隆图
 
 bfs, dfs, https://leetcode.cn/problems/clone-graph/
