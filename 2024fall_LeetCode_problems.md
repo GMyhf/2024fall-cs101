@@ -10596,7 +10596,8 @@ lRUCache.get(4);    // 返回 4
 
 
 
-
+双链表的做法用空的头指针和尾指针，方便快速插入到头部和移除尾部。
+dict的pop(key)时间复杂度是O(1)！！
 
 ```python
 class DLinkedNode:
@@ -10659,7 +10660,7 @@ class LRUCache:
                 # 移除链表尾部的元素，即最久未使用的
                 tail = self.tail.prev
                 self._remove(tail)
-                del self.cache[tail.key]
+                del self.cache[tail.key]  # dict的pop(key)时间复杂度是O(1)！！
 
 
 if __name__ == "__main__":
