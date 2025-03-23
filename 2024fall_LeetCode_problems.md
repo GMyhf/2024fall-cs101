@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2126 GMT+8 Mar 23 2025
+Updated 2333 GMT+8 Mar 23 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -8811,6 +8811,55 @@ Explanation:
 
 
 
+【汤伟杰，24信息管理系】思路：
+
+​	遍历棋盘的每一个位置，如果是单词的第一个字母就进入dfs的搜索，在dfs中设置一个idx索引来跟踪word的字母，之后就是很正常的搜索了。这道题能学到的东西是题解里面的两个优化：
+
+一是统计棋盘所有字母的个数，如果其中出现在word中字母的个数少于word中需求的字母数量，那么可以直接返回`False`；二是统计棋盘中的单词首字母和尾字母的个数，从个数少的一端进行dfs。
+
+这道题由于只需要返回“能不能找到单词”，因此设置的dfs的返回值是布尔值，那么在每次调用函数本身的时候可以写成`if dfs(word, s, nx, ny, visited, idx): return True`，这样的好处是：如果dfs到了单词末尾，那么会进入if语句的return True，从而逐层返回True，就不会进行visited的状态恢复了。很方便，这个写法也很巧妙。
+
+```python
+class Solution:
+    def exist(self, s: List[List[str]], word: str) -> bool:
+        cnt = Counter(c for row in s for c in row)
+        if not cnt >= Counter(word):  # 优化一
+            return False
+        if cnt[word[-1]] < cnt[word[0]]:  # 优化二
+            word = word[::-1]
+            
+        n,m=len(s),len(s[0])
+        dx,dy=[0,-1,1,0],[-1,0,0,1]
+        def dfs(word,s,x,y,visited,idx):
+            idx+=1
+            if idx==len(word):
+                return True
+            for i in range(4):
+                nx,ny=x+dx[i],y+dy[i]
+                if 0<=nx<n and 0<=ny<m and word[idx]==s[nx][ny] and (nx,ny) not in visited:
+                    visited.add((nx,ny))
+                    if dfs(word,s,nx,ny,visited,idx):
+                        return True
+                    visited.remove((nx,ny))
+            return False
+
+        def search(word,s):
+            for i in range(n):
+                for j in range(m):
+                    if s[i][j]==word[0]:
+                        if dfs(word,s,i,j,{(i,j)},0):
+                            return True
+            return False
+
+        return search(word,s)
+```
+
+
+
+
+
+
+
 ## 80.删除有序数组中的重复项II
 
 快慢指针, https://leetcode.cn/problems/remove-duplicates-from-sorted-array-ii/
@@ -10696,8 +10745,8 @@ lRUCache.get(4);    // 返回 4
 
 - `1 <= capacity <= 3000`
 - `0 <= key <= 10000`
-- `0 <= value <= 105`
-- 最多调用 `2 * 105` 次 `get` 和 `put`
+- `0 <= value <= 10^5`
+- 最多调用 `2 * 10^5` 次 `get` 和 `put`
 
 
 
