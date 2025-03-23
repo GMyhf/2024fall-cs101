@@ -10159,6 +10159,8 @@ class Solution:
 
 
 
+第一部分的判断某一段子串是不是回文串的 dp 写法；第二部分是 dfs 找切片。其中第一部分的 dp 的值都是布尔值，这样方便后续判断某一个子串是不是回文串；第二部分应该是双指针的思路，用 i 来遍历所有起点，用 j 来从每一个起点开始遍历第一处断点，这种写法也值得积累。
+
 ```python
 class Solution:
     def partition(self, s: str) -> List[List[str]]:
