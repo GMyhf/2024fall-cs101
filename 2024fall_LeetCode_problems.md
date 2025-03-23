@@ -889,6 +889,38 @@ class Solution:
 
 
 
+非递归写法
+
+```python
+# 戴嘉震 24信科学院
+from typing import Optional, List
+
+#Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class Solution:
+    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        stack = [root]
+        result = []
+        while stack:
+            top = stack.pop()
+            if top == None:
+                continue
+            if isinstance(top, TreeNode):
+                stack.append(top.right)
+                stack.append(top.val)
+                stack.append(top.left)
+            else:
+                result.append(top)
+        return result
+```
+
+
+
 ## 100.相同的树
 
 https://leetcode.cn/problems/same-tree/
@@ -9180,6 +9212,79 @@ class Solution:
 
         return result
         
+```
+
+
+
+没有使用队列，一层一层用 array
+
+```python
+# 戴嘉震 24信科
+from typing import List, Optional
+from collections import deque
+
+
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+
+class Solution:
+    def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        if not root: return []
+        result = []
+        this_level = [root]
+        while this_level:
+            result.append([])
+            new_level = []
+            for node in this_level:
+                result[-1].append(node.val)
+                if node.left: new_level.append(node.left)
+                if node.right: new_level.append(node.right)
+            this_level = new_level
+        return result
+
+
+# 辅助函数：将列表转换为二叉树
+def list_to_tree(lst: List[Optional[int]]) -> Optional[TreeNode]:
+    if not lst:
+        return None
+
+    root = TreeNode(lst[0])
+    queue = deque([root])
+    i = 1
+
+    while queue and i < len(lst):
+        node = queue.popleft()
+
+        # 处理左子节点
+        if lst[i] is not None:
+            node.left = TreeNode(lst[i])
+            queue.append(node.left)
+        i += 1
+
+        # 处理右子节点
+        if i < len(lst) and lst[i] is not None:
+            node.right = TreeNode(lst[i])
+            queue.append(node.right)
+        i += 1
+
+    return root
+
+
+if __name__ == '__main__':
+    sol = Solution()
+
+    # 输入列表
+    input_list = [3, 9, 20, None, None, 15, 7]
+
+    # 将列表转换为二叉树
+    root = list_to_tree(input_list)
+
+    # 打印层次遍历结果
+    print(sol.levelOrder(root))
 ```
 
 
