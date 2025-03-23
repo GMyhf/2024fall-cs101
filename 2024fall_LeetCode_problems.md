@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1224 GMT+8 Mar 22 2025
+Updated 1540 GMT+8 Mar 23 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -4869,6 +4869,56 @@ if __name__ == "__main__":
     print(sol.maxSum([1,2,3,4,5])) # 15
     print(sol.maxSum([1,1,0,1,1])) # 11
     print(sol.maxSum([-17,-15]))
+```
+
+
+
+## 3492.船上可以装载的最大集装箱数量
+
+https://leetcode.cn/problems/maximum-containers-on-a-ship/
+
+给你一个正整数 `n`，表示船上的一个 `n x n` 的货物甲板。甲板上的每个单元格可以装载一个重量 **恰好** 为 `w` 的集装箱。
+
+然而，如果将所有集装箱装载到甲板上，其总重量不能超过船的最大承载重量 `maxWeight`。
+
+请返回可以装载到船上的 **最大** 集装箱数量。
+
+ 
+
+**示例 1：**
+
+**输入：** n = 2, w = 3, maxWeight = 15
+
+**输出：** 4
+
+**解释：**
+
+甲板有 4 个单元格，每个集装箱的重量为 3。将所有集装箱装载后，总重量为 12，未超过 `maxWeight`。
+
+**示例 2：**
+
+**输入：** n = 3, w = 5, maxWeight = 20
+
+**输出：** 4
+
+**解释：**
+
+甲板有 9 个单元格，每个集装箱的重量为 5。可以装载的最大集装箱数量为 4，此时总重量不超过 `maxWeight`。
+
+ 
+
+**提示：**
+
+- `1 <= n <= 1000`
+- `1 <= w <= 1000`
+- `1 <= maxWeight <= 10^9`
+
+
+
+```python
+class Solution:
+    def maxContainers(self, n: int, w: int, maxWeight: int) -> int:
+        return min(n*n, maxWeight//w)
 ```
 
 
@@ -19254,6 +19304,334 @@ class Solution:
 
 
 
+## 3493.属性图
+
+graph, bfs, https://leetcode.cn/problems/properties-graph/
+
+给你一个二维整数数组 `properties`，其维度为 `n x m`，以及一个整数 `k`。
+
+定义一个函数 `intersect(a, b)`，它返回数组 `a` 和 `b` 中 **共有的不同整数的数量** 。
+
+构造一个 **无向图**，其中每个索引 `i` 对应 `properties[i]`。如果且仅当 `intersect(properties[i], properties[j]) >= k`（其中 `i` 和 `j` 的范围为 `[0, n - 1]` 且 `i != j`），节点 `i` 和节点 `j` 之间有一条边。
+
+返回结果图中 **连通分量** 的数量。
+
+ 
+
+**示例 1：**
+
+**输入：** properties = [[1,2],[1,1],[3,4],[4,5],[5,6],[7,7]], k = 1
+
+**输出：** 3
+
+**解释：**
+
+生成的图有 3 个连通分量：
+
+<img src="https://pic.leetcode.cn/1742665594-CDVPWz-image.png" alt="img" style="zoom:50%;" />
+
+**示例 2：**
+
+**输入：** properties = [[1,2,3],[2,3,4],[4,3,5]], k = 2
+
+**输出：** 1
+
+**解释：**
+
+生成的图有 1 个连通分量：
+
+<img src="https://pic.leetcode.cn/1742665565-NzYlYH-screenshot-from-2025-02-27-23-58-34.png" alt="img" style="zoom:50%;" />
+
+**示例 3：**
+
+**输入：** properties = [[1,1],[1,1]], k = 2
+
+**输出：** 2
+
+**解释：**
+
+`intersect(properties[0], properties[1]) = 1`，小于 `k`。因此在图中 `properties[0]` 和 `properties[1]` 之间没有边。
+
+ 
+
+**提示：**
+
+- `1 <= n == properties.length <= 100`
+- `1 <= m == properties[i].length <= 100`
+- `1 <= properties[i][j] <= 100`
+- `1 <= k <= m`
+
+
+
+```python
+from typing import List
+from collections import defaultdict
+from collections import deque
+
+class Solution:
+    def numberOfComponents(self, properties: List[List[int]], k: int) -> int:
+        graph = defaultdict(list)
+        n = len(properties)
+        for i in range(n):
+            for j in range(i + 1, n):
+                intersect_count = len(set(properties[i]) & set(properties[j]))
+                if intersect_count >= k:
+                    graph[i].append(j)
+                    graph[j].append(i)
+
+        visited = set()
+
+        def bfs(start: int):
+            queue = deque([start])
+            while queue:
+                cur = queue.popleft()
+                visited.add(cur)
+                for neighbor in graph[cur]:
+                    if neighbor not in visited:
+                        queue.append(neighbor)
+
+        ans = 0
+        for node in range(n):
+            if node not in visited:
+                bfs(node)
+                ans += 1
+
+        return ans
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.numberOfComponents([[1,2],[1,1],[3,4],[4,5],[5,6],[7,7]], 1))  # 1
+    print(sol.numberOfComponents([[2,3],[5,2],[4,3]], 1))  # 2
+    print(sol.numberOfComponents([[4,3],[5,2],[5,4]], 1))  # 2
+```
+
+
+
+## 3494.酿造药水需要的最少总时间
+
+implementation, https://leetcode.cn/problems/find-the-minimum-amount-of-time-to-brew-potions/
+
+给你两个长度分别为 `n` 和 `m` 的整数数组 `skill` 和 `mana` 。
+
+在一个实验室里，有 `n` 个巫师，他们必须按顺序酿造 `m` 个药水。每个药水的法力值为 `mana[j]`，并且每个药水 **必须** 依次通过 **所有** 巫师处理，才能完成酿造。第 `i` 个巫师在第 `j` 个药水上处理需要的时间为 `timeij = skill[i] * mana[j]`。
+
+由于酿造过程非常精细，药水在当前巫师完成工作后 **必须** 立即传递给下一个巫师并开始处理。这意味着时间必须保持 **同步**，确保每个巫师在药水到达时 **马上** 开始工作。
+
+返回酿造所有药水所需的 **最短** 总时间。
+
+ 
+
+**示例 1：**
+
+**输入：** skill = [1,5,2,4], mana = [5,1,4,2]
+
+**输出：** 110
+
+**解释：**
+
+| 药水编号 | 开始时间 | 巫师 0 完成时间 | 巫师 1 完成时间 | 巫师 2 完成时间 | 巫师 3 完成时间 |
+| -------- | -------- | --------------- | --------------- | --------------- | --------------- |
+| 0        | 0        | 5               | 30              | 40              | 60              |
+| 1        | 52       | 53              | 58              | 60              | 64              |
+| 2        | 54       | 58              | 78              | 86              | 102             |
+| 3        | 86       | 88              | 98              | 102             | 110             |
+
+举个例子，为什么巫师 0 不能在时间 `t = 52` 前开始处理第 1 个药水，假设巫师们在时间 `t = 50` 开始准备第 1 个药水。时间 `t = 58` 时，巫师 2 已经完成了第 1 个药水的处理，但巫师 3 直到时间 `t = 60` 仍在处理第 0 个药水，无法马上开始处理第 1个药水。
+
+**示例 2：**
+
+**输入：** skill = [1,1,1], mana = [1,1,1]
+
+**输出：** 5
+
+**解释：**
+
+1. 第 0 个药水的准备从时间 `t = 0` 开始，并在时间 `t = 3` 完成。
+2. 第 1 个药水的准备从时间 `t = 1` 开始，并在时间 `t = 4` 完成。
+3. 第 2 个药水的准备从时间 `t = 2` 开始，并在时间 `t = 5` 完成。
+
+**示例 3：**
+
+**输入：** skill = [1,2,3,4], mana = [1,2]
+
+**输出：** 21
+
+ 
+
+**提示：**
+
+- `n == skill.length`
+- `m == mana.length`
+- `1 <= n, m <= 5000`
+- `1 <= mana[i], skill[i] <= 5000`
+
+
+
+implementation 
+
+【灵茶山艾府】思路：为了计算酿造药水的时间，定义 `lastFinish[i]` 表示巫师 `i` 完成上一瓶药水的时间。
+
+示例 1 在处理完 `mana[0]` 后，有
+
+`lastFinish=[5,30,40,60]`
+如果接着 lastFinish 继续酿造下一瓶药水 mana[1]=1，完成时间是多少？注意开始酿造的时间不能早于 lastFinish[i]。
+
+| i    | skill[i] | lastFinish[i] | 完成时间        |
+| ---- | -------- | ------------- | --------------- |
+| 0    | 1        | 5             | 5+1=6           |
+| 1    | 5        | 30            | max(6,30)+5=35  |
+| 2    | 2        | 40            | max(35,40)+2=42 |
+| 3    | 4        | 60            | max(42,60)+4=64 |
+
+题目要求「药水在当前巫师完成工作后必须立即传递给下一个巫师并开始处理」，也就是说，酿造药水的过程中是不能有停顿的。
+
+从 64 开始倒推，可以得到每名巫师的实际完成时间。比如倒数第二位巫师的完成时间，就是 64 减去最后一名巫师花费的时间 4⋅1，得到 60。
+
+| i    | skill[i] | 实际完成时间 |
+| ---- | -------- | ------------ |
+| 3    | 4        | 64           |
+| 2    | 2        | 64−4⋅1=60    |
+| 1    | 5        | 60−2⋅1=58    |
+| 0    | 1        | 58−5⋅1=53    |
+
+按照上述过程处理每瓶药水，最终答案为 lastFinish[n−1]。
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def minTime(self, skill: List[int], mana: List[int]) -> int:
+        n = len(skill)  # 巫师的数量
+        last_completion = [0] * n  # last_completion[i] 表示巫师 i 处理完上一瓶药水的时间
+
+        # 依次处理每瓶药水
+        for potion_mana in mana:
+            current_time = 0  # 当前药水开始处理的时间
+
+            # **第一阶段：正向遍历所有巫师，计算药水完成时间**
+            for i in range(n):
+                # 确保当前巫师不会比上一瓶药水的完成时间更早开始
+                #current_time = max(current_time, last_completion[i])
+                if last_completion[i] > current_time: current_time = last_completion[i]  # 手写 max
+                # 巫师 i 处理当前药水所需时间
+                current_time += skill[i] * potion_mana
+
+            # **第二阶段：逆向更新 last_completion，确保后续药水可以无缝衔接**
+            last_completion[-1] = current_time  # 最后一个巫师的完成时间
+            for i in range(n - 2, -1, -1):
+                # 由于巫师 i+1 处理当前药水所需时间是 skill[i+1] * potion_mana
+                current_time -= skill[i + 1] * potion_mana
+                last_completion[i] = current_time  # 巫师 i 应该何时完成当前药水
+
+        return last_completion[-1]  # 返回最后一个药水的完成时间
+
+if __name__ == '__main__':
+    sol = Solution()
+    skill1 = [1, 5, 2, 4]
+    mana1 = [5, 1, 4, 2]
+    print(sol.minTime(skill1, mana1))  # 输出 110
+
+```
+
+
+
+
+
+下面给出一个 Python 解法，它利用前缀和以及对每个药水计算起始时间的“推迟量”来满足各个巫师之间立即传递的约束。关键思想是定义一个变量  
+
+$x[j]$
+表示第 \(j\) 个药水在巫师 0 上开始处理的时间，然后利用下面的不等式约束：  
+
+- 对于第 0 个巫师，其要求是  
+
+  $
+  x[j] \ge x[j-1] + \text{skill}[0]\times \text{mana}[j-1].
+  $
+
+- 对于 $i\ge1$ 的巫师，考虑药水在连续传递时必须无缝对接。可以证明为了保证所有巫师都“立刻”开始处理，第 j 个药水的起始时间必须满足对于所有 $1\le i<n$  
+
+  $
+  x[j] \ge x[j-1] + \text{skill}[i]\times \text{mana}[j-1] + \Bigl(\sum_{k=0}^{i-1}\text{skill}[k]\Bigr)\times\Bigl(\text{mana}[j-1]-\text{mana}[j]\Bigr).
+  $
+
+因此，我们令
+
+$
+x[j] = \max_{0\le i<n}\Bigl\{x[j-1] + \Delta(i,j)\Bigr\},
+$
+
+其中当 \(i=0\) 时  
+
+$
+\Delta(0,j)= \text{skill}[0]\times \text{mana}[j-1],
+$
+
+而当 $i\ge1$ 时 
+
+$
+\Delta(i,j)= \text{skill}[i]\times \text{mana}[j-1] + \Bigl(\sum_{k=0}^{i-1}\text{skill}[k]\Bigr)\times\Bigl(\text{mana}[j-1]-\text{mana}[j]\Bigr).
+$
+
+处理完所有 \(m\) 个药水以后，总耗时为  
+
+$
+x[m-1] + \Bigl(\sum_{k=0}^{n-1}\text{skill}[k]\Bigr)\times \text{mana}[m-1],
+$
+
+其中后半项表示最后一个药水经过所有巫师的加工时间。
+
+```python
+from typing import List
+
+class Solution:
+    def minTime(self, skill: List[int], mana: List[int]) -> int:
+        n = len(skill)
+        m = len(mana)
+        prefix = [0] * n
+        prefix[0] = skill[0]
+        for i in range(1, n):
+            prefix[i] = prefix[i - 1] + skill[i]
+
+        x = 0
+        for j in range(1, m):
+            pre = mana[j-1]
+            cur = mana[j]
+
+            max_v = x + skill[0] * pre
+            for i in range(1, n):
+                max_v = max(max_v, x + skill[i] * pre + prefix[i-1] * (pre - cur))
+
+            x = max_v
+
+        ans = x + prefix[-1] * mana[-1]
+        return ans
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.minTime([1,5,2,4], [5,1,4,2]))
+    print(sol.minTime([1,1,1], [1,1,1]))
+    print(sol.minTime([1,2,3,4], [1,2]))
+```
+
+说明
+
+1. **前缀和的作用**  
+   预先计算前 i 个巫师的技能和，这样在计算每个候选值时可以迅速获得 $\sum_{k=0}^{i-1} \text{skill}[k]$ 的值。
+
+2. **逐药水更新**  
+   依次处理药水 1 至 m-1（第 0 个药水的起始时间定为 0），每次根据所有巫师给出的约束计算出最晚的必要起始时间，保证后续传递过程中各个巫师能够“立即”接手。
+
+3. **最终耗时计算**  
+   最后一个药水在巫师 0 开始的时间加上经过所有巫师的处理时间就是总耗时。
+
+这种方法的时间复杂度是 $O(m \times n)$，使得即使 n, m 较大时效率也能接受。
+
+
+
+
+
 
 
 # 困难
@@ -25869,6 +26247,104 @@ class Solution:
 
 
 # 力扣周赛双周赛
+
+## 第 442 场周赛-20250323
+
+https://leetcode.cn/contest/weekly-contest-442
+
+中国时间：2025-03-23 10:30, 1 小时 30 分
+
+
+
+### 3492.船上可以装载的最大集装箱数量
+
+https://leetcode.cn/problems/maximum-containers-on-a-ship/
+
+
+
+### 3493.属性图
+
+graph, bfs, https://leetcode.cn/problems/properties-graph/
+
+
+
+### 3494.酿造药水需要的最少总时间
+
+implementation, https://leetcode.cn/problems/find-the-minimum-amount-of-time-to-brew-potions/
+
+
+
+### 3495.使数组元素变为零的最少操作次数
+
+https://leetcode.cn/problems/minimum-operations-to-make-array-elements-zero/
+
+给你一个二维数组 `queries`，其中 `queries[i]` 形式为 `[l, r]`。每个 `queries[i]` 表示了一个元素范围从 `l` 到 `r` （包括 **l** 和 **r** ）的整数数组 `nums` 。
+
+在一次操作中，你可以：
+
+- 选择一个查询数组中的两个整数 `a` 和 `b`。
+- 将它们替换为 `floor(a / 4)` 和 `floor(b / 4)`。
+
+你的任务是确定对于每个查询，将数组中的所有元素都变为零的 **最少** 操作次数。返回所有查询结果的总和。
+
+ 
+
+**示例 1：**
+
+**输入：** queries = [[1,2],[2,4]]
+
+**输出：** 3
+
+**解释：**
+
+对于 `queries[0]`：
+
+- 初始数组为 `nums = [1, 2]`。
+- 在第一次操作中，选择 `nums[0]` 和 `nums[1]`。数组变为 `[0, 0]`。
+- 所需的最小操作次数为 1。
+
+对于 `queries[1]`：
+
+- 初始数组为 `nums = [2, 3, 4]`。
+- 在第一次操作中，选择 `nums[0]` 和 `nums[2]`。数组变为 `[0, 3, 1]`。
+- 在第二次操作中，选择 `nums[1]` 和 `nums[2]`。数组变为 `[0, 0, 0]`。
+- 所需的最小操作次数为 2。
+
+输出为 `1 + 2 = 3`。
+
+**示例 2：**
+
+**输入：** queries = [[2,6]]
+
+**输出：** 4
+
+**解释：**
+
+对于 `queries[0]`：
+
+- 初始数组为 `nums = [2, 3, 4, 5, 6]`。
+- 在第一次操作中，选择 `nums[0]` 和 `nums[3]`。数组变为 `[0, 3, 4, 1, 6]`。
+- 在第二次操作中，选择 `nums[2]` 和 `nums[4]`。数组变为 `[0, 3, 1, 1, 1]`。
+- 在第三次操作中，选择 `nums[1]` 和 `nums[2]`。数组变为 `[0, 0, 0, 1, 1]`。
+- 在第四次操作中，选择 `nums[3]` 和 `nums[4]`。数组变为 `[0, 0, 0, 0, 0]`。
+- 所需的最小操作次数为 4。
+
+输出为 4。
+
+ 
+
+**提示：**
+
+- `1 <= queries.length <= 10^5`
+- `queries[i].length == 2`
+- `queries[i] == [l, r]`
+- `1 <= l < r <= 10^9`
+
+
+
+```python
+
+```
 
 
 
