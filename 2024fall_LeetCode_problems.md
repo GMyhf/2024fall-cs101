@@ -1115,7 +1115,7 @@ https://leetcode.cn/problems/maximum-depth-of-binary-tree/
 
 **提示：**
 
-- 树中节点的数量在 `[0, 104]` 区间内。
+- 树中节点的数量在 `[0, 10^4]` 区间内。
 - `-100 <= Node.val <= 100`
 
 
