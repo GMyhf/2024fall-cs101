@@ -1085,7 +1085,7 @@ class Solution:
 
 ## 104.二叉树的最大深度
 
-https://leetcode.cn/problems/maximum-depth-of-binary-tree/
+tree, dfs, https://leetcode.cn/problems/maximum-depth-of-binary-tree/
 
 给定一个二叉树 `root` ，返回其最大深度。
 
@@ -10846,6 +10846,16 @@ lRUCache.get(4);    // 返回 4
 - `0 <= key <= 10000`
 - `0 <= value <= 10^5`
 - 最多调用 `2 * 10^5` 次 `get` 和 `put`
+
+
+
+依照力扣题解的提示完成，题解中用书本的抽放来对比十分清楚，dummy是一个同时对书头书尾作处理的节点，next是书头prev是书尾，因此要放到书头或删除书尾都需要dummy帮忙。
+
+<img src="https://pic.leetcode.cn/1696039105-PSyHej-146-3-c.png" style="zoom: 25%;" />
+
+
+
+
 
 
 
