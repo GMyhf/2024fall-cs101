@@ -1,6 +1,6 @@
 # 2024/10/29 递归
 
-Updated 2253 GMT+8 Nov 7, 2024
+Updated 2138 GMT+8 Mar 25, 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -1768,7 +1768,7 @@ print(fibonacci(35))  # 现在会非常快
 >
 >    ```python
 >    from functools import lru_cache
->                            
+>                               
 >    @lru_cache(maxsize=None)
 >    def fibonacci(n):
 >        if n == 0:
@@ -2117,6 +2117,30 @@ for r in result:
 ![image-20231128135735294](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231128135735294.png)
 
 
+
+### LC46.全排列
+
+backtracking, https://leetcode.cn/problems/permutations/
+
+```python
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        n=len(nums)
+        res=[]
+        def backtrack(first=0):
+            if first==n:
+                res.append(nums[:])
+            for i in range(first,n):
+                nums[i],nums[first]=nums[first],nums[i]
+                backtrack(first+1)
+                nums[i],nums[first]=nums[first],nums[i]
+        backtrack()
+        return res
+```
+
+
+
+![image-20250325213817460](https://raw.githubusercontent.com/GMyhf/img/main/img/202503252138418.png)
 
 
 
