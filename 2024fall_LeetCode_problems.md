@@ -12436,6 +12436,34 @@ https://leetcode.cn/problems/kth-smallest-element-in-a-bst/
 #         self.right = right
 class Solution:
     def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
+        res = []
+        def pre_order(node):
+            if not node or len(res) == k:
+                return
+            pre_order(node.left)
+            if len(res) == k:
+                return
+            res.append(node.val)
+            if len(res) == k:
+                return
+            pre_order(node.right)
+        
+        pre_order(root)
+        return res[-1]
+        
+```
+
+
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
         # Initialize the result and the counter
         self.result = None
         self.count = 0
