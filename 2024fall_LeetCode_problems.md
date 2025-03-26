@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1853 GMT+8 Mar 25 2025
+Updated 1127 GMT+8 Mar 26 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -17255,6 +17255,127 @@ Q: 为什么copy()?
 2. **避免副作用**：每个单元格需要维护自己独立的“左上”或“右下”集合。如果不复制，就会因为共享同一个集合而混淆数据，影响最终计算答案时集合大小的准确性。
 
 总之，`copy()` 确保每个位置都有自己的独立集合，从而正确地累积对角线上的不同值。
+
+
+
+## 2829.k-avoiding数组的最小总和
+
+greedy, https://leetcode.cn/problems/determine-the-minimum-sum-of-a-k-avoiding-array/
+
+给你两个整数 `n` 和 `k` 。
+
+对于一个由 **不同** 正整数组成的数组，如果其中不存在任何求和等于 k 的不同元素对，则称其为 **k-avoiding** 数组。
+
+返回长度为 `n` 的 **k-avoiding** 数组的可能的最小总和。
+
+ 
+
+**示例 1：**
+
+```
+输入：n = 5, k = 4
+输出：18
+解释：设若 k-avoiding 数组为 [1,2,4,5,6] ，其元素总和为 18 。
+可以证明不存在总和小于 18 的 k-avoiding 数组。
+```
+
+**示例 2：**
+
+```
+输入：n = 2, k = 6
+输出：3
+解释：可以构造数组 [1,2] ，其元素总和为 3 。
+可以证明不存在总和小于 3 的 k-avoiding 数组。 
+```
+
+ 
+
+**提示：**
+
+- `1 <= n, k <= 50`
+
+
+
+```
+sample3 input:
+n = 3, k = 6
+
+sample3 output:
+6
+```
+
+
+
+
+
+```python
+class Solution:
+    def minimumSum(self, n: int, k: int) -> int:
+        # 使用一个集合记录已经被排除的数字
+        excluded = set()
+        result = []
+        current = 1
+        
+        while len(result) < n:
+            # 如果当前数字没有被排除，则加入结果数组
+            if current not in excluded:
+                result.append(current)
+                # 将与当前数字相加等于 k 的数字加入排除集合
+                complement = k - current
+                if complement > 0:
+                    excluded.add(complement)
+            # 移动到下一个数字
+            current += 1
+        
+        # 返回结果数组的总和
+        return sum(result)
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.minimumSum(5, 4))  # expects 18
+    print(sol.minimumSum(3, 5))  # expects 8
+    print(sol.minimumSum(3, 6))  # expects 6
+```
+
+
+
+
+
+```python
+from itertools import combinations
+
+class Solution:
+    def minimumSum(self, n: int, k: int) -> int:
+        min_v = n * (n + 1) // 2
+        if k > min_v:
+            return min_v
+
+        def has_conflict(arr):
+            for comb in combinations(arr, 2):
+                if sum(comb) == k:
+                    return comb
+            return None
+
+        current_array = list(range(1, n + 1))
+        while True:
+            conflict_pair = has_conflict(current_array)
+            if not conflict_pair:
+                return sum(current_array)
+
+            max_in_conflict = max(conflict_pair)
+            index_to_replace = current_array.index(max_in_conflict)
+            current_array.append(current_array[-1] + 1)
+            current_array.pop(index_to_replace)
+
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.minimumSum(5, 4))  # expects 18
+    print(sol.minimumSum(3, 5))  # expects 8
+    print(sol.minimumSum(3, 6))  # expects 6
+```
+
+
 
 
 
