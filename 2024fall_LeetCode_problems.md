@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1524 GMT+8 Mar 26 2025
+Updated 1811 GMT+8 Mar 26 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -7292,6 +7292,26 @@ backtracking, https://leetcode.cn/problems/permutations/
 
 
 
+
+
+```python
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        ans = []
+        def back(num_list:List[int],ans_list):
+            if not num_list:
+                ans.append(ans_list)
+                return
+            for i in range(len(num_list)):
+                back(num_list[:i]+num_list[i+1:],ans_list+[num_list[i]])
+        back(nums,[])
+        return ans
+```
+
+
+
+
+
 思路：
 
 1. **参数传递**：在递归调用中使用可变对象（如列表）作为默认参数是一个常见的Python陷阱，因为默认参数在函数定义时只初始化一次。这意味着所有递归调用共享同一个`perm`列表，这可能导致意外的行为。解决方案是不在函数参数中设置可变默认值。
@@ -10215,6 +10235,25 @@ class Solution:
         res = []
         backtrack(0, [])
         return res
+```
+
+
+
+
+
+```python
+class Solution:
+    def partition(self, s: str) -> List[List[str]]:
+        ans = []
+        def divide(ans_list,word):
+            if len(word) == 0:
+                ans.append(ans_list)
+                return
+            for i in range(1,len(word)+1):
+                if word[:i] == word[:i][::-1]:
+                    divide(ans_list+[word[:i]],word[i:])
+        divide([],s)
+        return ans
 ```
 
 
