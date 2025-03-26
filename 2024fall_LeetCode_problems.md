@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1127 GMT+8 Mar 26 2025
+Updated 1524 GMT+8 Mar 26 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -7319,6 +7319,28 @@ class Solution:
         backtrack()
         return ans
 ```
+
+
+
+思路：把k-1阶的全排列的每一个间隔加入第k个数
+
+```python
+# 刘中和 24工学院
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        def backtrack(k):
+            if k==1:
+                return [[nums[0]]]
+            ans=[]
+            for x in backtrack(k-1):
+                for y in range(k):
+                    ans.append(x[:y]+[nums[k-1]]+x[y:])
+            return ans
+        return backtrack(len(nums))
+
+```
+
+
 
 
 
