@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0839 GMT+8 Mar 27 2025
+Updated 2128 GMT+8 Mar 27 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -7459,6 +7459,47 @@ if __name__ == "__main__":
 
 撤销选择：
 由于我们在<mark>每次递归调用时创建了新的路径和剩余元素，所以不需要显式地撤销选择</mark>。递归返回后，自动恢复到之前的状态。
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        # https://github.com/python/cpython/blob/main/Modules/itertoolsmodule.c
+        def permutations(iterable, r=None):
+            # permutations('ABCD', 2) --> AB AC AD BA BC BD CA CB CD DA DB DC
+            # permutations(range(3)) --> 012 021 102 120 201 210
+            pool = tuple(iterable)
+            n = len(pool)
+            r = n if r is None else r
+            if r > n:
+                return
+            indices = list(range(n))
+            cycles = list(range(n, n - r, -1))  # [n, n-1, ..., n-r+1]，用于控制排列的生成
+            yield tuple(pool[i] for i in indices[:r])
+            while n:
+                for i in reversed(range(r)):
+                    cycles[i] -= 1
+                    if cycles[i] == 0:
+                        indices[i:] = indices[i + 1:] + indices[i:i + 1]
+                        cycles[i] = n - i
+                    else:
+                        j = cycles[i]
+                        indices[i], indices[-j] = indices[-j], indices[i]
+                        yield tuple(pool[i] for i in indices[:r])
+                        break
+                else:
+                    return
+
+        return list(map(list, permutations(nums)))
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.permute([1, 2, 3]))
+
+```
 
 
 
