@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2128 GMT+8 Mar 27 2025
+Updated 1117 GMT+8 Mar 28 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -3991,6 +3991,102 @@ class Solution:
 
 
 
+## 2716.最小化字符串长度
+
+hash table, https://leetcode.cn/problems/minimize-string-length/
+
+给你一个下标从 **0** 开始的字符串 `s` ，重复执行下述操作 **任意** 次：
+
+- 在字符串中选出一个下标 `i` ，并使 `c` 为字符串下标 `i` 处的字符。并在 `i` **左侧**（如果有）和 **右侧**（如果有）各 **删除** 一个距离 `i` **最近** 的字符 `c` 。
+
+请你通过执行上述操作任意次，使 `s` 的长度 **最小化** 。
+
+返回一个表示 **最小化** 字符串的长度的整数。
+
+ 
+
+**示例 1：**
+
+```
+输入：s = "aaabc"
+输出：3
+解释：在这个示例中，s 等于 "aaabc" 。我们可以选择位于下标 1 处的字符 'a' 开始。接着删除下标 1 左侧最近的那个 'a'（位于下标 0）以及下标 1 右侧最近的那个 'a'（位于下标 2）。执行操作后，字符串变为 "abc" 。继续对字符串执行任何操作都不会改变其长度。因此，最小化字符串的长度是 3 。
+```
+
+**示例 2：**
+
+```
+输入：s = "cbbd"
+输出：3
+解释：我们可以选择位于下标 1 处的字符 'b' 开始。下标 1 左侧不存在字符 'b' ，但右侧存在一个字符 'b'（位于下标 2），所以会删除位于下标 2 的字符 'b' 。执行操作后，字符串变为 "cbd" 。继续对字符串执行任何操作都不会改变其长度。因此，最小化字符串的长度是 3 。
+```
+
+**示例 3：**
+
+```
+输入：s = "dddaaa"
+输出：2
+解释：我们可以选择位于下标 1 处的字符 'd' 开始。接着删除下标 1 左侧最近的那个 'd'（位于下标 0）以及下标 1 右侧最近的那个 'd'（位于下标 2）。执行操作后，字符串变为 "daaa" 。继续对新字符串执行操作，可以选择位于下标 2 的字符 'a' 。接着删除下标 2 左侧最近的那个 'a'（位于下标 1）以及下标 2 右侧最近的那个 'a'（位于下标 3）。执行操作后，字符串变为 "da" 。继续对字符串执行任何操作都不会改变其长度。因此，最小化字符串的长度是 2 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 100`
+- `s` 仅由小写英文字母组成
+
+
+
+```python
+class Solution:
+    def minimizedStringLength(self, s: str) -> int:
+        n = len(s)
+        s = list(s)
+        for i in range(n):
+            if s[i] == 'D':
+                continue
+
+            for j in range(i - 1, -1, -1):
+                if s[j] == s[i]:
+                    s[j] = 'D'
+                    break
+
+            for j in range(i + 1, n):
+                if s[j] == s[i]:
+                    s[j] = 'D'
+                    break
+
+        ans = 0
+        for i in range(n):
+            if s[i] == 'D':
+                ans += 1
+
+        return n - ans
+
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.minimizedStringLength("aaabc"))  # 3
+
+```
+
+
+
+```python
+class Solution:
+    def minimizedStringLength(self, s: str) -> int:
+        # 使用集合记录唯一字符
+        unique_chars = set(s)
+        return len(unique_chars)
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.minimizedStringLength("aaabc"))  # 输出：3
+```
+
+
+
 
 
 ## 2928.给小朋友们分糖果I
@@ -7573,7 +7669,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->        
+>           
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
