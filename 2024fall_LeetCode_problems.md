@@ -7669,7 +7669,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->              
+>                 
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -12488,7 +12488,7 @@ class Solution:
 
 ## 200.岛屿数量
 
-dfs, https://leetcode.cn/problems/number-of-islands/ 
+dfs, bfs, https://leetcode.cn/problems/number-of-islands/ 
 
 给你一个由 `'1'`（陆地）和 `'0'`（水）组成的的二维网格，请你计算网格中岛屿的数量。
 
@@ -12522,9 +12522,7 @@ dfs, https://leetcode.cn/problems/number-of-islands/
 输出：3
 ```
 
- 
-
-**提示：**
+ **提示：**
 
 - `m == grid.length`
 - `n == grid[i].length`
@@ -12533,30 +12531,40 @@ dfs, https://leetcode.cn/problems/number-of-islands/
 
 
 
+计算二维网格中的岛屿数量，可以使用深度优先搜索（DFS）或广度优先搜索（BFS）。以下是基于 DFS 的解决方案：
+
 ```python
-from typing import List
-
-
 class Solution:
     def numIslands(self, grid: List[List[str]]) -> int:
-        def dfs(i, j):
-            if i < 0 or j < 0 or i >= len(grid) or j >= len(grid[0]) or grid[i][j] == '0':
-                return
-            grid[i][j] = '0'
-            dfs(i + 1, j)
-            dfs(i - 1, j)
-            dfs(i, j + 1)
-            dfs(i, j - 1)
-        
-        if not grid:
+        if not grid or not grid[0]:
             return 0
-        count = 0
+
+        def dfs(i, j):
+            # 如果越界或当前单元格不是陆地，直接返回
+            if i < 0 or i >= len(grid) or j < 0 or j >= len(grid[0]) or grid[i][j] == '0':
+                return
+            
+            # 将当前单元格标记为已访问
+            grid[i][j] = '0'
+            
+            # 递归访问上下左右四个方向
+            dfs(i - 1, j)  # 上
+            dfs(i + 1, j)  # 下
+            dfs(i, j - 1)  # 左
+            dfs(i, j + 1)  # 右
+
+        # 初始化岛屿计数器
+        num_islands = 0
+        
+        # 遍历整个网格
         for i in range(len(grid)):
             for j in range(len(grid[0])):
-                if grid[i][j] == '1':
-                    count += 1
-                    dfs(i, j)
-        return count
+                if grid[i][j] == '1':  # 找到新的岛屿
+                    num_islands += 1
+                    dfs(i, j)  # 使用 DFS 标记整个岛屿
+        
+        return num_islands
+        
 ```
 
 
