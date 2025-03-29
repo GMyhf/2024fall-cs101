@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1117 GMT+8 Mar 28 2025
+Updated 0852 GMT+8 Mar 29 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -7669,7 +7669,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->           
+>              
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -25481,6 +25481,102 @@ class FoodRatings:
 ```
 
 
+
+## 2360.图中的最长环
+
+graph, topological sort, dfs, bfs, https://leetcode.cn/problems/longest-cycle-in-a-graph/
+
+给你一个 `n` 个节点的 **有向图** ，节点编号为 `0` 到 `n - 1` ，其中每个节点 **至多** 有一条出边。
+
+图用一个大小为 `n` 下标从 **0** 开始的数组 `edges` 表示，节点 `i` 到节点 `edges[i]` 之间有一条有向边。如果节点 `i` 没有出边，那么 `edges[i] == -1` 。
+
+请你返回图中的 **最长** 环，如果没有任何环，请返回 `-1` 。
+
+一个环指的是起点和终点是 **同一个** 节点的路径。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2022/06/08/graph4drawio-5.png" alt="img" style="zoom:67%;" />
+
+```
+输入：edges = [3,3,4,2,3]
+输出去：3
+解释：图中的最长环是：2 -> 4 -> 3 -> 2 。
+这个环的长度为 3 ，所以返回 3 。
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2022/06/07/graph4drawio-1.png" alt="img" style="zoom:67%;" />
+
+```
+输入：edges = [2,-1,3,1]
+输出：-1
+解释：图中没有任何环。
+```
+
+ 
+
+**提示：**
+
+- `n == edges.length`
+- `2 <= n <= 10^5`
+- `-1 <= edges[i] < n`
+- `edges[i] != i`
+
+
+
+To solve this problem, we need to find the longest cycle in a directed graph where each node has at most one outgoing edge. The solution involves efficiently traversing the graph to identify cycles and determine their lengths.
+
+**Approach**
+
+1. **Graph Structure Insight**: Since each node has at most one outgoing edge, the graph consists of chains leading to cycles or ending in a node with no outgoing edge (denoted by -1).
+2. **Cycle Detection**: For each node, traverse its path until we either encounter a node that has been visited before or reach a node with no outgoing edge. 
+3. **Tracking Visits**: Use a `time` array to record when each node was first visited. This helps in determining if a node is part of the current path and thus part of a cycle.
+4. **Cycle Length Calculation**: When revisiting a node that is part of the current path (determined by its visit time), compute the cycle length as the difference between the current time and the node's visit time.
+
+**Solution Code**
+
+```python
+class Solution:
+    def longestCycle(self, edges: List[int]) -> int:
+        n = len(edges)
+        time = [0] * n
+        current_time = 1
+        max_length = -1
+        
+        for u in range(n):
+            if time[u] != 0:
+                continue
+            start_time = current_time
+            current_node = u
+            while True:
+                if current_node == -1:
+                    break
+                if time[current_node] != 0:
+                    if time[current_node] >= start_time:
+                        length = current_time - time[current_node]
+                        if length > max_length:
+                            max_length = length
+                    break
+                else:
+                    time[current_node] = current_time
+                    current_time += 1
+                    current_node = edges[current_node]
+        
+        return max_length
+```
+
+Explanation
+
+1. **Initialization**: We initialize a `time` array to keep track of when each node was first visited. `current_time` starts at 1 and increments each time we visit a new node.
+2. **Traversal**: For each node `u`, if it hasn't been visited, we start traversing from `u`. We record the start time of this traversal.
+3. **Cycle Detection**: As we traverse, each node's visit time is recorded. If we encounter a node that has already been visited (`time[current_node] != 0`), we check if it was visited during the current traversal (using `start_time`). If so, it indicates a cycle.
+4. **Cycle Length Calculation**: The length of the cycle is calculated as the difference between the current time and the visit time of the node where the cycle was detected. This value is compared with the current maximum cycle length to update the result.
+
+This approach ensures that each node is processed exactly once, leading to an efficient O(n) time complexity, where n is the number of nodes. The space complexity is O(n) due to the `time` array.
 
 
 
