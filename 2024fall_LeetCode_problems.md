@@ -3631,6 +3631,55 @@ class Solution:
 
 
 
+## 2278.字母在字符串中的百分比
+
+https://leetcode.cn/problems/percentage-of-letter-in-string/
+
+给你一个字符串 `s` 和一个字符 `letter` ，返回在 `s` 中等于 `letter` 字符所占的 **百分比** ，向下取整到最接近的百分比。
+
+ 
+
+**示例 1：**
+
+```
+输入：s = "foobar", letter = "o"
+输出：33
+解释：
+等于字母 'o' 的字符在 s 中占到的百分比是 2 / 6 * 100% = 33% ，向下取整，所以返回 33 。
+```
+
+**示例 2：**
+
+```
+输入：s = "jjjj", letter = "k"
+输出：0
+解释：
+等于字母 'k' 的字符在 s 中占到的百分比是 0% ，所以返回 0 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 100`
+- `s` 由小写英文字母组成
+- `letter` 是一个小写英文字母
+
+
+
+```python
+class Solution:
+    def percentageLetter(self, s: str, letter: str) -> int:
+        cnt = 0
+        for c in s:
+            if c == letter:
+                cnt += 1
+        
+        return cnt * 100 // len(s) 
+```
+
+
+
 
 
 ## 2506.统计相似字符串对的数目
@@ -7826,7 +7875,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                       
+>                          
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
