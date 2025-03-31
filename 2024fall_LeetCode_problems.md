@@ -7875,7 +7875,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                          
+>                             
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -15023,7 +15023,7 @@ class Solution:
 
 ## 437.路径总和III
 
-dfs, https://leetcode.cn/problems/path-sum-iii/
+dfs, prefix, https://leetcode.cn/problems/path-sum-iii/
 
 给定一个二叉树的根节点 `root` ，和一个整数 `targetSum` ，求该二叉树里节点值之和等于 `targetSum` 的 **路径** 的数目。
 
@@ -15055,6 +15055,145 @@ dfs, https://leetcode.cn/problems/path-sum-iii/
 - 二叉树的节点个数的范围是 `[0,1000]`
 - `-109 <= Node.val <= 109` 
 - `-1000 <= targetSum <= 1000` 
+
+
+
+这道题要求找到二叉树中所有和为 targetSum 的路径，这里的路径可以从任意节点开始，也可以结束于任意节点，但路径必须是向下的。解决这道题有两种常见方法：
+
+方法一：暴力递归
+
+```python
+from collections import deque
+
+# Definition for a binary tree node.
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+class Solution:
+    def pathSum(self, root: TreeNode, targetSum: int) -> int:
+        # Helper function to calculate the number of paths starting from the current node
+        def rootSum(root, targetSum):
+            if root is None:
+                return 0
+
+            ret = 0
+            if root.val == targetSum:
+                ret += 1
+
+            # Recursively check left and right subtrees
+            ret += rootSum(root.left, targetSum - root.val)
+            ret += rootSum(root.right, targetSum - root.val)
+            return ret
+
+        if root is None:
+            return 0
+
+        # Calculate paths starting from the current node
+        ret = rootSum(root, targetSum)
+        # Add paths starting from the left and right children
+        ret += self.pathSum(root.left, targetSum)
+        ret += self.pathSum(root.right, targetSum)
+        return ret
+
+# Helper function to build a binary tree from a list (level-order traversal)
+def build_tree(nodes):
+    if not nodes:
+        return None
+
+    root = TreeNode(nodes[0])
+    queue = deque([root])  # Use deque for efficient popping from the left
+    i = 1
+
+    while queue and i < len(nodes):
+        curr = queue.popleft()  # Efficiently pop from the left
+
+        # Left child
+        if i < len(nodes) and nodes[i] is not None:
+            curr.left = TreeNode(nodes[i])
+            queue.append(curr.left)
+        i += 1
+
+        # Right child
+        if i < len(nodes) and nodes[i] is not None:
+            curr.right = TreeNode(nodes[i])
+            queue.append(curr.right)
+        i += 1
+
+    return root
+
+if __name__ == "__main__":
+    sol = Solution()
+    
+    # Input as a list representation of the tree
+    tree_list = [10, 5, -3, 3, 2, None, 11, 3, -2, None, 1]
+    root = build_tree(tree_list)
+    
+    # Target sum
+    targetSum = 8
+    
+    # Call the solution method
+    print(sol.pathSum(root, targetSum))
+```
+
+对每个节点都尝试以该节点为起点，往下递归搜索所有可能的路径，判断是否满足路径和为 targetSum。虽然思路直观，但在最坏情况下时间复杂度较高，为 O(n²)。
+
+
+
+方法二：前缀和 + 回溯
+
+更高效的方法是使用前缀和思想。我们维护一个哈希表 `prefix`，存储从根节点到当前节点路径上的前缀和出现的次数。当遍历到一个节点时，设当前累加和为 `curr`，那么如果存在某个前缀和 `curr - targetSum`，就说明存在一段路径的和为 targetSum。  
+- 初始时，将哈希表初始化为 `{0: 1}`（当路径本身的和等于 targetSum 时能够正确计数）。  
+- 在递归进入子节点时，将当前前缀和加入哈希表；递归返回后，记得回溯时恢复哈希表，避免影响其他分支。
+
+下面是一段 Python 示例代码，展示了如何实现前缀和 + 回溯方法：
+
+```python
+# Definition for a binary tree node.
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+class Solution:
+    def pathSum(self, root: TreeNode, targetSum: int) -> int:
+        prefix = {0: 1}  # 初始化前缀和字典
+        
+        def dfs(node, currSum):
+            if not node:
+                return 0
+            currSum += node.val
+            # 当前路径上有多少前缀和满足 currSum - pre = targetSum
+            count = prefix.get(currSum - targetSum, 0)
+            # 更新前缀和字典
+            prefix[currSum] = prefix.get(currSum, 0) + 1
+            # 递归左右子树
+            count += dfs(node.left, currSum)
+            count += dfs(node.right, currSum)
+            # 回溯：撤销当前节点对 prefix 的贡献
+            prefix[currSum] -= 1
+            return count
+        
+        return dfs(root, 0)
+```
+
+代码解析
+
+1. **前缀和字典初始化**：  
+   - 我们将 `{0: 1}` 作为初始值，表示没有任何节点时前缀和为 0 出现一次。
+
+2. **递归函数 dfs(node, currSum)**：  
+   - 如果当前节点为空，返回 0。  
+   - 否则，将当前节点的值加入当前累加和 `currSum`。  
+   - 使用 `prefix.get(currSum - targetSum, 0)` 查找此前是否有累加和，使得当前路径和减去那个前缀和等于 targetSum，从而确定当前路径上存在符合条件的子路径。  
+   - 更新哈希表，将当前累加和出现的次数加 1。  
+   - 分别递归处理左右子树，并将结果累加。  
+   - 回溯时，将当前节点的贡献从哈希表中减去。
+
+这种方法的时间复杂度为 O(n)，空间复杂度为 O(n)，适合处理较大规模的二叉树。
 
 
 
