@@ -7875,7 +7875,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                
+>                                   
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -9684,6 +9684,14 @@ if __name__ == "__main__":
 **进阶：**你可以使用搜索剪枝的技术来优化解决方案，使其在 `board` 更大的情况下可以更快解决问题？
 
 
+
+
+
+思路：
+
+- 用dfs像周围四个方向搜索下一个字母
+- 剪枝1：如果最后一个字母出现的频率比第一个字母低，就反过来搜索，效率更高
+- 剪枝2：如果一个字母在单词中出现的次数大于在表中出现的次数，直接return false
 
 3535ms，击败58.21%
 
@@ -13520,7 +13528,7 @@ if __name__ == '__main__':
 
 ## 236.二叉树的最近公共祖先
 
-https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/
+dfs, https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/
 
 给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
 
