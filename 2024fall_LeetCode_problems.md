@@ -957,6 +957,35 @@ class Solution:
 
 
 
+【傅坚军】思路：该方法通过迭代方式模拟递归过程：将当前节点的所有左子节点压入栈中，直到最左侧叶子节点。然后弹出栈顶元素（当前最左侧节点），将其值加入结果列表。将当前指针转向该节点的右子节点，重复上述过程。
+用时约20分钟
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        result = []
+        stack = []
+        current = root
+        while current or stack:
+            while current:
+                stack.append(current)
+                current = current.left
+            current = stack.pop()
+            result.append(current.val)
+            current = current.right
+        return result
+```
+
+
+
+
+
 ## 100.相同的树
 
 https://leetcode.cn/problems/same-tree/
@@ -7934,7 +7963,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                      
+>                                         
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
