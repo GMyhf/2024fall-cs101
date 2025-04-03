@@ -7963,7 +7963,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                         
+>                                            
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -18826,6 +18826,112 @@ if __name__ == "__main__":
     print(sol.minimumSum(3, 5))  # expects 8
     print(sol.minimumSum(3, 6))  # expects 6
 ```
+
+
+
+## 2874.有序三元组中的最大值II
+
+dp, https://leetcode.cn/problems/maximum-value-of-an-ordered-triplet-ii/
+
+给你一个下标从 **0** 开始的整数数组 `nums` 。
+
+请你从所有满足 `i < j < k` 的下标三元组 `(i, j, k)` 中，找出并返回下标三元组的最大值。如果所有满足条件的三元组的值都是负数，则返回 `0` 。
+
+**下标三元组** `(i, j, k)` 的值等于 `(nums[i] - nums[j]) * nums[k]` 。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [12,6,1,2,7]
+输出：77
+解释：下标三元组 (0, 2, 4) 的值是 (nums[0] - nums[2]) * nums[4] = 77 。
+可以证明不存在值大于 77 的有序下标三元组。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,10,3,4,19]
+输出：133
+解释：下标三元组 (1, 2, 4) 的值是 (nums[1] - nums[2]) * nums[4] = 133 。
+可以证明不存在值大于 133 的有序下标三元组。 
+```
+
+**示例 3：**
+
+```
+输入：nums = [1,2,3]
+输出：0
+解释：唯一的下标三元组 (0, 1, 2) 的值是一个负数，(nums[0] - nums[1]) * nums[2] = -3 。因此，答案是 0 。
+```
+
+ 
+
+**提示：**
+
+- `3 <= nums.length <= 10^5`
+- `1 <= nums[i] <= 10^6`
+
+
+
+这个问题需要我们找到一个符合条件 `(i, j, k)` 且 `i < j < k` 的三元组，使得 `(nums[i] - nums[j]) * nums[k]` 取最大值。由于 `nums.length` 可达 `10^5`，必须使用高效的方法（如单调数据结构或预处理）来优化时间复杂度。
+
+---
+
+**解题思路**
+
+1. **拆分公式**  
+   我们的目标是最大化 `(nums[i] - nums[j]) * nums[k]`，注意：
+   - `nums[i] - nums[j]` 要尽可能大，即 `nums[i]` 尽可能大，`nums[j]` 尽可能小。
+   - `nums[k]` 要尽可能大。
+
+2. **前缀最小值 & 后缀最大值**  
+   - 对于每个 `j`，我们需要找到 `i < j` 使得 `nums[i]` 最大，因此可以用**前缀最大值**来维护 `nums[i]`。
+   - 同时，我们需要找到 `k > j` 使得 `nums[k]` 最大，因此可以用**后缀最大值**来维护 `nums[k]`。
+
+3. **遍历计算**  
+   - 对于每个 `j`，我们计算 `(max_left[j] - nums[j]) * max_right[j]` 并维护最大值。
+
+---
+
+**代码实现**
+
+```python
+def maximumTripletValue(nums):
+class Solution:
+    def maximumTripletValue(self, nums: List[int]) -> int:
+        n = len(nums)
+        if n < 3:
+            return 0
+
+        # 计算左侧最大值 max_left[j] 维护 i < j 时的最大值
+        max_left = [0] * n
+        max_left[0] = nums[0]
+        for j in range(1, n):
+            max_left[j] = max(max_left[j - 1], nums[j - 1])
+
+        # 计算右侧最大值 max_right[j] 维护 k > j 时的最大值
+        max_right = [0] * n
+        max_right[-1] = nums[-1]
+        for j in range(n - 2, -1, -1):
+            max_right[j] = max(max_right[j + 1], nums[j + 1])
+
+        # 计算最大三元组值
+        max_value = 0
+        for j in range(1, n - 1):
+            max_value = max(max_value, (max_left[j] - nums[j]) * max_right[j])
+
+        return max_value
+```
+
+---
+
+**时间 & 空间复杂度分析**
+
+- **时间复杂度**：`O(n)`，因为我们分别遍历 `nums` 三次（前缀最大值、后缀最大值、计算结果）。
+- **空间复杂度**：`O(n)`，额外使用了 `max_left` 和 `max_right` 两个数组来存储前缀最大值和后缀最大值。
 
 
 
