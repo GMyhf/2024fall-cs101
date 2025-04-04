@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1235 GMT+8 Apr 2 2025
+Updated 1235 GMT+8 Apr 4 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -7963,7 +7963,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                            
+>                                               
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -16297,6 +16297,170 @@ class Solution:
 ```
 
 
+
+## 1123.最深叶节点的最近公共祖先
+
+dfs, https://leetcode.cn/problems/lowest-common-ancestor-of-deepest-leaves/
+
+给你一个有根节点 `root` 的二叉树，返回它 *最深的叶节点的最近公共祖先* 。
+
+回想一下：
+
+- **叶节点** 是二叉树中没有子节点的节点
+- 树的根节点的 **深度** 为 `0`，如果某一节点的深度为 `d`，那它的子节点的深度就是 `d+1`
+- 如果我们假定 `A` 是一组节点 `S` 的 **最近公共祖先**，`S` 中的每个节点都在以 `A` 为根节点的子树中，且 `A` 的深度达到此条件下可能的最大值。
+
+**示例 1：**
+
+<img src="https://s3-lc-upload.s3.amazonaws.com/uploads/2018/07/01/sketch1.png" alt="img" style="zoom:33%;" />
+
+```
+输入：root = [3,5,1,6,2,0,8,null,null,7,4]
+输出：[2,7,4]
+解释：我们返回值为 2 的节点，在图中用黄色标记。
+在图中用蓝色标记的是树的最深的节点。
+注意，节点 6、0 和 8 也是叶节点，但是它们的深度是 2 ，而节点 7 和 4 的深度是 3 。
+```
+
+**示例 2：**
+
+```
+输入：root = [1]
+输出：[1]
+解释：根节点是树中最深的节点，它是它本身的最近公共祖先。
+```
+
+**示例 3：**
+
+```
+输入：root = [0,1,3,null,2]
+输出：[2]
+解释：树中最深的叶节点是 2 ，最近公共祖先是它自己。
+```
+
+ 
+
+**提示：**
+
+- 树中的节点数将在 `[1, 1000]` 的范围内。
+- `0 <= Node.val <= 1000`
+- 每个节点的值都是 **独一无二** 的。
+
+ 
+
+**注意：**本题与力扣 865 重复：https://leetcode-cn.com/problems/smallest-subtree-with-all-the-deepest-nodes/
+
+
+
+```python
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+
+class Solution:
+    def lcaDeepestLeaves(self, root: TreeNode) -> TreeNode:
+        def dfs(node):
+            if not node:
+                # 返回 (深度, LCA) 元组
+                return (0, None)
+
+            left_depth, left_lca = dfs(node.left)
+            right_depth, right_lca = dfs(node.right)
+
+            if left_depth > right_depth:
+                # 更深的子树在左子树
+                return (left_depth + 1, left_lca)
+            elif right_depth > left_depth:
+                # 更深的子树在右子树
+                return (right_depth + 1, right_lca)
+            else:
+                # 左右子树深度相同，当前节点是LCA
+                return (left_depth + 1, node)
+
+        _, lca = dfs(root)
+        return lca
+
+
+# 辅助函数保持不变
+def list_to_tree(lst, index=0):
+    if index >= len(lst) or lst[index] is None:
+        return None
+    root = TreeNode(lst[index])
+    root.left = list_to_tree(lst, 2 * index + 1)
+    root.right = list_to_tree(lst, 2 * index + 2)
+    return root
+
+
+def tree_to_list(root):
+    if not root:
+        return []
+    queue = [root]
+    result = []
+    while queue:
+        node = queue.pop(0)
+        if node:
+            result.append(node.val)
+            queue.append(node.left)
+            queue.append(node.right)
+        else:
+            result.append(None)
+    # 去除末尾的None
+    while result and result[-1] is None:
+        result.pop()
+    return result
+
+
+# 示例测试
+if __name__ == "__main__":
+    solution = Solution()
+
+    # 示例 1
+    root1 = list_to_tree([3, 5, 1, 6, 2, 0, 8, None, None, 7, 4])
+    lca1 = solution.lcaDeepestLeaves(root1)
+    print(lca1.val)  # 输出应为2
+
+    # 示例 2
+    root2 = list_to_tree([1])
+    lca2 = solution.lcaDeepestLeaves(root2)
+    print(lca2.val)  # 输出应为1
+
+    # 示例 3
+    root3 = list_to_tree([0, 1, 3, None, 2])
+    lca3 = solution.lcaDeepestLeaves(root3)
+    print(lca3.val)  # 输出应为2
+
+    # 额外测试
+    # 构建一个更复杂的树进行测试
+    #       1
+    #      / \
+    #     2   3
+    #    / \
+    #   4   5
+    #      /
+    #     6
+    root4 = list_to_tree([1, 2, 3, 4, None, 5, None, 6])
+    lca4 = solution.lcaDeepestLeaves(root4)
+    print(lca4.val)  
+```
+
+解释
+
+**递归函数 `dfs`**：
+
+- 对于每个节点，递归地计算其左子树和右子树的深度及对应的 LCA。
+- 如果左子树比右子树深，返回左子树的深度加一以及左子树的 LCA。
+- 如果右子树比左子树深，返回右子树的深度加一以及右子树的 LCA。
+- 如果左右子树深度相同，当前节点就是最深叶节点的 LCA，返回当前深度加一以及当前节点。
+
+复杂度分析
+
+- **时间复杂度**：O(N)，其中 N 是树中的节点数。每个节点只被访问一次。
+- **空间复杂度**：O(H)，其中 H 是树的高度。递归调用栈的深度取决于树的高度。
+
+通过上述修正，代码应能正确运行并返回最深叶节点的最近公共祖先，而不会再出现类型错误。
 
 ## 1143.最长公共子序列
 
