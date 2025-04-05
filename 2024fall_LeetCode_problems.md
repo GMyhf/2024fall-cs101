@@ -8070,7 +8070,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                  
+>                                                     
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -11138,6 +11138,133 @@ if __name__ == "__main__":
     sol = Solution()
     print(sol.rob([2, 1, 1, 2])) # 3
 ```
+
+
+
+## 129.求根节点到叶节点数字之和
+
+dfs, https://leetcode.cn/problems/sum-root-to-leaf-numbers/
+
+给你一个二叉树的根节点 `root` ，树中每个节点都存放有一个 `0` 到 `9` 之间的数字。
+
+每条从根节点到叶节点的路径都代表一个数字：
+
+- 例如，从根节点到叶节点的路径 `1 -> 2 -> 3` 表示数字 `123` 。
+
+计算从根节点到叶节点生成的 **所有数字之和** 。
+
+**叶节点** 是指没有子节点的节点。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2021/02/19/num1tree.jpg" alt="img" style="zoom: 67%;" />
+
+```
+输入：root = [1,2,3]
+输出：25
+解释：
+从根到叶子节点路径 1->2 代表数字 12
+从根到叶子节点路径 1->3 代表数字 13
+因此，数字总和 = 12 + 13 = 25
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2021/02/19/num2tree.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：root = [4,9,0,5,1]
+输出：1026
+解释：
+从根到叶子节点路径 4->9->5 代表数字 495
+从根到叶子节点路径 4->9->1 代表数字 491
+从根到叶子节点路径 4->0 代表数字 40
+因此，数字总和 = 495 + 491 + 40 = 1026
+```
+
+ 
+
+**提示：**
+
+- 树中节点的数目在范围 `[1, 1000]` 内
+- `0 <= Node.val <= 9`
+- 树的深度不超过 `10`
+
+
+
+**思路**
+
+1. **深度优先搜索 (DFS)**：
+   - 使用递归方法从根节点开始向下遍历。
+   - 在每一步中，将当前路径上的数字更新为 `current_number = current_number * 10 + node.val`。
+   - 如果到达叶节点（即没有左子节点和右子节点），将当前路径的数字加入结果总和。
+2. **递归终止条件**：
+   - 当前节点为空时，直接返回。
+   - 当前节点是叶节点时，将当前路径的数字加入总和。
+3. **时间复杂度**：
+   - 每个节点访问一次，时间复杂度为 O(n)*O*(*n*)，其中 n*n* 是节点总数。
+4. **空间复杂度**：
+   - 递归调用栈的空间复杂度为 O(h)*O*(*h*)，其中 h*h* 是树的高度。
+
+```python
+# 定义二叉树节点类
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+from typing import Optional
+
+class Solution:
+    def sumNumbers(self, root: Optional[TreeNode]) -> int:
+        """
+        计算从根节点到叶节点生成的所有数字之和。
+        :param root: Optional[TreeNode], 二叉树的根节点
+        :return: int, 所有路径数字的总和
+        """
+        def dfs(node, current_number):
+            if not node:
+                return 0
+            
+            # 更新当前路径的数字
+            current_number = current_number * 10 + node.val
+            
+            # 如果是叶节点，返回当前路径的数字
+            if not node.left and not node.right:
+                return current_number
+            
+            # 递归处理左右子树
+            left_sum = dfs(node.left, current_number)
+            right_sum = dfs(node.right, current_number)
+            
+            # 返回左右子树的结果之和
+            return left_sum + right_sum
+        
+        # 从根节点开始递归
+        return dfs(root, 0)
+
+# 测试代码
+if __name__ == "__main__":
+    # 示例 1: 构建树 [1,2,3]
+    root1 = TreeNode(1)
+    root1.left = TreeNode(2)
+    root1.right = TreeNode(3)
+    solution = Solution()
+    print(solution.sumNumbers(root1))  # 输出: 25
+
+    # 示例 2: 构建树 [4,9,0,5,1]
+    root2 = TreeNode(4)
+    root2.left = TreeNode(9)
+    root2.right = TreeNode(0)
+    root2.left.left = TreeNode(5)
+    root2.left.right = TreeNode(1)
+    print(solution.sumNumbers(root2))  # 输出: 1026
+```
+
+
 
 
 
