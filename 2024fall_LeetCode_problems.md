@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1235 GMT+8 Apr 4 2025
+Updated 1208 GMT+8 Apr 5 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -3396,6 +3396,113 @@ class Solution:
         max_balls_count = max(box_counts.values())
         
         return max_balls_count
+```
+
+
+
+## 1863.找出所有子集的异或总和再求和
+
+backtracking, https://leetcode.cn/problems/sum-of-all-subset-xor-totals/
+
+一个数组的 **异或总和** 定义为数组中所有元素按位 `XOR` 的结果；如果数组为 **空** ，则异或总和为 `0` 。
+
+- 例如，数组 `[2,5,6]` 的 **异或总和** 为 `2 XOR 5 XOR 6 = 1` 。
+
+给你一个数组 `nums` ，请你求出 `nums` 中每个 **子集** 的 **异或总和** ，计算并返回这些值相加之 **和** 。
+
+**注意：**在本题中，元素 **相同** 的不同子集应 **多次** 计数。
+
+数组 `a` 是数组 `b` 的一个 **子集** 的前提条件是：从 `b` 删除几个（也可能不删除）元素能够得到 `a` 。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,3]
+输出：6
+解释：[1,3] 共有 4 个子集：
+- 空子集的异或总和是 0 。
+- [1] 的异或总和为 1 。
+- [3] 的异或总和为 3 。
+- [1,3] 的异或总和为 1 XOR 3 = 2 。
+0 + 1 + 3 + 2 = 6
+```
+
+**示例 2：**
+
+```
+输入：nums = [5,1,6]
+输出：28
+解释：[5,1,6] 共有 8 个子集：
+- 空子集的异或总和是 0 。
+- [5] 的异或总和为 5 。
+- [1] 的异或总和为 1 。
+- [6] 的异或总和为 6 。
+- [5,1] 的异或总和为 5 XOR 1 = 4 。
+- [5,6] 的异或总和为 5 XOR 6 = 3 。
+- [1,6] 的异或总和为 1 XOR 6 = 7 。
+- [5,1,6] 的异或总和为 5 XOR 1 XOR 6 = 2 。
+0 + 5 + 1 + 6 + 4 + 3 + 7 + 2 = 28
+```
+
+**示例 3：**
+
+```
+输入：nums = [3,4,5,6,7,8]
+输出：480
+解释：每个子集的全部异或总和值之和为 480 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 12`
+- `1 <= nums[i] <= 20`
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def subsetXORSum(self, nums: List[int]) -> int:
+        if not nums:
+            return 0
+
+        n = len(nums)
+        subs = []
+
+        # 深度优先搜索生成所有子集
+        def dfs(start: int, sub_nums: List[int]):
+            # 将当前子集加入结果
+            subs.append(sub_nums[:])
+
+            # 遍历剩余元素，生成新的子集
+            for i in range(start, n):
+                sub_nums.append(nums[i])  # 选择当前元素
+                dfs(i + 1, sub_nums)      # 递归处理下一个元素
+                sub_nums.pop()            # 回溯，撤销选择
+
+        # 从索引 0 开始生成子集
+        dfs(0, [])
+
+        # 计算所有子集的 XOR 和
+        ans = 0
+        for sub in subs:
+            xor = 0
+            for num in sub:
+                xor ^= num
+            ans += xor
+
+        return ans
+
+if __name__ == "__main__":
+    nums = [1, 2, 3]
+    solution = Solution()
+    result = solution.subsetXORSum(nums)
+    print(result)  # Output: 6
 ```
 
 
@@ -7963,7 +8070,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                               
+>                                                  
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
