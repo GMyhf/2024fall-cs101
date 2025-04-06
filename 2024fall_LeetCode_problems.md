@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1208 GMT+8 Apr 5 2025
+Updated 1605 GMT+8 Apr 6 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -5549,6 +5549,110 @@ if __name__ == '__main__':
 
 
 
+### 3507.移除最小数对使数组有序I
+
+https://leetcode.cn/problems/minimum-pair-removal-to-sort-array-i/
+
+给你一个数组 `nums`，你可以执行以下操作任意次数：
+
+- 选择 **相邻** 元素对中 **和最小** 的一对。如果存在多个这样的对，选择最左边的一个。
+- 用它们的和替换这对元素。
+
+返回将数组变为 **非递减** 所需的 **最小操作次数** 。
+
+如果一个数组中每个元素都大于或等于它前一个元素（如果存在的话），则称该数组为**非递减**。
+
+ 
+
+**示例 1：**
+
+**输入：** nums = [5,2,3,1]
+
+**输出：** 2
+
+**解释：**
+
+- 元素对 `(3,1)` 的和最小，为 4。替换后 `nums = [5,2,4]`。
+- 元素对 `(2,4)` 的和为 6。替换后 `nums = [5,6]`。
+
+数组 `nums` 在两次操作后变为非递减。
+
+**示例 2：**
+
+**输入：** nums = [1,2,2]
+
+**输出：** 0
+
+**解释：**
+
+数组 `nums` 已经是非递减的。
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 50`
+- `-1000 <= nums[i] <= 1000`
+
+
+
+```python
+from typing import List
+
+
+class Solution:
+    def minimumPairRemoval(self, nums: List[int]) -> int:
+        def is_sorted(arr: List[int]) -> bool:
+            """Check if the array is sorted in non-decreasing order."""
+            return all(arr[i] <= arr[i + 1] for i in range(len(arr) - 1))
+
+        cnt = 0  # Count of pair removals
+
+        while True:
+            n = len(nums)
+
+            # Early exit conditions
+            if n == 1 or (n == 2 and nums[0] <= nums[1]):
+                break
+            elif n == 2 and nums[0] > nums[1]:
+                cnt += 1
+                break
+
+            # If the array is already sorted, no further operations are needed
+            if is_sorted(nums):
+                break
+
+            # Find the pair with the smallest sum
+            min_pair_sum = float('inf')
+            min_pair_idx = (0, 1)
+
+            for i in range(n - 1):
+                current_sum = nums[i] + nums[i + 1]
+                if current_sum < min_pair_sum:
+                    min_pair_sum = current_sum
+                    min_pair_idx = (i, i + 1)
+
+            # Replace the pair with their sum
+            i, j = min_pair_idx
+            nums = nums[:i] + [min_pair_sum] + nums[j + 1:]
+
+            # Increment the operation count
+            cnt += 1
+
+        return cnt
+
+
+if __name__ == "__main__":
+    s = Solution()
+    print(s.minimumPairRemoval([5, 2, 3, 1]))  # Example test case
+    print(s.minimumPairRemoval([1, 2, 2]))
+    print(s.minimumPairRemoval([1, 1, 4, 4, 2, -4, -1]))
+    print(s.minimumPairRemoval([3, 6, 4, -6, 2, -4, 5, -7, -3, 6, 3, -4]))
+
+```
+
+
+
 
 
 # 中等
@@ -8070,7 +8174,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                     
+>                                                        
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -14727,6 +14831,104 @@ if __name__ == '__main__':
 ```
 
 > 使用堆（Heap）来解决这个问题也是一个非常有效的方法。我们可以利用 Python 的 heapq 模块来创建一个最小堆，从而保持前 K 个高频元素。这种方法的时间复杂度为 O(n log k)，其中 n 是数组的长度，k 是需要返回的高频元素的数量。虽然这比桶排序的 O(n) 方法稍微慢一些，但在很多实际情况下依然非常高效。这种方法不仅简洁，而且在处理大数据集时也能保证较好的性能。
+
+
+
+## 368.最大整除子集
+
+dp, https://leetcode.cn/problems/largest-divisible-subset/description/
+
+给你一个由 **无重复** 正整数组成的集合 `nums` ，请你找出并返回其中最大的整除子集 `answer` ，子集中每一元素对 `(answer[i], answer[j])` 都应当满足：
+
+- `answer[i] % answer[j] == 0` ，或
+- `answer[j] % answer[i] == 0`
+
+如果存在多个有效解子集，返回其中任何一个均可。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,2,3]
+输出：[1,2]
+解释：[1,3] 也会被视为正确答案。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,2,4,8]
+输出：[1,2,4,8]
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 1000`
+- `1 <= nums[i] <= 2 * 10^9`
+- `nums` 中的所有整数 **互不相同**
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def largestDivisibleSubset(self, nums: List[int]) -> List[int]:
+        if not nums:
+            return []
+        
+        # 对数组进行排序，确保可以从小到大检查整除关系
+        nums.sort()
+        n = len(nums)
+        
+        # dp[i] 表示以 nums[i] 结尾的最大整除子集的大小
+        dp = [1] * n
+        # prev[i] 记录 dp[i] 的前驱索引，用于回溯构造结果
+        prev = [-1] * n
+        
+        max_size = 1  # 最大整除子集的大小
+        max_index = 0  # 最大整除子集的最后一个元素的索引
+        
+        # 动态规划计算 dp 和 prev
+        for i in range(1, n):
+            for j in range(i):
+                if nums[i] % nums[j] == 0:  # 满足整除条件
+                    if dp[j] + 1 > dp[i]:  # 更新 dp[i]
+                        dp[i] = dp[j] + 1
+                        prev[i] = j  # 记录前驱
+            # 更新最大整除子集的信息
+            if dp[i] > max_size:
+                max_size = dp[i]
+                max_index = i
+        
+        # 回溯构造最大整除子集
+        result = []
+        while max_index != -1:
+            result.append(nums[max_index])
+            max_index = prev[max_index]
+        
+        # 返回结果（需要逆序）
+        return result[::-1]
+```
+
+代码说明
+
+1. **排序**：
+   - 首先对 `nums` 进行排序，这样可以确保在后续动态规划中只需要检查 `nums[i] % nums[j] == 0` 而不需要同时检查 `nums[j] % nums[i] == 0`。
+2. **动态规划**：
+   - 使用一个 `dp` 数组来记录以每个元素结尾的最大整除子集的大小。
+   - 使用一个 `prev` 数组来记录每个元素的前驱索引，方便最后回溯构造结果。
+3. **状态转移方程**：
+   - 如果 `nums[i] % nums[j] == 0`，则 `dp[i] = max(dp[i], dp[j] + 1)`，并更新 `prev[i] = j`。
+4. **回溯构造结果**：
+   - 找到 `dp` 中的最大值及其对应的索引，然后通过 `prev` 数组回溯构造最大整除子集。
+5. **时间复杂度**：
+   - 排序的时间复杂度为 $O(nlog⁡n)$。
+   - 动态规划部分需要两层嵌套循环，时间复杂度为 $O(n^2)$。
+   - 总体时间复杂度为 $O(n^2)$，适合题目给定的数据范围（n ≤ 1000）。
 
 
 
@@ -22438,6 +22640,166 @@ if __name__ == '__main__':
 
 
 
+### 3508.设计路由器
+
+中等，https://leetcode.cn/problems/implement-router/
+
+请你设计一个数据结构来高效管理网络路由器中的数据包。每个数据包包含以下属性：
+
+- `source`：生成该数据包的机器的唯一标识符。
+- `destination`：目标机器的唯一标识符。
+- `timestamp`：该数据包到达路由器的时间戳。
+
+实现 `Router` 类：
+
+`Router(int memoryLimit)`：初始化路由器对象，并设置固定的内存限制。
+
+- `memoryLimit` 是路由器在任意时间点可以存储的 **最大** 数据包数量。
+- 如果添加一个新数据包会超过这个限制，则必须移除 **最旧的** 数据包以腾出空间。
+
+`bool addPacket(int source, int destination, int timestamp)`：将具有给定属性的数据包添加到路由器。
+
+- 如果路由器中已经存在一个具有相同 `source`、`destination` 和 `timestamp` 的数据包，则视为重复数据包。
+- 如果数据包成功添加（即不是重复数据包），返回 `true`；否则返回 `false`。
+
+`int[] forwardPacket()`：以 FIFO（先进先出）顺序转发下一个数据包。
+
+- 从存储中移除该数据包。
+- 以数组 `[source, destination, timestamp]` 的形式返回该数据包。
+- 如果没有数据包可以转发，则返回空数组。
+
+`int getCount(int destination, int startTime, int endTime)`：
+
+- 返回当前存储在路由器中（即尚未转发）的，且目标地址为指定 `destination` 且时间戳在范围 `[startTime, endTime]`（包括两端）内的数据包数量。
+
+**注意**：对于 `addPacket` 的查询会按照 `timestamp` 的递增顺序进行。
+
+ 
+
+**示例 1：**
+
+**输入：**
+["Router", "addPacket", "addPacket", "addPacket", "addPacket", "addPacket", "forwardPacket", "addPacket", "getCount"]
+[[3], [1, 4, 90], [2, 5, 90], [1, 4, 90], [3, 5, 95], [4, 5, 105], [], [5, 2, 110], [5, 100, 110]]
+
+**输出：**
+[null, true, true, false, true, true, [2, 5, 90], true, 1] 
+
+**解释：**
+
+`Router router = new Router(3);` // 初始化路由器，内存限制为 3。
+`router.addPacket(1, 4, 90);` // 数据包被添加，返回 True。
+`router.addPacket(2, 5, 90);` // 数据包被添加，返回 True。
+`router.addPacket(1, 4, 90);` // 这是一个重复数据包，返回 False。
+`router.addPacket(3, 5, 95);` // 数据包被添加，返回 True。
+`router.addPacket(4, 5, 105);` // 数据包被添加，`[1, 4, 90]` 被移除，因为数据包数量超过限制，返回 True。
+`router.forwardPacket();` // 转发数据包 `[2, 5, 90]` 并将其从路由器中移除。
+`router.addPacket(5, 2, 110);` // 数据包被添加，返回 True。
+`router.getCount(5, 100, 110);` // 唯一目标地址为 5 且时间在 `[100, 110]` 范围内的数据包是 `[4, 5, 105]`，返回 1。
+
+**示例 2：**
+
+**输入：**
+["Router", "addPacket", "forwardPacket", "forwardPacket"]
+[[2], [7, 4, 90], [], []]
+
+**输出：**
+[null, true, [7, 4, 90], []] 
+
+**解释：**
+
+`Router router = new Router(2);` // 初始化路由器，内存限制为 2。
+`router.addPacket(7, 4, 90);` // 返回 True。
+`router.forwardPacket();` // 返回 `[7, 4, 90]`。
+`router.forwardPacket();` // 没有数据包可以转发，返回 `[]`。
+
+ 
+
+**提示：**
+
+- `2 <= memoryLimit <= 10^5`
+- `1 <= source, destination <= 2 * 10^5`
+- `1 <= timestamp <= 10^9`
+- `1 <= startTime <= endTime <= 10^9`
+- `addPacket`、`forwardPacket` 和 `getCount` 方法的总调用次数最多为 `10^5`。
+- 对于 `addPacket` 的查询，`timestamp` 按递增顺序给出。
+
+
+
+```python
+from sortedcontainers import SortedList
+
+class Router:
+    def __init__(self, memoryLimit: int):
+        self.limit = memoryLimit
+        # 环形缓冲区
+        self.buffer = [None] * memoryLimit
+        self.head = 0      # 下一个要 forward 的位置
+        self.size = 0      # 当前存量
+        # 去重
+        self.packet_set = set()
+        # destination -> SortedList of timestamps
+        self.ts_lists = {}
+
+    def _evict_at(self, idx):
+        """从 idx 处驱逐旧包，并更新 packet_set、ts_lists"""
+        src, dst, ts = self.buffer[idx]
+        key = (src, dst, ts)
+        self.packet_set.remove(key)
+        sl = self.ts_lists[dst]
+        sl.remove(ts)
+        if not sl:
+            del self.ts_lists[dst]
+
+    def addPacket(self, source: int, destination: int, timestamp: int) -> bool:
+        key = (source, destination, timestamp)
+        if key in self.packet_set:
+            return False
+
+        # 1) 找到写入位置
+        if self.size < self.limit:
+            idx = (self.head + self.size) % self.limit
+            self.size += 1
+        else:
+            # 缓冲满，覆盖 head
+            idx = self.head
+            self._evict_at(idx)
+            # head 前移
+            self.head = (self.head + 1) % self.limit
+
+        # 2) 写入新包
+        self.buffer[idx] = [source, destination, timestamp]
+        self.packet_set.add(key)
+        # 更新 ts_lists
+        if destination not in self.ts_lists:
+            self.ts_lists[destination] = SortedList()
+        self.ts_lists[destination].add(timestamp)
+        return True
+
+    def forwardPacket(self):
+        if self.size == 0:
+            return []
+
+        # 从 head 读
+        pkt = self.buffer[self.head]
+        # 驱逐它
+        self._evict_at(self.head)
+        # head 前移
+        self.head = (self.head + 1) % self.limit
+        self.size -= 1
+        return pkt
+
+    def getCount(self, destination: int, startTime: int, endTime: int) -> int:
+        if destination not in self.ts_lists:
+            return 0
+        sl = self.ts_lists[destination]
+        # bisect_right - bisect_left 即区间内元素个数
+        return sl.bisect_right(endTime) - sl.bisect_left(startTime)
+
+```
+
+
+
 
 
 # 困难
@@ -29283,7 +29645,435 @@ class Solution:
 
 
 
+### 3510.移除最小数对使数组有序II
+
+doubly-linked list + heap, https://leetcode.cn/problems/minimum-pair-removal-to-sort-array-ii/
+
+给你一个数组 `nums`，你可以执行以下操作任意次数：
+
+- 选择 **相邻** 元素对中 **和最小** 的一对。如果存在多个这样的对，选择最左边的一个。
+- 用它们的和替换这对元素。
+
+返回将数组变为 **非递减** 所需的 **最小操作次数** 。
+
+如果一个数组中每个元素都大于或等于它前一个元素（如果存在的话），则称该数组为**非递减**。
+
+ 
+
+**示例 1：**
+
+**输入：** nums = [5,2,3,1]
+
+**输出：** 2
+
+**解释：**
+
+- 元素对 `(3,1)` 的和最小，为 4。替换后 `nums = [5,2,4]`。
+- 元素对 `(2,4)` 的和为 6。替换后 `nums = [5,6]`。
+
+数组 `nums` 在两次操作后变为非递减。
+
+**示例 2：**
+
+**输入：** nums = [1,2,2]
+
+**输出：** 0
+
+**解释：**
+
+数组 `nums` 已经是非递减的。
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 10^5`
+- `-10^9 <= nums[i] <= 10^9`
+
+
+
+下面给出一个基于**优先队列 + 双向链表**的 O(nlog⁡n)实现思路：
+
+1. **初始化**
+
+   - 将数组中的每个元素封装成一个双向链表节点 `Node(val)`，并且用 `prev`/`next` 串起来。
+   - 用一个小顶堆存所有相邻节点对的「和」，即 `(sum, timestamp, left_node)`。`timestamp` 用来区分同样 `sum` 的不同对。
+   - 统计初始的「逆序对数」 `bad`，即有多少处 `node.next.val < node.val`。
+
+2. **主循环**
+
+   - 当 `bad == 0`（已经非递减）或链表只剩一个节点时结束。
+
+   - 从堆里弹出当前最小的 `(sum, ts, left)`，如果这对节点已经被合并过（检查 `left.next` 是否还在链表里）就跳过。
+
+   - 否则把这对节点合并成一个新节点 `m = Node(sum)`，并插入原来这对节点的位置：
+
+     ```
+     left.prev <-> left <-> right <-> right.next
+             ↓               ↓
+     left.prev <->   m   <-> right.next
+     ```
+
+   - 更新「逆序对数」`bad`：
+
+     - 删除原来 `(left.prev, left)` 和 `(right, right.next)` 两处可能的逆序，
+     - 新增 `(left.prev, m)` 和 `(m, right.next)` 两处可能的逆序。
+
+   - 将 `m` 与它的新左右相邻节点组成的两对新「和」重新 push 进堆。
+
+   - 计数 `cnt += 1`。
+
+```python
+import heapq
+from typing import List
+
+class Node:
+    def __init__(self, val: int, index: int):
+        self.val = val
+        self.prev = None
+        self.next = None
+        self.alive = True
+        self.index = index
+
+class Solution:
+    def minimumPairRemoval(self, nums: List[int]) -> int:
+        n = len(nums)
+        if n <= 1:
+            return 0
+
+        # 初始化节点和双向链表
+        nodes = [Node(nums[i], i) for i in range(n)]
+        for i in range(n):
+            if i > 0:
+                nodes[i].prev = nodes[i - 1]
+            else:
+                nodes[i].prev = None
+            if i < n - 1:
+                nodes[i].next = nodes[i + 1]
+            else:
+                nodes[i].next = None
+
+        # 计算初始逆序对数
+        bad = 0
+        for i in range(n - 1):
+            if nodes[i].val > nodes[i + 1].val:
+                bad += 1
+
+        # 初始化堆
+        heap = []
+        for i in range(n - 1):
+            current_node = nodes[i]
+            next_node = current_node.next
+            heapq.heappush(heap, (current_node.val + next_node.val, i))
+
+        cnt = 0
+
+        while bad > 0:
+            if not heap:
+                break  # 堆为空但仍有逆序对，说明逻辑错误
+
+            s, i = heapq.heappop(heap)
+            current_node = nodes[i]
+            next_node = current_node.next
+
+            # 检查 next_node 是否存在
+            if next_node is None:
+                continue
+
+            # 跳过无效条目
+            if not current_node.alive or not next_node.alive or (current_node.val + next_node.val) != s:
+                continue
+
+            prev_node = current_node.prev
+            next_next_node = next_node.next
+
+            # 移除旧逆序对
+            # 1. prev_node 和 current_node 的逆序
+            if prev_node and prev_node.alive and prev_node.val > current_node.val:
+                bad -= 1
+            # 2. current_node 和 next_node 的逆序
+            if current_node.val > next_node.val:
+                bad -= 1
+            # 3. next_node 和 next_next_node 的逆序
+            if next_next_node and next_next_node.alive and next_node.val > next_next_node.val:
+                bad -= 1
+
+            # 合并 next_node 到 current_node
+            current_node.val += next_node.val
+            next_node.alive = False
+
+            # 更新指针
+            current_node.next = next_next_node
+            if next_next_node:
+                next_next_node.prev = current_node
+            else:
+                current_node.next = None  # 确保指针正确
+
+            # 添加新逆序对
+            # 1. prev_node 和 current_node 的新逆序
+            if prev_node and prev_node.alive and prev_node.val > current_node.val:
+                bad += 1
+            # 2. current_node 和 next_next_node 的新逆序
+            if next_next_node and next_next_node.alive and current_node.val > next_next_node.val:
+                bad += 1
+
+            # 将新邻对推入堆
+            if prev_node and prev_node.alive:
+                heapq.heappush(heap, (prev_node.val + current_node.val, prev_node.index))
+            if next_next_node and next_next_node.alive:
+                heapq.heappush(heap, (current_node.val + next_next_node.val, current_node.index))
+
+            cnt += 1
+
+        return cnt
+
+if __name__ == "__main__":
+    s = Solution()
+    print(s.minimumPairRemoval([5, 2, 3, 1]))  # 输出 2
+    print(s.minimumPairRemoval([1, 2, 2]))     # 输出 0
+    print(s.minimumPairRemoval([1, 1, 4, 4, 2, -4, -1]))  # 输出 5
+    print(s.minimumPairRemoval([3,6,4,-6,2,-4,5,-7,-3,6,3,-4]))  # 输出 10
+    print(s.minimumPairRemoval([2,2,-1,3,-2,2,1,1,1,0,-1]))  # 输出 9
+    print(s.minimumPairRemoval([-1,2,2,-2,-3,0,2,1,0,0,1]))  # 输出 9
+```
+
+
+
+
+
+「数组模拟双向链表 + 小顶堆」写法。它对每次合并都严格检查“节点还活着”并且“相邻”，同时只在合并点附近更新逆序对计数，避免全局扫描。
+
+```python
+from typing import List
+import heapq
+
+class Solution:
+    def minimumPairRemoval(self, nums: List[int]) -> int:
+        n = len(nums)
+        if n <= 1:
+            return 0
+
+        # 值数组
+        v = nums[:]
+        # 左右指针：模拟双向链表
+        L = [i-1 for i in range(n)]
+        R = [i+1 for i in range(n)]
+        # 标记节点是否还在链表中
+        alive = [True] * n
+
+        # 1) 计算初始逆序对数 bad
+        bad = 0
+        for i in range(n-1):
+            if v[i] > v[i+1]:
+                bad += 1
+
+        # 2) 建堆，存 (sum, i)，代表合并 i 和 R[i]
+        heap = []
+        for i in range(n-1):
+            heapq.heappush(heap, (v[i] + v[i+1], i))
+
+        cnt = 0
+        # 3) 主循环：只要还有逆序，就不断合并堆顶最小的合法邻对
+        while bad > 0:
+            s, i = heapq.heappop(heap)
+            j = R[i]
+            # 跳过不合法的条目
+            if j >= n or not alive[i] or not alive[j] or v[i] + v[j] != s:
+                continue
+
+            # 准备更新逆序对：左邻 pi, 右邻 nj
+            pi, nj = L[i], R[j]
+
+            # —— 删除旧的三处可能的逆序 —— 
+            if pi >= 0 and alive[pi] and v[pi] > v[i]:
+                bad -= 1
+            if v[i] > v[j]:
+                bad -= 1
+            if nj < n and alive[nj] and v[j] > v[nj]:
+                bad -= 1
+
+            # 执行合并：把 j 融到 i 上
+            v[i] = s
+            alive[j] = False
+            # 从链表中摘除 j
+            R[i] = nj
+            if nj < n:
+                L[nj] = i
+
+            # —— 添加新的两处可能的逆序 —— 
+            if pi >= 0 and alive[pi] and v[pi] > v[i]:
+                bad += 1
+            if nj < n and alive[nj] and v[i] > v[nj]:
+                bad += 1
+
+            # 把新产生的邻对重新推入堆
+            if pi >= 0 and alive[pi]:
+                heapq.heappush(heap, (v[pi] + v[i], pi))
+            if nj < n and alive[nj]:
+                heapq.heappush(heap, (v[i] + v[nj], i))
+
+            cnt += 1
+
+        return cnt
+
+
+# 验证所有给出的例子
+if __name__ == "__main__":
+    s = Solution()
+    print(s.minimumPairRemoval([5, 2, 3, 1]))                   # 2
+    print(s.minimumPairRemoval([1, 2, 2]))                       # 0
+    print(s.minimumPairRemoval([1, 1, 4, 4, 2, -4, -1]))         # 5
+    print(s.minimumPairRemoval([3,6,4,-6,2,-4,5,-7,-3,6,3,-4]))  # 10
+    print(s.minimumPairRemoval([2,2,-1,3,-2,2,1,1,1,0,-1]))      # 9
+    print(s.minimumPairRemoval([-1,2,2,-2,-3,0,2,1,0,0,1]))      # 9
+```
+
+**思路要点**  
+
+1. **数组模拟双向链表**：用 `L[i]`/`R[i]` 存储左右邻居下标，用 `alive[i]` 标记节点是否被合并掉。  
+2. **小顶堆**：每次取堆顶 `(sum, i)`，对应合并 `(i, R[i])`。取出后检查三条件：  
+   - `R[i]` 还在范围内，  
+   - `alive[i]` 和 `alive[R[i]]` 都是 `True`，  
+   - 当前 `v[i] + v[R[i]] == sum`（防止值被更新）。  
+3. **局部更新逆序对**：维护一个 `bad` 计数，只在合并点的左右各三条边上做增减，不用每次全局扫描。  
+4. **时间复杂度**：每次合并都做 $O(\log n)$ 的堆操作，最多合并 n 次，整体 $O(n\log n)$。  
+
+
+
 # 力扣周赛双周赛
+
+
+
+## 第 444 场周赛-20250406
+
+https://leetcode.cn/contest/weekly-contest-444/
+
+中国时间：2025-04-06 10:30, 1 小时 30 分
+
+
+
+### 3507.移除最小数对使数组有序I
+
+简单，https://leetcode.cn/problems/minimum-pair-removal-to-sort-array-i/
+
+
+
+### 3508.设计路由器
+
+中等，https://leetcode.cn/problems/implement-router/
+
+
+
+### 3509.最大化交错和为K的子序列乘积
+
+困难，https://leetcode.cn/problems/maximum-product-of-subsequences-with-an-alternating-sum-equal-to-k/
+
+给你一个整数数组 `nums` 和两个整数 `k` 与 `limit`，你的任务是找到一个非空的 **子序列**，满足以下条件：
+
+- 它的 **交错和** 等于 `k`。
+- 在乘积 **不超过** `limit` 的前提下，**最大化** 其所有数字的乘积。
+
+返回满足条件的子序列的 **乘积** 。如果不存在这样的子序列，则返回 -1。
+
+**子序列** 是指可以通过删除原数组中的某些（或不删除）元素并保持剩余元素顺序得到的新数组。
+
+**交错和** 是指一个 **从下标 0 开始** 的数组中，**偶数下标** 的元素之和减去 **奇数下标** 的元素之和。
+
+ 
+
+**示例 1：**
+
+**输入：** nums = [1,2,3], k = 2, limit = 10
+
+**输出：** 6
+
+**解释：**
+
+交错和为 2 的子序列有：
+
+- ```
+  [1, 2, 3]
+  ```
+
+  - 交错和：`1 - 2 + 3 = 2`
+  - 乘积：`1 * 2 * 3 = 6`
+
+- ```
+  [2]
+  ```
+
+  - 交错和：2
+  - 乘积：2
+
+在 limit 内的最大乘积是 6。
+
+**示例 2：**
+
+**输入：** nums = [0,2,3], k = -5, limit = 12
+
+**输出：** -1
+
+**解释：**
+
+不存在交错和恰好为 -5 的子序列。
+
+**示例 3：**
+
+**输入：** nums = [2,2,3,3], k = 0, limit = 9
+
+**输出：** 9
+
+**解释：**
+
+交错和为 0 的子序列包括：
+
+- ```
+  [2, 2]
+  ```
+
+  - 交错和：`2 - 2 = 0`
+  - 乘积：`2 * 2 = 4`
+
+- ```
+  [3, 3]
+  ```
+
+  - 交错和：`3 - 3 = 0`
+  - 乘积：`3 * 3 = 9`
+
+- ```
+  [2, 2, 3, 3]
+  ```
+
+  - 交错和：`2 - 2 + 3 - 3 = 0`
+  - 乘积：`2 * 2 * 3 * 3 = 36`
+
+子序列 `[2, 2, 3, 3]` 虽然交错和为 `k` 且乘积最大，但 `36 > 9`，超出 limit 。下一个最大且在 limit 范围内的乘积是 9。
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 150`
+- `0 <= nums[i] <= 12`
+- `-105 <= k <= 105`
+- `1 <= limit <= 5000`
+
+
+
+```python
+
+```
+
+
+
+
+
+### 3510.移除最小数对使数组有序II
+
+doubly-linked list + heap, https://leetcode.cn/problems/minimum-pair-removal-to-sort-array-ii/
+
+
 
 ## 第 443 场周赛-20250330
 
