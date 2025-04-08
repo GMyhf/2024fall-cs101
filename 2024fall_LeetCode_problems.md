@@ -8260,7 +8260,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                              
+>                                                                 
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -11381,6 +11381,29 @@ dfs, https://leetcode.cn/problems/sum-root-to-leaf-numbers/
 - 树中节点的数目在范围 `[1, 1000]` 内
 - `0 <= Node.val <= 9`
 - 树的深度不超过 `10`
+
+
+
+思路：用栈模拟递归。
+
+```python
+class Solution:
+    def sumNumbers(self, root: Optional[TreeNode]) -> int:
+        stack = [(root, 0)]
+        ans = 0
+
+        while stack:
+            node, cur = stack.pop()
+            cur = cur * 10 + node.val
+            if node.left is None and node.right is None:
+                ans += cur
+            if node.left is not None:
+                stack.append((node.left, cur))
+            if node.right is not None:
+                stack.append((node.right, cur))
+
+        return ans
+```
 
 
 
