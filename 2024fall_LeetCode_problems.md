@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1629 GMT+8 Apr 9 2025
+Updated 1842 GMT+8 Apr 10 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -8347,7 +8347,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                    
+>                                                                       
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -28236,6 +28236,130 @@ if __name__ == "__main__":
         print(sol.maxSpending(values2))  # Output: 386
 
 ```
+
+
+
+## 2999.统计强大整数的数目
+
+digit dp, https://leetcode.cn/problems/count-the-number-of-powerful-integers/
+
+给你三个整数 `start` ，`finish` 和 `limit` 。同时给你一个下标从 **0** 开始的字符串 `s` ，表示一个 **正** 整数。
+
+如果一个 **正** 整数 `x` 末尾部分是 `s` （换句话说，`s` 是 `x` 的 **后缀**），且 `x` 中的每个数位至多是 `limit` ，那么我们称 `x` 是 **强大的** 。
+
+请你返回区间 `[start..finish]` 内强大整数的 **总数目** 。
+
+如果一个字符串 `x` 是 `y` 中某个下标开始（**包括** `0` ），到下标为 `y.length - 1` 结束的子字符串，那么我们称 `x` 是 `y` 的一个后缀。比方说，`25` 是 `5125` 的一个后缀，但不是 `512` 的后缀。
+
+ 
+
+**示例 1：**
+
+```
+输入：start = 1, finish = 6000, limit = 4, s = "124"
+输出：5
+解释：区间 [1..6000] 内的强大数字为 124 ，1124 ，2124 ，3124 和 4124 。这些整数的各个数位都 <= 4 且 "124" 是它们的后缀。注意 5124 不是强大整数，因为第一个数位 5 大于 4 。
+这个区间内总共只有这 5 个强大整数。
+```
+
+**示例 2：**
+
+```
+输入：start = 15, finish = 215, limit = 6, s = "10"
+输出：2
+解释：区间 [15..215] 内的强大整数为 110 和 210 。这些整数的各个数位都 <= 6 且 "10" 是它们的后缀。
+这个区间总共只有这 2 个强大整数。
+```
+
+**示例 3：**
+
+```
+输入：start = 1000, finish = 2000, limit = 4, s = "3000"
+输出：0
+解释：区间 [1000..2000] 内的整数都小于 3000 ，所以 "3000" 不可能是这个区间内任何整数的后缀。
+```
+
+ 
+
+**提示：**
+
+- `1 <= start <= finish <= 10^15`
+- `1 <= limit <= 9`
+- `1 <= s.length <= floor(log10(finish)) + 1`
+- `s` 数位中每个数字都小于等于 `limit` 。
+- `s` 不包含任何前导 0 。
+
+
+
+用**数学+数位DP**的方法，避免 BFS 遗漏或超时的问题。
+
+1. 令后缀长度为 $L = |s|$，后缀数值为 $\text{suffix} = \mathtt{int}(s)$，基数 $\text{base} = 10^L$。
+2. 所有「强大数」可写成
+   $
+     x = p \times \text{base} + \text{suffix},
+   $
+   其中 $p$ 是非负整数，且 $x \in [\text{start},\,\text{finish}]$。
+3. 解得
+   $
+     p \in \Bigl[\lceil(\text{start}-\text{suffix})/\text{base}\rceil,\;
+              \lfloor(\text{finish}-\text{suffix})/\text{base}\rfloor\Bigr].
+   $
+4. 我们只需统计该区间内，所有十进制数位均 $\le$$\mathtt{limit}$ 的整数个数。可以用经典的「数位DP」（https://oi-wiki.org/dp/number/）来完成。
+
+[数位 DP 视频讲解](https://leetcode.cn/link/?target=https%3A%2F%2Fwww.bilibili.com%2Fvideo%2FBV1rS4y1s721%2F%3Ft%3D20m20s)。
+
+```python
+class Solution:
+    def numberOfPowerfulInt(self, start: int, finish: int, limit: int, s: str) -> int:
+        # 后缀与基数
+        L = len(s)
+        suffix = int(s)
+        base = 10 ** L
+
+        # 计算 p 的上下界
+        lo = (start - suffix + base - 1) // base   # ceil
+        hi = (finish - suffix) // base             # floor
+        if hi < lo:
+            return 0
+
+        # 将 hi 和 lo-1 分别转为字符串方便DP
+        def count_upto(bound: int) -> int:
+            """统计 [0..bound] 内，所有十进制数位均 <= limit 的数的个数。"""
+            if bound < 0:
+                return 0
+            s = list(map(int, str(bound)))
+            n = len(s)
+            from functools import lru_cache
+
+            @lru_cache(None)
+            def dp(idx: int, tight: bool) -> int:
+                """
+                idx: 当前处理到第 idx 位 (0-based, 最左侧)
+                tight: 前面是否已严格等于上界
+                返回：从 idx 到末尾的可选方案数
+                """
+                if idx == n:
+                    return 1
+                up = s[idx] if tight else 9
+                total = 0
+                for d in range(0, up+1):
+                    if d > limit:
+                        break
+                    total += dp(idx+1, tight and (d == up))
+                return total
+
+            return dp(0, True)
+
+        return count_upto(hi) - count_upto(lo-1)
+```
+
+**解释要点**  
+
+- 我们把所有符合后缀条件的数映射到前缀 $p$，降低了搜索空间。  
+- 用数位DP统计一个区间内，所有数位都不超过 `limit` 的整数个数。  
+- 最终答案就是 $\#([0..hi]) - \#([0..lo-1])$。
+
+这样可以正确且高效地处理 $1 \le \text{start} \le \text{finish} \le 10^{15}$ 的所有情况。
 
 
 
