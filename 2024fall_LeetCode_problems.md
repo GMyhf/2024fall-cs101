@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1842 GMT+8 Apr 10 2025
+Updated 2027 GMT+8 Apr 10 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -8347,7 +8347,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                       
+>                                                                          
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -10758,6 +10758,94 @@ if __name__ == '__main__':
     # 打印层次遍历结果
     print(sol.levelOrder(root))
 ```
+
+
+
+## 103.二叉树的锯齿形层序遍历
+
+bfs, https://leetcode.cn/problems/binary-tree-zigzag-level-order-traversal/
+
+给你二叉树的根节点 `root` ，返回其节点值的 **锯齿形层序遍历** 。（即先从左往右，再从右往左进行下一层遍历，以此类推，层与层之间交替进行）。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2021/02/19/tree1.jpg)
+
+```
+输入：root = [3,9,20,null,null,15,7]
+输出：[[3],[20,9],[15,7]]
+```
+
+**示例 2：**
+
+```
+输入：root = [1]
+输出：[[1]]
+```
+
+**示例 3：**
+
+```
+输入：root = []
+输出：[]
+```
+
+ 
+
+**提示：**
+
+- 树中节点数目在范围 `[0, 2000]` 内
+- `-100 <= Node.val <= 100`
+
+
+
+```python
+from collections import deque
+from typing import Optional, List
+
+# 定义二叉树节点（LeetCode 会自动提供这个定义）
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+class Solution:
+    def zigzagLevelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        if not root:
+            return []
+
+        result = []
+        queue = deque([root])
+        left_to_right = True
+
+        while queue:
+            level_size = len(queue)
+            level_nodes = deque()
+
+            for _ in range(level_size):
+                node = queue.popleft()
+
+                if left_to_right:
+                    level_nodes.append(node.val)
+                else:
+                    level_nodes.appendleft(node.val)
+
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+
+            result.append(list(level_nodes))
+            left_to_right = not left_to_right
+
+        return result
+
+```
+
+
 
 
 
