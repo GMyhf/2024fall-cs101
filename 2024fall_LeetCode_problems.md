@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2027 GMT+8 Apr 10 2025
+Updated 1014 GMT+8 Apr 11 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -4272,6 +4272,60 @@ if __name__ == "__main__":
 
 
 
+## 2843.统计对称整数的数目
+
+enumeration, https://leetcode.cn/problems/count-symmetric-integers/
+
+给你两个正整数 `low` 和 `high` 。
+
+对于一个由 `2 * n` 位数字组成的整数 `x` ，如果其前 `n` 位数字之和与后 `n` 位数字之和相等，则认为这个数字是一个对称整数。
+
+返回在 `[low, high]` 范围内的 **对称整数的数目** 。
+
+ 
+
+**示例 1：**
+
+```
+输入：low = 1, high = 100
+输出：9
+解释：在 1 到 100 范围内共有 9 个对称整数：11、22、33、44、55、66、77、88 和 99 。
+```
+
+**示例 2：**
+
+```
+输入：low = 1200, high = 1230
+输出：4
+解释：在 1200 到 1230 范围内共有 4 个对称整数：1203、1212、1221 和 1230 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= low <= high <= 10^4`
+
+
+
+```python
+class Solution:
+    def countSymmetricIntegers(self, low: int, high: int) -> int:
+        cnt = 0
+        for num in range(low, high + 1):
+            s = [int(i) for i in str(num)]
+            if len(s) & 1:
+                continue
+            mid = len(s) // 2
+            if sum(s[:mid]) == sum(s[mid:]):
+                cnt += 1
+        return cnt
+```
+
+
+
+
+
 ## 2873.有序三元组中的最大值I
 
 https://leetcode.cn/problems/maximum-value-of-an-ordered-triplet-i/
@@ -8347,7 +8401,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                          
+>                                                                             
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
