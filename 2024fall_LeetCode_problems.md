@@ -8401,7 +8401,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                
+>                                                                                   
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -30516,6 +30516,66 @@ if __name__ == "__main__":
 ```
 
 
+
+完整的双向链表(通过两个列表来模拟)与最小堆+懒删除
+
+```python
+import heapq
+class Solution:
+    def minimumPairRemoval(self, nums: List[int]) -> int:
+        n = len(nums)
+        pairs = [(nums[i], nums[i + 1]) for i in range(n - 1)]
+        h = []
+        dec = 0
+        for i, (x, y) in enumerate(pairs):
+            if x > y:
+                dec += 1
+            h.append((x + y, i))
+
+        heapq.heapify(h)
+
+        # 模拟双向链表
+        left = list(range(-1, n))
+        right = list(range(1, n + 1))
+
+        ans = 0
+        while dec:
+            ans += 1
+
+            # 懒删除
+            while right[h[0][1]] >= n or nums[h[0][1]] + nums[right[h[0][1]]] != h[0][0]:
+                heapq.heappop(h)
+
+            s, i = heapq.heappop(h)
+            nxt = right[i]
+            pre = left[i]
+            nxt2 = right[nxt]
+
+            if nums[nxt] < nums[i]:
+                dec -= 1
+
+            if pre >= 0:
+                if nums[pre] > s:
+                    dec += 1
+                if nums[pre] > nums[i]:
+                    dec -= 1
+                heapq.heappush(h, (nums[pre] + s, pre))
+
+            if nxt2 < n:
+                if nums[nxt] > nums[nxt2]:
+                    dec -= 1
+                if nums[nxt2] < s:
+                    dec += 1
+                heapq.heappush(h, (s + nums[nxt2], i))
+
+            nums[i] = s
+            # 删除 nxt
+            right[i] = nxt2
+            left[nxt2] = i
+            right[nxt] = n
+
+        return ans
+```
 
 
 
