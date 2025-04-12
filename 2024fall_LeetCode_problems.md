@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1014 GMT+8 Apr 11 2025
+Updated 1500 GMT+8 Apr 12 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -8401,7 +8401,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                             
+>                                                                                
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -28502,6 +28502,222 @@ class Solution:
 - 最终答案就是 $\#([0..hi]) - \#([0..lo-1])$。
 
 这样可以正确且高效地处理 $1 \le \text{start} \le \text{finish} \le 10^{15}$ 的所有情况。
+
+
+
+## 3272.统计好整数的数目
+
+hash table, math, combinators, enumeration, https://leetcode.cn/problems/find-the-count-of-good-integers/
+
+给你两个 **正** 整数 `n` 和 `k` 。
+
+如果一个整数 `x` 满足以下条件，那么它被称为 **k** **回文** 整数 。
+
+- `x` 是一个 回文整数 。
+- `x` 能被 `k` 整除。
+
+如果一个整数的数位重新排列后能得到一个 **k 回文整数** ，那么我们称这个整数为 **好** 整数。比方说，`k = 2` ，那么 2020 可以重新排列得到 2002 ，2002 是一个 k 回文串，所以 2020 是一个好整数。而 1010 无法重新排列数位得到一个 k 回文整数。
+
+请你返回 `n` 个数位的整数中，有多少个 **好** 整数。
+
+**注意** ，任何整数在重新排列数位之前或者之后 **都不能** 有前导 0 。比方说 1010 不能重排列得到 101 。
+
+ 
+
+**示例 1：**
+
+**输入：**n = 3, k = 5
+
+**输出：**27
+
+**解释：**
+
+部分好整数如下：
+
+- 551 ，因为它可以重排列得到 515 。
+- 525 ，因为它已经是一个 k 回文整数。
+
+**示例 2：**
+
+**输入：**n = 1, k = 4
+
+**输出：**2
+
+**解释：**
+
+两个好整数分别是 4 和 8 。
+
+**示例 3：**
+
+**输入：**n = 5, k = 6
+
+**输出：**2468
+
+ 
+
+**提示：**
+
+- `1 <= n <= 10`
+- `1 <= k <= 9`
+
+
+
+作者：灵茶山艾府
+链接：https://leetcode.cn/problems/find-the-count-of-good-integers/solutions/2899725/mei-ju-suo-you-hui-wen-shu-zu-he-shu-xue-3d35/
+
+视频讲解，https://leetcode.cn/link/?target=https%3A%2F%2Fwww.bilibili.com%2Fvideo%2FBV1ajHYeoEG5%2F
+
+```python
+class Solution:
+    def countGoodIntegers(self, n: int, k: int) -> int:
+        fac = [factorial(i) for i in range(n + 1)]
+        ans = 0
+        vis = set()
+        base = 10 ** ((n - 1) // 2)
+        for i in range(base, base * 10):  # 枚举回文数左半边
+            s = str(i)
+            s += s[::-1][n % 2:]
+            if int(s) % k:  # 回文数不能被 k 整除
+                continue
+
+            sorted_s = ''.join(sorted(s))
+            if sorted_s in vis:  # 不能重复统计
+                continue
+            vis.add(sorted_s)
+
+            cnt = Counter(sorted_s)
+            res = (n - cnt['0']) * fac[n - 1]
+            for c in cnt.values():
+                res //= fac[c]
+            ans += res
+        return ans
+
+
+```
+
+
+
+
+
+下面是一个完整的 Python 实现，时间复杂度在 $n\le10$ 时是可接受的。思路分两步：
+
+1. **枚举所有长度为 $n$ 的回文数**，并筛选出能被 $k$ 整除的那些，记录它们的“数位多重集”（用长度为 10 的频次数组表示）。
+2. 对于每一种出现过的数位多重集，计算所有不含前导零的排列数，并累加。
+
+具体代码如下：
+
+```python
+from math import factorial
+
+class Solution:
+    def countGoodIntegers(self, n: int, k: int) -> int:
+        """
+        返回长度为 n 的所有“好整数”的个数，
+        即可以重排列得到一个可被 k 整除的回文数的整数。
+        """
+        # 用来存放所有合法回文数对应的“数位多重集”（用 tuple(freq[0..9]) 表示）
+        seen_multisets = set()
+
+        # 生成所有长度为 n 的回文数
+        # 如果 n 是偶数，前半部分长度 m = n//2；如果奇数，多一位 middle
+        half_len = n // 2
+        is_odd = (n % 2 == 1)
+
+        # 枚举前半部分
+        # 前半部分的最高位不能为 0
+        def gen_palindromes():
+            # 枚举前半
+            # 前半部分共有 half_len 位，高位 1..9，其余 0..9
+            def dfs(pos, half_digits):
+                if pos == half_len:
+                    # 构造回文
+                    if is_odd:
+                        # 中间位 0..9
+                        for mid in range(10):
+                            left = half_digits
+                            right = left[::-1]
+                            s = ''.join(map(str, left)) + str(mid) + ''.join(map(str, right))
+                            yield int(s)
+                    else:
+                        left = half_digits
+                        right = left[::-1]
+                        s = ''.join(map(str, left)) + ''.join(map(str, right))
+                        yield int(s)
+                    return
+
+                # 最高位
+                start = 1 if pos == 0 else 0
+                for d in range(start, 10):
+                    half_digits.append(d)
+                    yield from dfs(pos + 1, half_digits)
+                    half_digits.pop()
+
+            yield from dfs(0, [])
+
+        # 枚举所有回文，筛出能被 k 整除的，并记录它们的数位多重集
+        for p in gen_palindromes():
+            if p % k == 0:
+                cnt = [0]*10
+                for ch in str(p):
+                    cnt[int(ch)] += 1
+                seen_multisets.add(tuple(cnt))
+
+        # 计算给定数位多重集的排列数（无前导零）
+        def permutations_without_leading_zero(freq):
+            # 总排列 = n! / ∏(freq[d]!)
+            total = factorial(n)
+            for d in range(10):
+                total //= factorial(freq[d])
+
+            # 如果没有 0，直接返回
+            if freq[0] == 0:
+                return total
+
+            # 含 0 时，减去所有以 0 开头的排列数
+            # 固定第一位为 0，则剩余 n-1 位，freq[0]-1 个 0，其它不变
+            freq0 = list(freq)
+            freq0[0] -= 1
+            bad = factorial(n-1)
+            for d in range(10):
+                bad //= factorial(freq0[d])
+            return total - bad
+
+        # 累加所有不同多重集对应的合法排列数
+        ans = 0
+        for freq in seen_multisets:
+            ans += permutations_without_leading_zero(freq)
+
+        return ans
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.countGoodIntegers(3, 5))  # 27
+    print(sol.countGoodIntegers(1, 4))  # 2
+    print(sol.countGoodIntegers(5, 6))  # 2468
+```
+
+代码说明
+
+1. **生成回文数**  
+   - 先用深度优先枚举回文的前半部分（最高位不能为 0）。  
+   - 如果 $n$ 是奇数，还要在中间插入一个 0–9。  
+   - 将前半部分和其镜像拼接，得到完整的回文数。
+
+2. **筛选与去重**  
+   - 对每个回文数，如果能被 $k$ 整除，则统计它的数位频次，存入一个 `set` 中以去重。
+
+3. **排列计数**  
+   - 对每个唯一的数位频次 `freq`，先计算总排列数：  
+     $
+       \frac{n!}{\prod_{d=0}^{9} \text{freq}[d]!}
+     $
+   - 如果 `freq[0]>0`，再减去所有以 0 开头的排列：固定首位为 0 后，剩余 \(n-1\) 位的排列数同理计算。
+
+4. **时间复杂度**  
+   - 枚举回文数大约 $O(10^{\lceil n/2\rceil})$，在 $n\le10$ 时上限约 $10^5$ 级别，完全可行。  
+   - 排列计数与多重集数量也都在可控范围内。
+
+这样即可在 $n\le10$ 且 $1\le k\le9$ 的约束下，高效地统计出所有 “好整数” 的个数。
 
 
 
