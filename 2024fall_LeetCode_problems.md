@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1500 GMT+8 Apr 12 2025
+Updated 0956 GMT+8 Apr 13 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -8516,7 +8516,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                      
+>                                                                                         
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -11340,7 +11340,7 @@ if __name__ == "__main__":
 
 ## 108.将有序数组转换为二叉树
 
-https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/
+dfs, https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/
 
 给你一个整数数组 `nums` ，其中元素已经按 **升序** 排列，请你将其转换为一棵 平衡 二叉搜索树。
 
@@ -11348,7 +11348,7 @@ https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/
 
 **示例 1：**
 
-![img](https://assets.leetcode.com/uploads/2021/02/18/btree1.jpg)
+<img src="https://assets.leetcode.com/uploads/2021/02/18/btree1.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：nums = [-10,-3,0,5,9]
@@ -11358,7 +11358,7 @@ https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/
 
 **示例 2：**
 
-![img](https://assets.leetcode.com/uploads/2021/02/18/btree.jpg)
+<img src="https://assets.leetcode.com/uploads/2021/02/18/btree.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：nums = [1,3]
@@ -11375,6 +11375,8 @@ https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/
 - `nums` 按 **严格递增** 顺序排列
 
 
+
+找到根节点后递归生成左右子树。
 
 ```python
 # Definition for a binary tree node.
