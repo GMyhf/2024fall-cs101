@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0956 GMT+8 Apr 13 2025
+Updated 1907 GMT+8 Apr 13 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -8516,7 +8516,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                         
+>                                                                                            
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -18040,6 +18040,144 @@ class Solution:
 >
 > 作者：灵茶山艾府
 > 链接：https://leetcode.cn/problems/minimum-limit-of-balls-in-a-bag/solutions/3071967/er-fen-da-an-pythonjavaccgojsrust-by-end-g7l7/
+
+
+
+## 1922.统计好数字的数目
+
+math, https://leetcode.cn/problems/count-good-numbers/
+
+我们称一个数字字符串是 **好数字** 当它满足（下标从 **0** 开始）**偶数** 下标处的数字为 **偶数** 且 **奇数** 下标处的数字为 **质数** （`2`，`3`，`5` 或 `7`）。
+
+- 比方说，`"2582"` 是好数字，因为偶数下标处的数字（`2` 和 `8`）是偶数且奇数下标处的数字（`5`和 `2`）为质数。但 `"3245"` **不是** 好数字，因为 `3` 在偶数下标处但不是偶数。
+
+给你一个整数 `n` ，请你返回长度为 `n` 且为好数字的数字字符串 **总数** 。由于答案可能会很大，请你将它对 `109 + 7` **取余后返回** 。
+
+一个 **数字字符串** 是每一位都由 `0` 到 `9` 组成的字符串，且可能包含前导 0 。
+
+ 
+
+**示例 1：**
+
+```
+输入：n = 1
+输出：5
+解释：长度为 1 的好数字包括 "0"，"2"，"4"，"6"，"8" 。
+```
+
+**示例 2：**
+
+```
+输入：n = 4
+输出：400
+```
+
+**示例 3：**
+
+```
+输入：n = 50
+输出：564908303
+```
+
+ 
+
+**提示：**
+
+- `1 <= n <= 10^15`
+
+
+
+快速幂
+
+```python
+class Solution:
+    MOD = 10**9 + 7
+
+    def quick_pow(self, base: int, exp: int, mod: int) -> int:
+        result = 1
+        while exp > 0:
+            if exp % 2 == 1:  # 如果指数是奇数
+                result = (result * base) % mod
+            base = (base * base) % mod
+            exp //= 2
+        return result
+
+    def countGoodNumbers(self, n: int) -> int:
+        # 计算偶数下标和奇数下标的数量
+        even_count = (n + 1) // 2
+        odd_count = n // 2
+
+        # 计算 5^even_count 和 4^odd_count
+        even_result = self.quick_pow(5, even_count, self.MOD)
+        odd_result = self.quick_pow(4, odd_count, self.MOD)
+
+        # 最终结果
+        return (even_result * odd_result) % self.MOD
+
+# 示例测试
+sol = Solution()
+print(sol.countGoodNumbers(1))  # 输出：5
+print(sol.countGoodNumbers(4))  # 输出：400
+print(sol.countGoodNumbers(50)) # 输出：564908303
+        
+```
+
+> 快速幂（Exponentiation by Squaring），也称为二进制幂算法，是一种高效计算幂运算的算法。它主要用于快速计算一个数（底数）的某个整数次幂（指数），特别是当指数很大时，能够显著提高计算效率。以下是快速幂算法的核心思想和实现方式：
+>
+> **核心思想**
+>
+> 快速幂算法利用指数的二进表示来减少乘法的次数。它将指数分解为一系列的2的幂次，然后利用幂运算的性质 $a^{m+n} = a^m \times a^n$ 和 $a^{2m} = (a^m)^2$ 来递归或迭代地计算幂。
+>
+> **实现方法**
+>
+> 1. **递归实现**
+>    - 如果指数 $n$ 为偶数，则 $a^n = (a^{n/2})^2$。
+>    - 如果指数 $n$ 为奇数，则 $a^n = a \times (a^{(n-1)/2})^2$。
+>    - 递归的终止条件是指数为0，此时结果为1。
+>
+> ```python
+> def quickPowRecursive(base: int, exponent: int) -> int:
+>     if exponent == 0:
+>         return 1
+>     elif exponent % 2 == 0:
+>         half = quickPowRecursive(base, exponent // 2)
+>         return half * half
+>     else:
+>         half = quickPowRecursive(base, (exponent - 1) // 2)
+>         return base * half * half
+> ```
+>
+> 2. **迭代实现**
+>    - 使用一个循环，从指数的最低位开始，如果位为1，则将当前的底数乘入结果中；然后底数自乘，指数右移一位。
+>
+> ```python
+> def quickPowIterative(base: int, exponent: int) -> int:
+>     result = 1
+>     while exponent > 0:
+>         if exponent % 2 == 1:
+>             result *= base
+>         base *= base
+>         exponent //= 2
+>     return result
+> ```
+>
+> 时间复杂度
+>
+> 快速幂算法的时间复杂度为 $O(\log n)$，其中 $n$ 是指数。这是因为每次递归或迭代都将指数减半，因此总共需要 $O(\log n)$ 步。
+>
+> 应用场景
+>
+> 1. **大数运算**：当底数或指数很大时，快速幂可以避免直接乘法导致的溢出问题。
+> 2. **模幂运算**：在密码学中，经常需要计算大数的模幂，快速幂结合取模运算可以高效地解决这类问题。
+> 3. **优化算法**：在解决一些数学问题时，如计算斐波那契数列、矩阵乘法等，快速幂可以用来加速计算。
+>
+> 总结
+>
+> 快速幂算法通过将指数分解为2的幂次，利用幂运算的性质，将原本需要 $O(n)$ 次乘法的问题优化到 $O(\log n)$ 次，极大地提高了计算效率。这种算法在理论和实践中都有广泛的应用。
+
+
+
+
 
 
 
