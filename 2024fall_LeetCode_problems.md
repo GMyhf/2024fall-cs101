@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1907 GMT+8 Apr 13 2025
+Updated 1550 GMT+8 Apr 14 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -3338,6 +3338,69 @@ class Solution:
 
         return dp   
 ```
+
+
+
+## 1534.统计好三元组
+
+https://leetcode.cn/problems/count-good-triplets/description/
+
+给你一个整数数组 `arr` ，以及 `a`、`b` 、`c` 三个整数。请你统计其中好三元组的数量。
+
+如果三元组 `(arr[i], arr[j], arr[k])` 满足下列全部条件，则认为它是一个 **好三元组** 。
+
+- `0 <= i < j < k < arr.length`
+- `|arr[i] - arr[j]| <= a`
+- `|arr[j] - arr[k]| <= b`
+- `|arr[i] - arr[k]| <= c`
+
+其中 `|x|` 表示 `x` 的绝对值。
+
+返回 **好三元组的数量** 。
+
+ 
+
+**示例 1：**
+
+```
+输入：arr = [3,0,1,1,9,7], a = 7, b = 2, c = 3
+输出：4
+解释：一共有 4 个好三元组：[(3,0,1), (3,0,1), (3,1,1), (0,1,1)] 。
+```
+
+**示例 2：**
+
+```
+输入：arr = [1,1,2,2,3], a = 0, b = 0, c = 1
+输出：0
+解释：不存在满足所有条件的三元组。
+```
+
+ 
+
+**提示：**
+
+- `3 <= arr.length <= 100`
+- `0 <= arr[i] <= 1000`
+- `0 <= a, b, c <= 1000`
+
+
+
+```python
+class Solution:
+    def countGoodTriplets(self, arr: List[int], a: int, b: int, c: int) -> int:
+        n = len(arr)
+        cnt = 0
+        for i in range(n):
+            for j in range(i+1, n):
+                for k in range(j+1, n):
+                    if abs(arr[i] - arr[j]) <= a and abs(arr[j] - arr[k]) <= b and abs(arr[i] - arr[k]) <= c :
+                        cnt += 1
+        
+        return cnt
+```
+
+
 
 
 
@@ -8518,7 +8581,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                  
+>                                                                                                        
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -11487,6 +11550,95 @@ class Solution:
 ```
 
 
+
+## 117.填充每个节点的下一个右侧节点指针II
+
+bfs, https://leetcode.cn/problems/populating-next-right-pointers-in-each-node-ii/
+
+给定一个二叉树：
+
+```
+struct Node {
+  int val;
+  Node *left;
+  Node *right;
+  Node *next;
+}
+```
+
+填充它的每个 next 指针，让这个指针指向其下一个右侧节点。如果找不到下一个右侧节点，则将 next 指针设置为 `NULL` 。
+
+初始状态下，所有 next 指针都被设置为 `NULL` 。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2019/02/15/117_sample.png" alt="img" style="zoom: 50%;" />
+
+```
+输入：root = [1,2,3,4,5,null,7]
+输出：[1,#,2,3,#,4,5,7,#]
+解释：给定二叉树如图 A 所示，你的函数应该填充它的每个 next 指针，以指向其下一个右侧节点，如图 B 所示。序列化输出按层序遍历顺序（由 next 指针连接），'#' 表示每层的末尾。
+```
+
+**示例 2：**
+
+```
+输入：root = []
+输出：[]
+```
+
+ 
+
+**提示：**
+
+- 树中的节点数在范围 `[0, 6000]` 内
+- `-100 <= Node.val <= 100`
+
+**进阶：**
+
+- 你只能使用常量级额外空间。
+- 使用递归解题也符合要求，本题中递归程序的隐式栈空间不计入额外空间复杂度。
+
+
+
+```python
+"""
+# Definition for a Node.
+class Node:
+    def __init__(self, val: int = 0, left: 'Node' = None, right: 'Node' = None, next: 'Node' = None):
+        self.val = val
+        self.left = left
+        self.right = right
+        self.next = next
+"""
+
+
+class Solution:
+    def connect(self, root: 'Node') -> 'Node':
+        if not root:
+            return None
+
+        queue = [root]
+
+        while queue:
+            next_queue = []
+            for i in range(len(queue)):
+                node = queue[i]
+                if i < len(queue) - 1:
+                    node.next = queue[i + 1]
+                else:
+                    node.next = None
+
+                if node.left:
+                    next_queue.append(node.left)
+                if node.right:
+                    next_queue.append(node.right)
+            queue = next_queue
+
+        return root
+```
 
 
 
