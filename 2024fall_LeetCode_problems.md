@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1013 GMT+8 Apr 15 2025
+Updated 0953 GMT+8 Apr 16 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -8581,7 +8581,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                           
+>                                                                                                              
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -11977,6 +11977,29 @@ if __name__ == "__main__":
     root2.left.left = TreeNode(5)
     root2.left.right = TreeNode(1)
     print(solution.sumNumbers(root2))  # 输出: 1026
+```
+
+
+
+黄一田 物理学院：将各点连接成的字符串加入递归变量中就不难处理了，找叶子结点也是很模板化的处理。
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def sumNumbers(self, root: Optional[TreeNode]) -> int:
+        def s(node,string):
+            if node==None:
+                return 0
+            if node.left==node.right==None:
+                return int(string+str(node.val))
+            return s(node.left,string+str(node.val))+\
+            s(node.right,string+str(node.val))
+        return s(root,'') if root else 0
 ```
 
 
