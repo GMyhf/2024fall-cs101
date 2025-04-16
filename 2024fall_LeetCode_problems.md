@@ -2084,7 +2084,7 @@ class Solution:
 
 ## 222.完全二叉树的节点个数
 
-https://leetcode.cn/problems/count-complete-tree-nodes/
+bfs, dfs, https://leetcode.cn/problems/count-complete-tree-nodes/
 
 给你一棵 **完全二叉树** 的根节点 `root` ，求出该树的节点个数。
 
@@ -2129,9 +2129,45 @@ https://leetcode.cn/problems/count-complete-tree-nodes/
 
 
 
+bfs
+
+```python
+from collections import deque
+
+# 定义树节点类
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+class Solution:
+    def countNodes(self, root: TreeNode) -> int:
+        # 如果根节点为空，直接返回 0
+        if not root:
+            return 0
+        
+        # 初始化队列和计数器
+        queue = deque([root])
+        count = 0
+        
+        # 使用 BFS 遍历树
+        while queue:
+            node = queue.popleft()
+            count += 1  # 每访问一个节点，计数器加 1
+            
+            # 将左右子节点加入队列（如果存在）
+            if node.left:
+                queue.append(node.left)
+            if node.right:
+                queue.append(node.right)
+        
+        return count
+```
 
 
-这题是关于“**完全二叉树的节点个数**”，如果使用普通遍历，时间复杂度是 **O(n)**。但由于题目保证这是一棵“完全二叉树”，可以利用它的结构性质设计一个更快的算法 —— **O(log² n)**。
+
+这题是关于“**完全二叉树的节点个数**”，如果使用普通遍历，时间复杂度是 **O(n)**。但由于题目保证这是一棵“完全二叉树”，可以利用它的结构性质设计一个更快的算法 —— $O(log² n)$。
 
 ---
 
@@ -2191,7 +2227,7 @@ class Solution:
 
 - `get_depth()` 的时间是 `O(log n)`
 - 每层递归最多进行一次 `get_depth()`，最多递归 `log n` 层
-- 所以总复杂度为 **O((log n)²)**，比 O(n) 快很多
+- 所以总复杂度为 $O((log n)²)$，比 O(n) 快很多
 
 
 
@@ -8581,7 +8617,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                 
+>                                                                                                                    
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
