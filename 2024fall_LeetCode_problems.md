@@ -8788,7 +8788,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                             
+>                                                                                                                                
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -26457,6 +26457,125 @@ if __name__ == "__main__":
 ```
 
 
+
+## 827.最大人工岛
+
+disjoint set, https://leetcode.cn/problems/making-a-large-island/
+
+给你一个大小为 `n x n` 二进制矩阵 `grid` 。**最多** 只能将一格 `0` 变成 `1` 。
+
+返回执行此操作后，`grid` 中最大的岛屿面积是多少？
+
+**岛屿** 由一组上、下、左、右四个方向相连的 `1` 形成。
+
+ 
+
+**示例 1:**
+
+```
+输入: grid = [[1, 0], [0, 1]]
+输出: 3
+解释: 将一格0变成1，最终连通两个小岛得到面积为 3 的岛屿。
+```
+
+**示例 2:**
+
+```
+输入: grid = [[1, 1], [1, 0]]
+输出: 4
+解释: 将一格0变成1，岛屿的面积扩大为 4。
+```
+
+**示例 3:**
+
+```
+输入: grid = [[1, 1], [1, 1]]
+输出: 4
+解释: 没有0可以让我们变成1，面积依然为 4。
+```
+
+ 
+
+**提示：**
+
+- `n == grid.length`
+- `n == grid[i].length`
+- `1 <= n <= 500`
+- `grid[i][j]` 为 `0` 或 `1`
+
+
+
+这是一个经典的 **并查集（Union Find）+ 标记连通块面积** 的题目，整体思路如下：
+
+✅ 解题思路：
+
+1. **第一遍遍历整个 grid**，用并查集记录每个连通块的代表（root），并计算每个连通块的面积。
+2. **第二遍遍历 grid 中的 0**，尝试将其变成 1，看它四周的连通块可以组成多大的岛屿面积（注意去重）。
+3. 返回其中最大的结果。
+
+以下是完整代码：
+
+```python
+from typing import List
+
+class Solution:
+    def largestIsland(self, grid: List[List[int]]) -> int:
+        n = len(grid)
+        parent = {}
+        size = {}
+
+        def find(x):
+            parent.setdefault(x, x)
+            if parent[x] != x:
+                parent[x] = find(parent[x])
+            return parent[x]
+
+        def union(x, y):
+            rx, ry = find(x), find(y)
+            if rx != ry:
+                parent[ry] = rx
+                size[rx] += size[ry]
+
+        directions = [(-1,0),(1,0),(0,-1),(0,1)]
+
+        # Step 1: Assign an id to each island using union-find
+        for i in range(n):
+            for j in range(n):
+                if grid[i][j] == 1:
+                    idx = i * n + j
+                    parent[idx] = idx
+                    size[idx] = 1
+                    for dx, dy in directions:
+                        ni, nj = i + dx, j + dy
+                        if 0 <= ni < n and 0 <= nj < n and grid[ni][nj] == 1:
+                            nidx = ni * n + nj
+                            if nidx in parent:
+                                union(idx, nidx)
+
+        max_area = max(size.values(), default=0)  # In case there's no zero at all
+
+        # Step 2: Try flipping each 0 to 1 and calculate the potential area
+        for i in range(n):
+            for j in range(n):
+                if grid[i][j] == 0:
+                    seen = set()
+                    area = 1
+                    for dx, dy in directions:
+                        ni, nj = i + dx, j + dy
+                        if 0 <= ni < n and 0 <= nj < n and grid[ni][nj] == 1:
+                            root = find(ni * n + nj)
+                            if root not in seen:
+                                seen.add(root)
+                                area += size[root]
+                    max_area = max(max_area, area)
+
+        return max_area
+```
+
+🧠 时间复杂度分析：
+
+- **并查集操作接近 O(1)**，因为路径压缩。
+- 两次遍历 `O(n^2)`，适用于 `n <= 500`。
 
 
 
