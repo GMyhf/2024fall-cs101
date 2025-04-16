@@ -284,7 +284,7 @@ linked list, recursion, https://leetcode.cn/problems/merge-two-sorted-lists/
 
 **示例 1：**
 
-<img src="https://assets.leetcode.com/uploads/2020/10/03/merge_ex1.jpg" alt="img" style="zoom:67%;" />
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/merge_ex1.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：l1 = [1,2,4], l2 = [1,3,4]
@@ -8788,7 +8788,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                    
+>                                                                                                                       
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
