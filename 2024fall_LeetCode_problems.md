@@ -8788,7 +8788,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                          
+>                                                                                                                             
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -16734,6 +16734,134 @@ class Solution:
             
         return ''.join(s)  # 将列表转换回字符串
 ```
+
+
+
+## 547.省份数量
+
+dfs, disjoint set, https://leetcode.cn/problems/number-of-provinces/
+
+有 `n` 个城市，其中一些彼此相连，另一些没有相连。如果城市 `a` 与城市 `b` 直接相连，且城市 `b`与城市 `c` 直接相连，那么城市 `a` 与城市 `c` 间接相连。
+
+**省份** 是一组直接或间接相连的城市，组内不含其他没有相连的城市。
+
+给你一个 `n x n` 的矩阵 `isConnected` ，其中 `isConnected[i][j] = 1` 表示第 `i` 个城市和第 `j`个城市直接相连，而 `isConnected[i][j] = 0` 表示二者不直接相连。
+
+返回矩阵中 **省份** 的数量。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/graph1.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：isConnected = [[1,1,0],[1,1,0],[0,0,1]]
+输出：2
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/graph2.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：isConnected = [[1,0,0],[0,1,0],[0,0,1]]
+输出：3
+```
+
+ 
+
+**提示：**
+
+- `1 <= n <= 200`
+- `n == isConnected.length`
+- `n == isConnected[i].length`
+- `isConnected[i][j]` 为 `1` 或 `0`
+- `isConnected[i][i] == 1`
+- `isConnected[i][j] == isConnected[j][i]`
+
+
+
+这个问题本质上是一个 **无向图连通分量数量** 的问题，每个城市是一个节点，`isConnected[i][j] == 1` 表示有边连接城市 `i` 和城市 `j`。我们可以使用 **深度优先搜索（DFS）** 或 **并查集（Union Find）** 来求解。
+
+这里先用 DFS 给你一个简单清晰的 Python 实现：
+
+---
+
+✅ DFS 解法（推荐理解用）
+
+```python
+from typing import List
+
+class Solution:
+    def findCircleNum(self, isConnected: List[List[int]]) -> int:
+        n = len(isConnected)
+        visited = [False] * n
+
+        def dfs(i):
+            for j in range(n):
+                if isConnected[i][j] == 1 and not visited[j]:
+                    visited[j] = True
+                    dfs(j)
+
+        provinces = 0
+        for i in range(n):
+            if not visited[i]:
+                dfs(i)
+                provinces += 1
+
+        return provinces
+```
+
+🔍 思路解释：
+
+- 每次从一个没有访问过的城市开始 DFS，所有能通过直接/间接方式到达的城市都会被标记访问。
+- 每进行一次新的 DFS，就代表找到了一个新的省份。
+
+
+
+
+
+
+
+下面是使用 **并查集（Union-Find）** 的解法，按照你的要求封装在 `class Solution` 的 `findCircleNum` 方法中：
+
+```python
+from typing import List
+
+class Solution:
+    def findCircleNum(self, isConnected: List[List[int]]) -> int:
+        n = len(isConnected)
+        parent = list(range(n))
+
+        def find(x):
+            if parent[x] != x:
+                parent[x] = find(parent[x])  # 路径压缩
+            return parent[x]
+
+        def union(x, y):
+            root_x = find(x)
+            root_y = find(y)
+            if root_x != root_y:
+                parent[root_y] = root_x  # 合并两个集合
+
+        for i in range(n):
+            for j in range(i + 1, n):  # 只需遍历上三角区域，避免重复
+                if isConnected[i][j] == 1:
+                    union(i, j)
+
+        # 统计最终有多少个不同的根节点（省份数）
+        return len({find(i) for i in range(n)})
+```
+
+🧠 思路说明：
+
+- `parent[i]` 表示城市 `i` 当前属于哪个集合。
+- `find(i)` 找到城市 `i` 所在集合的根节点，并进行路径压缩。
+- `union(i, j)` 将两个城市所在的集合合并。
+- 最后统计所有不同的根节点数量，就是省份的个数。
+
+有需要我也可以加上带秩优化（union by rank），不过这个题数据规模不大，当前版本就很快。
 
 
 
