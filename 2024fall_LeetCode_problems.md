@@ -2084,7 +2084,9 @@ class Solution:
 
 ## 222.完全二叉树的节点个数
 
-bfs, dfs, https://leetcode.cn/problems/count-complete-tree-nodes/
+bfs, dfs, binary + greedy,  https://leetcode.cn/problems/count-complete-tree-nodes/
+
+> 如果用bfs写是简单级别，其他方法是中级难度。
 
 给你一棵 **完全二叉树** 的根节点 `root` ，求出该树的节点个数。
 
@@ -2094,7 +2096,7 @@ bfs, dfs, https://leetcode.cn/problems/count-complete-tree-nodes/
 
 **示例 1：**
 
-<img src="https://assets.leetcode.com/uploads/2021/01/14/complete.jpg" alt="img" style="zoom:67%;" />
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/complete.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：root = [1,2,3,4,5,6]
@@ -2251,7 +2253,7 @@ class Solution:
 
 ---
 
-### 🔍 Python 实现（Binary Search + Greedy）：
+🔍 Python 实现（Binary Search + Greedy）：
 
 ```python
 class TreeNode:
