@@ -19541,6 +19541,80 @@ if __name__ == '__main__':
 
 
 
+## 2537.统计好子数组的数目
+
+sliding window, https://leetcode.cn/problems/count-the-number-of-good-subarrays/
+
+给你一个整数数组 `nums` 和一个整数 `k` ，请你返回 `nums` 中 **好** 子数组的数目。
+
+一个子数组 `arr` 如果有 **至少** `k` 对下标 `(i, j)` 满足 `i < j` 且 `arr[i] == arr[j]` ，那么称它是一个 **好** 子数组。
+
+**子数组** 是原数组中一段连续 **非空** 的元素序列。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,1,1,1,1], k = 10
+输出：1
+解释：唯一的好子数组是这个数组本身。
+```
+
+**示例 2：**
+
+```
+输入：nums = [3,1,4,3,2,2,4], k = 2
+输出：4
+解释：总共有 4 个不同的好子数组：
+- [3,1,4,3,2,2] 有 2 对。
+- [3,1,4,3,2,2,4] 有 3 对。
+- [1,4,3,2,2,4] 有 2 对。
+- [4,3,2,2,4] 有 2 对。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 10^5`
+- `1 <= nums[i], k <= 10^9`
+
+
+
+```python
+from typing import List, DefaultDict
+from collections import defaultdict
+
+class Solution:
+    def countGood(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        left = 0
+        pair_count = 0
+        cnt: DefaultDict[int, int] = defaultdict(int)
+        result = 0
+
+        for right in range(n):
+            # 更新当前数字的出现次数，并增加相等对数
+            cnt[nums[right]] += 1
+            pair_count += cnt[nums[right]] - 1
+
+            # 当相等对数达到或超过 k 时，收缩左边界
+            while pair_count >= k:
+                result += n - right  # 从 left 到 right 的所有子数组都满足条件
+                # 收缩左边界，并减少相等对数
+                pair_count -= cnt[nums[left]] - 1
+                cnt[nums[left]] -= 1
+                left += 1
+
+        return result
+        
+```
+
+
+
+
+
 ## 2588.统计美丽子数组数目
 
 bit manipulation, hash table, prefix sum, https://leetcode.cn/problems/count-the-number-of-beautiful-subarrays/
