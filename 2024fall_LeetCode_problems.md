@@ -2086,7 +2086,7 @@ class Solution:
 
 bfs, dfs, binary + greedy,  https://leetcode.cn/problems/count-complete-tree-nodes/
 
-> 如果用bfs, dfs写是简单级别，其他方法是中级难度。
+> 如果用bfs, dfs写是简单级别，binary search是中级难度。
 
 给你一棵 **完全二叉树** 的根节点 `root` ，求出该树的节点个数。
 
@@ -2128,6 +2128,26 @@ bfs, dfs, binary + greedy,  https://leetcode.cn/problems/count-complete-tree-nod
  
 
 **进阶：**遍历树来统计节点是一种时间复杂度为 `O(n)` 的简单解决方案。你可以设计一个更快的算法吗？
+
+
+
+dfs
+
+```python
+from typing import Optional
+
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+class Solution:
+    def countNodes(self, root: Optional[TreeNode]) -> int:
+        if root is None:
+            return 0
+        return 1 + self.countNodes(root.left) + self.countNodes(root.right)
+```
 
 
 
