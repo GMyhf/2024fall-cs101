@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1404 GMT+8 Apr 16 2025
+Updated 1019 GMT+8 Apr 17 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -2166,6 +2166,65 @@ class Solution:
         
         return count
 ```
+
+
+
+思路：起初用简单的dfs思路AC了，但时间复杂度不够好看，于是尝试新方法，看了题解中的二进制思路后大受震撼，故用二进制思路走了一遍。
+
+```python
+from typing import Optional
+
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+class Solution:
+    def countNodes(self, root: Optional[TreeNode]) -> int:
+        if not root:
+            return 0
+
+        def check(node_index: int, current_node: Optional[TreeNode]) -> bool:
+            """
+            检查编号为 node_index 的节点是否存在。
+            :param node_index: 节点编号（从 1 开始）
+            :param current_node: 当前遍历到的节点
+            :return: 如果节点存在返回 True，否则返回 False
+            """
+            # 将节点编号转换为二进制路径（去掉 '0b' 前缀）
+            path = bin(node_index)[3:]
+            for direction in path:
+                if direction == '0':
+                    current_node = current_node.left
+                else:
+                    current_node = current_node.right
+                # 如果当前节点为空，说明该路径不存在
+                if not current_node:
+                    return False
+            return True
+
+        # 计算树的高度（从根节点到最深左子节点的路径长度）
+        height = 0
+        current = root
+        while current.left:
+            height += 1
+            current = current.left
+
+        # 二分查找最后一层的节点范围
+        left, right = 2 ** height, 2 ** (height + 1) - 1
+        while left < right:
+            mid = (left + right) // 2
+            if check(mid, root):
+                left = mid + 1  # 编号 mid 存在，尝试更大的编号
+            else:
+                right = mid  # 编号 mid 不存在，尝试更小的编号
+
+        # 检查最终结果是否包含最后一个节点
+        return left if check(left, root) else left - 1
+```
+
+
 
 
 
@@ -8788,7 +8847,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                
+>                                                                                                                                   
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
