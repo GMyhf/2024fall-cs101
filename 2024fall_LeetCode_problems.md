@@ -2151,6 +2151,26 @@ class Solution:
 
 
 
+```python
+class Solution:
+    def countNodes(self, root: Optional[TreeNode]) -> int:
+        if not root:
+         return 0
+        def h(root):
+            if not root:
+             return 0
+            return h(root.left)+1
+        l,r= h(root.left),h(root.right)
+        if l==r:
+            return (1<<l) +self.countNodes(root.right)
+        else:
+            return (1<<r)+self.countNodes(root.left)
+```
+
+
+
+
+
 bfs
 
 ```python
@@ -8921,7 +8941,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                      
+>                                                                                                                                         
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
