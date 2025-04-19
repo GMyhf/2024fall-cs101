@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1019 GMT+8 Apr 17 2025
+Updated 2224 GMT+8 Apr 19 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -8941,7 +8941,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                         
+>                                                                                                                                            
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -20064,6 +20064,107 @@ class Solution:
 ```
 
 
+
+## 2563.统计公平数对的数目
+
+two pointers, https://leetcode.cn/problems/count-the-number-of-fair-pairs/
+
+给你一个下标从 **0** 开始、长度为 `n` 的整数数组 `nums` ，和两个整数 `lower` 和 `upper` ，返回 **公平数对的数目** 。
+
+如果 `(i, j)` 数对满足以下情况，则认为它是一个 **公平数对** ：
+
+- `0 <= i < j < n`，且
+- `lower <= nums[i] + nums[j] <= upper`
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [0,1,7,4,4,5], lower = 3, upper = 6
+输出：6
+解释：共计 6 个公平数对：(0,3)、(0,4)、(0,5)、(1,3)、(1,4) 和 (1,5) 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,7,9,2,5], lower = 11, upper = 11
+输出：1
+解释：只有单个公平数对：(2,3) 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 10^5`
+- `nums.length == n`
+- `-10^9 <= nums[i] <= 10^9`
+- `-10^9 <= lower <= upper <= 10^9`
+
+
+
+下面是一种基于「排序 + 双指针」的 $O(n\log n)$ 解法，模板化为一个函数 `count_fair_pairs(nums, lower, upper)`：
+
+```python
+from typing import List
+
+class Solution:
+    def countFairPairs(self, nums: List[int], lower: int, upper: int) -> int:
+        """
+        计数数组中所有 i<j 且 lower <= nums[i] + nums[j] <= upper 的公平数对数量。
+        核心思路：先排序，然后用双指针分别求 ≤ upper 的对数和 < lower 的对数，二者之差即为答案。
+        """
+        nums.sort()
+        n = len(nums)
+
+        def count_pairs_le(t):
+            """返回 i<j 且 nums[i] + nums[j] <= t 的对数。"""
+            count = 0
+            left, right = 0, n - 1
+            while left < right:
+                if nums[left] + nums[right] <= t:
+                    # 对于当前 left，(left, left+1), …, (left, right) 都满足
+                    count += (right - left)
+                    left += 1
+                else:
+                    # sum 太大，尝试减小 right
+                    right -= 1
+            return count
+
+        # <= upper 的对数 减去 < lower 的对数 即为 [lower, upper] 区间内的对数
+        return count_pairs_le(upper) - count_pairs_le(lower - 1)
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.countFairPairs([0,1,7,4,4,5], 3, 6))  # 输出：6
+    print(sol.countFairPairs([1,7,9,2,5], 11, 11))      # 输出：1
+
+
+
+```
+
+**思路解析：**
+
+1. **排序**  
+   将 `nums` 从小到大排序，便于利用双指针快速计数。
+
+2. **计数函数 `count_pairs_le(t)`**  
+   计算所有满足 `nums[i] + nums[j] <= t`（且 \(i < j\)）的对数：  
+   - 初始化 `left=0, right=n-1`  
+   - 若 `nums[left] + nums[right] <= t`，则对于固定的 `left`，`(left, left+1), …, (left, right)` 都满足不等式，共 `right-left` 个，累加到答案后 `left+=1`；  
+   - 否则 `nums[left] + nums[right] > t`，说明此时的 `right` 太大，需要 `right-=1`。  
+   - 直到 `left >= right`。
+
+3. **求区间对数**  
+   要求 `lower <= sum <= upper` 的对数，可以先算出 `sum <= upper` 的数量，再减去 `sum < lower`（即 `sum <= lower-1`）的数量：  
+   $
+     \#\{sum\le upper\} \;-\; \#\{sum\le lower-1\}
+     \;=\;\#\{lower\le sum\le upper\}.
+   $
+
+这种做法仅需对数组排序一次 $O(n\log n)$，再两次线性双指针扫描 $O(n)$，总体 $O(n\log n)$，可以轻松应对 $n$ 达到 $10^5$ 的情况。
 
 
 
