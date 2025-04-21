@@ -16,7 +16,7 @@ https://leetcode.cn/problems/set-matrix-zeroes/
 
 **示例 1：**
 
-![img](https://assets.leetcode.com/uploads/2020/08/17/mat1.jpg)
+<img src="https://assets.leetcode.com/uploads/2020/08/17/mat1.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：matrix = [[1,1,1],[1,0,1],[1,1,1]]
@@ -25,7 +25,7 @@ https://leetcode.cn/problems/set-matrix-zeroes/
 
 **示例 2：**
 
-![img](https://assets.leetcode.com/uploads/2020/08/17/mat2.jpg)
+<img src="https://assets.leetcode.com/uploads/2020/08/17/mat2.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：matrix = [[0,1,2,0],[3,4,5,2],[1,3,1,5]]
@@ -103,7 +103,7 @@ binary search, https://leetcode.cn/problems/search-a-2d-matrix/
 
 **示例 1：**
 
-![img](https://assets.leetcode.com/uploads/2020/10/05/mat.jpg)
+<img src="https://assets.leetcode.com/uploads/2020/10/05/mat.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 3
@@ -112,7 +112,7 @@ binary search, https://leetcode.cn/problems/search-a-2d-matrix/
 
 **示例 2：**
 
-![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/11/25/mat2.jpg)
+<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/11/25/mat2.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 13
