@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1417 GMT+8 Apr 21 2025
+Updated 1435 GMT+8 Apr 22 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -8941,7 +8941,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                  
+>                                                                                                                                                     
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -28982,6 +28982,169 @@ class TextEditor:
   - 通过在两个栈之间转移字符实现光标移动，移动后返回光标左侧最多 10 个字符（保持原字符串顺序）。
 
 这种解法可以模拟文本编辑器中光标的左右移动与文本修改，且符合题目的时间复杂度要求。
+
+
+
+## 2338.统计理想数组的数目
+
+dp, combinatorics, number theory, https://leetcode.cn/problems/count-the-number-of-ideal-arrays/
+
+给你两个整数 `n` 和 `maxValue` ，用于描述一个 **理想数组** 。
+
+对于下标从 **0** 开始、长度为 `n` 的整数数组 `arr` ，如果满足以下条件，则认为该数组是一个 **理想数组** ：
+
+- 每个 `arr[i]` 都是从 `1` 到 `maxValue` 范围内的一个值，其中 `0 <= i < n` 。
+- 每个 `arr[i]` 都可以被 `arr[i - 1]` 整除，其中 `0 < i < n` 。
+
+返回长度为 `n` 的 **不同** 理想数组的数目。由于答案可能很大，返回对 `109 + 7` 取余的结果。
+
+ 
+
+**示例 1：**
+
+```
+输入：n = 2, maxValue = 5
+输出：10
+解释：存在以下理想数组：
+- 以 1 开头的数组（5 个）：[1,1]、[1,2]、[1,3]、[1,4]、[1,5]
+- 以 2 开头的数组（2 个）：[2,2]、[2,4]
+- 以 3 开头的数组（1 个）：[3,3]
+- 以 4 开头的数组（1 个）：[4,4]
+- 以 5 开头的数组（1 个）：[5,5]
+共计 5 + 2 + 1 + 1 + 1 = 10 个不同理想数组。
+```
+
+**示例 2：**
+
+```
+输入：n = 5, maxValue = 3
+输出：11
+解释：存在以下理想数组：
+- 以 1 开头的数组（9 个）：
+   - 不含其他不同值（1 个）：[1,1,1,1,1] 
+   - 含一个不同值 2（4 个）：[1,1,1,1,2], [1,1,1,2,2], [1,1,2,2,2], [1,2,2,2,2]
+   - 含一个不同值 3（4 个）：[1,1,1,1,3], [1,1,1,3,3], [1,1,3,3,3], [1,3,3,3,3]
+- 以 2 开头的数组（1 个）：[2,2,2,2,2]
+- 以 3 开头的数组（1 个）：[3,3,3,3,3]
+共计 9 + 1 + 1 = 11 个不同理想数组。
+```
+
+ 
+
+**提示：**
+
+- `2 <= n <= 10^4`
+- `1 <= maxValue <= 10^4`
+
+
+
+下面是修正后的关键代码，只需将「归一化链」的初始状态改成 **只从 1 开始**，这样所有计数都以 `1` 为起点，避免把以其他值开头的链错误纳入统计：
+
+```python
+class Solution:
+    def idealArrays(self, n: int, maxValue: int) -> int:
+        MOD = 10**9 + 7
+
+        # 1. 收集每个 v 的真除数 u < v，u | v
+        divisors = [[] for _ in range(maxValue + 1)]
+        for u in range(1, maxValue // 2 + 1):
+            for v in range(u * 2, maxValue + 1, u):
+                divisors[v].append(u)
+
+        # 2. 最多可能的不同值 kmax ≈ log2(maxValue) + 1
+        import math
+        kmax = int(math.log2(maxValue)) + 1
+
+        # 3. dp[k][v] = 归一化后严格增大链长度为 k，以 v 结尾 的数量
+        dp = [[0] * (maxValue + 1) for _ in range(kmax + 1)]
+        # **修正点**：链必须从 1 开始
+        dp[1][1] = 1  
+
+        # 递推：dp[k][v] = sum(dp[k-1][u] for u in 真除数(v))
+        for k in range(2, kmax + 1):
+            for v in range(2, maxValue + 1):
+                s = 0
+                for u in divisors[v]:
+                    s += dp[k-1][u]
+                dp[k][v] = s % MOD
+
+        # 4. 前缀和：prefix[k][T] = sum_{v=1..T} dp[k][v]
+        prefix = [[0] * (maxValue + 1) for _ in range(kmax + 1)]
+        for k in range(1, kmax + 1):
+            run = 0
+            for v in range(1, maxValue + 1):
+                run = (run + dp[k][v]) % MOD
+                prefix[k][v] = run
+
+        # 5. 预处理组合数 C(n-1, k-1)
+        fac = [1] * (n + 1)
+        ifac = [1] * (n + 1)
+        for i in range(1, n + 1):
+            fac[i] = fac[i-1] * i % MOD
+        ifac[n] = pow(fac[n], MOD-2, MOD)
+        for i in range(n, 0, -1):
+            ifac[i-1] = ifac[i] * i % MOD
+        def comb(a, b):
+            if b < 0 or b > a: return 0
+            return fac[a] * ifac[b] % MOD * ifac[a-b] % MOD
+
+        # 6. 分桶：count[T] = |{a : floor(maxValue/a)==T}|
+        count = [0] * (maxValue + 1)
+        for a in range(1, maxValue + 1):
+            count[maxValue // a] += 1
+
+        # 7. 汇总答案
+        ans = 0
+        for T in range(1, maxValue + 1):
+            cT = count[T]
+            if cT == 0: continue
+
+            ways = 0
+            for k in range(1, kmax + 1):
+                # prefix[k][T] 是所有 ≤T 的 k 长“从1开始”的链数
+                ways = (ways + prefix[k][T] * comb(n-1, k-1)) % MOD
+
+            ans = (ans + cT * ways) % MOD
+
+        return ans
+```
+
+**核心修正：**  
+
+- 原来 `dp[1][v] = 1` 会把所有单个值 `v` 视为一条合法链，导致后续统计里出现不以 1 开头的“归一化链”，错误地多算了许多不符合“首元素 = a”映射关系的情况。  
+- 正确的「归一化链」必须 **从 1 开始**，所以只保留 `dp[1][1] = 1`，其余 `dp[1][v>1] = 0`。  
+
+这样修正后，示例 `n = 2, maxValue = 5` 的返回值即为 10。
+
+
+
+> 在构造「除法链」时 **去掉了自身** 作为前驱，确保链中都是 **严格增大的不同值**。
+>
+> 思路解析
+>
+> 1. **除法链「严格增大」**  
+>    - 我们先只考虑「不同值如何从小到大变化」的链，比如 `1 → 2 → 4`。  
+>    - 要求每一步都能整除，所以是在求一个严格增大的除数链。  
+>    - `dp[k][v]` 统计「长度为 k、以 v 结尾」的不同值链数。
+>
+> 2. **插入重复值凑长度**  
+>    - 如果一个链有 k 个不同值，要把它“拉长”到总长度 n，就相当于在这 k 个值之间插入 (n-k) 个重复。  
+>    - 方式数为 $\binom{n-1}{k-1}$：在 n−1 个间隙中选 k−1 个来放“下一个新值”的切换点。
+>
+> 3. **按起点分组加速**  
+>    - 真实数组第一个元素 a 可以从 1 到 maxValue。  
+>    - 归一化后，链中的最大值不能超过 $\lfloor \tfrac{\text{maxValue}}{a}\rfloor$。  
+>    - 我们统计每个 T 对应的 a 有多少个，然后统一用 `prefix[k][T]`（前缀和）来加速。
+>
+> 4. **复杂度**  
+>    - 构造真除数：$O(maxValue \log maxValue)$  
+>    - DP：$O(kmax \times maxValue \times \text{avg\_divisors})$  
+>    - 组合数预处理：$O(n)$  
+>    - 最终汇总：$O(maxValue \times kmax)$  
+>
+> 整体能轻松应对 $n,\,\text{maxValue}\le10^4$ 的规模。
+
+
 
 
 
