@@ -9057,7 +9057,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                              
+>                                                                                                                                                                 
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -10823,6 +10823,34 @@ class Solution:
         for x in nums:
             ans+=[[x] + y for y in ans]
         return ans 
+```
+
+
+
+参考了灵神的题解对代码进行了优化。这道题的思路和寒假pre中的01321棋盘问题是一样的，与八皇后有一定差别。八皇后考虑的是每一个数字都要选，而这道题的每一个数字则有两种选择：选或者不选。那么普通的dfs一次对应的就是“选择该元素”，然后在dfs结束后并把这个元素pop掉，紧接着对下一个元素进行第二次dfs，对应的就是“不选该元素”。然后考虑到原数组可能存在重复值，使用while循环将索引k不断右移到新元素进行第二次dfs（题目是90-子集II）
+
+```python
+# 汤伟杰，信息管理系
+class Solution:
+    def subsetsWithDup(self, nums: List[int]) -> List[List[int]]:
+        def dfs(nums,curr,k,ans):
+            if k==len(nums):
+               ans.append(curr[:])
+               return 
+
+            num = nums[k]
+            curr.append(num)
+            dfs(nums, curr, k+1, ans)
+            curr.pop()
+
+            while k<len(nums) and num == nums[k]:
+                k+=1
+            dfs(nums, curr, k, ans) 
+
+        ans=[]
+        nums.sort()
+        dfs(nums,[],0,ans)
+        return ans
 ```
 
 
@@ -25545,7 +25573,7 @@ backtracking, https://leetcode.cn/problems/n-queens/
 
 **示例 1：**
 
-![img](https://assets.leetcode.com/uploads/2020/11/13/queens.jpg)
+<img src="https://assets.leetcode.com/uploads/2020/11/13/queens.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：n = 4
@@ -25582,7 +25610,7 @@ class Solution:
             for i in range(1,n+1):
                 if i in r:continue
                 for j in range(len(r)):
-                    if abs(i-r[j])==abs(len(r)-j):
+                    if abs(i-r[j])==abs(len(r)-j): # 
                         break
                 else:
                     r.append(i)
@@ -25592,7 +25620,9 @@ class Solution:
         return p
 ```
 
+`abs(i - r[j]) == abs(len(r) - j)`：
 
+如果当前列 i 和之前某一行的列 r[j] 的差值等于行号差值，则它们在同一对角线上。
 
 
 
