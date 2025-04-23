@@ -7896,6 +7896,30 @@ if __name__ == "__main__":
 
 
 
+
+
+```python
+# 曾孜博 24工学院
+class Solution:
+    from collections import deque 
+    def letterCombinations(self, digits: str) -> List[str]:
+        k={'1':[],'2':['a','b','c'],'3':['d','e','f'],'4':['g','h','i'],'5':['j','k','l'],'6':['m','n','o'],'7':['p','q','r','s'],'8':['t','u','v'],'9':['w','x','y','z']}
+        if not digits:
+            return []
+        r=deque([''])
+        for x in digits:
+            for _ in range(len(r)):
+                pre=r.popleft()
+                for y in k[x]:
+                    cur=pre+y
+                    r.append(cur)
+        return list(r)
+```
+
+
+
+
+
 ## 19.删除链表的倒数第N个结点
 
 快慢指针，https://leetcode.cn/problems/remove-nth-node-from-end-of-list/
@@ -9033,7 +9057,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                           
+>                                                                                                                                                              
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -10785,6 +10809,23 @@ if __name__ == "__main__":
     nums = [1,2,3]
     print(Solution().subsets(nums))
 ```
+
+
+
+
+
+```python
+# 曾孜博 24工学院
+class Solution:
+    from collections import defaultdict
+    def subsets(self, nums: List[int]) -> List[List[int]]:
+        ans=[[]]
+        for x in nums:
+            ans+=[[x] + y for y in ans]
+        return ans 
+```
+
+
 
 
 
@@ -25524,6 +25565,34 @@ backtracking, https://leetcode.cn/problems/n-queens/
 **提示：**
 
 - `1 <= n <= 9`
+
+
+
+思路：模仿8皇后的写法
+
+```python
+# 曾孜博 24工学院
+class Solution:
+    def solveNQueens(self, n: int) -> List[List[str]]:
+        p=[]
+        def dfs(r):
+            if len(r)==n:
+                p.append(['.'*(t-1)+'Q'+'.'*(n-t) for t in r])
+                return
+            for i in range(1,n+1):
+                if i in r:continue
+                for j in range(len(r)):
+                    if abs(i-r[j])==abs(len(r)-j):
+                        break
+                else:
+                    r.append(i)
+                    dfs(r)
+                    r.pop()
+        dfs([])
+        return p
+```
+
+
 
 
 
