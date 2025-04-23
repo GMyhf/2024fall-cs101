@@ -2131,41 +2131,58 @@ bfs, dfs, binary + greedy,  https://leetcode.cn/problems/count-complete-tree-nod
 
 
 
-dfs
+思路：直接递归很简单
+
+优化的话利用完全二叉树的性质，左右子树至少有一个是满二叉树，可以直接得出节点数目。学习了一下二进制运算符（满二叉树的节点数为 `2^h - 1`，其中 `h` 是树的高度。使用左移运算符可以高效地计算 `2^h`）
 
 ```python
-from typing import Optional
-
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
-
-class Solution:
-    def countNodes(self, root: Optional[TreeNode]) -> int:
-        if root is None:
-            return 0
-        return 1 + self.countNodes(root.left) + self.countNodes(root.right)
-```
-
-
-
-```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
 class Solution:
     def countNodes(self, root: Optional[TreeNode]) -> int:
         if not root:
-         return 0
-        def h(root):
-            if not root:
-             return 0
-            return h(root.left)+1
-        l,r= h(root.left),h(root.right)
-        if l==r:
-            return (1<<l) +self.countNodes(root.right)
+            return 0
+        leftnum = self.countNodes(root.left)
+        rightnum = self.countNodes(root.right)
+        return 1+leftnum +rightnum
+#以下是利用完全二叉树性质的解法
+class Solution:
+    def countNodes(self, root: Optional[TreeNode]) -> int:
+        if not root:
+            return 0
+        
+        left_height = self.get_height(root.left)
+        right_height = self.get_height(root.right)
+        
+        if left_height == right_height:
+            # 左子树是满二叉树
+            return (1 << left_height) + self.countNodes(root.right)
         else:
-            return (1<<r)+self.countNodes(root.left)
+            # 右子树是满二叉树
+            return (1 << right_height) + self.countNodes(root.left)
+    
+    def get_height(self, node):
+        height = 0
+        while node:
+            height += 1
+            node = node.left
+        return height
 ```
+
+> 核心逻辑
+>
+> 在完全二叉树中：
+>
+> 如果 left_height == right_height，则说明左子树是满二叉树。
+> 如果 left_height != right_height，则说明右子树是满二叉树。
+> 这是因为：
+>
+> 完全二叉树的节点从左到右依次填满，所以如果左右子树的高度相等，左子树必然是满二叉树。
+> 如果左右子树的高度不相等，则右子树必然是满二叉树（因为右子树的高度比左子树少一层）。
 
 
 
@@ -8941,7 +8958,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                     
+>                                                                                                                                                        
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
