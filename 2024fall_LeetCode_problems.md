@@ -9057,7 +9057,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                       
+>                                                                                                                                                                          
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -10789,6 +10789,26 @@ backtracking, https://leetcode.cn/problems/subsets/
 - `1 <= nums.length <= 10`
 - `-10 <= nums[i] <= 10`
 - `nums` 中的所有元素 **互不相同**
+
+
+
+```python
+class Solution:
+    def subsets(self, nums: List[int]) -> List[List[int]]:
+        n = len(nums)
+        result = []
+        ans = []
+        def dfs(x):
+            if x == n:
+                result.append(ans[:])
+                return
+            dfs(x + 1)
+            ans.append(nums[x])
+            dfs(x + 1)
+            ans.pop()
+        dfs(0)
+        return result
+```
 
 
 
