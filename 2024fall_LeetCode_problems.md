@@ -9057,7 +9057,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                          
+>                                                                                                                                                                             
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -10924,6 +10924,54 @@ class Solution:
 ```
 
 
+
+
+
+```python
+class Solution:
+    def subsets(self, nums: List[int]) -> List[List[int]]:
+        return [[nums[i] for i in range(len(nums)) if musk & 1 << i] for musk in range(1 << len(nums))]
+```
+
+> 解读：生成子集的位运算解法
+>
+> 这段代码是一个Python类方法，用于生成给定整数列表的所有可能子集。它使用了位运算的技巧来高效地生成所有子集。
+>
+> **工作原理**
+>
+> 1. **子集总数**：对于一个长度为n的列表，子集总数是2^n个（包括空集）。`1 << len(nums)`计算这个总数（2的n次方）。
+> 2. **位掩码(mask)表示**：
+>    - 每个mask代表一个子集的选择方式
+>    - mask的二进制表示中，第i位为1表示选择nums[i]，为0表示不选择
+> 3. **列表推导式**：
+>    - 外层推导式遍历所有可能的mask值（0到2^n-1）
+>    - 内层推导式检查mask的每一位，确定哪些元素应该包含在当前子集中
+>
+> **示例**
+>
+> 以nums = [1,2,3]为例：
+>
+> - len(nums) = 3 → 总子集数=8 (0b000到0b111)
+> - mask从0(0b000)到7(0b111)：
+>   - 0(0b000): [] (空集)
+>   - 1(0b001): [1]
+>   - 2(0b010): [2]
+>   - 3(0b011): [1,2]
+>   - ...
+>   - 7(0b111): [1,2,3]
+>
+> **优点**
+>
+> 1. 高效：利用位运算快速生成所有子集
+> 2. 简洁：一行代码实现复杂功能
+> 3. 通用：适用于任何长度的输入列表
+>
+> **注意事项**
+>
+> - 当nums长度较大时（如超过20），子集数量会非常大(2^20=1,048,576)，可能导致内存问题
+> - 返回的子集顺序是按二进制掩码顺序排列的，不是按子集大小排序的
+>
+> 这种方法是解决子集问题的经典位运算解法，展示了Python列表推导式和位运算的强大结合。
 
 
 
@@ -25762,6 +25810,28 @@ class Solution:
 `abs(i - r[j]) == abs(len(r) - j)`：
 
 如果当前列 i 和之前某一行的列 r[j] 的差值等于行号差值，则它们在同一对角线上。
+
+
+
+
+
+```python
+class Solution:
+    def solveNQueens(self, n: int) -> List[List[str]]:
+        solutions = []
+        def queens(row: int, cols: List[int], ldiags: Set[int], rdiags: Set[int]) -> None:
+            if row == n:
+                solutions.append(["".join("Q" if j == cols[i] else "." for j in range(n)) for i in range(n)])
+                return
+            for j in range(n):
+                if j not in cols and row + j not in ldiags and row - j not in rdiags:
+                    queens(row + 1, cols + [j], ldiags | {row + j}, rdiags | {row - j})
+
+        queens(0, [], set(), set())
+        return solutions
+```
+
+
 
 
 
