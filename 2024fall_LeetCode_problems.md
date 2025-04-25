@@ -9057,7 +9057,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                             
+>                                                                                                                                                                                
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -21427,6 +21427,125 @@ if __name__ == "__main__":
     print(sol.minimumSum(3, 5))  # expects 8
     print(sol.minimumSum(3, 6))  # expects 6
 ```
+
+
+
+## 2845.统计趣味子数组的数目
+
+hash table, prefix sum, https://leetcode.cn/problems/count-of-interesting-subarrays/
+
+给你一个下标从 **0** 开始的整数数组 `nums` ，以及整数 `modulo` 和整数 `k` 。
+
+请你找出并统计数组中 **趣味子数组** 的数目。
+
+如果 **子数组** `nums[l..r]` 满足下述条件，则称其为 **趣味子数组** ：
+
+- 在范围 `[l, r]` 内，设 `cnt` 为满足 `nums[i] % modulo == k` 的索引 `i` 的数量。并且 `cnt % modulo == k` 。
+
+以整数形式表示并返回趣味子数组的数目。
+
+**注意：**子数组是数组中的一个连续非空的元素序列。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [3,2,4], modulo = 2, k = 1
+输出：3
+解释：在这个示例中，趣味子数组分别是： 
+子数组 nums[0..0] ，也就是 [3] 。 
+- 在范围 [0, 0] 内，只存在 1 个下标 i = 0 满足 nums[i] % modulo == k 。
+- 因此 cnt = 1 ，且 cnt % modulo == k 。
+子数组 nums[0..1] ，也就是 [3,2] 。
+- 在范围 [0, 1] 内，只存在 1 个下标 i = 0 满足 nums[i] % modulo == k 。
+- 因此 cnt = 1 ，且 cnt % modulo == k 。
+子数组 nums[0..2] ，也就是 [3,2,4] 。
+- 在范围 [0, 2] 内，只存在 1 个下标 i = 0 满足 nums[i] % modulo == k 。
+- 因此 cnt = 1 ，且 cnt % modulo == k 。
+可以证明不存在其他趣味子数组。因此，答案为 3 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [3,1,9,6], modulo = 3, k = 0
+输出：2
+解释：在这个示例中，趣味子数组分别是： 
+子数组 nums[0..3] ，也就是 [3,1,9,6] 。
+- 在范围 [0, 3] 内，只存在 3 个下标 i = 0, 2, 3 满足 nums[i] % modulo == k 。
+- 因此 cnt = 3 ，且 cnt % modulo == k 。
+子数组 nums[1..1] ，也就是 [1] 。
+- 在范围 [1, 1] 内，不存在下标满足 nums[i] % modulo == k 。
+- 因此 cnt = 0 ，且 cnt % modulo == k 。
+可以证明不存在其他趣味子数组，因此答案为 2 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 10^5 `
+- `1 <= nums[i] <= 10^9`
+- `1 <= modulo <= 10^9`
+- `0 <= k < modulo`
+
+
+
+可以使用**前缀和 + 哈希表优化**来解决这个问题。
+
+**思路：**
+
+1. 对于每个位置，定义一个前缀和 `count`，记录从起点到当前位置满足 `nums[i] % modulo == k` 的数量。
+
+2. 然后统计有多少个前缀对 `(i, j)` 满足：
+
+   ```python
+   (count[j+1] - count[i]) % modulo == k
+   ```
+
+   即：
+
+   ```python
+   count[j+1] % modulo == (count[i] + k) % modulo
+   ```
+
+3. 遍历数组过程中维护一个哈希表 `prefix_mod_count`，记录每个 `count % modulo` 出现的次数。
+
+------
+
+Python 代码如下：
+
+```python
+from collections import defaultdict
+from typing import List
+
+class Solution:
+    def countInterestingSubarrays(self, nums: List[int], modulo: int, k: int) -> int:
+        prefix_mod_count = defaultdict(int)
+        prefix_mod_count[0] = 1  # 初始前缀为0时也要计入
+        count = 0  # 满足条件的数量前缀和
+        result = 0
+
+        for num in nums:
+            if num % modulo == k:
+                count += 1
+            # 找有多少之前的前缀，使得满足 (count - prev) % modulo == k
+            target = (count - k) % modulo
+            result += prefix_mod_count[target]
+            # 更新哈希表
+            prefix_mod_count[count % modulo] += 1
+
+        return result
+```
+
+------
+
+示例解释：
+
+比如 `nums = [3, 2, 4], modulo = 2, k = 1`，会计算前缀中有多少次 `count % 2 == 1` 出现过能和当前匹配。
+
+该算法时间复杂度为 **O(n)**，适合处理 `10^5` 级别的输入。
 
 
 
