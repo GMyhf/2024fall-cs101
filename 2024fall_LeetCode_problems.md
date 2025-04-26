@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1024 GMT+8 Apr 24 2025
+Updated 1001 GMT+8 Apr 26 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -9057,7 +9057,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                
+>                                                                                                                                                                                   
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -10881,6 +10881,29 @@ if __name__ == "__main__":
 > 4. 时间复杂度为 $O(2^n)$，因为一个有n个元素的集合有2^n个子集
 >
 > 这个实现简洁高效，是解决子集问题的经典回溯方法。
+
+
+
+陈冠宇 24工学院
+
+突发奇想搞了个二进制数和子集的一一对应
+
+```python
+from typing import List
+
+class Solution:
+    def subsets(self, nums: List[int]) -> List[List[int]]:
+        n = len(nums)            # 数组长度
+        ans = []                 # 存储所有子集的结果
+        for i in range(0, 2**n): # 遍历所有可能的子集（共2^n个）
+            cur = []             # 当前子集
+            prev = format(i, f'0{n}b')  # 将i转为n位二进制字符串（补前导0）
+            for j in range(n):   # 检查每一位是否为1
+                if prev[j] == '1':
+                    cur.append(nums[j])  # 包含对应元素
+            ans.append(cur)      # 将当前子集加入结果
+        return ans
+```
 
 
 
