@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1137 GMT+8 Apr 28 2025
+Updated 1537 GMT+8 Apr 28 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -6470,7 +6470,7 @@ if __name__ == '__main__':
 
 
 
-### 3507.移除最小数对使数组有序I
+## 3507.移除最小数对使数组有序I
 
 https://leetcode.cn/problems/minimum-pair-removal-to-sort-array-i/
 
@@ -6570,6 +6570,89 @@ if __name__ == "__main__":
     print(s.minimumPairRemoval([1, 1, 4, 4, 2, -4, -1]))
     print(s.minimumPairRemoval([3, 6, 4, -6, 2, -4, 5, -7, -3, 6, 3, -4]))
 
+```
+
+
+
+## 3516.找到最近的人
+
+https://leetcode.cn/problems/find-closest-person/
+
+给你三个整数 `x`、`y` 和 `z`，表示数轴上三个人的位置：
+
+- `x` 是第 1 个人的位置。
+- `y` 是第 2 个人的位置。
+- `z` 是第 3 个人的位置，第 3 个人 **不会移动** 。
+
+第 1 个人和第 2 个人以 **相同** 的速度向第 3 个人移动。
+
+判断谁会 **先** 到达第 3 个人的位置：
+
+- 如果第 1 个人先到达，返回 1 。
+- 如果第 2 个人先到达，返回 2 。
+- 如果两个人同时到达，返回 **0** 。
+
+根据上述规则返回结果。
+
+ 
+
+**示例 1：**
+
+**输入：** x = 2, y = 7, z = 4
+
+**输出：** 1
+
+**解释：**
+
+- 第 1 个人在位置 2，到达第 3 个人（位置 4）需要 2 步。
+- 第 2 个人在位置 7，到达第 3 个人需要 3 步。
+
+由于第 1 个人先到达，所以输出为 1。
+
+**示例 2：**
+
+**输入：** x = 2, y = 5, z = 6
+
+**输出：** 2
+
+**解释：**
+
+- 第 1 个人在位置 2，到达第 3 个人（位置 6）需要 4 步。
+- 第 2 个人在位置 5，到达第 3 个人需要 1 步。
+
+由于第 2 个人先到达，所以输出为 2。
+
+**示例 3：**
+
+**输入：** x = 1, y = 5, z = 3
+
+**输出：** 0
+
+**解释：**
+
+- 第 1 个人在位置 1，到达第 3 个人（位置 3）需要 2 步。
+- 第 2 个人在位置 5，到达第 3 个人需要 2 步。
+
+由于两个人同时到达，所以输出为 0。
+
+ 
+
+**提示：**
+
+- `1 <= x, y, z <= 100`
+
+
+
+```python
+class Solution:
+    def findClosest(self, x: int, y: int, z: int) -> int:
+        if abs(x - z) < abs(y - z):
+            return 1
+        elif abs(x - z) > abs(y - z):
+            return 2
+        else:
+            return 0
+        
 ```
 
 
@@ -9119,7 +9202,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                            
+>                                                                                                                                                                                               
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -24845,7 +24928,7 @@ if __name__ == '__main__':
 
 
 
-### 3508.设计路由器
+## 3508.设计路由器
 
 中等，https://leetcode.cn/problems/implement-router/
 
@@ -25002,6 +25085,909 @@ class Router:
         return sl.bisect_right(endTime) - sl.bisect_left(startTime)
 
 ```
+
+
+
+## 3517.最小回文排列I
+
+string, counting sort, sorting, https://leetcode.cn/problems/smallest-palindromic-rearrangement-i/
+
+给你一个 **回文** 字符串 `s`。
+
+返回 `s` 的按字典序排列的 **最小** 回文排列。
+
+如果一个字符串从前往后和从后往前读都相同，那么这个字符串是一个 **回文** 字符串。
+
+**排列** 是字符串中所有字符的重排。
+
+如果字符串 `a` 按字典序小于字符串 `b`，则表示在第一个不同的位置，`a` 中的字符比 `b` 中的对应字符在字母表中更靠前。
+如果在前 `min(a.length, b.length)` 个字符中没有区别，则较短的字符串按字典序更小。
+
+ 
+
+ 
+
+**示例 1：**
+
+**输入：** s = "z"
+
+**输出：** "z"
+
+**解释：**
+
+仅由一个字符组成的字符串已经是按字典序最小的回文。
+
+**示例 2：**
+
+**输入：** s = "babab"
+
+**输出：** "abbba"
+
+**解释：**
+
+通过重排 `"babab"` → `"abbba"`，可以得到按字典序最小的回文。
+
+**示例 3：**
+
+**输入：** s = "daccad"
+
+**输出：** "acddca"
+
+**解释：**
+
+通过重排 `"daccad"` → `"acddca"`，可以得到按字典序最小的回文。
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 10^5`
+- `s` 由小写英文字母组成。
+- 保证 `s` 是回文字符串。
+
+
+
+```python
+from collections import Counter
+
+class Solution:
+    def smallestPalindrome(self, s: str) -> str:
+        freq = Counter(s)
+
+        left = []
+
+        for char in sorted(freq.keys()):
+            left.append(char * (freq[char] // 2))
+
+        middle = ""
+        for char in sorted(freq.keys()):
+            cnt = freq[char]
+            if cnt % 2 == 1:
+                middle = char
+                break
+
+        left = ''.join(left)
+        right = left[::-1]
+
+        return left + middle + right
+
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.smallestPalindrome("babab"))  # Expected output: "aabbaa"
+    print(sol.smallestPalindrome("daccad"))  # Expected output: "aaabbb"
+    print(sol.smallestPalindrome("afdbbbbdfa"))  #
+```
+
+
+
+## M3522.执行指令后的得分
+
+implementation, https://leetcode.cn/problems/calculate-score-after-performing-instructions/
+
+给你两个数组：`instructions` 和 `values`，数组的长度均为 `n`。
+
+你需要根据以下规则模拟一个过程：
+
+- 从下标 `i = 0` 的第一个指令开始，初始得分为 0。
+
+- 如果instructions[i]是"add"：
+
+  - 将 `values[i]` 加到你的得分中。
+  - 移动到下一个指令 `(i + 1)`。
+
+- 如果instructions[i]是"jump"：
+
+  - 移动到下标为 `(i + values[i])` 的指令，但不修改你的得分。
+
+当以下任一情况发生时，过程会终止：
+
+- 越界（即 `i < 0` 或 `i >= n`），或
+- 尝试再次执行已经执行过的指令。被重复访问的指令不会再次执行。
+
+返回过程结束时的得分。
+
+ 
+
+**示例 1：**
+
+**输入：** instructions = ["jump","add","add","jump","add","jump"], values = [2,1,3,1,-2,-3]
+
+**输出：** 1
+
+**解释：**
+
+从下标 0 开始模拟过程：
+
+- 下标 0：指令是 `"jump"`，移动到下标 `0 + 2 = 2`。
+- 下标 2：指令是 `"add"`，将 `values[2] = 3` 加到得分中，移动到下标 3。得分变为 3。
+- 下标 3：指令是 `"jump"`，移动到下标 `3 + 1 = 4`。
+- 下标 4：指令是 `"add"`，将 `values[4] = -2` 加到得分中，移动到下标 5。得分变为 1。
+- 下标 5：指令是 `"jump"`，移动到下标 `5 + (-3) = 2`。
+- 下标 2：已经访问过。过程结束。
+
+**示例 2：**
+
+**输入：** instructions = ["jump","add","add"], values = [3,1,1]
+
+**输出：** 0
+
+**解释：**
+
+从下标 0 开始模拟过程：
+
+- 下标 0：指令是 `"jump"`，移动到下标 `0 + 3 = 3`。
+- 下标 3：越界。过程结束。
+
+**示例 3：**
+
+**输入：** instructions = ["jump"], values = [0]
+
+**输出：** 0
+
+**解释：**
+
+从下标 0 开始模拟过程：
+
+- 下标 0：指令是 `"jump"`，移动到下标 `0 + 0 = 0`。
+- 下标 0：已经访问过。过程结束。
+
+ 
+
+**提示：**
+
+- `n == instructions.length == values.length`
+- `1 <= n <= 10^5`
+- `instructions[i]` 只能是 `"add"` 或 `"jump"`。
+- `-10^5 <= values[i] <= 10^5`
+
+
+
+```python
+from typing import List
+class Solution:
+    def calculateScore(self, instructions: List[str], values: List[int]) -> int:
+        n = len(instructions)
+        ans = 0
+        i = 0
+        seen = set()
+        while i < n:
+            if i in seen:
+                break
+            seen.add(i)
+
+            if instructions[i] == "add":
+                ans += values[i]
+                i += 1
+            elif instructions[i] == "jump":
+                i += values[i]
+                if i<0 or i>=n:
+                    break
+        return ans
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.calculateScore(["jump","add","add","jump","add","jump"],[2,1,3,1,-2,-3])) #
+    print(sol.calculateScore(["jump","add","add"],[3,1,1])) #
+    print(sol.calculateScore(["jump"],[0])) #
+```
+
+
+
+## M3523.非递减数组的最大长度
+
+greedy, monotonic stack, https://leetcode.cn/problems/make-array-non-decreasing/
+
+给你一个整数数组 `nums`。在一次操作中，你可以选择一个子数组，并将其替换为一个等于该子数组 **最大值** 的单个元素。
+
+返回经过零次或多次操作后，数组仍为 **非递减** 的情况下，数组 **可能的最大长度**。
+
+**子数组** 是数组中一个连续、**非空** 的元素序列。
+
+ 
+
+**示例 1：**
+
+**输入：** nums = [4,2,5,3,5]
+
+**输出：** 3
+
+**解释：**
+
+实现最大长度的一种方法是：
+
+1. 将子数组 `nums[1..2] = [2, 5]` 替换为 `5` → `[4, 5, 3, 5]`。
+2. 将子数组 `nums[2..3] = [3, 5]` 替换为 `5` → `[4, 5, 5]`。
+
+最终数组 `[4, 5, 5]` 是非递减的，长度为 3。
+
+**示例 2：**
+
+**输入：** nums = [1,2,3]
+
+**输出：** 3
+
+**解释：**
+
+无需任何操作，因为数组 `[1,2,3]` 已经是非递减的。
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 2 * 10^5`
+- `1 <= nums[i] <= 2 * 10^5`
+
+
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def maximumPossibleSize(self, nums: List[int]) -> int:
+        if not nums:
+            return 0
+
+        current_max = nums[0]
+        count = 1
+
+        for num in nums[1:]:
+            if num >= current_max:
+                count += 1
+                current_max = num
+            else:
+                current_max = max(current_max, num)
+
+        return count
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.maximumPossibleSize([4,2,5,3,5]))
+    print(sol.maximumPossibleSize([1,2,3]))
+```
+
+
+
+
+
+## 3527.找到最常见的问题
+
+implementation, https://leetcode.cn/problems/find-the-most-common-response/
+
+给你一个二维字符串数组 `responses`，其中每个 `responses[i]` 是一个字符串数组，表示第 `i` 天调查的回答结果。
+
+请返回在对每个 `responses[i]` 中的回答 **去重** 后，所有天数中 **最常见** 的回答。如果有多个回答出现频率相同，则返回 **字典序最小** 的那个回答。
+
+一个字符串 `a` 在字典序上 **小于** 另一个字符串 `b` 的条件是：在第一个不相同的位置上，`a` 中的字母比 `b` 中对应的字母在字母表中靠前。
+
+如果前 `min(a.length, b.length)` 个字符都相同，则较短的字符串字典序更小。
+
+ 
+
+**示例 1：**
+
+**输入：** responses = [["good","ok","good","ok"],["ok","bad","good","ok","ok"],["good"],["bad"]]
+
+**输出：** "good"
+
+**解释：**
+
+- 每个列表去重后，得到 `responses = [["good", "ok"], ["ok", "bad", "good"], ["good"], ["bad"]]`。
+- `"good"` 出现了 3 次，`"ok"` 出现了 2 次，`"bad"` 也出现了 2 次。
+- 返回 `"good"`，因为它出现的频率最高。
+
+**示例 2：**
+
+**输入：** responses = [["good","ok","good"],["ok","bad"],["bad","notsure"],["great","good"]]
+
+**输出：** "bad"
+
+**解释：**
+
+- 每个列表去重后，`responses = [["good", "ok"], ["ok", "bad"], ["bad", "notsure"], ["great", "good"]]`。
+- `"bad"`、`"good"` 和 `"ok"` 都出现了 2 次。
+- 返回 `"bad"`，因为它在这些最高频率的词中字典序最小。
+
+ 
+
+**提示：**
+
+- `1 <= responses.length <= 1000`
+- `1 <= responses[i].length <= 1000`
+- `1 <= responses[i][j].length <= 10`
+- `responses[i][j]` 仅由小写英文字母组成
+
+
+
+
+
+```python
+from typing import List
+from collections import Counter
+
+class Solution:
+    def findCommonResponse(self, responses: List[List[str]]) -> str:
+        new_responses = []
+        for response in responses:
+            new_responses.append(list(set(response)))
+        to_list = []
+        for i in new_responses:
+            to_list.extend(i)
+
+        count = Counter(to_list)
+        max_count = max(count.values())
+        most_common = [k for k, v in count.items() if v == max_count]
+        most_common.sort()
+        return most_common[0]
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.findCommonResponse([["good","ok","good"],["ok","bad"],["bad","notsure"],["great","good"]]))
+
+```
+
+
+
+## 3528.单位转换I
+
+dp, https://leetcode.cn/problems/unit-conversion-i/
+
+有 `n` 种单位，编号从 `0` 到 `n - 1`。给你一个二维整数数组 `conversions`，长度为 `n - 1`，其中 `conversions[i] = [sourceUniti, targetUniti, conversionFactori]` ，表示一个 `sourceUniti` 类型的单位等于 `conversionFactori` 个 `targetUniti` 类型的单位。
+
+请你返回一个长度为 `n` 的数组 `baseUnitConversion`，其中 `baseUnitConversion[i]` 表示 **一个** 0 类型单位等于多少个 i 类型单位。由于结果可能很大，请返回每个 `baseUnitConversion[i]` 对 `10^9 + 7` 取模后的值。
+
+ 
+
+**示例 1：**
+
+**输入：** conversions = [[0,1,2],[1,2,3]]
+
+**输出：** [1,2,6]
+
+**解释：**
+
+- 使用 `conversions[0]`：将一个 0 类型单位转换为 2 个 1 类型单位。
+- 使用 `conversions[0]` 和 `conversions[1]` 将一个 0 类型单位转换为 6 个 2 类型单位。
+
+<img src="https://pic.leetcode.cn/1745660099-FZhVTM-example1.png" alt="img" style="zoom: 25%;" />
+
+**示例 2：**
+
+**输入：** conversions = [[0,1,2],[0,2,3],[1,3,4],[1,4,5],[2,5,2],[4,6,3],[5,7,4]]
+
+**输出：** [1,2,3,8,10,6,30,24]
+
+**解释：**
+
+- 使用 `conversions[0]` 将一个 0 类型单位转换为 2 个 1 类型单位。
+- 使用 `conversions[1]` 将一个 0 类型单位转换为 3 个 2 类型单位。
+- 使用 `conversions[0]` 和 `conversions[2]` 将一个 0 类型单位转换为 8 个 3 类型单位。
+- 使用 `conversions[0]` 和 `conversions[3]` 将一个 0 类型单位转换为 10 个 4 类型单位。
+- 使用 `conversions[1]` 和 `conversions[4]` 将一个 0 类型单位转换为 6 个 5 类型单位。
+- 使用 `conversions[0]`、`conversions[3]` 和 `conversions[5]` 将一个 0 类型单位转换为 30 个 6 类型单位。
+- 使用 `conversions[1]`、`conversions[4]` 和 `conversions[6]` 将一个 0 类型单位转换为 24 个 7 类型单位。
+
+ 
+
+**提示：**
+
+- `2 <= n <= 10^5`
+- `conversions.length == n - 1`
+- `0 <= sourceUniti, targetUniti < n`
+- `1 <= conversionFactori <= 10^9`
+- 保证单位 0 可以通过 **唯一** 的转换路径（不需要反向转换）转换为任何其他单位。
+
+
+
+
+
+```python
+from typing import List
+from collections import deque
+
+class Solution:
+    def baseUnitConversions(self, conversions: List[List[int]]) -> List[int]:
+        n = len(conversions)
+        #conversions.sort(key=lambda x: (x[0], x[1]))
+        dp = [0] * (n+1)
+        dp[0] = 1
+        MOD = 10**9 + 7
+        for i in range(n):
+            s, t, f = conversions[i]
+            if s == 0:
+                dp[t] = f
+            else:
+                dp[t] = (dp[s] * f) % MOD
+
+
+        return dp
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.baseUnitConversions([[0, 1, 2], [1, 2, 3]]))
+    print(sol.baseUnitConversions([[0,1,2],[0,2,3],[1,3,4],[1,4,5],[2,5,2],[4,6,3],[5,7,4]]))
+    print(sol.baseUnitConversions([[0,3,4],[3,2,7],[2,1,12]])) # [1,336,28,4]
+
+```
+
+
+
+## 3529.统计水平子串和垂直子串重叠格子的数目
+
+KMP, https://leetcode.cn/problems/count-cells-in-overlapping-horizontal-and-vertical-substrings/
+
+
+
+给你一个由字符组成的 `m x n` 矩阵 `grid` 和一个字符串 `pattern`。
+
+**水平子串** 是从左到右的一段连续字符序列。如果子串到达了某行的末尾，它将换行并从下一行的第一个字符继续。**不会** 从最后一行回到第一行。
+
+**垂直子串** 是从上到下的一段连续字符序列。如果子串到达了某列的底部，它将换列并从下一列的第一个字符继续。**不会** 从最后一列回到第一列。
+
+请统计矩阵中满足以下条件的单元格数量：
+
+- 该单元格必须属于 **至少** 一个等于 `pattern` 的水平子串，且属于 **至少** 一个等于 `pattern` 的垂直子串。
+
+返回满足条件的单元格数量。
+
+ 
+
+**示例 1：**
+
+![img](https://pic.leetcode.cn/1745660164-PjoTAy-gridtwosubstringsdrawio.png)
+
+**输入：** grid = [["a","a","c","c"],["b","b","b","c"],["a","a","b","a"],["c","a","a","c"],["a","a","c","c"]], pattern = "abaca"
+
+**输出：** 1
+
+**解释：**
+
+`"abaca"` 作为一个水平子串（蓝色）和一个垂直子串（红色）各出现一次，并在一个单元格（紫色）处相交。
+
+**示例 2：**
+
+![img](https://pic.leetcode.cn/1745660201-bMoajW-gridexample2fixeddrawio.png)
+
+**输入：** grid = [["c","a","a","a"],["a","a","b","a"],["b","b","a","a"],["a","a","b","a"]], pattern = "aba"
+
+**输出：** 4
+
+**解释：**
+
+上述被标记的单元格都同时属于至少一个 `"aba"` 的水平和垂直子串。
+
+**示例 3：**
+
+**输入：** grid = [["a"]], pattern = "a"
+
+**输出：** 1
+
+ 
+
+**提示：**
+
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 1000`
+- `1 <= m * n <= 10^5`
+- `1 <= pattern.length <= m * n`
+- `grid` 和 `pattern` 仅由小写英文字母组成。
+
+
+
+下面给出一种基于 KMP（Knuth–Morris–Pratt）字符串匹配的线性时间解法。思路如下：
+
+1. **将矩阵展平为两个长串**
+
+   - 水平串 `S_h`：按行从左到右、从上到下依次拼接，长度为 $m\times n$。
+   - 垂直串 `S_v`：按列从上到下、从左到右依次拼接，长度同样为 $m\times n$。
+
+2. **用 KMP 在两条长串上分别查找所有与 `pattern` 完全匹配的起始位置**
+
+   - 得到水平匹配集合 $\{i\}\subseteq[0,\,mn-|p|]$；
+   - 得到垂直匹配集合 $\{j\}\subseteq[0,\,mn-|p|]$。
+
+3. **标记所有被水平匹配覆盖的格子**
+
+   - 对每个水平匹配起点 $i$，把区间 $[i,\,i+|p|-1]$ 内的所有位置都标记为 “横向有效”。
+
+4. **标记所有被垂直匹配覆盖的格子**
+
+   - 对每个垂直匹配起点 $j$，把区间 $[j,\,j+|p|-1]$ 内的所有位置都标记为 “纵向有效”。
+
+   - 注意：垂直串的第 $k$ 个字符对应的矩阵位置为
+     $$
+       \text{row} = k \bmod m,\quad
+       \text{col} = \lfloor k / m\rfloor.
+     $$
+
+5. **统计同时被横向和纵向标记的格子数量**
+
+   - 在矩阵视为一维下标 $0\ldots mn-1$ 上统计两种标记都为 `True` 的总数。
+
+
+
+用 **差分数组** 替代逐字符打标，做到真正的 $O(mn+|p|)$
+
+```python
+from typing import List
+
+class Solution:
+    def countCells(self, grid: List[List[str]], pattern: str) -> int:
+        m, n = len(grid), len(grid[0])
+        L = len(pattern)
+        total = m * n
+        if L > total:
+            return 0
+
+        # 1. 构造水平串和垂直串
+        S_h = ''.join(''.join(row) for row in grid)
+        cols = []
+        for j in range(n):
+            for i in range(m):
+                cols.append(grid[i][j])
+        S_v = ''.join(cols)
+
+        # 2. KMP 预处理：构造 lps 数组
+        def build_lps(p: str) -> List[int]:
+            lps = [0] * len(p)
+            k = 0
+            for i in range(1, len(p)):
+                while k > 0 and p[k] != p[i]:
+                    k = lps[k - 1]
+                if p[k] == p[i]:
+                    k += 1
+                lps[i] = k
+            return lps
+
+        # 3. KMP 查所有匹配起点
+        def kmp_search(text: str, pat: str, lps: List[int]) -> List[int]:
+            res = []
+            j = 0
+            for i, ch in enumerate(text):
+                while j > 0 and pat[j] != ch:
+                    j = lps[j - 1]
+                if pat[j] == ch:
+                    j += 1
+                if j == len(pat):
+                    res.append(i - j + 1)
+                    j = lps[j - 1]
+            return res
+
+        lps = build_lps(pattern)
+        starts_h = kmp_search(S_h, pattern, lps)
+        starts_v = kmp_search(S_v, pattern, lps)
+
+        # 4. 用差分数组标记覆盖区间
+        #    diff_h[i] 表示 S_h[i] 位置的“增量”，最后前缀和>0即被水平匹配覆盖
+        #    diff_v 同理针对 S_v
+        diff_h = [0] * (total + 1)
+        diff_v = [0] * (total + 1)
+        for st in starts_h:
+            diff_h[st] += 1
+            diff_h[st + L] -= 1
+        for st in starts_v:
+            diff_v[st] += 1
+            diff_v[st + L] -= 1
+
+        # 5. 前缀和，得到覆盖标志
+        cov_h = [0] * total
+        cov_v = [0] * total
+        cnt = 0
+        s = 0
+        for i in range(total):
+            s += diff_h[i]
+            cov_h[i] = 1 if s > 0 else 0
+        s = 0
+        for i in range(total):
+            s += diff_v[i]
+            cov_v[i] = 1 if s > 0 else 0
+
+        # 6. 遍历每个格子，映射到 S_h 和 S_v 的下标，统计双重覆盖
+        ans = 0
+        for i in range(m):
+            base_h = i * n       # 行首在 S_h 的下标
+            for j in range(n):
+                idx_h = base_h + j      # (i,j) 在 S_h
+                idx_v = j * m + i       # (i,j) 在 S_v
+                if cov_h[idx_h] and cov_v[idx_v]:
+                    ans += 1
+        return ans
+
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.countCells(
+        [["a", "a", "c", "c"], ["b", "b", "b", "c"], ["a", "a", "b", "a"], ["c", "a", "a", "c"], ["a", "a", "c", "c"]],
+        "abaca"))  # Output: 1
+    print(sol.countCells([["c", "a", "a", "a"], ["a", "a", "b", "a"], ["b", "b", "a", "a"], ["a", "a", "b", "a"]],
+                         "aba"))  # Output: 4
+    print(sol.countCells([["a"]], "a"))  # Output: 1
+```
+
+**复杂度分析**
+
+- 时间复杂度：
+  - 构造两条长度为 $mn$ 的串： $O(mn)$
+  - 构造 LPS 数组： $O(|\text{pattern}|)$
+  - 在两条串上各做一次 KMP 匹配： $O(mn + |\text{pattern}|)$
+  - 标记和计数： $O(mn)$
+    总体为 $O(mn + |\text{pattern}|)$，在 $mn\le10^5$ 的约束下足够快。
+- 空间复杂度： $O(mn)$（用于存储两条串和两个标记数组）。
+
+这样就能线性时间内准确统计出既在某个水平匹配中又在某个垂直匹配中的所有格子数。
+
+
+
+**关键优化点**
+
+- 不再对每一次匹配都循环标记 $L$ 个格子，而是对匹配区间做差分，加速到对每个匹配只做两次增/减操作。
+- 最后一次遍历 $O(mn)$ 的前缀和即可得到每个位置是否被覆盖。
+
+如此整体现实 $O(mn + |pattern|)$ 时间，空间 $O(mn)$，即可通过所有测试。
+
+
+
+## M3531.统计被覆盖的建筑
+
+implementation, https://leetcode.cn/problems/count-covered-buildings/
+
+给你一个正整数 `n`，表示一个 `n x n` 的城市，同时给定一个二维数组 `buildings`，其中 `buildings[i] = [x, y]`表示位于坐标 `[x, y]` 的一个 **唯一** 建筑。
+
+如果一个建筑在四个方向（左、右、上、下）中每个方向上都至少存在一个建筑，则称该建筑 **被覆盖** 。
+
+返回 **被覆盖** 的建筑数量。
+
+ 
+
+**示例 1：**
+
+<img src="https://pic.leetcode.cn/1745660407-qtNUjI-telegram-cloud-photo-size-5-6212982906394101085-m.jpg" alt="img" style="zoom:50%;" />
+
+**输入:** n = 3, buildings = [[1,2],[2,2],[3,2],[2,1],[2,3]]
+
+**输出:** 1
+
+**解释:**
+
+- 只有建筑[2,2]被覆盖，因为它在每个方向上都至少存在一个建筑：
+  - 上方 (`[1,2]`)
+  - 下方 (`[3,2]`)
+  - 左方 (`[2,1]`)
+  - 右方 (`[2,3]`)
+- 因此，被覆盖的建筑数量是 1。
+
+**示例 2：**
+
+<img src="https://pic.leetcode.cn/1745660407-tUMUKl-telegram-cloud-photo-size-5-6212982906394101086-m.jpg" alt="img" style="zoom:50%;" />
+
+**输入:** n = 3, buildings = [[1,1],[1,2],[2,1],[2,2]]
+
+**输出:** 0
+
+**解释:**
+
+- 没有任何一个建筑在每个方向上都有至少一个建筑。
+
+**示例 3：**
+
+<img src="https://pic.leetcode.cn/1745660407-bQIwBX-telegram-cloud-photo-size-5-6248862251436067566-x.jpg" alt="img" style="zoom: 33%;" />
+
+**输入:** n = 5, buildings = [[1,3],[3,2],[3,3],[3,5],[5,3]]
+
+**输出:** 1
+
+**解释:**
+
+- 只有建筑[3,3]被覆盖，因为它在每个方向上至少存在一个建筑：
+  - 上方 (`[1,3]`)
+  - 下方 (`[5,3]`)
+  - 左方 (`[3,2]`)
+  - 右方 (`[3,5]`)
+- 因此，被覆盖的建筑数量是 1。
+
+ 
+
+**提示：**
+
+- `2 <= n <= 10^5`
+- `1 <= buildings.length <= 10^5`
+- `buildings[i] = [x, y]`
+- `1 <= x, y <= n`
+- `buildings` 中所有坐标均 **唯一** 。
+
+
+
+
+
+思路是：
+
+1. 先遍历一次所有建筑，统计每一行（相同 x）的最小列号和最大列号，以及每一列（相同 y）的最小行号和最大行号。
+2. 再遍历一次，每个建筑 (x,y) 同时满足：
+   - 在它同一行上，存在列号更小的建筑（即 y>row_min[x]）且存在列号更大的建筑（即 y<row_max[x]）；
+   - 在它同一列上，存在行号更小的建筑（即 x>col_min[y]）且存在行号更大的建筑（即 x<col_max[y]）。
+3. 满足以上四个条件的建筑即为“被覆盖”建筑。
+
+```python
+from typing import List
+import collections
+
+class Solution:
+    def countCoveredBuildings(self, n: int, buildings: List[List[int]]) -> int:
+        # row_min[x], row_max[x] 分别记录行 x 上的最小列号和最大列号
+        row_min = collections.defaultdict(lambda: float('inf'))
+        row_max = collections.defaultdict(lambda: float('-inf'))
+        # col_min[y], col_max[y] 分别记录列 y 上的最小行号和最大行号
+        col_min = collections.defaultdict(lambda: float('inf'))
+        col_max = collections.defaultdict(lambda: float('-inf'))
+        
+        # 第一次遍历：填充行/列的极值
+        for x, y in buildings:
+            if y < row_min[x]:
+                row_min[x] = y
+            if y > row_max[x]:
+                row_max[x] = y
+            if x < col_min[y]:
+                col_min[y] = x
+            if x > col_max[y]:
+                col_max[y] = x
+        
+        # 第二次遍历：判断每个建筑是否在四个方向上都有其他建筑
+        covered = 0
+        for x, y in buildings:
+            # 左：y > row_min[x]
+            # 右：y < row_max[x]
+            # 上：x > col_min[y]
+            # 下：x < col_max[y]
+            if (y > row_min[x] and y < row_max[x] and
+                x > col_min[y] and x < col_max[y]):
+                covered += 1
+        
+        return covered
+```
+
+**复杂度分析：**
+
+- 时间复杂度：O(m)，其中 m 为 `buildings.length`，第一次和第二次遍历都是线性的。
+- 空间复杂度：O(m)，用于存储行/列的极值映射。
+
+
+
+## M3532.针对图的路径存在性查询I
+
+disjoint set, https://leetcode.cn/problems/path-existence-queries-in-a-graph-i/description/
+
+给你一个整数 `n`，表示图中的节点数量，这些节点按从 `0` 到 `n - 1` 编号。
+
+同时给你一个长度为 `n` 的整数数组 `nums`，该数组按 **非递减** 顺序排序，以及一个整数 `maxDiff`。
+
+如果满足 `|nums[i] - nums[j]| <= maxDiff`（即 `nums[i]` 和 `nums[j]` 的 **绝对差** 至多为 `maxDiff`），则节点 `i` 和节点 `j` 之间存在一条 **无向边** 。
+
+此外，给你一个二维整数数组 `queries`。对于每个 `queries[i] = [ui, vi]`，需要判断节点 `ui` 和 `vi` 之间是否存在路径。
+
+返回一个布尔数组 `answer`，其中 `answer[i]` 等于 `true` 表示在第 `i` 个查询中节点 `ui` 和 `vi` 之间存在路径，否则为 `false`。
+
+ 
+
+**示例 1：**
+
+**输入:** n = 2, nums = [1,3], maxDiff = 1, queries = [[0,0],[0,1]]
+
+**输出:** [true,false]
+
+**解释:**
+
+- 查询 `[0,0]`：节点 0 有一条到自己的显然路径。
+- 查询 `[0,1]`：节点 0 和节点 1 之间没有边，因为 `|nums[0] - nums[1]| = |1 - 3| = 2`，大于 `maxDiff`。
+- 因此，在处理完所有查询后，最终答案为 `[true, false]`。
+
+**示例 2：**
+
+**输入:** n = 4, nums = [2,5,6,8], maxDiff = 2, queries = [[0,1],[0,2],[1,3],[2,3]]
+
+**输出:** [false,false,true,true]
+
+**解释:**
+
+生成的图如下：
+
+<img src="https://pic.leetcode.cn/1745660506-eNVQtC-screenshot-2025-03-26-at-122249.png" alt="img" style="zoom:33%;" />
+
+- 查询 `[0,1]`：节点 0 和节点 1 之间没有边，因为 `|nums[0] - nums[1]| = |2 - 5| = 3`，大于 `maxDiff`。
+- 查询 `[0,2]`：节点 0 和节点 2 之间没有边，因为 `|nums[0] - nums[2]| = |2 - 6| = 4`，大于 `maxDiff`。
+- 查询 `[1,3]`：节点 1 和节点 3 之间存在路径通过节点 2，因为 `|nums[1] - nums[2]| = |5 - 6| = 1` 和 `|nums[2] - nums[3]| = |6 - 8| = 2`，都小于等于 `maxDiff`。
+- 查询 `[2,3]`：节点 2 和节点 3 之间有一条边，因为 `|nums[2] - nums[3]| = |6 - 8| = 2`，等于 `maxDiff`。
+- 因此，在处理完所有查询后，最终答案为 `[false, false, true, true]`。
+
+ 
+
+**提示：**
+
+- `1 <= n == nums.length <= 105`
+- `0 <= nums[i] <= 105`
+- `nums` 按 **非递减** 顺序排序。
+- `0 <= maxDiff <= 10^5`
+- `1 <= queries.length <= 10^5`
+- `queries[i] == [ui, vi]`
+- `0 <= ui, vi < n`
+
+
+
+这个题目可以用「并查集」（Union Find）来高效处理！
+
+------
+
+因为 `nums` 是 **非递减** 排序的，所以如果 `|nums[i] - nums[j]| <= maxDiff`，节点 `i` 和 `j` **一定是相邻的或很近的**。
+所以我们可以：
+
+1. 从左到右，**只连接相邻节点** `i` 和 `i+1`，如果 `nums[i+1] - nums[i] <= maxDiff`。
+2. 用 **并查集** 把这些能连通的点合并在一起。
+3. 最后，对于每个查询 `[u, v]`，只需要判断 `u` 和 `v` 是否在同一个连通块里（也就是 `find(u) == find(v)`）。
+
+这样，整体复杂度大概是 **O(n + q)**，能轻松应对 `10^5` 规模！
+
+------
+
+完整代码：
+
+```python
+from typing import List
+
+class UnionFind:
+    def __init__(self, n):
+        self.parent = list(range(n))
+    
+    def find(self, x):
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])  # 路径压缩
+        return self.parent[x]
+    
+    def union(self, x, y):
+        self.parent[self.find(x)] = self.find(y)
+
+class Solution:
+    def pathExistenceQueries(self, n: int, nums: List[int], maxDiff: int, queries: List[List[int]]) -> List[bool]:
+        uf = UnionFind(n)
+
+        for i in range(n - 1):
+            if nums[i+1] - nums[i] <= maxDiff:
+                uf.union(i, i+1)
+
+        res = []
+        for u, v in queries:
+            res.append(uf.find(u) == uf.find(v))
+        return res
+```
+
+
+
+核心思想总结：
+
+- 只在 `nums[i]` 和 `nums[i+1]` 之间建边（因为排序了，其他的不可能更近）。
+- 并查集合并相邻可达节点。
+- 查询就是快速判断是不是同一个集合。
 
 
 
@@ -33232,7 +34218,929 @@ if __name__ == "__main__":
 
 
 
+## 3518.最小回文排列II
+
+hash table, math, string, combinatorics, counting,  https://leetcode.cn/problems/smallest-palindromic-rearrangement-ii/
+
+给你一个 **回文** 字符串 `s` 和一个整数 `k`。
+
+返回 `s` 的按字典序排列的 **第 k 小** 回文排列。如果不存在 `k` 个不同的回文排列，则返回空字符串。
+
+**注意：** 产生相同回文字符串的不同重排视为相同，仅计为一次。
+
+如果一个字符串从前往后和从后往前读都相同，那么这个字符串是一个 **回文** 字符串。
+
+**排列** 是字符串中所有字符的重排。
+
+如果字符串 `a` 按字典序小于字符串 `b`，则表示在第一个不同的位置，`a` 中的字符比 `b` 中的对应字符在字母表中更靠前。
+如果在前 `min(a.length, b.length)` 个字符中没有区别，则较短的字符串按字典序更小。
+
+**示例 1：**
+
+**输入：** s = "abba", k = 2
+
+**输出：** "baab"
+
+**解释：**
+
+- `"abba"` 的两个不同的回文排列是 `"abba"` 和 `"baab"`。
+- 按字典序，`"abba"` 位于 `"baab"` 之前。由于 `k = 2`，输出为 `"baab"`。
+
+**示例 2：**
+
+**输入：** s = "aa", k = 2
+
+**输出：** ""
+
+**解释：**
+
+- 仅有一个回文排列：`"aa"`。
+- 由于 `k = 2` 超过了可能的排列数，输出为空字符串。
+
+**示例 3：**
+
+**输入：** s = "bacab", k = 1
+
+**输出：** "abcba"
+
+**解释：**
+
+- `"bacab"` 的两个不同的回文排列是 `"abcba"` 和 `"bacab"`。
+- 按字典序，`"abcba"` 位于 `"bacab"` 之前。由于 `k = 1`，输出为 `"abcba"`。
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 10^4`
+- `s` 由小写英文字母组成。
+- 保证 `s` 是回文字符串。
+- `1 <= k <= 10^6`
+
+
+
+
+
+
+
+```python
+from collections import Counter
+
+
+class Solution:
+    def smallestPalindrome(self, s: str, k: int) -> str:
+        cnt = Counter(s)
+        # 1. 构造半串计数和中间字符
+        half = {}
+        mid = ''
+        m = 0
+        for ch in sorted(cnt):
+            c = cnt[ch]
+            if c & 1:
+                mid = ch
+            half[ch] = c // 2
+            m += c // 2
+
+        # 2. 预计算 factorial[0..m]
+        fact = [1] * (m + 1)
+        for i in range(1, m + 1):
+            fact[i] = fact[i - 1] * i
+
+        # 初始的总排列数 = m! / ∏(half[ch]!)
+        total = fact[m]
+        for v in half.values():
+            total //= fact[v]
+        if total < k:
+            return ""  # 不足 k 个
+
+        # 3. 增量生成第 k 小半串
+        left = []
+        rem = m
+        # 当前“可用排列数”为 total = rem! / ∏(half[ch]!)
+        for _ in range(m):
+            # 在每个位置，按字典序尝试
+            for ch in half:
+                v = half[ch]
+                if v == 0:
+                    continue
+                # 如果我们把一个 ch 放到当前位置，
+                # 剩余的排列数 new_total = total * v / rem
+                # （因为 rem!/(v!·…) → (rem-1)!/((v-1)!·…) = total * v / rem）
+                cnt_here = total * v // rem
+                if cnt_here >= k:
+                    # 选中 ch
+                    left.append(ch)
+                    # 更新 total、half、rem
+                    total = cnt_here
+                    half[ch] -= 1
+                    rem -= 1
+                    break
+                # 否则跳过 ch
+                k -= cnt_here
+
+        # 拼回文
+        half_str = ''.join(left)
+        return half_str + mid + half_str[::-1]
+
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.smallestPalindrome("abba", 1))  # "baab"
+    print(sol.smallestPalindrome("aa", 2))  # ""
+
+```
+
+
+
+## 3519.统计逐位递减的整数
+
+数位DP，https://leetcode.cn/problems/count-numbers-with-non-decreasing-digits/
+
+给你两个以字符串形式表示的整数 `l` 和 `r`，以及一个整数 `b`。返回在区间 `[l, r]` （闭区间）内，以 `b` 进制表示时，其每一位数字为 **非递减** 顺序的整数个数。
+
+整数逐位 **非递减** 需要满足：当按从左到右（从最高有效位到最低有效位）读取时，每一位数字都大于或等于前一位数字。
+
+由于答案可能非常大，请返回对 `10^9 + 7` **取余** 后的结果。
+
+ 
+
+**示例 1：**
+
+**输入：** l = "23", r = "28", b = 8
+
+**输出：** 3
+
+**解释：**
+
+- 从 23 到 28 的数字在 8 进制下为：27、30、31、32、33 和 34。
+- 其中，27、33 和 34 的数字是非递减的。因此，输出为 3。
+
+**示例 2：**
+
+**输入：** l = "2", r = "7", b = 2
+
+**输出：** 2
+
+**解释：**
+
+- 从 2 到 7 的数字在 2 进制下为：10、11、100、101、110 和 111。
+- 其中，11 和 111 的数字是非递减的。因此，输出为 2。
+
+ 
+
+**提示：**
+
+- `1 <= l.length <= r.length <= 100`
+- `2 <= b <= 10`
+- `l` 和 `r` 仅由数字（`0-9`）组成。
+- `l` 表示的值小于或等于 `r` 表示的值。
+- `l` 和 `r` 不包含前导零。
+
+
+
+下面给出完整的 Python 实现，思路如下：
+
+1. **将十进制字符串转换为 b 进制的数字列表**  
+   由于输入的上下界 `l`、`r` 都是十进制的字符串，我们先编写一个函数 `to_base_digits(s, b)`，将十进制字符串 `s` 转换成基数为 `b` 的数字列表（最高位在前）。
+
+2. **“十进制字符串减一”操作**  
+   为了计算区间 \[l, r\] 内满足条件的数目，我们可以先算出 \[0, r\] 内满足条件的数，再减去 \[0, l-1\] 内满足条件的数。这里需要一个函数 `dec_str_minus_one(s)`，对十进制字符串做 “减一” 操作（假定 s ≥ "1"）。
+
+3. **数位 DP**  
+   定义 `dp[pos][last][tight]` 表示：当前在第 `pos` 位（从 0 开始，最高位），前一位的数字是 `last`，`tight` 表示是否还受到上界限制（1=是，0=否），从这一状态出发能构造的满足“各位非递减”条件的合法后缀的个数。  
+   - 如果 `tight==1`，那么当前位置的数字上限是 `digits[pos]`，否则上限是 `b-1`。  
+   - 下一位的 `last` 要取不小于当前位的值，保证非递减。
+
+4. **组合起来**  
+   - 先计算 `count_up_to(r)`，再计算 `count_up_to(l-1)`，两者相减并加上 MOD 即为答案。
+
+```python
+MOD = 10**9 + 7
+
+class Solution:
+    def countNumbers(self, l: str, r: str, b: int) -> int:
+        # 1. 十进制字符串减一
+        def dec_str_minus_one(s: str) -> str:
+            # 假设 s >= "1"
+            arr = list(s)
+            i = len(arr) - 1
+            while i >= 0:
+                if arr[i] == '0':
+                    arr[i] = '9'
+                    i -= 1
+                else:
+                    arr[i] = str(int(arr[i]) - 1)
+                    break
+            # 去掉可能出现的最高位 '0'
+            if arr[0] == '0':
+                arr.pop(0)
+            return ''.join(arr) if arr else '0'
+
+        # 2. 将十进制字符串转为 b 进制数字列表（最高位在前）
+        def to_base_digits(s: str, base: int) -> list[int]:
+            # 用“短除法”模拟十进制字符串除 base
+            digits = []
+            num = list(map(int, s))
+            while num and not (len(num) == 1 and num[0] == 0):
+                carry = 0
+                new_num = []
+                for d in num:
+                    carry = carry * 10 + d
+                    q = carry // base
+                    r = carry % base
+                    if new_num or q != 0:
+                        new_num.append(q)
+                    carry = r
+                digits.append(carry)
+                num = new_num if new_num else [0]
+            return digits[::-1]  # 目前是低位到高位，翻转为高位到低位
+
+        # 3. 计算 [0, S] 范围内满足条件的个数
+        from functools import lru_cache
+
+        def count_up_to(S: str) -> int:
+            # 转为 base b 数字列表
+            digs = to_base_digits(S, b)
+            n = len(digs)
+
+            @lru_cache(None)
+            def dp(pos: int, last: int, tight: int) -> int:
+                if pos == n:
+                    return 1  # 构造完毕
+                res = 0
+                up = digs[pos] if tight else b - 1
+                # 枚举当前位置的数字 x，要求 x >= last，且 x <= up
+                for x in range(last, up + 1):
+                    res = (res + dp(pos + 1, x, tight and (x == up))) % MOD
+                return res
+
+            # 起始时，last = 0（因为可以从 0 开始），tight = 1
+            return dp(0, 0, 1)
+
+        # 4. 主逻辑：count(r) - count(l-1)
+        l_minus_1 = dec_str_minus_one(l)
+        ans = (count_up_to(r) - count_up_to(l_minus_1)) % MOD
+        return ans
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.countNumbers("23", "28", 8))  # 3
+    print(sol.countNumbers("2", "7", 2))    # 2
+```
+
+**复杂度分析**
+
+- 将长度为 \(D\) 的十进制字符串转换为 \(b\) 进制，最坏情况下每次除法要 $O(D)$，共做 $O(D \log_{b}(10^D)) = O(D^2)$ 步；  
+- DP 状态数为 $O(n \times b \times 2)$，其中 \(n\) 是基 \(b\) 表示后的位数，最坏 $n = O(D \log_b 10)$；转移枚举最多 $b $次，因此整体 DP 复杂度为 $O(n \times b^2)$。  
+- 综合来看，对于 $D \le 100$、$b \le 10$ 的限制，完全在可接受范围内。
+
+
+
+
+
 # 力扣周赛双周赛
+
+
+
+## 第 447 场周赛-20250427
+
+https://leetcode.cn/contest/weekly-contest-447/
+
+中国时间：2025-04-27 10:30, 1 小时 30 分
+
+
+
+### M3531.统计被覆盖的建筑
+
+implementation, https://leetcode.cn/problems/count-covered-buildings/
+
+
+
+### M3532.针对图的路径存在性查询I
+
+disjoint set, https://leetcode.cn/problems/path-existence-queries-in-a-graph-i/description/
+
+
+
+### T3533.判断连接可整除性
+
+https://leetcode.cn/problems/concatenated-divisibility/
+
+给你一个正整数数组 `nums` 和一个正整数 `k`。
+
+当 `nums` 的一个排列中的所有数字，按照排列顺序 **连接其十进制表示** 后形成的数可以 **被** `k` 整除时，我们称该排列形成了一个 **可整除连接** 。
+
+返回能够形成 **可整除连接** 且 **字典序最小** 的排列（按整数列表的形式表示）。如果不存在这样的排列，返回一个空列表。
+
+**排列** 是数组所有元素的一种重排。
+
+如果在数组 `a` 和数组 `b` 第一个位置不同的地方，`a` 的元素小于对应位置上 `b` 的元素，那么数组 `a` 的 **字典序小于**数组 `b` 。
+如果前 `min(a.length, b.length)` 个元素均相同，则较短的数组字典序更小。
+
+ 
+
+**示例 1：**
+
+**输入:** nums = [3,12,45], k = 5
+
+**输出:** [3,12,45]
+
+**解释:**
+
+| 排列        | 连接后的值 | 是否能被 5 整除 |
+| ----------- | ---------- | --------------- |
+| [3, 12, 45] | 31245      | 是              |
+| [3, 45, 12] | 34512      | 否              |
+| [12, 3, 45] | 12345      | 是              |
+| [12, 45, 3] | 12453      | 否              |
+| [45, 3, 12] | 45312      | 否              |
+| [45, 12, 3] | 45123      | 否              |
+
+可以形成可整除连接且字典序最小的排列是 `[3,12,45]`。
+
+**示例 2：**
+
+**输入:** nums = [10,5], k = 10
+
+**输出:** [5,10]
+
+**解释:**
+
+| 排列    | 连接后的值 | 是否能被 10 整除 |
+| ------- | ---------- | ---------------- |
+| [5, 10] | 510        | 是               |
+| [10, 5] | 105        | 否               |
+
+可以形成可整除连接且字典序最小的排列是 `[5,10]`。
+
+**示例 3：**
+
+**输入:** nums = [1,2,3], k = 5
+
+**输出:** []
+
+**解释:**
+
+由于不存在任何可以形成有效可整除连接的排列，因此返回空列表。
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 13`
+- `1 <= nums[i] <= 10^5`
+- `1 <= k <= 100`
+
+
+
+```python
+class Solution:
+    def concatenatedDivisibility(self, nums: List[int], k: int) -> List[int]:
+```
+
+
+
+### T3534.针对图的路径存在性查询II
+
+https://leetcode.cn/problems/path-existence-queries-in-a-graph-ii/
+
+给你一个整数 `n`，表示图中的节点数量，这些节点按从 `0` 到 `n - 1` 编号。
+
+同时给你一个长度为 `n` 的整数数组 `nums`，以及一个整数 `maxDiff`。
+
+如果满足 `|nums[i] - nums[j]| <= maxDiff`（即 `nums[i]` 和 `nums[j]` 的 **绝对差** 至多为 `maxDiff`），则节点 `i` 和节点 `j` 之间存在一条 **无向边** 。
+
+此外，给你一个二维整数数组 `queries`。对于每个 `queries[i] = [ui, vi]`，找到节点 `ui` 和节点 `vi` 之间的 **最短距离** 。如果两节点之间不存在路径，则返回 -1。
+
+返回一个数组 `answer`，其中 `answer[i]` 是第 `i` 个查询的结果。
+
+**注意：**节点之间的边是无权重（unweighted）的。
+
+ 
+
+**示例 1：**
+
+**输入:** n = 5, nums = [1,8,3,4,2], maxDiff = 3, queries = [[0,3],[2,4]]
+
+**输出:** [1,1]
+
+**解释:**
+
+生成的图如下：
+
+![img](https://pic.leetcode.cn/1745660620-PauXMH-4149example1drawio.png)
+
+| 查询   | 最短路径 | 最短距离 |
+| ------ | -------- | -------- |
+| [0, 3] | 0 → 3    | 1        |
+| [2, 4] | 2 → 4    | 1        |
+
+因此，输出为 `[1, 1]`。
+
+**示例 2：**
+
+**输入:** n = 5, nums = [5,3,1,9,10], maxDiff = 2, queries = [[0,1],[0,2],[2,3],[4,3]]
+
+**输出:** [1,2,-1,1]
+
+**解释:**
+
+生成的图如下：
+
+![img](https://pic.leetcode.cn/1745660627-mSVsDs-4149example2drawio.png)
+
+| 查询   | 最短路径  | 最短距离 |
+| ------ | --------- | -------- |
+| [0, 1] | 0 → 1     | 1        |
+| [0, 2] | 0 → 1 → 2 | 2        |
+| [2, 3] | 无        | -1       |
+| [4, 3] | 3 → 4     | 1        |
+
+因此，输出为 `[1, 2, -1, 1]`。
+
+**示例 3：**
+
+**输入:** n = 3, nums = [3,6,1], maxDiff = 1, queries = [[0,0],[0,1],[1,2]]
+
+**输出:** [0,-1,-1]
+
+**解释:**
+
+由于以下原因，任意两个节点之间都不存在边：
+
+- 节点 0 和节点 1：`|nums[0] - nums[1]| = |3 - 6| = 3 > 1`
+- 节点 0 和节点 2：`|nums[0] - nums[2]| = |3 - 1| = 2 > 1`
+- 节点 1 和节点 2：`|nums[1] - nums[2]| = |6 - 1| = 5 > 1`
+
+因此，不存在任何可以到达其他节点的节点，输出为 `[0, -1, -1]`。
+
+ 
+
+**提示：**
+
+- `1 <= n == nums.length <= 10^5`
+- `0 <= nums[i] <= 10^5`
+- `0 <= maxDiff <= 10^5`
+- `1 <= queries.length <= 10^5`
+- `queries[i] == [ui, vi]`
+- `0 <= ui, vi < n`
+
+
+
+
+
+
+
+超出时间限制 664 / 682 个通过的测试用例
+
+------
+
+按「并查集 + 动态 BFS」思路修正
+
+1. **连通性剪枝**
+
+   - 排序后只对相邻对做并查，快速判断两点若不在同一块，直接 `-1`。
+
+2. **真正的 BFS**
+
+   - **不再** 预先把所有边都存到邻接表（那会是 O(n²)），而是在 BFS 扩展时动态找“滑动窗口”内的所有未访问节点：
+
+     1. 先把所有节点按 `nums` 升序，记为数组 `A`，并维护一个**平衡集合**（Python 用 `bisect` + `list` 或第三方的 `sortedcontainers`）存放「还没被 BFS 访问过」的所有 **排序下标**。
+
+     2. 从起点 `u` 出发，把它在排序中的位置 `ru` 弹出集合并入队，`dist[ru]=0`。
+
+     3. 每次取出当前排位 `x`，用二分在 `A` 上找左右界
+
+        ```python
+        lo = bisect_left(A, A[x] - maxDiff)
+        hi = bisect_right(A, A[x] + maxDiff) - 1
+        ```
+
+     4. 在平衡集合里快速定位所有 ∈ [lo..hi] 的排位 `y`，它们都是直接邻居：
+
+        - 将它们从集合里一并删掉
+        - `dist[y] = dist[x] + 1`，加入队列
+
+     5. 直到你把目标 `rv` 弹出，返回它的 `dist`。
+
+这样一来，每个节点 **只会被访问一次**，查找窗口又是 O(log n) 去定位边界，摊销下来 **O((n + q)·log n)**。
+
+------
+
+```python
+from collections import deque
+from bisect import bisect_left, bisect_right
+from sortedcontainers import SortedList  # pip install sortedcontainers
+
+class Solution:
+    def pathExistenceQueries(self, n, nums, maxDiff, queries):
+        # 1) 并查集只对相邻排序对做 union，用于快速连通性剪枝
+        parent = list(range(n))
+        def find(x):
+            while parent[x] != x:
+                parent[x] = parent[parent[x]]
+                x = parent[x]
+            return x
+        def union(a, b):
+            pa, pb = find(a), find(b)
+            if pa != pb:
+                parent[pb] = pa
+
+        nodes = list(range(n))
+        nodes.sort(key=lambda i: nums[i])
+        for i in range(n-1):
+            u, v = nodes[i], nodes[i+1]
+            if nums[v] - nums[u] <= maxDiff:
+                union(u, v)
+
+        # 2) 排序数组 & 反向映射
+        A   = [nums[i] for i in nodes]
+        pos = [0]*n
+        for sorted_idx, orig in enumerate(nodes):
+            pos[orig] = sorted_idx
+
+        answers = []
+        for u, v in queries:
+            if u == v:
+                answers.append(0)
+                continue
+            # 剪枝：不连通就 -1
+            if find(u) != find(v):
+                answers.append(-1)
+                continue
+
+            # 真正 BFS：在排序下标空间里跑
+            ru, rv = pos[u], pos[v]
+            # ensure we know when we hit rv
+            sl = SortedList(range(n))      # 当前所有未访问的排位
+            dist = [-1]*n
+
+            dq = deque()
+            dq.append(ru)
+            dist[ru] = 0
+            sl.remove(ru)
+
+            while dq:
+                x = dq.popleft()
+                if x == rv:
+                    break
+
+                # 找到所有 A[y] 与 A[x] 差值 ≤ maxDiff 的 y ∈ sl
+                lo = bisect_left(A, A[x] - maxDiff)
+                hi = bisect_right(A, A[x] + maxDiff) - 1
+
+                # sl.irange 直接取出所有 in [lo, hi]
+                for y in list(sl.irange(lo, hi)):
+                    sl.remove(y)
+                    dist[y] = dist[x] + 1
+                    dq.append(y)
+
+            answers.append(dist[rv])
+
+        return answers
+```
+
+关键点
+
+- **不要** 只连“相邻对”，否则只构建了生成树，漏掉大量直接边，导致最短路被拉长。
+- 在线 BFS 时用「滑动窗口 + 平衡集合」动态枚举所有 `|nums[i]−nums[j]|≤maxDiff` 的邻居。
+- 并查集只负责把明显不连通的查询剪掉，避免 BFS 白跑。
+
+这样既修正了建图的错误，也能在 $n,q\le10^5$ 的规模下通过所有测试。
+
+
+
+## 第 155 场双周赛-20250426
+
+https://leetcode.cn/contest/biweekly-contest-155/
+
+中国时间：2025-04-26 22:30, 1 小时 30 分
+
+
+
+### 3527.找到最常见的问题
+
+implementation, https://leetcode.cn/problems/find-the-most-common-response/
+
+
+
+### 3528.单位转换I
+
+dp, https://leetcode.cn/problems/unit-conversion-i/
+
+
+
+### 3529.统计水平子串和垂直子串重叠格子的数目
+
+KMP, https://leetcode.cn/problems/count-cells-in-overlapping-horizontal-and-vertical-substrings/
+
+
+
+### 3530.有向无环图中合法拓扑排序的最大利润
+
+https://leetcode.cn/problems/maximum-profit-from-valid-topological-order-in-dag/
+
+给你一个由 `n` 个节点组成的**有向无环图（DAG）**，节点编号从 `0` 到 `n - 1`，通过二维数组 `edges` 表示，其中 `edges[i] = [ui, vi]` 表示一条从节点 `ui` 指向节点 `vi` 的有向边。每个节点都有一个对应的 **得分** ，由数组 `score` 给出，其中 `score[i]` 表示节点 `i` 的得分。
+
+你需要以 **有效的拓扑排序** 顺序处理这些节点。每个节点在处理顺序中被分配一个编号从 **1** 开始的位置。
+
+将每个节点的得分乘以其在拓扑排序中的位置，然后求和，得到的值称为 **利润**。
+
+请返回在所有合法拓扑排序中可获得的 **最大利润** 。
+
+**拓扑排序** 是一个对 DAG 中所有节点的线性排序，使得每条有向边 `u → v` 中，节点 `u` 都出现在 `v` 之前。
+
+ 
+
+**示例 1：**
+
+**输入：** n = 2, edges = [[0,1]], score = [2,3]
+
+**输出：** 8
+
+**解释：**
+
+<img src="https://pic.leetcode.cn/1745660258-BXXGjv-screenshot-2025-03-11-at-021131.png" alt="img" style="zoom:33%;" />
+
+节点 1 依赖于节点 0，因此一个合法顺序是 `[0, 1]`。
+
+| 节点 | 处理顺序 | 得分 | 乘数 | 利润计算  |
+| ---- | -------- | ---- | ---- | --------- |
+| 0    | 第 1 个  | 2    | 1    | 2 × 1 = 2 |
+| 1    | 第 2 个  | 3    | 2    | 3 × 2 = 6 |
+
+所有合法拓扑排序中可获得的最大总利润是 `2 + 6 = 8`。
+
+**示例 2：**
+
+**输入：** n = 3, edges = [[0,1],[0,2]], score = [1,6,3]
+
+**输出：** 25
+
+**解释：**
+
+<img src="https://pic.leetcode.cn/1745660268-mJrEKY-screenshot-2025-03-11-at-023558.png" alt="img" style="zoom:33%;" />
+
+节点 1 和 2 都依赖于节点 0，因此最优的合法顺序是 `[0, 2, 1]`。
+
+| 节点 | 处理顺序 | 得分 | 乘数 | 利润计算   |
+| ---- | -------- | ---- | ---- | ---------- |
+| 0    | 第 1 个  | 1    | 1    | 1 × 1 = 1  |
+| 2    | 第 2 个  | 3    | 2    | 3 × 2 = 6  |
+| 1    | 第 3 个  | 6    | 3    | 6 × 3 = 18 |
+
+所有合法拓扑排序中可获得的最大总利润是 `1 + 6 + 18 = 25`。
+
+ 
+
+**提示：**
+
+- `1 <= n == score.length <= 22`
+- `1 <= score[i] <= 10^5`
+- `0 <= edges.length <= n * (n - 1) / 2`
+- `edges[i] == [ui, vi]` 表示一条从 `ui` 到 `vi` 的有向边。
+- `0 <= ui, vi < n`
+- `ui != vi`
+- 输入图 **保证** 是一个 **DAG**。
+- 不存在重复的边。
+
+
+
+```python
+class Solution:
+    def maxProfit(self, n: int, edges: List[List[int]], score: List[int]) -> int:
+```
+
+
+
+## 第 446 场周赛-20250420
+
+https://leetcode.cn/contest/weekly-contest-446/
+
+中国时间：2025-04-20 10:30, 1 小时 30 分
+
+
+
+### M3522.执行指令后的得分
+
+implementation, https://leetcode.cn/problems/calculate-score-after-performing-instructions/
+
+
+
+### M3523.非递减数组的最大长度
+
+greedy, monotonic stack, https://leetcode.cn/problems/make-array-non-decreasing/
+
+
+
+### M3524.求出数组X值I
+
+dp, https://leetcode.cn/problems/find-x-value-of-array-i/
+
+给你一个由 **正** 整数组成的数组 `nums`，以及一个 **正** 整数 `k`。
+
+你可以对 `nums` 执行 **一次** 操作，该操作中可以移除任意 **不重叠** 的前缀和后缀，使得 `nums` 仍然 **非空** 。
+
+你需要找出 `nums` 的 **x 值**，即在执行操作后，剩余元素的 **乘积** 除以 `k` 后的 **余数** 为 `x` 的操作数量。
+
+返回一个大小为 `k` 的数组 `result`，其中 `result[x]` 表示对于 `0 <= x <= k - 1`，`nums` 的 **x 值**。
+
+数组的 **前缀** 指从数组起始位置开始到数组中任意位置的一段连续子数组。
+
+数组的 **后缀** 是指从数组中任意位置开始到数组末尾的一段连续子数组。
+
+**子数组** 是数组中一段连续的元素序列。
+
+**注意**，在操作中选择的前缀和后缀可以是 **空的** 。
+
+ 
+
+**示例 1：**
+
+**输入：** nums = [1,2,3,4,5], k = 3
+
+**输出：** [9,2,4]
+
+**解释：**
+
+- 对于 `x = 0`，可行的操作包括所有不会移除 `nums[2] == 3` 的前后缀移除方式。
+- 对于x = 1，可行操作包括：
+  - 移除空前缀和后缀 `[2, 3, 4, 5]`，`nums` 变为 `[1]`。
+  - 移除前缀 `[1, 2, 3]` 和后缀 `[5]`，`nums` 变为 `[4]`。
+- 对于x = 2，可行操作包括：
+  - 移除空前缀和后缀 `[3, 4, 5]`，`nums` 变为 `[1, 2]`。
+  - 移除前缀 `[1]` 和后缀 `[3, 4, 5]`，`nums` 变为 `[2]`。
+  - 移除前缀 `[1, 2, 3]` 和空后缀，`nums` 变为 `[4, 5]`。
+  - 移除前缀 `[1, 2, 3, 4]` 和空后缀，`nums` 变为 `[5]`。
+
+**示例 2：**
+
+**输入：** nums = [1,2,4,8,16,32], k = 4
+
+**输出：** [18,1,2,0]
+
+**解释：**
+
+- 对于x = 0，唯一 不 得到x = 0的操作有：
+  - 移除空前缀和后缀 `[4, 8, 16, 32]`，`nums` 变为 `[1, 2]`。
+  - 移除空前缀和后缀 `[2, 4, 8, 16, 32]`，`nums` 变为 `[1]`。
+  - 移除前缀 `[1]` 和后缀 `[4, 8, 16, 32]`，`nums` 变为 `[2]`。
+- 对于x = 1，唯一的操作是：
+  - 移除空前缀和后缀 `[2, 4, 8, 16, 32]`，`nums` 变为 `[1]`。
+- 对于x = 2，可行操作包括：
+  - 移除空前缀和后缀 `[4, 8, 16, 32]`，`nums` 变为 `[1, 2]`。
+  - 移除前缀 `[1]` 和后缀 `[4, 8, 16, 32]`，`nums` 变为 `[2]`。
+- 对于 `x = 3`，没有可行的操作。
+
+**示例 3：**
+
+**输入：** nums = [1,1,2,1,1], k = 2
+
+**输出：** [9,6]
+
+ 
+
+**提示：**
+
+- `1 <= nums[i] <= 10^9`
+- `1 <= nums.length <= 10^5`
+- `1 <= k <= 5`
+
+
+
+Python code请嵌在这个代码中
+
+```python
+class Solution:
+    def resultArray(self, nums: List[int], k: int) -> List[int]:
+        
+```
+
+
+
+### T3525.出数组X值II
+
+https://leetcode.cn/problems/find-x-value-of-array-ii/
+
+给你一个由 **正整数** 组成的数组 `nums` 和一个 **正整数** `k`。同时给你一个二维数组 `queries`，其中 `queries[i] = [indexi, valuei, starti, xi]`。
+
+你可以对 `nums` 执行 **一次** 操作，移除 `nums` 的任意 **后缀** ，使得 `nums` 仍然**非空**。
+
+给定一个 `x`，`nums` 的 **x值** 定义为执行以上操作后剩余元素的 **乘积** 除以 `k` 的 **余数** 为 `x` 的方案数。
+
+对于 `queries` 中的每个查询，你需要执行以下操作，然后确定 `xi` 对应的 `nums` 的 **x值**：
+
+- 将 `nums[indexi]` 更新为 `valuei`。仅这个更改在接下来的所有查询中保留。
+- **移除** 前缀 `nums[0..(starti - 1)]`（`nums[0..(-1)]` 表示 **空前缀** ）。
+
+返回一个长度为 `queries.length` 的数组 `result`，其中 `result[i]` 是第 `i` 个查询的答案。
+
+数组的一个 **前缀** 是从数组开始位置到任意位置的子数组。
+
+数组的一个 **后缀** 是从数组中任意位置开始直到结束的子数组。
+
+**子数组** 是数组中一段连续的元素序列。
+
+**注意**：操作中所选的前缀或后缀可以是 **空的** 。
+
+**注意**：x值在本题中与问题 I 有不同的定义。
+
+ 
+
+**示例 1：**
+
+**输入：** nums = [1,2,3,4,5], k = 3, queries = [[2,2,0,2],[3,3,3,0],[0,1,0,1]]
+
+**输出：** [2,2,2]
+
+**解释：**
+
+- 对于查询 0，nums变为[1, 2, 2, 4, 5]。移除空前缀后，可选操作包括：
+  - 移除后缀 `[2, 4, 5]` ，`nums` 变为 `[1, 2]`。
+  - 不移除任何后缀。`nums` 保持为 `[1, 2, 2, 4, 5]`，乘积为 80，对 3 取余为 2。
+- 对于查询 1，nums变为[1, 2, 2, 3, 5] 。移除前缀[1, 2, 2]后，可选操作包括：
+  - 不移除任何后缀，`nums` 为 `[3, 5]`。
+  - 移除后缀 `[5]` ，`nums` 为 `[3]`。
+- 对于查询 2，nums保持为[1, 2, 2, 3, 5]。移除空前缀后。可选操作包括：
+  - 移除后缀 `[2, 2, 3, 5]`。`nums` 为 `[1]`。
+  - 移除后缀 `[3, 5]`。`nums` 为 `[1, 2, 2]`。
+
+**示例 2：**
+
+**输入：** nums = [1,2,4,8,16,32], k = 4, queries = [[0,2,0,2],[0,2,0,1]]
+
+**输出：** [1,0]
+
+**解释：**
+
+- 对于查询 0，nums变为[2, 2, 4, 8, 16, 32]。唯一可行的操作是：
+  - 移除后缀 `[2, 4, 8, 16, 32]`。
+- 对于查询 1，`nums` 仍为 `[2, 2, 4, 8, 16, 32]`。没有任何操作能使余数为 1。
+
+**示例 3：**
+
+**输入：** nums = [1,1,2,1,1], k = 2, queries = [[2,1,0,1]]
+
+**输出：** [5]
+
+ 
+
+**提示：**
+
+- `1 <= nums[i] <= 10^9`
+- `1 <= nums.length <= 10^5`
+- `1 <= k <= 5`
+- `1 <= queries.length <= 2 * 10^4`
+- `queries[i] == [indexi, valuei, starti, xi]`
+- `0 <= indexi <= nums.length - 1`
+- `1 <= valuei <= 10^9`
+- `0 <= starti <= nums.length - 1`
+- `0 <= xi <= k - 1`
+
+
+
+
+
+```python
+class Solution:
+    def resultArray(self, nums: List[int], k: int, queries: List[List[int]]) -> List[int]:©leetcode
+```
+
+
+
+
+
+
+
+## 第 445 场周赛-20250413
+
+https://leetcode.cn/contest/weekly-contest-445/
+
+中国时间：2025-04-13 10:30, 1 小时 30 分
+
+
+
+### 3516.找到最近的人
+
+https://leetcode.cn/problems/find-closest-person/
+
+
+
+### 3517.最小回文排列I
+
+string, counting sort, sorting, https://leetcode.cn/problems/smallest-palindromic-rearrangement-i/
+
+
+
+### 3518.最小回文排列II
+
+hash table, math, string, combinatorics, counting,  https://leetcode.cn/problems/smallest-palindromic-rearrangement-ii/
+
+
+
+### 3519.统计逐位递减的整数
+
+数位DP，https://leetcode.cn/problems/count-numbers-with-non-decreasing-digits/
 
 
 
