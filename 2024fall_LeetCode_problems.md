@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 2108 GMT+8 Apr 26 2025
+Updated 1137 GMT+8 Apr 28 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -9119,7 +9119,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                         
+>                                                                                                                                                                                            
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -29586,6 +29586,143 @@ class TextEditor:
   - 通过在两个栈之间转移字符实现光标移动，移动后返回光标左侧最多 10 个字符（保持原字符串顺序）。
 
 这种解法可以模拟文本编辑器中光标的左右移动与文本修改，且符合题目的时间复杂度要求。
+
+
+
+## 2302.统计得分小于K的子数组数目
+
+sliding window, binary search, prefix sum, https://leetcode.cn/problems/count-subarrays-with-score-less-than-k/
+
+一个数组的 **分数** 定义为数组之和 **乘以** 数组的长度。
+
+- 比方说，`[1, 2, 3, 4, 5]` 的分数为 `(1 + 2 + 3 + 4 + 5) * 5 = 75` 。
+
+给你一个正整数数组 `nums` 和一个整数 `k` ，请你返回 `nums` 中分数 **严格小于** `k` 的 **非空整数子数组数目**。
+
+**子数组** 是数组中的一个连续元素序列。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [2,1,4,3,5], k = 10
+输出：6
+解释：
+有 6 个子数组的分数小于 10 ：
+- [2] 分数为 2 * 1 = 2 。
+- [1] 分数为 1 * 1 = 1 。
+- [4] 分数为 4 * 1 = 4 。
+- [3] 分数为 3 * 1 = 3 。 
+- [5] 分数为 5 * 1 = 5 。
+- [2,1] 分数为 (2 + 1) * 2 = 6 。
+注意，子数组 [1,4] 和 [4,3,5] 不符合要求，因为它们的分数分别为 10 和 36，但我们要求子数组的分数严格小于 10 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,1,1], k = 5
+输出：5
+解释：
+除了 [1,1,1] 以外每个子数组分数都小于 5 。
+[1,1,1] 分数为 (1 + 1 + 1) * 3 = 9 ，大于 5 。
+所以总共有 5 个子数组得分小于 5 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 10^5`
+- `1 <= nums[i] <= 10^5`
+- `1 <= k <= 10^15`
+
+
+
+这个题目适合用 **滑动窗口** 来做。
+
+因为子数组要求连续，可以维护一个窗口 `[left, right]`，使得窗口内的 **score** `< k`。
+滑动时只要右边界右移，同时调整左边界，保证条件成立，然后累加满足条件的子数组数量。
+
+```python
+from typing import List
+
+class Solution:
+    def countSubarrays(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        ans = 0
+        total = 0  # 窗口内元素之和
+        left = 0
+
+        for right in range(n):
+            total += nums[right]
+            # 确保当前窗口得分 < k
+            while total * (right - left + 1) >= k:
+                total -= nums[left]
+                left += 1
+            ans += (right - left + 1)  # 加上以 right 结尾的所有有效子数组数
+
+        return ans
+```
+
+------
+
+简单解释下思路：
+
+- `total`：窗口内的总和。
+- `(right - left + 1)`：窗口内元素个数。
+- `total * (right - left + 1)` 是窗口得分。
+- 当得分不满足 `< k`，就不断收缩左边界 `left`，直到得分满足。
+- 每次右边界固定在 `right` 时，有 `(right - left + 1)` 个子数组是有效的（分别是 `[left,right]`, `[left+1,right]`, ..., `[right,right]`）。
+
+------
+
+
+
+用 **二分查找 + 前缀和** 的版本！
+
+思路是：
+
+- 先算出数组的**前缀和数组** `prefix_sum`，即 `prefix_sum[i] = nums[0] + nums[1] + ... + nums[i-1]`。
+- 固定子数组的右端点 `right`，在 `prefix_sum` 上**二分**找最左边的 `left`，使得子数组 `[left, right]` 的 **score**小于 `k`。
+- 子数组的和是 `prefix_sum[right+1] - prefix_sum[left]`，长度是 `(right - left + 1)`，得分是它们的乘积。
+- 每个 `right` 累加符合条件的子数组数量。
+
+```python
+from typing import List
+import bisect
+
+class Solution:
+    def countSubarrays(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        prefix_sum = [0] * (n + 1)
+        for i in range(n):
+            prefix_sum[i+1] = prefix_sum[i] + nums[i]
+        
+        ans = 0
+        for right in range(n):
+            # 二分找最小的 left，使得 (sum) * (length) < k
+            l, r = 0, right
+            while l <= r:
+                mid = (l + r) // 2
+                total = prefix_sum[right+1] - prefix_sum[mid]
+                length = right - mid + 1
+                if total * length < k:
+                    r = mid - 1
+                else:
+                    l = mid + 1
+            # 说明 [l, right] 及其右边的都合法
+            ans += (right - l + 1)
+        
+        return ans
+```
+
+小总结：
+
+- 时间复杂度是 **O(n log n)**，因为每个 `right` 做一次二分。
+- 不如滑动窗口版快（滑动窗口是线性 `O(n)` 的）。
+- 但是如果题目换成 "子数组不一定连续" 或者别的变化，二分法有时可以更灵活！
 
 
 
