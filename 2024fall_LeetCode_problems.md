@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1537 GMT+8 Apr 28 2025
+Updated 1052 GMT+8 Apr 30 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -9202,7 +9202,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                               
+>                                                                                                                                                                                                  
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -25988,6 +25988,33 @@ class Solution:
 - 只在 `nums[i]` 和 `nums[i+1]` 之间建边（因为排序了，其他的不可能更近）。
 - 并查集合并相邻可达节点。
 - 查询就是快速判断是不是同一个集合。
+
+
+
+【郑涵予 24物理学院】这里数组已经被排好序了，所以只要直接判断相邻的两个数之差会不会大于maxDiff就行，如果大于就把后一个数归入下一组.接下来只要判断查询的数是不是在同一个组里就行.(用时约8min)
+
+```python
+class Solution:
+    def pathExistenceQueries(self, n: int, nums: List[int], maxDiff: int, queries: List[List[int]]) -> List[bool]:
+        a=[0]*n
+        pos=0
+        for i in range(n-1):
+            if nums[i+1]-nums[i]<=maxDiff:
+                a[i]=a[i+1]=pos
+            else:
+                a[i]=pos
+                pos+=1
+                a[i+1]=pos
+        m=len(queries)
+        ans=[False]*m
+        for i in range(m):
+            u,v=queries[i][0],queries[i][1]
+            if a[u]==a[v]:
+                ans[i]=True
+            else:
+                ans[i]=False
+        return ans
+```
 
 
 
