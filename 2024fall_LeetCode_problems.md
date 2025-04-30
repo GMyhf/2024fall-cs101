@@ -3548,6 +3548,62 @@ if __name__ == "__main__":
 
 
 
+## 1295.统计位数为偶数的数字
+
+https://leetcode.cn/problems/find-numbers-with-even-number-of-digits/
+
+给你一个整数数组 `nums`，请你返回其中包含 **偶数** 个数位的数字的个数。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [12,345,2,6,7896]
+输出：2
+解释：
+12 是 2 位数字（位数为偶数） 
+345 是 3 位数字（位数为奇数）  
+2 是 1 位数字（位数为奇数） 
+6 是 1 位数字 位数为奇数） 
+7896 是 4 位数字（位数为偶数）  
+因此只有 12 和 7896 是位数为偶数的数字
+```
+
+**示例 2：**
+
+```
+输入：nums = [555,901,482,1771]
+输出：1 
+解释： 
+只有 1771 是位数为偶数的数字。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 500`
+- `1 <= nums[i] <= 10^5`
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def findNumbers(self, nums: List[int]) -> int:
+        count = 0
+        for num in nums:
+            if len(str(num)) % 2 == 0:
+                count += 1
+        return count
+```
+
+
+
+
+
 ## 1287.有序数组中出现次数超过25%的元素
 
 https://leetcode.cn/problems/element-appearing-more-than-25-in-sorted-array/
@@ -9202,7 +9258,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                  
+>                                                                                                                                                                                                     
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -22124,6 +22180,102 @@ if __name__ == '__main__':
 
 
 ```
+
+
+
+## 2962.统计最大元素出现至少K次的子数组
+
+sliding window, https://leetcode.cn/problems/count-subarrays-where-max-element-appears-at-least-k-times/
+
+给你一个整数数组 `nums` 和一个 **正整数** `k` 。
+
+请你统计有多少满足 「 `nums` 中的 **最大** 元素」至少出现 `k` 次的子数组，并返回满足这一条件的子数组的数目。
+
+子数组是数组中的一个连续元素序列。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,3,2,3,3], k = 2
+输出：6
+解释：包含元素 3 至少 2 次的子数组为：[1,3,2,3]、[1,3,2,3,3]、[3,2,3]、[3,2,3,3]、[2,3,3] 和 [3,3] 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,4,2,1], k = 3
+输出：0
+解释：没有子数组包含元素 4 至少 3 次。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 10^5`
+- `1 <= nums[i] <= 10^6`
+- `1 <= k <= 10^5`
+
+
+
+
+
+我们可以使用双指针的滑动窗口技巧解决问题：
+
+1. 找出整个数组中最大的元素 `max_num`。
+2. 使用两个指针 `left` 和 `right` 表示当前考察的子数组范围 `[left, right]`。
+3. 在移动 `right` 的过程中维护 `max_num` 出现的次数。
+4. 一旦某个窗口内 `max_num` 出现次数 ≥ `k`，就说明从 `left` 到 `right` 的所有以 `right` 结尾的子数组都满足条件（即从 `left` 到 `right` 的所有起点都可以构成有效子数组），可以计入答案。
+5. 此时我们尝试右移 `left`，继续寻找更小的有效窗口。
+
+---
+
+🧠 关键点
+
+- 时间复杂度要控制在 O(n)，因为 n 可达 1e5。
+- 我们只关心最大值出现的次数，其他数字可以忽略。
+
+---
+
+✅ Python 代码实现
+
+```python
+from typing import List
+
+class Solution:
+    def countSubarrays(self, nums: List[int], k: int) -> int:
+        max_num = max(nums)
+        count = 0
+        left = 0
+        max_count = 0
+        
+        for right in range(len(nums)):
+            if nums[right] == max_num:
+                max_count += 1
+            
+            # 如果当前窗口中最大值出现次数 >= k
+            while max_count >= k:
+                # 那么从 left 到 right 结尾的所有子数组都满足条件
+                # 所以一共有 (len(nums) - right) 个这样的子数组
+                count += len(nums) - right
+                if nums[left] == max_num:
+                    max_count -= 1
+                left += 1
+                
+        return count
+```
+
+---
+
+⏱️ 复杂度分析
+
+- **时间复杂度**：O(n)，每个元素最多被访问两次（一次由 `right` 进入窗口，一次由 `left` 移出窗口）
+- **空间复杂度**：O(1)，仅使用几个变量保存状态
+
+
 
 
 
