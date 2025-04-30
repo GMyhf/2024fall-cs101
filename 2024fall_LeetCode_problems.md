@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1052 GMT+8 Apr 30 2025
+Updated 0041 GMT+8 May 1 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -9258,7 +9258,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                     
+>                                                                                                                                                                                                        
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -29944,6 +29944,150 @@ if __name__ == "__main__":
     print(sol.checkPartitioning("abcbdd"))
     print(sol.checkPartitioning("bcbddxy"))
 ```
+
+
+
+## T2071.你可以安排的最多任务数目
+
+greedy, binary search, https://leetcode.cn/problems/maximum-number-of-tasks-you-can-assign/
+
+给你 `n` 个任务和 `m` 个工人。每个任务需要一定的力量值才能完成，需要的力量值保存在下标从 **0** 开始的整数数组 `tasks` 中，第 `i` 个任务需要 `tasks[i]` 的力量才能完成。每个工人的力量值保存在下标从 **0** 开始的整数数组 `workers` 中，第 `j` 个工人的力量值为 `workers[j]` 。每个工人只能完成 **一个** 任务，且力量值需要 **大于等于** 该任务的力量要求值（即 `workers[j] >= tasks[i]` ）。
+
+除此以外，你还有 `pills` 个神奇药丸，可以给 **一个工人的力量值** 增加 `strength` 。你可以决定给哪些工人使用药丸，但每个工人 **最多** 只能使用 **一片** 药丸。
+
+给你下标从 **0** 开始的整数数组`tasks` 和 `workers` 以及两个整数 `pills` 和 `strength` ，请你返回 **最多** 有多少个任务可以被完成。
+
+ 
+
+**示例 1：**
+
+```
+输入：tasks = [3,2,1], workers = [0,3,3], pills = 1, strength = 1
+输出：3
+解释：
+我们可以按照如下方案安排药丸：
+- 给 0 号工人药丸。
+- 0 号工人完成任务 2（0 + 1 >= 1）
+- 1 号工人完成任务 1（3 >= 2）
+- 2 号工人完成任务 0（3 >= 3）
+```
+
+**示例 2：**
+
+```
+输入：tasks = [5,4], workers = [0,0,0], pills = 1, strength = 5
+输出：1
+解释：
+我们可以按照如下方案安排药丸：
+- 给 0 号工人药丸。
+- 0 号工人完成任务 0（0 + 5 >= 5）
+```
+
+**示例 3：**
+
+```
+输入：tasks = [10,15,30], workers = [0,10,10,10,10], pills = 3, strength = 10
+输出：2
+解释：
+我们可以按照如下方案安排药丸：
+- 给 0 号和 1 号工人药丸。
+- 0 号工人完成任务 0（0 + 10 >= 10）
+- 1 号工人完成任务 1（10 + 10 >= 15）
+```
+
+**示例 4：**
+
+```
+输入：tasks = [5,9,8,5,9], workers = [1,6,4,2,6], pills = 1, strength = 5
+输出：3
+解释：
+我们可以按照如下方案安排药丸：
+- 给 2 号工人药丸。
+- 1 号工人完成任务 0（6 >= 5）
+- 2 号工人完成任务 2（4 + 5 >= 8）
+- 4 号工人完成任务 3（6 >= 5）
+```
+
+ 
+
+**提示：**
+
+- `n == tasks.length`
+- `m == workers.length`
+- `1 <= n, m <= 5 * 10^4`
+- `0 <= pills <= m`
+- `0 <= tasks[i], workers[j], strength <= 10^9`
+
+
+
+下面是一种思路，时间复杂度约为 $O((n + m)\log m \log \min(n,m))$：
+
+1. **二分答案**
+    我们对“最多能完成的任务数”$k$二分：在区间 $[0, \min(n,m)]$ 上搜索。
+2. **贪心检查函数 `check(k)`**
+    尝试只完成最困难的前 $k$ 个任务，看看是否可行：
+   - 将这 $k$ 个任务按需求从大到小排序。
+   - 将所有工人力量按从小到大排序，维护一个有序列表 `avail`。
+   - 从需求最大的任务开始：
+     - 如果 `avail` 中最强的工人（末尾元素）力量 ≥ 任务需求，则直接指派，不用药丸，删除之。
+     - 否则，如果还有剩余药丸，则尽量用药丸：我们需要在 `avail` 中找到最“弱”但加药丸后仍能完成任务的工人 —— 即寻找第一个力量 ≥ `任务需求 - strength` 的位置，用该工人（消耗一片药丸）来完成任务；删除之。
+     - 否则，返回 False（任务数 $k$ 不可行）。
+   - 所有任务都能指派则返回 True。
+3. **整体框架**
+    二分出最大 $k$，每次调用 `check(k)` 做可行性验证。
+
+```python
+from bisect import bisect_left
+from typing import List
+
+class Solution:
+    def maxTaskAssign(self, tasks: List[int], workers: List[int], pills: int, strength: int) -> int:
+        tasks.sort()            # 升序
+        workers.sort()          # 升序
+        
+        def check(k: int) -> bool:
+            # 取最容易的 k 个任务，再从大到小匹配
+            need = tasks[:k]
+            # 可用工人列表（升序）
+            avail = workers[:]  
+            rem_pills = pills
+            
+            # 从需求大的任务开始匹配
+            for x in reversed(need):
+                # 如果最强工人能直接做
+                if avail and avail[-1] >= x:
+                    avail.pop()  # 指派该工人
+                else:
+                    # 尝试用药丸：在 avail 中找第一个力量 >= x - strength
+                    if rem_pills == 0:
+                        return False
+                    target = x - strength
+                    idx = bisect_left(avail, target)
+                    if idx == len(avail):
+                        return False
+                    # 用药片后的这个工人能做
+                    rem_pills -= 1
+                    avail.pop(idx)
+            return True
+        
+        # 二分 [0, min(n, m)]
+        left, right = 0, min(len(tasks), len(workers))
+        while left < right:
+            mid = (left + right + 1) // 2
+            if check(mid):
+                left = mid
+            else:
+                right = mid - 1
+        return left
+```
+
+复杂度分析
+
+- 每次 `check(k)` 操作中，我们最多做 $k$ 次二分查找和删除，维护一个有序列表，单次删除和查找都是 $O(\log m)$（使用 `bisect` + `list.pop(idx)` 整体摊销亦可视为 $O(m)$，但在平均情况下表现足够好）。
+- 二分答案共做 $O(\log \min(n,m))$ 次 `check`。
+- 因此总体约为 $O((n + m)\log m \log \min(n,m))$，在 $n,m\le5\times10^4$ 的限制下能够接受。
+
+
 
 
 
