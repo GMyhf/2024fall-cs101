@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0041 GMT+8 May 1 2025
+Updated 0041 GMT+8 May 2 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -9258,7 +9258,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                        
+>                                                                                                                                                                                                           
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -26143,6 +26143,28 @@ class Solution:
 
 
 
+【张洺瑜 24地空】还以为要建类，用完整的并查集做法。其实由于数组单调，所以只需要比较相邻两个数就可以将他们分成不同的组，用每个组的首位作记录，比较节点的记录值是否一致。
+
+```python
+class Solution:
+    def pathExistenceQueries(self, n: int, nums: List[int], maxDiff: int, queries: List[List[int]]) -> List[bool]:
+        lst=[0]*len(nums)
+        tmp=0
+        for i in range(1,len(nums)):
+            if nums[i]-nums[i-1]>maxDiff:
+                tmp=i
+            lst[i]=tmp
+        ans=[False]*len(queries)
+        for j,(x,y) in enumerate(queries):
+            if lst[x]==lst[y]:
+                ans[j]=True
+        return ans
+```
+
+
+
+
+
 【郑涵予 24物理学院】这里数组已经被排好序了，所以只要直接判断相邻的两个数之差会不会大于maxDiff就行，如果大于就把后一个数归入下一组.接下来只要判断查询的数是不是在同一个组里就行.(用时约8min)
 
 ```python
@@ -26167,6 +26189,8 @@ class Solution:
                 ans[i]=False
         return ans
 ```
+
+
 
 
 
