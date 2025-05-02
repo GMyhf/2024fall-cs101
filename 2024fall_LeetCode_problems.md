@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0041 GMT+8 May 2 2025
+Updated 2317 GMT+8 May 2 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -9258,7 +9258,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                           
+>                                                                                                                                                                                                              
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -18150,6 +18150,122 @@ class Solution:
 - 每种回答 `x`，一组最多有 `x+1` 只兔子。
 - 如果出现次数 `c > x+1`，我们就需要多个组。
 - 用 `(c + x) // (x + 1)` 或者更通用的 `(c + group_size - 1) // group_size` 来计算最少组数。
+
+
+
+## M838.推多米诺
+
+dp, https://leetcode.cn/problems/push-dominoes/
+
+`n` 张多米诺骨牌排成一行，将每张多米诺骨牌垂直竖立。在开始时，同时把一些多米诺骨牌向左或向右推。
+
+每过一秒，倒向左边的多米诺骨牌会推动其左侧相邻的多米诺骨牌。同样地，倒向右边的多米诺骨牌也会推动竖立在其右侧的相邻多米诺骨牌。
+
+如果一张垂直竖立的多米诺骨牌的两侧同时有多米诺骨牌倒下时，由于受力平衡， 该骨牌仍然保持不变。
+
+就这个问题而言，我们会认为一张正在倒下的多米诺骨牌不会对其它正在倒下或已经倒下的多米诺骨牌施加额外的力。
+
+给你一个字符串 `dominoes` 表示这一行多米诺骨牌的初始状态，其中：
+
+- `dominoes[i] = 'L'`，表示第 `i` 张多米诺骨牌被推向左侧，
+- `dominoes[i] = 'R'`，表示第 `i` 张多米诺骨牌被推向右侧，
+- `dominoes[i] = '.'`，表示没有推动第 `i` 张多米诺骨牌。
+
+返回表示最终状态的字符串。
+
+ 
+
+**示例 1：**
+
+```
+输入：dominoes = "RR.L"
+输出："RR.L"
+解释：第一张多米诺骨牌没有给第二张施加额外的力。
+```
+
+**示例 2：**
+
+![img](https://s3-lc-upload.s3.amazonaws.com/uploads/2018/05/18/domino.png)
+
+```
+输入：dominoes = ".L.R...LR..L.."
+输出："LL.RR.LLRRLL.."
+```
+
+ 
+
+**提示：**
+
+- `n == dominoes.length`
+- `1 <= n <= 10^5`
+- `dominoes[i]` 为 `'L'`、`'R'` 或 `'.'`
+
+
+
+
+
+利用一种线性扫描的方法，通过两次遍历（从左到右、从右到左）来模拟受力的传播。
+
+**思路简述：**
+
+每张多米诺骨牌受到的力可以用数值来表示：
+
+- 向右的力（由 `'R'` 推动）为正数；
+- 向左的力（由 `'L'` 推动）为负数；
+- 力越远，数值越小（因为距离远影响小）。
+
+最终状态取决于左右两侧的力之和：
+
+- 如果力为 0，保持直立（即 `'.'`）；
+- 如果力为正数，倒向右（即 `'R'`）；
+- 如果力为负数，倒向左（即 `'L'`）。
+
+**Python 实现：**
+
+```python
+class Solution:
+    def pushDominoes(self, dominoes: str) -> str:
+        n = len(dominoes)
+        forces = [0] * n
+
+        # 从左到右，处理 'R' 推动
+        force = 0
+        for i in range(n):
+            if dominoes[i] == 'R':
+                force = n  # 设一个最大值
+            elif dominoes[i] == 'L':
+                force = 0
+            else:
+                force = max(force - 1, 0)
+            forces[i] += force
+
+        # 从右到左，处理 'L' 推动
+        force = 0
+        for i in range(n - 1, -1, -1):
+            if dominoes[i] == 'L':
+                force = n
+            elif dominoes[i] == 'R':
+                force = 0
+            else:
+                force = max(force - 1, 0)
+            forces[i] -= force
+
+        # 计算最终状态
+        result = []
+        for f in forces:
+            if f > 0:
+                result.append('R')
+            elif f < 0:
+                result.append('L')
+            else:
+                result.append('.')
+
+        return ''.join(result)
+```
+
+这个算法的时间复杂度是 O(n)，空间复杂度也是 O(n)，可以高效处理最大长度为 10^5 的输入。
+
+
 
 
 
