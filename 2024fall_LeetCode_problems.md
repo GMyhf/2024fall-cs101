@@ -9258,7 +9258,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                              
+>                                                                                                                                                                                                                 
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -18452,6 +18452,115 @@ class Solution:
         # 如果还有新鲜橘子，返回-1；否则返回分钟数
         return -1 if fresh_oranges > 0 else minutes
 ```
+
+
+
+## M1007.行相等的最少多米诺旋转
+
+greedy, https://leetcode.cn/problems/minimum-domino-rotations-for-equal-row/
+
+在一排多米诺骨牌中，`tops[i]` 和 `bottoms[i]` 分别代表第 `i` 个多米诺骨牌的上半部分和下半部分。（一个多米诺是两个从 1 到 6 的数字同列平铺形成的 —— 该平铺的每一半上都有一个数字。）
+
+我们可以旋转第 `i` 张多米诺，使得 `tops[i]` 和 `bottoms[i]` 的值交换。
+
+返回能使 `tops` 中所有值或者 `bottoms` 中所有值都相同的最小旋转次数。
+
+如果无法做到，返回 `-1`.
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2021/05/14/domino.png" alt="img" style="zoom: 67%;" />
+
+```
+输入：tops = [2,1,2,4,2,2], bottoms = [5,2,6,2,3,2]
+输出：2
+解释： 
+图一表示：在我们旋转之前， tops 和 bottoms 给出的多米诺牌。 
+如果我们旋转第二个和第四个多米诺骨牌，我们可以使上面一行中的每个值都等于 2，如图二所示。 
+```
+
+**示例 2：**
+
+```
+输入：tops = [3,5,1,2,3], bottoms = [3,6,3,3,4]
+输出：-1
+解释： 在这种情况下，不可能旋转多米诺牌使一行的值相等。
+```
+
+ 
+
+**提示：**
+
+- `2 <= tops.length <= 2 * 10^4`
+- `bottoms.length == tops.length`
+- `1 <= tops[i], bottoms[i] <= 6`
+
+
+
+使用贪心算法。思路解析：
+
+我们要使得 **tops** 中全部数字相同，或者 **bottoms** 中全部相同。每次可以交换第 `i` 个多米诺的上下部分（即旋转），目标是找到最小的旋转次数。
+
+**关键点：**
+
+- 如果某一个数字 x 可以覆盖整个 tops 或 bottoms 行，那么对于每个位置 i：
+  - 要么 tops[i] == x
+  - 要么 bottoms[i] == x
+
+否则，x 就不可能成为统一的一行。
+
+---
+
+✅ 实现步骤：
+
+1. 检查数字 1~6 是否能成为统一的一行。
+2. 对于每一个候选值 `x in {1,2,...,6}`:
+   - 计算使 **tops** 全为 x 所需的旋转次数。
+   - 计算使 **bottoms** 全为 x 所需的旋转次数。
+3. 返回这些情况中的最小值。
+4. 如果没有可行解，返回 -1。
+
+```python
+from typing import List
+
+class Solution:
+    def minDominoRotations(self, tops: List[int], bottoms: List[int]) -> int:
+        n = len(tops)
+        
+        # 统计每个数字在 top 和 bottom 出现的总次数
+        count_top = [0] * 7
+        count_bottom = [0] * 7
+        same = [0] * 7  # 同一块多米诺上两个数相等的情况
+        
+        for i in range(n):
+            t = tops[i]
+            b = bottoms[i]
+            count_top[t] += 1
+            count_bottom[b] += 1
+            if t == b:
+                same[t] += 1  # 注意：只对 t == b 的情况进行计数
+
+        res = float('inf')
+        for x in range(1, 7):
+            # 如果 x 可以覆盖所有 domino，则满足 count_top[x] + count_bottom[x] - same[x] == n
+            if count_top[x] + count_bottom[x] - same[x] == n:
+                # 使 tops 全为 x 所需旋转次数：n - count_top[x]
+                # 使 bottoms 全为 x 所需旋转次数：n - count_bottom[x]
+                res = min(res, n - count_top[x], n - count_bottom[x])
+        
+        return res if res != float('inf') else -1
+```
+
+时间复杂度：
+
+- O(n)：遍历一次数组统计频率。
+- 空间复杂度 O(1)：因为最多有 7 个数字。
+
+
+
+
 
 
 
