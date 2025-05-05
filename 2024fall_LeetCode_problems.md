@@ -9340,7 +9340,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                       
+>                                                                                                                                                                                                                          
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -19446,6 +19446,129 @@ class Solution:
             cnt += q.pop()
         return cnt
 ```
+
+
+
+## M1584.连接所有点的最小费用
+
+Union find, minimum spanning tree,https://leetcode.cn/problems/min-cost-to-connect-all-points/
+
+给你一个`points` 数组，表示 2D 平面上的一些点，其中 `points[i] = [xi, yi]` 。
+
+连接点 `[xi, yi]` 和点 `[xj, yj]` 的费用为它们之间的 **曼哈顿距离** ：`|xi - xj| + |yi - yj|` ，其中 `|val|` 表示 `val` 的绝对值。
+
+请你返回将所有点连接的最小总费用。只有任意两点之间 **有且仅有** 一条简单路径时，才认为所有点都已连接。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2020/08/26/d.png)
+
+
+
+> 输入：points = [[0,0],[2,2],[3,10],[5,2],[7,0]]
+> 输出：20
+> 解释：
+>
+> ![img](https://assets.leetcode.com/uploads/2020/08/26/c.png)
+>
+> 我们可以按照上图所示连接所有点得到最小总费用，总费用为 20 。
+> 注意到任意两个点之间只有唯一一条路径互相到达。
+
+
+
+**示例 2：**
+
+```
+输入：points = [[3,12],[-2,5],[-4,1]]
+输出：18
+```
+
+**示例 3：**
+
+```
+输入：points = [[0,0],[1,1],[1,0],[-1,1]]
+输出：4
+```
+
+**示例 4：**
+
+```
+输入：points = [[-1000000,-1000000],[1000000,1000000]]
+输出：4000000
+```
+
+**示例 5：**
+
+```
+输入：points = [[0,0]]
+输出：0
+```
+
+ 
+
+**提示：**
+
+- `1 <= points.length <= 1000`
+- `-10^6 <= xi, yi <= 10^6`
+- 所有点 `(xi, yi)` 两两不同。
+
+
+
+使用Prim算法来解决这个问题。Prim算法是一种用于在图中寻找最小生成树的贪心算法。以下是实现代码：
+
+```python
+import heapq
+
+class Solution:
+    def minCostConnectPoints(self, points: List[List[int]]) -> int:
+        if not points or len(points) == 1:
+            return 0
+        
+        n = len(points)
+        graph = {i: [] for i in range(n)}
+        
+        # 构建图的邻接表表示
+        for i in range(n):
+            for j in range(i + 1, n):
+                xi, yi = points[i]
+                xj, yj = points[j]
+                distance = abs(xi - xj) + abs(yi - yj)
+                graph[i].append((distance, j))
+                graph[j].append((distance, i))
+        
+        # Prim算法
+        visited = {0}
+        heap = graph[0]
+        heapq.heapify(heap)
+        total_cost = 0
+        edges_used = 0
+        
+        while heap and edges_used < n - 1:
+            distance, node = heapq.heappop(heap)
+            if node not in visited:
+                visited.add(node)
+                total_cost += distance
+                edges_used += 1
+                for neighbor_distance, neighbor in graph[node]:
+                    if neighbor not in visited:
+                        heapq.heappush(heap, (neighbor_distance, neighbor))
+        
+        return total_cost
+```
+
+代码解释：
+
+1. **输入处理**：如果输入的`points`为空或只有一个点，直接返回0，因为没有边需要连接。
+2. **构建图的邻接表**：对于每对不同的点，计算它们之间的曼哈顿距离，并将这些距离存储在邻接表中。
+3. **Prim算法**：
+   - **初始化**：从第一个点开始，将其所有邻接边加入优先队列（最小堆）。
+   - **贪心选择**：每次从堆中取出距离最小的边，如果该边连接的节点未被访问过，则将其加入最小生成树，并累加距离。
+   - **更新堆**：将新加入节点的所有未访问邻接边加入堆中，直到所有节点都被访问或堆为空。
+4. **返回结果**：最终返回最小生成树的总距离。
+
+这种方法确保了我们找到的是连接所有点的最小总费用，且任意两点之间有且仅有一条简单路径。
 
 
 
