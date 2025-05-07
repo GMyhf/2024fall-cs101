@@ -9471,7 +9471,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                   
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -26961,6 +26961,26 @@ class Solution:
 - 只在 `nums[i]` 和 `nums[i+1]` 之间建边（因为排序了，其他的不可能更近）。
 - 并查集合并相邻可达节点。
 - 查询就是快速判断是不是同一个集合。
+
+
+
+【郭泓竹 24中文系】相邻差 > maxDiff 即断开，新建连通块；查询看两点块号是否相同
+
+```python
+from typing import List
+
+class Solution:
+    def pathExistenceQueries(self, n: int, nums: List[int], maxDiff: int, queries: List[List[int]]) -> List[bool]:
+        comp = [0] * n
+        cur = 0
+        for i in range(1, n):
+            if nums[i] - nums[i - 1] > maxDiff:
+                cur += 1
+            comp[i] = cur
+        return [comp[u] == comp[v] for u, v in queries]
+```
+
+
 
 
 
