@@ -9471,7 +9471,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                         
+>                                                                                                                                                                                                                                            
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -34287,6 +34287,152 @@ class Solution:
 
         return res
 ```
+
+
+
+## T3343.统计平衡排列的数目
+
+dp, https://leetcode.cn/problems/count-number-of-balanced-permutations/
+
+给你一个字符串 `num` 。如果一个数字字符串的奇数位下标的数字之和与偶数位下标的数字之和相等，那么我们称这个数字字符串是 **平衡的** 。
+
+请你返回 `num` **不同排列** 中，**平衡** 字符串的数目。
+
+由于答案可能很大，请你将答案对 `10^9 + 7` **取余** 后返回。
+
+一个字符串的 **排列** 指的是将字符串中的字符打乱顺序后连接得到的字符串。
+
+ 
+
+**示例 1：**
+
+**输入：**num = "123"
+
+**输出：**2
+
+**解释：**
+
+- `num` 的不同排列包括： `"123"` ，`"132"` ，`"213"` ，`"231"` ，`"312"` 和 `"321"` 。
+- 它们之中，`"132"` 和 `"231"` 是平衡的。所以答案为 2 。
+
+**示例 2：**
+
+**输入：**num = "112"
+
+**输出：**1
+
+**解释：**
+
+- `num` 的不同排列包括：`"112"` ，`"121"` 和 `"211"` 。
+- 只有 `"121"` 是平衡的。所以答案为 1 。
+
+**示例 3：**
+
+**输入：**num = "12345"
+
+**输出：**0
+
+**解释：**
+
+- `num` 的所有排列都是不平衡的。所以答案为 0 。
+
+ 
+
+**提示：**
+
+- `2 <= num.length <= 80`
+- `num` 中的字符只包含数字 `'0'` 到 `'9'` 。
+
+
+
+**Approaching DP solution for balanced permutations**
+
+So, I need to count the number of arrangements where the sum of digits at odd positions equals the sum at even positions. First, if the total sum is odd, the answer is zero. Let me think through how to compute this: I'll handle duplicates of digits and consider permutations, using dynamic programming to track the count of ways to form odd and even groups, always considering factorials for arrangements. I'll sum over valid possibilities, then compute the final answer modulo $1e9+7$.
+
+Thought for 16 seconds
+
+Here’s an 𝑂(10·𝑛·𝐾·𝑆) DP solution (with 𝑛=length of `num`, 𝐾=⌈𝑛/2⌉, 𝑆=∑digits/2) that runs in under a second for 𝑛≤80:
+
+```python
+class Solution:
+    def countBalancedPermutations(self, num: str) -> int:
+        MOD = 10**9 + 7
+        n = len(num)
+        freq = [0]*10
+        total = 0
+        for ch in num:
+            d = ord(ch) - ord('0')
+            freq[d] += 1
+            total += d
+
+        # If total sum odd, no way to split equally
+        if total & 1:
+            return 0
+        half = total // 2
+
+        # precompute factorials & inv factorials up to n
+        fact = [1]*(n+1)
+        inv_fact = [1]*(n+1)
+        for i in range(1, n+1):
+            fact[i] = fact[i-1] * i % MOD
+        inv_fact[n] = pow(fact[n], MOD-2, MOD)
+        for i in range(n, 0, -1):
+            inv_fact[i-1] = inv_fact[i] * i % MOD
+
+        # number of odd & even positions
+        k = (n+1)//2
+        m = n//2
+
+        # dp[i][t][s]: after processing digits 0..i-1,
+        #                used t digits in odd positions,
+        #                sum of those digits = s,
+        #                ways_inv = sum of 1/(prod c_{d,odd}! c_{d,even}!)
+        # We only need two layers over i, and store t∈[0..k], s∈[0..half].
+        dp = [ [ [0]*(half+1) for _ in range(k+1) ] for __ in range(2) ]
+        cur, nxt = 0, 1
+        dp[cur][0][0] = 1
+
+        for d in range(10):
+            f = freq[d]
+            # zero out next layer
+            for t in range(k+1):
+                for s in range(half+1):
+                    dp[nxt][t][s] = 0
+
+            # try assigning x copies of digit d to odd positions (0≤x≤f)
+            for t in range(k+1):
+                for s in range(half+1):
+                    base = dp[cur][t][s]
+                    if not base:
+                        continue
+                    for x in range(f+1):
+                        t2 = t + x
+                        s2 = s + x*d
+                        if t2 > k or s2 > half:
+                            break
+                        # inv_fact[x]*inv_fact[f-x] accounts for dividing by x! and (f-x)!
+                        ways = base * inv_fact[x] % MOD * inv_fact[f-x] % MOD
+                        dp[nxt][t2][s2] = (dp[nxt][t2][s2] + ways) % MOD
+
+            cur, nxt = nxt, cur
+
+        # dp[cur][k][half] = sum of 1/Π(c_odd! c_even!)
+        inv_denom_sum = dp[cur][k][half]
+        # multiply by k! for odd slots and m! for even slots
+        return (inv_denom_sum * fact[k] % MOD) * fact[m] % MOD
+```
+
+**思路要点**
+
+1. **位置划分**：将长度为 *n* 的排列分成奇数位 *k=⌈n/2⌉* 和偶数位 *m=⌊n/2⌋*。
+2. **和的约束**：若所有数字之和 *total* 为奇数，则无法平分，直接返回 0；否则目标准备填充奇数位的和为 *half=total/2*。
+3. **多重集枚举**：数字 0–9 各有 `freq[d]` 份。对每个数字 *d*，枚举给奇数位分配 *x* 份（0≤*x*≤`freq[d]`），则偶数位获剩余 `freq[d]-x` 份。
+4. **DP转移**：
+   - 状态 `dp[i][t][s]` 表示处理到数字 *i-1* 时，已有 *t* 个数填到奇数位、和为 *s*，值等于“组合分配方案的倒数阶乘之和”
+   - 转移乘上 `inv_fact[x]*inv_fact[f-x]` 来累积对应的 1/(x! (f-x)!)
+5. **答案计算**：累加得到的 `dp[10][k][half]` 即 ∑1/(Πc_odd!c_even!)，最后乘上 *k!* 和 *m!* 恢复计数，再取 mod。
+
+这样做的时间复杂度约为 10 × (k+1) × (half+1) × (max freq) ≈ 10·40·360·80 ≈ 11.5M 步，完全可接受。
 
 
 
