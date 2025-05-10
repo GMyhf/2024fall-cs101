@@ -9471,7 +9471,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                            
+>                                                                                                                                                                                                                                               
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -22813,6 +22813,100 @@ if __name__ == "__main__":
   整个过程只需对所有元素进行几次遍历，时间复杂度为 O(n*m)（最多 10^5 个元素）。
 - **注意事项：**  
   由于模数 12345 不是质数，因此不能直接使用全局乘积再除去当前值（利用模逆元）来计算答案。使用前缀后缀数组可以避免除法问题。
+
+
+
+## M2918.数组的最小相等和
+
+greedy, https://leetcode.cn/problems/minimum-equal-sum-of-two-arrays-after-replacing-zeros/
+
+给你两个由正整数和 `0` 组成的数组 `nums1` 和 `nums2` 。
+
+你必须将两个数组中的 **所有** `0` 替换为 **严格** 正整数，并且满足两个数组中所有元素的和 **相等** 。
+
+返回 **最小** 相等和 ，如果无法使两数组相等，则返回 `-1` 。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums1 = [3,2,0,1,0], nums2 = [6,5,0]
+输出：12
+解释：可以按下述方式替换数组中的 0 ：
+- 用 2 和 4 替换 nums1 中的两个 0 。得到 nums1 = [3,2,2,1,4] 。
+- 用 1 替换 nums2 中的一个 0 。得到 nums2 = [6,5,1] 。
+两个数组的元素和相等，都等于 12 。可以证明这是可以获得的最小相等和。
+```
+
+**示例 2：**
+
+```
+输入：nums1 = [2,0,2,0], nums2 = [1,4]
+输出：-1
+解释：无法使两个数组的和相等。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums1.length, nums2.length <= 10^5`
+- `0 <= nums1[i], nums2[i] <= 10^6`
+
+
+
+**Solving for minimal sum**
+
+The goal is to replace zeros in two arrays with positive integers so their sums match, while minimizing that sum. I’ll start by calculating the sum of non-zero elements and the count of zeros for each array. Both replacement sums must be at least as large as the number of zeros in their respective arrays, so I'll ensure the sum is at least: max(S1 + c1, S2 + c2). From there, I'll work to find the smallest target sum T where these replacement sums can be made. If it’s impossible, I’ll return -1.
+
+**Checking solution feasibility**
+
+I’m analyzing whether it's always possible to make the sums equal. I reason that if I pick T = max(S1 + c1, S2 + c2), everything should work out. This ensures equal sums as long as I can assign positive integers to fill the gaps in both arrays. If one array has zeros and the other doesn’t, the condition T = max(S1 + c1, S2) should hold as long as S2 >= S1 + c1. In any case, it seems like it’s always possible to solve this problem.
+
+Thought for 13 seconds
+
+下面是对 `minSum` 方法的完整实现，时间复杂度 O(n)，只做一次遍历即可完成所有统计和判断：
+
+```python
+class Solution:
+    def minSum(self, nums1: List[int], nums2: List[int]) -> int:
+        # 计算非零元素之和和 0 的个数
+        s1 = sum(x for x in nums1 if x != 0)
+        c1 = len(nums1) - sum(1 for x in nums1 if x != 0)
+        s2 = sum(x for x in nums2 if x != 0)
+        c2 = len(nums2) - sum(1 for x in nums2 if x != 0)
+        
+        # 两个数组都没有 0
+        if c1 == 0 and c2 == 0:
+            return s1 if s1 == s2 else -1
+        
+        # nums1 有 0，nums2 没有 0
+        if c1 > 0 and c2 == 0:
+            # 只能把 nums1 的和提高到 s2
+            return s2 if s2 >= s1 + c1 else -1
+        
+        # nums1 没有 0，nums2 有 0
+        if c1 == 0 and c2 > 0:
+            # 只能把 nums2 的和提高到 s1
+            return s1 if s1 >= s2 + c2 else -1
+        
+        # 两个数组都有 0
+        # 最小的公共总和就是 max(s1 + c1, s2 + c2)
+        return max(s1 + c1, s2 + c2)
+```
+
+**思路解析**
+
+1. 记 `s1, c1` 分别为 `nums1` 中非零元素之和和零的个数，`s2, c2` 同理。
+
+2. 若某个数组没有 0，则它的和无法改变，最终公共和 `T` 必须等于该数组当前的和；同时，为了能分配至少 1 给每个 0，另一数组的 “提增” 需求必须满足。
+
+3. 若两个数组都有 0，则我们既可以把它们的和提升到任意值，只要满足每个 0 至少加 1，于是取两边提升下限的较大者：
+
+   T=max⁡(s1+c1, s2+c2).
+
+4. 若所有条件都不满足（比如需要把固定和的数组降低），则返回 -1。
 
 
 
