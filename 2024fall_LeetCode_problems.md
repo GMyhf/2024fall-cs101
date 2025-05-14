@@ -9651,7 +9651,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                     
+>                                                                                                                                                                                                                                                        
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -34561,6 +34561,186 @@ class Solution:
 
         return res
 ```
+
+
+
+## T3337.字符串转换后的长度II
+
+矩阵快速幂, https://leetcode.cn/problems/total-characters-in-string-after-transformations-ii/
+
+给你一个由小写英文字母组成的字符串 `s`，一个整数 `t` 表示要执行的 **转换** 次数，以及一个长度为 26 的数组 `nums`。每次 **转换** 需要根据以下规则替换字符串 `s` 中的每个字符：
+
+- 将 `s[i]` 替换为字母表中后续的 `nums[s[i] - 'a']` 个连续字符。例如，如果 `s[i] = 'a'` 且 `nums[0] = 3`，则字符 `'a'` 转换为它后面的 3 个连续字符，结果为 `"bcd"`。
+- 如果转换超过了 `'z'`，则 **回绕** 到字母表的开头。例如，如果 `s[i] = 'y'` 且 `nums[24] = 3`，则字符 `'y'` 转换为它后面的 3 个连续字符，结果为 `"zab"`。
+
+返回 **恰好** 执行 `t` 次转换后得到的字符串的 **长度**。
+
+由于答案可能非常大，返回其对 `109 + 7` 取余的结果。
+
+ 
+
+**示例 1：**
+
+**输入：** s = "abcyy", t = 2, nums = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2]
+
+**输出：** 7
+
+**解释：**
+
+- **第一次转换 (t = 1)**
+  - `'a'` 变为 `'b'` 因为 `nums[0] == 1`
+  - `'b'` 变为 `'c'` 因为 `nums[1] == 1`
+  - `'c'` 变为 `'d'` 因为 `nums[2] == 1`
+  - `'y'` 变为 `'z'` 因为 `nums[24] == 1`
+  - `'y'` 变为 `'z'` 因为 `nums[24] == 1`
+  - 第一次转换后的字符串为: `"bcdzz"`
+- **第二次转换 (t = 2)**
+  - `'b'` 变为 `'c'` 因为 `nums[1] == 1`
+  - `'c'` 变为 `'d'` 因为 `nums[2] == 1`
+  - `'d'` 变为 `'e'` 因为 `nums[3] == 1`
+  - `'z'` 变为 `'ab'` 因为 `nums[25] == 2`
+  - `'z'` 变为 `'ab'` 因为 `nums[25] == 2`
+  - 第二次转换后的字符串为: `"cdeabab"`
+- **字符串最终长度：** 字符串为 `"cdeabab"`，长度为 7 个字符。
+
+**示例 2：**
+
+**输入：** s = "azbk", t = 1, nums = [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
+
+**输出：** 8
+
+**解释：**
+
+- **第一次转换 (t = 1)**
+  - `'a'` 变为 `'bc'` 因为 `nums[0] == 2`
+  - `'z'` 变为 `'ab'` 因为 `nums[25] == 2`
+  - `'b'` 变为 `'cd'` 因为 `nums[1] == 2`
+  - `'k'` 变为 `'lm'` 因为 `nums[10] == 2`
+  - 第一次转换后的字符串为: `"bcabcdlm"`
+- **字符串最终长度：** 字符串为 `"bcabcdlm"`，长度为 8 个字符。
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 10^5`
+- `s` 仅由小写英文字母组成。
+- `1 <= t <= 109`
+- `nums.length == 26`
+- `1 <= nums[i] <= 25`
+
+
+
+下面给出一种基于矩阵快速幂的 $O(26^3\log t + |s|)$ 时间算法，能够处理 $t$ 高达 $10^9$ 的情况。
+
+思路
+
+1. **状态定义**
+    令 $f_k(i)$ 表示从字符 $i$（用 $0$～$25$ 表示字母 $a$～$z$）经过 **恰好** $k$ 次转换后所得字符串的长度。
+
+   - 边界条件：$f_0(i)=1$。
+
+   - 递推：一次转换中，字符 $i$ 会被替换为从 $(i+1)\bmod 26$ 开始的连续 $nums[i]$ 个字符，因此
+
+     $f_k(i) \;=\; \sum_{j=1}^{nums[i]} f_{k-1}\!\bigl((i+j)\bmod 26\bigr).$
+
+2. **矩阵表示**
+    定义大小 $26\times26$ 的矩阵 $M$，使得
+
+   $M[i][\,x\,] =   \begin{cases}    1, & \exists\,1\le j\le nums[i]\text{ 使得 }x=(i+j)\bmod26,\\    0, & \text{otherwise}.  \end{cases}$
+
+   则递推可写成
+
+   $f{f}_k \;=\; M\,\mathbf{f}_{k-1},$
+
+   其中 $\mathbf{f}_k$ 是长度 26 的列向量，$\mathbf{f}_k[i]=f_k(i)$。
+
+3. **快速幂**
+    $\mathbf{f}_t = M^t \,\mathbf{f}_0$，且 $\mathbf{f}_0$ 是全 1 列向量。
+    因此只需用**矩阵快速幂**算出 $M^t\bmod 10^9+7$，再乘以全 1 向量，得到所有起始字符的 $f_t(i)$。
+
+4. **累计答案**
+    初始字符串 $s$ 中每个字符 $c$（映射到索引 $i=c-'a'$）出现的次数为 $\mathrm{freq}[i]$。
+    最终答案就是
+
+   $\sum_{i=0}^{25} \mathrm{freq}[i]\;f_t(i)\;\bmod\;(10^9+7).$
+
+整体复杂度：
+
+- 构造矩阵：$O(26^2)$
+- 矟冪计算：$O(26^3\log t)$
+- 字符串扫描：$O(|s|)$
+
+------
+
+代码实现
+
+```python
+class Solution:
+    def lengthAfterTransformations(self, s: str, t: int, nums: List[int]) -> int:
+        MOD = 10**9 + 7
+
+        # 1. 构造矩阵 M
+        # M[i][j] = 1 if j in {(i+1)%26, ..., (i+nums[i])%26}
+        M = [[0]*26 for _ in range(26)]
+        for i in range(26):
+            for d in range(1, nums[i] + 1):
+                M[i][(i + d) % 26] = 1
+
+        # 2. 矩阵乘法
+        def mat_mul(A, B):
+            # 26x26 矩阵乘法，返回 (A*B) % MOD
+            C = [[0]*26 for _ in range(26)]
+            for i in range(26):
+                for k in range(26):
+                    if A[i][k]:
+                        aik = A[i][k]
+                        row_k = B[k]
+                        c_i = C[i]
+                        for j in range(26):
+                            c_i[j] = (c_i[j] + aik * row_k[j]) % MOD
+            return C
+
+        # 3. 矩阵快速幂 M^t
+        def mat_pow(mat, exp):
+            # 26x26 单位矩阵
+            R = [[1 if i == j else 0 for j in range(26)] for i in range(26)]
+            base = mat
+            while exp > 0:
+                if exp & 1:
+                    R = mat_mul(R, base)
+                base = mat_mul(base, base)
+                exp >>= 1
+            return R
+
+        M_t = mat_pow(M, t)
+
+        # 4. 计算 f_t(i) = sum_j M_t[i][j] * f_0(j), 这里 f_0(j)=1，因此是行和
+        f_t = [sum(M_t[i]) % MOD for i in range(26)]
+
+        # 5. 累加答案
+        freq = [0]*26
+        for ch in s:
+            freq[ord(ch) - ord('a')] += 1
+
+        ans = 0
+        for i in range(26):
+            if freq[i]:
+                ans = (ans + freq[i] * f_t[i]) % MOD
+
+        return ans
+```
+
+复杂度分析
+
+- **时间**
+  - 构造矩阵：$O(26^2)$
+  - 快速幂：$O(26^3 \log t)$，其中 $\log t\le 30$
+  - 累加初始字符串：$O(|s|)$
+- **空间**
+  - 存储 $26\times26$ 矩阵若干个，常数级别。
+
+这样即可在 $t$ 高达 $10^9$、$|s|$ 达到 $10^5$ 的规模下高效计算答案。
 
 
 
