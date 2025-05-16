@@ -9743,7 +9743,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                           
+>                                                                                                                                                                                                                                                              
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -23085,6 +23085,134 @@ if __name__ == "__main__":
   整个过程只需对所有元素进行几次遍历，时间复杂度为 O(n*m)（最多 10^5 个元素）。
 - **注意事项：**  
   由于模数 12345 不是质数，因此不能直接使用全局乘积再除去当前值（利用模逆元）来计算答案。使用前缀后缀数组可以避免除法问题。
+
+
+
+## M2901.最长相邻不相等子序列II
+
+dp, https://leetcode.cn/problems/longest-unequal-adjacent-groups-subsequence-ii/
+
+给你一个整数 `n` 和一个下标从 **0** 开始的字符串数组 `words` ，和一个下标从 **0** 开始的数组 `groups` ，两个数组长度都是 `n` 。
+
+两个长度相等字符串的 **汉明距离** 定义为对应位置字符 **不同** 的数目。
+
+你需要从下标 `[0, 1, ..., n - 1]` 中选出一个 **最长子序列** ，将这个子序列记作长度为 `k` 的 `[i0, i1, ..., ik - 1]` ，它需要满足以下条件：
+
+- **相邻** 下标对应的 `groups` 值 **不同**。即，对于所有满足 `0 < j + 1 < k` 的 `j` 都有 `groups[ij] != groups[ij + 1]` 。
+- 对于所有 `0 < j + 1 < k` 的下标 `j` ，都满足 `words[ij]` 和 `words[ij + 1]` 的长度 **相等** ，且两个字符串之间的 **汉明距离** 为 `1` 。
+
+请你返回一个字符串数组，它是下标子序列 **依次** 对应 `words` 数组中的字符串连接形成的字符串数组。如果有多个答案，返回任意一个。
+
+**子序列** 指的是从原数组中删掉一些（也可能一个也不删掉）元素，剩余元素不改变相对位置得到的新的数组。
+
+**注意：**`words` 中的字符串长度可能 **不相等** 。
+
+ 
+
+**示例 1：**
+
+```
+输入：n = 3, words = ["bab","dab","cab"], groups = [1,2,2]
+输出：["bab","cab"]
+解释：一个可行的子序列是 [0,2] 。
+- groups[0] != groups[2]
+- words[0].length == words[2].length 且它们之间的汉明距离为 1 。
+所以一个可行的答案是 [words[0],words[2]] = ["bab","cab"] 。
+另一个可行的子序列是 [0,1] 。
+- groups[0] != groups[1]
+- words[0].length = words[1].length 且它们之间的汉明距离为 1 。
+所以另一个可行的答案是 [words[0],words[1]] = ["bab","dab"] 。
+符合题意的最长子序列的长度为 2 。
+```
+
+**示例 2：**
+
+```
+输入：n = 4, words = ["a","b","c","d"], groups = [1,2,3,4]
+输出：["a","b","c","d"]
+解释：我们选择子序列 [0,1,2,3] 。
+它同时满足两个条件。
+所以答案为 [words[0],words[1],words[2],words[3]] = ["a","b","c","d"] 。
+它是所有下标子序列里最长且满足所有条件的。
+所以它是唯一的答案。
+```
+
+ 
+
+**提示：**
+
+- `1 <= n == words.length == groups.length <= 1000`
+- `1 <= words[i].length <= 10`
+- `1 <= groups[i] <= n`
+- `words` 中的字符串 **互不相同** 。
+- `words[i]` 只包含小写英文字母。
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def getWordsInLongestSubsequence(self, words: List[str], groups: List[int]) -> List[str]:
+        n = len(words)
+        # dp[i]: length of longest valid subsequence ending at i
+        dp = [1] * n
+        # prev index to reconstruct path
+        prev = [-1] * n
+
+        def hamming1(a: str, b: str) -> bool:
+            # Check if Hamming distance is exactly 1
+            diff = 0
+            for x, y in zip(a, b):
+                if x != y:
+                    diff += 1
+                    if diff > 1:
+                        return False
+            return diff == 1
+
+        # Build DP
+        for i in range(n):
+            for j in range(i):
+                # groups must differ, lengths equal, hamming distance 1
+                if groups[j] != groups[i] and len(words[j]) == len(words[i]) and hamming1(words[j], words[i]):
+                    if dp[j] + 1 > dp[i]:
+                        dp[i] = dp[j] + 1
+                        prev[i] = j
+
+        # Find the end of the longest subsequence
+        max_len = max(dp)
+        end_idx = dp.index(max_len)
+
+        # Reconstruct the sequence
+        seq = []
+        while end_idx != -1:
+            seq.append(words[end_idx])
+            end_idx = prev[end_idx]
+        seq.reverse()
+        return seq
+
+# Example usage:
+if __name__ == '__main__':
+    sol = Solution()
+    print(sol.getWordsInLongestSubsequence(["bab","dab","cab"], [1,2,2]))  # ["bab","dab"] or ["bab","cab"]
+    print(sol.getWordsInLongestSubsequence(["a","b","c","d"], [1,2,3,4]))  # ["a","b","c","d"]
+
+```
+
+
+
+Here’s a straightforward O(n²·L) DP solution (with L ≤ 10) that:
+
+1. Initializes `dp[i] = 1` for each position `i`, meaning the subsequence of just `words[i]`.
+2. Scans all prior positions `j < i` and, whenever
+   - `groups[j] != groups[i]`
+   - `len(words[j]) == len(words[i])`
+   - `hamming_distance(words[j], words[i]) == 1`
+     it tries to extend the best subsequence ending at `j` by `words[i]`.
+3. Remembers predecessors in `prev[]` to reconstruct one maximal subsequence.
+4. Finally backtracks from the index with the highest `dp[i]`, reverses the collected words, and returns them.
+
+The code is in the canvas on the right. Feel free to run it on your examples or integrate it directly into your solution stub.
 
 
 
