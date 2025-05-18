@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1443 GMT+8 May 15 2025
+Updated 1443 GMT+8 May 18 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -9743,7 +9743,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                              
+>                                                                                                                                                                                                                                                                 
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -31887,6 +31887,226 @@ if __name__ == "__main__":
     print(sol.checkPartitioning("abcbdd"))
     print(sol.checkPartitioning("bcbddxy"))
 ```
+
+
+
+## T1931.用三种不同颜色为网格涂色
+
+dp, https://leetcode.cn/problems/painting-a-grid-with-three-different-colors/
+
+给你两个整数 `m` 和 `n` 。构造一个 `m x n` 的网格，其中每个单元格最开始是白色。请你用 **红、绿、蓝** 三种颜色为每个单元格涂色。所有单元格都需要被涂色。
+
+涂色方案需要满足：**不存在相邻两个单元格颜色相同的情况** 。返回网格涂色的方法数。因为答案可能非常大， 返回 **对** `10^9 + 7` **取余** 的结果。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2021/06/22/colorthegrid.png" alt="img" style="zoom:50%;" />
+
+```
+输入：m = 1, n = 1
+输出：3
+解释：如上图所示，存在三种可能的涂色方案。
+```
+
+**示例 2：**
+
+![img](https://assets.leetcode.com/uploads/2021/06/22/copy-of-colorthegrid.png)
+
+```
+输入：m = 1, n = 2
+输出：6
+解释：如上图所示，存在六种可能的涂色方案。
+```
+
+**示例 3：**
+
+```
+输入：m = 5, n = 5
+输出：580986
+```
+
+ 
+
+**提示：**
+
+- `1 <= m <= 5`
+- `1 <= n <= 1000`
+
+
+
+下面是一种高效的做法，利用每一列合法涂色方案的状态压缩和列间兼容性预计算，动态规划地推进到第 n 列：
+
+```python
+class Solution:
+    def colorTheGrid(self, m: int, n: int) -> int:
+        MOD = 10**9 + 7
+
+        # 1) 枚举所有单列合法方案（不同行上下相邻颜色不同）
+        valid = []
+        def dfs(pos: int, prev_color: int, state: tuple):
+            if pos == m:
+                valid.append(state)
+                return
+            for c in (0,1,2):  # 0=红，1=绿，2=蓝
+                if c != prev_color:
+                    dfs(pos+1, c, state + (c,))
+        dfs(0, -1, ())
+
+        # 2) 预计算两列方案之间的兼容性：同一行颜色不能相同
+        L = len(valid)
+        compat = [[] for _ in range(L)]
+        for i in range(L):
+            for j in range(L):
+                for k in range(m):
+                    if valid[i][k] == valid[j][k]:
+                        break
+                else:
+                    compat[i].append(j)
+
+        # 3) DP over 列：dp[i] = 第 current 列采用 valid[i] 的方案数
+        dp = [1] * L  # 第一列任意方案都可
+        for _ in range(1, n):
+            new_dp = [0] * L
+            for i in range(L):
+                for j in compat[i]:
+                    new_dp[j] = (new_dp[j] + dp[i]) % MOD
+            dp = new_dp
+
+        return sum(dp) % MOD
+```
+
+**思路简要说明：**
+
+1. **单列状态枚举**
+
+   - 对每一列，用 DFS（或递归）枚举长度为 m 的颜色序列，保证上下相邻格子颜色不同。
+   - 对于 m≤5，这样的状态数至多 3·2^(m−1) ≤ 48。
+
+2. **状态兼容性**
+
+   - 两列之间的合法过渡要求：同一行上的两个格子颜色不同。
+   - 预先判断所有成对状态是否兼容，并存储在 `compat` 数组里。
+
+3. **动态规划**
+
+   - 令 `dp[i]` 表示当前列选用第 i 个方案的方案数；初始时每个方案都能用于第一列（值为 1）。
+   - 向右推进一列时，对所有 `i→j` 的兼容对累加转移：
+
+   ```
+   new_dp[j] += dp[i]  （mod 10^9+7）
+   ```
+
+   - 总复杂度：O(n · S^2)，其中 S≈3·2^(m−1)≤48，n≤1000，约为 2.3M 次简单操作，完全可行。
+
+这种做法非常经典，也是 LeetCode 官方题解中推荐的方法。
+
+
+
+> **详细解释一下第 3 部分的动态规划（DP）过程**：
+>
+> ------
+>
+> 📌问题背景
+>
+> 我们已经预处理好了：
+>
+> - 所有**合法的单列涂色方案** `valid`（长度是 m，颜色合法）。
+> - `compat[i]` 表示哪些方案可以和 `valid[i]` 连在一起形成相邻两列（即两列之间每一行的颜色都不同）。
+>
+> ------
+>
+> 🤔想要做什么？
+>
+> 我们需要把这个 `m x n` 的网格，每一列从左往右一个一个填好。由于：
+>
+> - 每一列只能用合法方案 `valid[i]` 中的某个。
+> - 每两列之间的颜色要兼容（上下左右都不一样）。
+>
+> 我们就**对列进行动态规划（逐列推进）**。
+>
+> ------
+>
+> 🧠状态定义
+>
+> 我们定义一个数组 `dp`，它表示：
+>
+> > **当前列（第 k 列）使用第 i 个方案（valid[i]）时，前 k 列的合法涂色方法总数。**
+>
+> 初始状态
+>
+> ```
+> python
+> 
+> 
+> CopyEdit
+> dp = [1] * L
+> ```
+>
+> - 因为第一列（第 0 列）可以任选任何合法方案。
+> - 所以每种方案都有 1 种方式，初始化为全 1。
+>
+> ------
+>
+> 🔁状态转移
+>
+> 对于第 k 列（k 从 1 到 n−1）：
+>
+> ```
+> python
+> 
+> 
+> CopyEdit
+> new_dp = [0] * L
+> for i in range(L):  # 当前列选 valid[i]
+>     for j in compat[i]:  # 上一列可以选 valid[j]
+>         new_dp[i] += dp[j]
+> ```
+>
+> 但代码中换了个角度写：
+>
+> ```
+> python
+> 
+> 
+> CopyEdit
+> for i in range(L):      # 上一列使用 valid[i]
+>     for j in compat[i]: # 下一列可以使用 valid[j]
+>         new_dp[j] = (new_dp[j] + dp[i]) % MOD
+> ```
+>
+> **理解这段话的方式是：**
+>
+> - `dp[i]`：上一列使用方案 `valid[i]` 的涂色数。
+> - `compat[i]`：能接在 `valid[i]` 后面的所有方案索引。
+> - 对这些可以跟在后面的方案 `j`，累加上一列的数量 `dp[i]`。
+>
+> 最后：
+>
+> ```
+> dp = new_dp
+> ```
+>
+> 表示把当前列的结果赋值给下一轮的 `dp`，继续处理下一列。
+>
+> ------
+>
+> ✅结束后
+>
+> ```
+> return sum(dp) % MOD
+> ```
+>
+> 处理完 n 列后，`dp[i]` 表示网格最后一列使用方案 `valid[i]` 的所有涂色方式总数，求和即为答案。
+>
+> ------
+>
+> 🧩总结一句话
+>
+> 我们在做的是：
+>
+> > **从第一列往右推，每一列尝试所有合法方案，只连接那些兼容的前一列。最终把最后一列所有可能方案加起来就是答案。**
 
 
 
