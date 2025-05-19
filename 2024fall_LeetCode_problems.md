@@ -10049,7 +10049,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                    
+>                                                                                                                                                                                                                                                                       
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -18941,6 +18941,134 @@ class Solution:
 - 每种回答 `x`，一组最多有 `x+1` 只兔子。
 - 如果出现次数 `c > x+1`，我们就需要多个组。
 - 用 `(c + x) // (x + 1)` 或者更通用的 `(c + group_size - 1) // group_size` 来计算最少组数。
+
+
+
+## M787.K站中转内最便宜的航班
+
+Bellman Ford, https://leetcode.cn/problems/cheapest-flights-within-k-stops/
+
+有 `n` 个城市通过一些航班连接。给你一个数组 `flights` ，其中 `flights[i] = [fromi, toi, pricei]` ，表示该航班都从城市 `fromi` 开始，以价格 `pricei` 抵达 `toi`。
+
+现在给定所有的城市和航班，以及出发城市 `src` 和目的地 `dst`，你的任务是找到出一条最多经过 `k` 站中转的路线，使得从 `src` 到 `dst` 的 **价格最便宜** ，并返回该价格。 如果不存在这样的路线，则输出 `-1`。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2022/03/18/cheapest-flights-within-k-stops-3drawio.png" alt="img" style="zoom:67%;" />
+
+```
+输入: 
+n = 4, flights = [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]], src = 0, dst = 3, k = 1
+输出: 700 
+解释: 城市航班图如上
+从城市 0 到城市 3 经过最多 1 站的最佳路径用红色标记，费用为 100 + 600 = 700。
+请注意，通过城市 [0, 1, 2, 3] 的路径更便宜，但无效，因为它经过了 2 站。
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2022/03/18/cheapest-flights-within-k-stops-1drawio.png" alt="img" style="zoom:67%;" />
+
+```
+输入: 
+n = 3, edges = [[0,1,100],[1,2,100],[0,2,500]], src = 0, dst = 2, k = 1
+输出: 200
+解释: 
+城市航班图如上
+从城市 0 到城市 2 经过最多 1 站的最佳路径标记为红色，费用为 100 + 100 = 200。
+```
+
+**示例 3：**
+
+<img src="https://assets.leetcode.com/uploads/2022/03/18/cheapest-flights-within-k-stops-2drawio.png" alt="img" style="zoom:67%;" />
+
+```
+输入：n = 3, flights = [[0,1,100],[1,2,100],[0,2,500]], src = 0, dst = 2, k = 0
+输出：500
+解释：
+城市航班图如上
+从城市 0 到城市 2 不经过站点的最佳路径标记为红色，费用为 500。
+```
+
+**提示：**
+
+- `1 <= n <= 100`
+- `0 <= flights.length <= (n * (n - 1) / 2)`
+- `flights[i].length == 3`
+- `0 <= fromi, toi < n`
+- `fromi != toi`
+- `1 <= pricei <= 10^4`
+- 航班没有重复，且不存在自环
+- `0 <= src, dst, k < n`
+- `src != dst`
+
+
+
+下面给出基于 Bellman–Ford 思想的做法，它在「最多经过 K 次中转」的约束下，求出从 src 到 dst 的最小费用。
+
+------
+
+**思路**
+
+1. **初始化：**
+   我们用一个长度为 n 的数组 `dist` 表示当前已知到各城市的最便宜费用，初始时所有城市费用设为 ∞，只有 `dist[src] = 0`。
+
+2. **松弛操作：**
+   Bellman–Ford 的经典算法是对所有边做 n–1 轮松弛，最终可求出任意路径的最短路。但本题对中转次数有限制：**至多 K 次中转**，也就是路径上最多 K+1 条边。
+
+   因此，我们只需要做 **K+1** 轮松弛即可。在第 i 轮松弛后，`dist[j]` 就代表「恰好使用最多 i 条边能到达 j 的最小费用」。
+
+   为了避免本轮松弛互相影响，需要每轮都基于上一轮的 `prev_dist` 来更新新的 `cur_dist`，更新完成后再复制回 `dist`。
+
+3. **返回答案：**
+   做完 K+1 轮后，`dist[dst]` 即为所求最小费用；若仍为 ∞，则说明无法在 K 次中转以内到达，返回 -1。
+
+
+
+代码实现（Python）
+
+```python
+from typing import List
+
+class Solution:
+    def findCheapestPrice(self, 
+                          n: int, 
+                          flights: List[List[int]], 
+                          src: int, 
+                          dst: int, 
+                          K: int) -> int:
+        # 初始化：到各城最便宜费用
+        INF = float('inf')
+        dist = [INF] * n
+        dist[src] = 0
+        
+        # 最多允许 K 次中转 -> 最多使用 K+1 条边
+        for _ in range(K + 1):
+            # 基于上一轮的结果创建新一轮的 dist
+            prev = dist[:]  
+            
+            # 对每条航班边做松弛
+            for u, v, w in flights:
+                # 若 u 可达，则尝试用 u -> v 这条边更新 v
+                if prev[u] + w < dist[v]:
+                    dist[v] = prev[u] + w
+            
+            # 下一轮松弛时，依然要基于本轮更新后的 dist，
+            # 因此不需要再额外复制
+        
+        return dist[dst] if dist[dst] != INF else -1
+```
+
+**复杂度分析**
+
+- 时间复杂度：
+  每轮要遍历所有边，边数最多为 O(n²)，共做 K+1 轮松弛，总体为 O((K+1)·E)；在最坏情况下 E≈n²，则为 O(K·n²)。
+- 空间复杂度：
+  仅使用了大小为 n 的数组，故为 O(n)。
+
+
 
 
 
