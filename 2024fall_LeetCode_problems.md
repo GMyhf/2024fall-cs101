@@ -10049,7 +10049,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                          
+>                                                                                                                                                                                                                                                                             
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -19067,6 +19067,45 @@ class Solution:
   每轮要遍历所有边，边数最多为 O(n²)，共做 K+1 轮松弛，总体为 O((K+1)·E)；在最坏情况下 E≈n²，则为 O(K·n²)。
 - 空间复杂度：
   仅使用了大小为 n 的数组，故为 O(n)。
+
+
+
+使用 BFS + 堆（优先队列），记录每个点在中转次数不超过 `k` 时的最短路径。
+
+```python
+import heapq
+from collections import defaultdict
+
+class Solution:
+    def findCheapestPrice(self, n, flights, src, dst, k):
+        graph = defaultdict(list)
+        for u, v, w in flights:
+            graph[u].append((v, w))
+        
+        # 优先队列中存储：总费用, 当前城市, 当前中转次数
+        heap = [(0, src, 0)]
+        # 记录每个城市在某个中转次数下的最小费用
+        visited = dict()
+
+        while heap:
+            cost, city, stops = heapq.heappop(heap)
+            
+            if city == dst:
+                return cost
+            
+            if stops > k:
+                continue
+
+            # 剪枝：如果已经以更少的费用到达过这个城市在相同或更少的中转数下，则跳过
+            if (city, stops) in visited and visited[(city, stops)] <= cost:
+                continue
+            visited[(city, stops)] = cost
+
+            for nei, price in graph[city]:
+                heapq.heappush(heap, (cost + price, nei, stops + 1))
+
+        return -1
+```
 
 
 
