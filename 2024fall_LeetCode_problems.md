@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0925 GMT+8 May 22 2025
+Updated 0925 GMT+8 May 23 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -10049,7 +10049,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                   
+>                                                                                                                                                                                                                                                                                      
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -35897,6 +35897,137 @@ class Solution:
 - 最终答案就是 $\#([0..hi]) - \#([0..lo-1])$。
 
 这样可以正确且高效地处理 $1 \le \text{start} \le \text{finish} \le 10^{15}$ 的所有情况。
+
+
+
+## T3068.最大节点价值之和
+
+greedy, https://leetcode.cn/problems/find-the-maximum-sum-of-node-values/
+
+给你一棵 `n` 个节点的 **无向** 树，节点从 `0` 到 `n - 1` 编号。树以长度为 `n - 1` 下标从 **0** 开始的二维整数数组 `edges` 的形式给你，其中 `edges[i] = [ui, vi]` 表示树中节点 `ui` 和 `vi` 之间有一条边。同时给你一个 **正** 整数 `k` 和一个长度为 `n` 下标从 **0** 开始的 **非负** 整数数组 `nums` ，其中 `nums[i]` 表示节点 `i` 的 **价值** 。
+
+Alice 想 **最大化** 树中所有节点价值之和。为了实现这一目标，Alice 可以执行以下操作 **任意** 次（**包括** **0 次**）：
+
+- 选择连接节点 u 和 v 的边 [u, v]，并将它们的值更新为：
+  - `nums[u] = nums[u] XOR k`
+  - `nums[v] = nums[v] XOR k`
+
+请你返回 Alice 通过执行以上操作 **任意次** 后，可以得到所有节点 **价值之和** 的 **最大值** 。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2023/11/09/screenshot-2023-11-10-012513.png" alt="img" style="zoom:50%;" />
+
+```
+输入：nums = [1,2,1], k = 3, edges = [[0,1],[0,2]]
+输出：6
+解释：Alice 可以通过一次操作得到最大价值和 6 ：
+- 选择边 [0,2] 。nums[0] 和 nums[2] 都变为：1 XOR 3 = 2 ，数组 nums 变为：[1,2,1] -> [2,2,2] 。
+所有节点价值之和为 2 + 2 + 2 = 6 。
+6 是可以得到最大的价值之和。
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2024/01/09/screenshot-2024-01-09-220017.png" alt="img" style="zoom: 33%;" />
+
+```
+输入：nums = [2,3], k = 7, edges = [[0,1]]
+输出：9
+解释：Alice 可以通过一次操作得到最大和 9 ：
+- 选择边 [0,1] 。nums[0] 变为：2 XOR 7 = 5 ，nums[1] 变为：3 XOR 7 = 4 ，数组 nums 变为：[2,3] -> [5,4] 。
+所有节点价值之和为 5 + 4 = 9 。
+9 是可以得到最大的价值之和。
+```
+
+**示例 3：**
+
+<img src="https://assets.leetcode.com/uploads/2023/11/09/screenshot-2023-11-10-012641.png" alt="img" style="zoom:50%;" />
+
+```
+输入：nums = [7,7,7,7,7,7], k = 3, edges = [[0,1],[0,2],[0,3],[0,4],[0,5]]
+输出：42
+解释：Alice 不需要执行任何操作，就可以得到最大价值之和 42 。
+```
+
+ 
+
+**提示：**
+
+- `2 <= n == nums.length <= 2 * 10^4`
+- `1 <= k <= 10^9`
+- `0 <= nums[i] <= 10^9`
+- `edges.length == n - 1`
+- `edges[i].length == 2`
+- `0 <= edges[i][0], edges[i][1] <= n - 1`
+- 输入保证 `edges` 构成一棵合法的树。
+
+
+
+下面是基于「节点翻转等价于为每个节点选一个 0/1 翻转标记，且翻转标记和必须为偶数」的思路，在 O(n) 时间内完成的解法。
+
+```python
+from typing import List
+
+class Solution:
+    def maximumValueSum(self, nums: List[int], k: int, edges: List[List[int]]) -> int:
+        n = len(nums)
+        # 初始总和
+        base = sum(nums)
+        # 计算每个节点翻转后相对于原值的增量
+        deltas = [ (num ^ k) - num for num in nums ]
+        
+        # 分别统计正增量、零增量、负增量
+        pos_deltas = [d for d in deltas if d > 0]
+        zero_count = sum(1 for d in deltas if d == 0)
+        neg_deltas = [d for d in deltas if d < 0]
+        
+        sum_pos = sum(pos_deltas)
+        cnt_pos = len(pos_deltas)
+        
+        # 如果正增量个数为偶数，或者有零增量可用来凑偶数，
+        # 则可以直接选所有正增量（并额外选 0 增量保证偶数）
+        if cnt_pos % 2 == 0 or zero_count > 0:
+            return base + sum_pos
+        
+        # 否则必须牺牲一次「翻正」或多带入一次「翻负」来凑偶数
+        # 方案1：去掉最小的正增量
+        min_pos = min(pos_deltas)
+        opt1 = sum_pos - min_pos
+        
+        # 方案2：额外加上最大的负增量（即负增量中数值最大者，减少最少）
+        # 注意 neg_deltas 里如果没有元素，这里要避免错误
+        opt2 = float('-inf')
+        if neg_deltas:
+            max_neg = max(neg_deltas)  # 例如 -1 > -5
+            opt2 = sum_pos + max_neg
+        
+        best = max(opt1, opt2)
+        return base + best
+```
+
+**核心思路**
+
+1. **等价模型**
+   - 每次在一条边上做 XOR 操作，会对该边两个端点的值各做一次 `^k`。
+   - 由于 XOR 的可逆性，对一条边操作偶数次等同于不操作，奇数次等同于操作一次。
+   - 最终每个节点 `i` 被翻转的次数即其在所选“被操作过奇数次”的边集合中出现的次数的奇偶性。
+   - 记对于节点 `i`，若翻转次数为奇数，则值从 `nums[i]` 变为 `nums[i] ^ k`，否则保持 `nums[i]`。
+2. **减至「选点翻转」问题**
+   - 定义二进制标记数组 `f[i] ∈ {0,1}` 表示节点 `i` 是否翻转。
+   - 翻转后的总和 = `sum(nums) + sum_{i}( f[i] * ((nums[i]^k) - nums[i]) )`。
+   - 翻转标记 `f` 在树上可实现的唯一约束是 `sum_i f[i]` 必须为偶数（因为树是连通的，在任意连通图中，度数模 2 的向量之和必然为 0）。
+3. **贪心选取**
+   - 先把所有正增量 `delta = (nums[i]^k) - nums[i] > 0` 都标记为 `f[i]=1`，因为它们必然能增大总和。
+   - 如果正增量个数本身就是偶数，直接翻即可；如果是奇数且存在 `delta=0`，也可以翻一个零增量来凑成偶数，不改变总和。
+   - 其余情况（正增量个数为奇数且没有零增量）：
+     - **方案 A**：舍弃一个最小的正增量，使正增量个数变为偶数。
+     - **方案 B**：额外再翻一个「负增量中数值最大的节点」，同样使总翻转数变为偶数，但只需牺牲最少。
+   - 比较两种方案的净增量，取较大者。
+
+此算法只遍历了一次数组，时间复杂度 O(n)，空间复杂度 O(n)。
 
 
 
