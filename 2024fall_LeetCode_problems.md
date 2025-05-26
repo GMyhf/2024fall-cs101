@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0925 GMT+8 May 23 2025
+Updated 0925 GMT+8 May 26 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -10049,7 +10049,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                            
+>                                                                                                                                                                                                                                                                                               
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -33461,6 +33461,146 @@ if __name__ == "__main__":
     print(sol.checkPartitioning("abcbdd"))
     print(sol.checkPartitioning("bcbddxy"))
 ```
+
+
+
+## T1857.有向图中最大颜色值
+
+topological sort, dp, https://leetcode.cn/problems/largest-color-value-in-a-directed-graph/
+
+给你一个 **有向图** ，它含有 `n` 个节点和 `m` 条边。节点编号从 `0` 到 `n - 1` 。
+
+给你一个字符串 `colors` ，其中 `colors[i]` 是小写英文字母，表示图中第 `i` 个节点的 **颜色** （下标从 **0** 开始）。同时给你一个二维数组 `edges` ，其中 `edges[j] = [aj, bj]` 表示从节点 `aj` 到节点 `bj` 有一条 **有向边** 。
+
+图中一条有效 **路径** 是一个点序列 `x1 -> x2 -> x3 -> ... -> xk` ，对于所有 `1 <= i < k` ，从 `xi` 到 `xi+1` 在图中有一条有向边。路径的 **颜色值** 是路径中 **出现次数最多** 颜色的节点数目。
+
+请你返回给定图中有效路径里面的 **最大颜色值** **。**如果图中含有环，请返回 `-1` 。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2021/04/21/leet1.png" alt="img" style="zoom:50%;" />
+
+```
+输入：colors = "abaca", edges = [[0,1],[0,2],[2,3],[3,4]]
+输出：3
+解释：路径 0 -> 2 -> 3 -> 4 含有 3 个颜色为 "a" 的节点（上图中的红色节点）。
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2021/04/21/leet2.png" alt="img" style="zoom:50%;" />
+
+```
+输入：colors = "a", edges = [[0,0]]
+输出：-1
+解释：从 0 到 0 有一个环。
+```
+
+ 
+
+**提示：**
+
+- `n == colors.length`
+- `m == edges.length`
+- `1 <= n <= 10^5`
+- `0 <= m <= 10^5`
+- `colors` 只含有小写英文字母。
+- `0 <= aj, bj < n`
+
+
+
+下面提供一种基于 **拓扑排序 + 动态规划** 的做法，时间复杂度 O(n×26+m)，空间复杂度 O(n×26+m)：
+
+1. **构建入度数组**
+   统计每个节点的入度 `indeg`，并同时把图用邻接表表示。
+
+2. **初始化 DP 表**
+   用 `dp[u][c]` 表示以节点 u 为终点、且颜色为第 c（用 0…25 表示）的路径中，该颜色出现的最大次数。
+   初始时，对每个节点 u：
+
+   ```python
+   dp[u][colors[u]] = 1
+   ```
+
+   其它颜色都是 0。
+
+3. **拓扑排序遍历**
+
+   - 将所有入度为 0 的节点加入队列。
+
+   - 依次从队列中取出节点 u，对每一条 u→v 边，尝试 **松弛**：
+
+     ```python
+     for c in range(26):
+         dp[v][c] = max(dp[v][c], dp[u][c] + (colors[v] == c))
+     ```
+
+     然后将 `indeg[v]` 减 1，若变为 0 则加入队列。
+
+4. **检查环**
+   如果最终被处理（出队）的节点数少于 n，说明图中有环，直接返回 −1。
+
+5. **答案**
+   在所有 u、所有颜色 c 中取 `dp[u][c]` 的最大值。
+
+------
+
+```python
+from collections import deque
+from typing import List
+
+class Solution:
+    def largestPathValue(self, colors: str, edges: List[List[int]]) -> int:
+        n = len(colors)
+        # 1. 构建图与入度
+        g = [[] for _ in range(n)]
+        indeg = [0] * n
+        for u, v in edges:
+            g[u].append(v)
+            indeg[v] += 1
+
+        # 2. 初始化 DP 表
+        # dp[u][c] = 在以 u 结尾的路径中，颜色 c 出现的最大次数
+        dp = [[0] * 26 for _ in range(n)]
+        for u, ch in enumerate(colors):
+            dp[u][ord(ch) - ord('a')] = 1
+
+        # 3. 拓扑排序
+        q = deque(u for u in range(n) if indeg[u] == 0)
+        visited = 0
+        ans = 0
+
+        while q:
+            u = q.popleft()
+            visited += 1
+            # 更新全局最优
+            ans = max(ans, max(dp[u]))
+            for v in g[u]:
+                # 对 v 的每一种颜色尝试松弛
+                for c in range(26):
+                    # 如果 v 的颜色恰好是 c，则要 +1，否则不加
+                    dp[v][c] = max(dp[v][c], dp[u][c] + (ord(colors[v]) - ord('a') == c))
+                indeg[v] -= 1
+                if indeg[v] == 0:
+                    q.append(v)
+
+        # 4. 如果没遍历完所有节点，说明存在环
+        if visited < n:
+            return -1
+
+        return ans
+```
+
+**复杂度分析：**
+
+- 构建图和入度：O(m)
+- 初始化 DP：O(n)
+- 拓扑过程：每条边会导致一次对长度为 26 的数组松弛，整体 O(m×26)；每个节点还要一次 O(26) 的局部最值计算，总体 O(n×26)。
+- 总体 O((n+m)×26)，在 n,m≤105 下完全可行。
+
+这样就能在线性时间内检测环并求出最大颜色值路径。
 
 
 
