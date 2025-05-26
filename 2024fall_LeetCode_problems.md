@@ -7504,6 +7504,82 @@ if __name__ == "__main__":
 
 
 
+## E3560.木材运输的最小成本
+
+implementation, https://leetcode.cn/problems/find-minimum-log-transportation-cost/description/
+
+给你三个整数 `n`、`m` 和 `k`。
+
+有两根长度分别为 `n` 和 `m` 单位的木材，需要通过三辆卡车运输。每辆卡车最多只能装载一根长度 **不超过** `k` 单位的木材。
+
+你可以将木材切成更小的段，其中将长度为 `x` 的木材切割成长度为 `len1` 和 `len2` 的段的成本为 `cost = len1 * len2`，并且满足 `len1 + len2 = x`。
+
+返回将木材分配到卡车上的 **最小总成本** 。如果木材不需要切割，总成本为 0。
+
+ 
+
+**示例 1：**
+
+**输入：** n = 6, m = 5, k = 5
+
+**输出：** 5
+
+**解释：**
+
+将长度为 6 的木材切割成长度为 1 和 5 的两段，成本为 `1 * 5 == 5`。现在三段长度分别为 1、5 和 5 的木材可以分别装载到每辆卡车。
+
+**示例 2：**
+
+**输入：** n = 4, m = 4, k = 6
+
+**输出：** 0
+
+**解释：**
+
+两根木材已经可以直接装载到卡车上，因此不需要切割。
+
+ 
+
+**提示：**
+
+- `2 <= k <= 10^5`
+- `1 <= n, m <= 2 * k`
+- 输入数据保证木材总存在能被运输的方案。
+
+
+
+
+
+```python
+class Solution:
+    def minCuttingCost(self, n: int, m: int, k: int) -> int:
+        if m <=k and n<=k:
+            return 0
+        if m <= k and n > k:
+            return (n-k) * k
+        if n <=k and m > k:
+            return (m-k) * k
+
+        return (m-k) * k + (n-k) * k
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.minCuttingCost(6, 5, 5))
+    print(sol.minCuttingCost(4, 4, 6))
+```
+
+
+
+
+
+### M3561.移除相邻字符
+
+stack, https://leetcode.cn/problems/resulting-string-after-adjacent-removals/
+
+
+
+
+
 
 
 # 中等
@@ -10049,7 +10125,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                               
+>                                                                                                                                                                                                                                                                                                  
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -21728,6 +21804,95 @@ class Solution:
 
 
 
+## M2131.连接两字母单词得到的最长回文串
+
+greedy, hash table, https://leetcode.cn/problems/longest-palindrome-by-concatenating-two-letter-words/
+
+给你一个字符串数组 `words` 。`words` 中每个元素都是一个包含 **两个** 小写英文字母的单词。
+
+请你从 `words` 中选择一些元素并按 **任意顺序** 连接它们，并得到一个 **尽可能长的回文串** 。每个元素 **至多** 只能使用一次。
+
+请你返回你能得到的最长回文串的 **长度** 。如果没办法得到任何一个回文串，请你返回 `0` 。
+
+**回文串** 指的是从前往后和从后往前读一样的字符串。
+
+ 
+
+**示例 1：**
+
+```
+输入：words = ["lc","cl","gg"]
+输出：6
+解释：一个最长的回文串为 "lc" + "gg" + "cl" = "lcggcl" ，长度为 6 。
+"clgglc" 是另一个可以得到的最长回文串。
+```
+
+**示例 2：**
+
+```
+输入：words = ["ab","ty","yt","lc","cl","ab"]
+输出：8
+解释：最长回文串是 "ty" + "lc" + "cl" + "yt" = "tylcclyt" ，长度为 8 。
+"lcyttycl" 是另一个可以得到的最长回文串。
+```
+
+**示例 3：**
+
+```
+输入：words = ["cc","ll","xx"]
+输出：2
+解释：最长回文串是 "cc" ，长度为 2 。
+"ll" 是另一个可以得到的最长回文串。"xx" 也是。
+```
+
+ 
+
+**提示：**
+
+- `1 <= words.length <= 10^5`
+- `words[i].length == 2`
+- `words[i]` 仅包含小写英文字母。
+
+
+
+Greedy
+
+```python
+from collections import Counter
+from typing import List
+
+class Solution:
+    def longestPalindrome(self, words: List[str]) -> int:
+        count = Counter(words)
+        res = 0
+        central_used = False  # 标记是否已经用了一个自回文字符串作为中心
+        
+        for word in count:
+            reversed_word = word[::-1]
+            if word == reversed_word:
+                # 处理自回文字符串
+                pairs = count[word] // 2
+                res += pairs * 4
+                count[word] -= pairs * 2
+                # 如果还有剩余且尚未使用中心位置，则可以作为中心增加2长度
+                if count[word] > 0 and not central_used:
+                    res += 2
+                    central_used = True
+            else:
+                # 处理互为逆序的字符串对
+                if reversed_word in count:
+                    pairs = min(count[word], count[reversed_word])
+                    res += pairs * 4
+                    count[word] -= pairs
+                    count[reversed_word] -= pairs
+                    
+        return res      
+```
+
+
+
+
+
 ## 2140.解决智力问题
 
 dp, https://leetcode.cn/problems/solving-questions-with-brainpower/
@@ -29684,6 +29849,397 @@ class Solution:
    - 可通过所有边界情况，包括示例 1、示例 2 以及 `[".A","CA"]` 这类起步后直接传送的场景。
 
 这样既保证了正确性，也把内存压到了 $O(mn)$。
+
+
+
+## M3556.最大质数子字符串之和
+
+sliding window, https://leetcode.cn/problems/sum-of-largest-prime-substrings/description/
+
+给定一个字符串 `s`，找出可以由其 **子字符串** 组成的 **3个最大的不同质数** 的和。
+
+返回这些质数的 **总和** ，如果少于 3 个不同的质数，则返回 **所有** 不同质数的和。
+
+质数是大于 1 且只有两个因数的自然数：1和它本身。
+
+**子字符串** 是字符串中的一个连续字符序列。 
+
+**注意：**每个质数即使出现在 **多个** 子字符串中，也只能计算 **一次** 。此外，将子字符串转换为整数时，忽略任何前导零。
+
+ 
+
+**示例 1：**
+
+**输入：** s = "12234"
+
+**输出：** 1469
+
+**解释：**
+
+- 由 `"12234"` 的子字符串形成的不同质数为 2 ，3 ，23 ，223 和 1223。
+- 最大的 3 个质数是 1223、223 和 23。它们的和是 1469。
+
+**示例 2：**
+
+**输入：** s = "111"
+
+**输出：** 11
+
+**解释：**
+
+- 由 `"111"` 的子字符串形成的不同质数是 11。
+- 由于只有一个质数，所以结果是 11。
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 10`
+- `s` 仅由数字组成。
+
+
+
+
+
+```python
+class Solution:
+    def sumOfLargestPrimes(self, s: str) -> int:
+        def is_prime(n: int) -> bool:
+            if n < 2:
+                return False
+            for i in range(2, int(n**0.5) + 1):
+                if n % i == 0:
+                    return False
+            return True
+
+        primes = set()
+        for left in range(len(s)):
+            num = int(s[left])
+            if is_prime(num):
+                primes.add(num)
+            for right in range(left + 1, len(s)):
+                num = int(s[left:right + 1])
+
+                if is_prime(num):
+                    primes.add(num)
+
+        primes = list(primes)
+        primes.sort(reverse=True)
+
+        return sum(primes[:3]) if len(primes) > 2 else sum(primes)
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.sumOfLargestPrimes("12234"))
+    print(sol.sumOfLargestPrimes("111"))
+```
+
+
+
+
+
+## M3557.不相交子字符串的最大数量
+
+greedy, https://leetcode.cn/problems/find-maximum-number-of-non-intersecting-substrings/description/
+
+给你一个字符串 `word`。
+
+返回以 **首尾字母相同** 且 **长度至少为 4** 的 **不相交子字符串** 的最大数量。
+
+**子字符串** 是字符串中连续的 **非空** 字符序列。
+
+ 
+
+**示例 1：**
+
+**输入：** word = "abcdeafdef"
+
+**输出：** 2
+
+**解释：**
+
+两个子字符串是 `"abcdea"` 和 `"fdef"`。
+
+**示例 2：**
+
+**输入：** word = "bcdaaaab"
+
+**输出：** 1
+
+**解释：**
+
+唯一的子字符串是 `"aaaa"`。注意我们 **不能** 同时选择 `"bcdaaaab"`，因为它和另一个子字符串有重叠。
+
+ 
+
+**提示：**
+
+- `1 <= word.length <= 2 * 10^5`
+- `word` 仅由小写英文字母组成。
+
+
+
+
+
+```python
+from collections import defaultdict
+
+class Solution:
+    def maxSubstrings(self, word: str) -> int:
+        pos = defaultdict(list)
+
+        # 收集每个字符的所有位置
+        for i, ch in enumerate(word):
+            pos[ch].append(i)
+
+        # 存储所有符合条件的子串 [start, end]
+        intervals = []
+
+        for ch in pos:
+            indices = pos[ch]
+            n = len(indices)
+            for i in range(n):
+                for j in range(i + 1, n):
+                    if indices[j] - indices[i] + 1 >= 4:
+                        intervals.append((indices[i], indices[j]))
+                        break  # 找到最小的满足条件的就停止内层循环，避免重复
+
+        # 按照结束位置排序，方便贪心选择不重叠区间
+        intervals.sort(key=lambda x: x[1])
+
+        res = 0
+        last_end = -1
+
+        for start, end in intervals:
+            if start > last_end:
+                res += 1
+                last_end = end
+
+        return res
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.maxSubstrings("abcdeafdef"))
+    print(sol.maxSubstrings("bcdaaaab"))
+    print(sol.maxSubstrings("aabececbbeccdcdcbbdece"))
+```
+
+
+
+
+
+## M3558.给边赋权值的方案数 I
+
+bfs, math, https://leetcode.cn/problems/number-of-ways-to-assign-edge-weights-i/description/
+
+给你一棵 `n` 个节点的无向树，节点从 1 到 `n` 编号，树以节点 1 为根。树由一个长度为 `n - 1` 的二维整数数组 `edges` 表示，其中 `edges[i] = [ui, vi]` 表示在节点 `ui` 和 `vi` 之间有一条边。
+
+一开始，所有边的权重为 0。你可以将每条边的权重设为 **1** 或 **2**。
+
+两个节点 `u` 和 `v` 之间路径的 **代价** 是连接它们路径上所有边的权重之和。
+
+选择任意一个 **深度最大** 的节点 `x`。返回从节点 1 到 `x` 的路径中，边权重之和为 **奇数** 的赋值方式数量。
+
+由于答案可能很大，返回它对 `10^9 + 7` 取模的结果。
+
+**注意：** 忽略从节点 1 到节点 `x` 的路径外的所有边。
+
+ 
+
+**示例 1：**
+
+<img src="https://pic.leetcode.cn/1748074049-lsGWuV-screenshot-2025-03-24-at-060006.png" alt="img" style="zoom:50%;" />
+
+**输入：** edges = [[1,2]]
+
+**输出：** 1
+
+**解释：**
+
+- 从节点 1 到节点 2 的路径有一条边（`1 → 2`）。
+- 将该边赋权为 1 会使代价为奇数，赋权为 2 则为偶数。因此，合法的赋值方式有 1 种。
+
+**示例 2：**
+
+<img src="https://pic.leetcode.cn/1748074095-sRyffx-screenshot-2025-03-24-at-055820.png" alt="img" style="zoom:50%;" />
+
+**输入：** edges = [[1,2],[1,3],[3,4],[3,5]]
+
+**输出：** 2
+
+**解释：**
+
+- 最大深度为 2，节点 4 和节点 5 都在该深度，可以选择任意一个。
+- 例如，从节点 1 到节点 4 的路径包括两条边（`1 → 3` 和 `3 → 4`）。
+- 将两条边赋权为 (1,2) 或 (2,1) 会使代价为奇数，因此合法赋值方式有 2 种。
+
+ 
+
+**提示：**
+
+- `2 <= n <= 10^5`
+
+- `edges.length == n - 1`
+
+- `edges[i] == [ui, vi]`
+
+- `1 <= ui, vi <= n`
+
+- `edges` 表示一棵合法的树。
+
+  
+
+思路：
+
+1. **求最大深度**
+   把树看作以 1 为根的有向树，用 BFS 或 DFS 计算每个节点到根的深度，取最大值记为 D。
+
+2. **计算方案数**
+   只考虑从 1 到深度为 D 的某个节点的这条路径上的 D 条边，每条边权重只能是 1（奇）或 2（偶）。我们要统计总和为奇数的方案数。
+
+   令 O(D)O(D) 为长度为 DD 的序列中和为奇数的方案数，则有递推：
+
+   $O(D)=E(D−1)×(\#选 1)+O(D−1)×(\#选 2)=[2^{D−1}−O(D−1)]×1+O(D−1)×1=2^{D−1}$.
+
+   因此答案就是
+
+   $O(D)=2^{D−1} \mod (10^9+7)$.
+
+```python
+from typing import List
+
+class Solution:
+    def assignEdgeWeights(self, edges: List[List[int]]) -> int:
+        MOD = 10**9 + 7
+        n = len(edges) + 1
+
+        # 构建无向图
+        g = [[] for _ in range(n+1)]
+        for u, v in edges:
+            g[u].append(v)
+            g[v].append(u)
+
+        # BFS 求各节点深度
+        from collections import deque
+        q = deque([1])
+        depth = [0] * (n+1)
+        seen = [False] * (n+1)
+        seen[1] = True
+
+        maxd = 0
+        while q:
+            u = q.popleft()
+            for v in g[u]:
+                if not seen[v]:
+                    seen[v] = True
+                    depth[v] = depth[u] + 1
+                    maxd = max(maxd, depth[v])
+                    q.append(v)
+
+        return pow(2, maxd-1, MOD)
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.assignEdgeWeights([[1,2]]))
+    print(sol.assignEdgeWeights([[1,2],[1,3],[3,4],[3,5]]))
+```
+
+**时间复杂度**
+
+- 构图 O(n)
+- BFS/DFS 求深度 O(n)
+- 快速幂 O(logn)
+  总体 O(n)。
+
+
+
+
+
+## M3561.移除相邻字符
+
+stack, https://leetcode.cn/problems/resulting-string-after-adjacent-removals/
+
+给你一个由小写英文字母组成的字符串 `s`。
+
+你 **必须** 在字符串 `s` 中至少存在两个 **连续** 字符时，反复执行以下操作：
+
+- 移除字符串中 **最左边** 的一对按照字母表 **连续** 的相邻字符（无论是按顺序还是逆序，例如 `'a'` 和 `'b'`，或 `'b'` 和 `'a'`）。
+- 将剩余字符向左移动以填补空隙。
+
+当无法再执行任何操作时，返回最终的字符串。
+
+**注意：**字母表是循环的，因此 `'a'` 和 `'z'` 也视为连续。
+
+ 
+
+**示例 1：**
+
+**输入:** s = "abc"
+
+**输出:** "c"
+
+**解释:**
+
+- 从字符串中移除 `"ab"`，剩下 `"c"`。
+- 无法进行进一步操作。因此，所有可能移除操作后的最终字符串为 `"c"`。
+
+**示例 2：**
+
+**输入:** s = "adcb"
+
+**输出:** ""
+
+**解释:**
+
+- 从字符串中移除 `"dc"`，剩下 `"ab"`。
+- 从字符串中移除 `"ab"`，剩下 `""`。
+- 无法进行进一步操作。因此，所有可能移除操作后的最终字符串为 `""`。
+
+**示例 3：**
+
+**输入:** s = "zadb"
+
+**输出:** "db"
+
+**解释:**
+
+- 从字符串中移除 `"za"`，剩下 `"db"`。
+- 无法进行进一步操作。因此，所有可能移除操作后的最终字符串为 `"db"`。
+
+ 
+
+**提示:**
+
+- `1 <= s.length <= 10^5`
+- `s` 仅由小写英文字母组成。
+
+
+
+```python
+class Solution:
+    def resultingString(self, s: str) -> str:
+        def is_consecutive(a: str, b: str) -> bool:
+            diff = abs(ord(a) - ord(b))
+            return diff == 1 or diff == 25
+
+        stack = []
+        for c in s:
+            if stack and is_consecutive(stack[-1], c):
+                stack.pop()
+            else:
+                stack.append(c)
+        return ''.join(stack)
+
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.resultingString("abc"))
+    print(sol.resultingString("adcb"))
+    print(sol.resultingString("zadb"))
+    print(sol.resultingString("hkg"))
+```
+
+
 
 
 
@@ -39400,6 +39956,412 @@ if __name__ == '__main__':
 
 
 # 力扣周赛双周赛
+
+
+
+## 第 451 场周赛-20250525
+
+https://leetcode.cn/contest/weekly-contest-451/
+
+中国时间：2025-05-25 10:30, 1 小时 30 分
+
+
+
+### E3560.木材运输的最小成本
+
+implementation, https://leetcode.cn/problems/find-minimum-log-transportation-cost/description/
+
+
+
+
+
+### M3561.移除相邻字符
+
+stack, https://leetcode.cn/problems/resulting-string-after-adjacent-removals/
+
+
+
+
+
+### T3562.折扣价交易股票的最大利润
+
+树形DP + 多重背包合并, https://leetcode.cn/problems/maximum-profit-from-trading-stocks-with-discounts/
+
+给你一个整数 `n`，表示公司中员工的数量。每位员工都分配了一个从 1 到 `n` 的唯一 ID ，其中员工 1 是 CEO。另给你两个下标从 **1** 开始的整数数组 `present` 和 `future`，两个数组的长度均为 `n`，具体定义如下：
+
+- `present[i]` 表示第 `i` 位员工今天可以购买股票的 **当前价格** 。
+- `future[i]` 表示第 `i` 位员工明天可以卖出股票的 **预期价格** 。
+
+公司的层级关系由二维整数数组 `hierarchy` 表示，其中 `hierarchy[i] = [ui, vi]` 表示员工 `ui` 是员工 `vi` 的直属上司。
+
+此外，再给你一个整数 `budget`，表示可用于投资的总预算。
+
+公司有一项折扣政策：如果某位员工的直属上司购买了自己的股票，那么该员工可以以 **半价** 购买自己的股票（即 `floor(present[v] / 2)`）。
+
+请返回在不超过给定预算的情况下可以获得的 **最大利润** 。
+
+**注意：**
+
+- 每只股票最多只能购买一次。
+- 不能使用股票未来的收益来增加投资预算，购买只能依赖于 `budget`。
+
+ 
+
+**示例 1：**
+
+**输入：** n = 2, present = [1,2], future = [4,3], hierarchy = [[1,2]], budget = 3
+
+**输出：** 5
+
+**解释：**
+
+<img src="https://pic.leetcode.cn/1748074339-Jgupjx-screenshot-2025-04-10-at-053641.png" alt="img" style="zoom: 33%;" />
+
+- 员工 1 以价格 1 购买股票，获得利润 `4 - 1 = 3`。
+- 由于员工 1 是员工 2 的直属上司，员工 2 可以以折扣价 `floor(2 / 2) = 1` 购买股票。
+- 员工 2 以价格 1 购买股票，获得利润 `3 - 1 = 2`。
+- 总购买成本为 `1 + 1 = 2 <= budget`，因此最大总利润为 `3 + 2 = 5`。
+
+**示例 2：**
+
+**输入：** n = 2, present = [3,4], future = [5,8], hierarchy = [[1,2]], budget = 4
+
+**输出：** 4
+
+**解释：**
+
+<img src="https://pic.leetcode.cn/1748074339-Jgupjx-screenshot-2025-04-10-at-053641.png" alt="img" style="zoom:33%;" />
+
+- 员工 2 以价格 4 购买股票，获得利润 `8 - 4 = 4`。
+- 由于两位员工无法同时购买，最大利润为 4。
+
+**示例 3：**
+
+**输入：** n = 3, present = [4,6,8], future = [7,9,11], hierarchy = [[1,2],[1,3]], budget = 10
+
+**输出：** 10
+
+**解释：**
+
+<img src="https://pic.leetcode.cn/1748074339-BkQeTc-image.png" alt="img" style="zoom:33%;" />
+
+- 员工 1 以价格 4 购买股票，获得利润 `7 - 4 = 3`。
+- 员工 3 可获得折扣价 `floor(8 / 2) = 4`，获得利润 `11 - 4 = 7`。
+- 员工 1 和员工 3 的总购买成本为 `4 + 4 = 8 <= budget`，因此最大总利润为 `3 + 7 = 10`。
+
+**示例 4：**
+
+**输入：** n = 3, present = [5,2,3], future = [8,5,6], hierarchy = [[1,2],[2,3]], budget = 7
+
+**输出：** 12
+
+**解释：**
+
+<img src="https://pic.leetcode.cn/1748074339-XmAKtD-screenshot-2025-04-10-at-054114.png" alt="img" style="zoom:33%;" />
+
+- 员工 1 以价格 5 购买股票，获得利润 `8 - 5 = 3`。
+- 员工 2 可获得折扣价 `floor(2 / 2) = 1`，获得利润 `5 - 1 = 4`。
+- 员工 3 可获得折扣价 `floor(3 / 2) = 1`，获得利润 `6 - 1 = 5`。
+- 总成本为 `5 + 1 + 1 = 7 <= budget`，因此最大总利润为 `3 + 4 + 5 = 12`。
+
+ 
+
+**提示：**
+
+- `1 <= n <= 160`
+- `present.length, future.length == n`
+- `1 <= present[i], future[i] <= 50`
+- `hierarchy.length == n - 1`
+- `hierarchy[i] == [ui, vi]`
+- `1 <= ui, vi <= n`
+- `ui != vi`
+- `1 <= budget <= 160`
+- 没有重复的边。
+- 员工 1 是所有员工的直接或间接上司。
+- 输入的图 `hierarchy` 保证 **无环** 。
+
+
+
+
+
+下面给出基于「树形动态规划 + 多重背包合并」的 O(n⋅budget2) 解法。核心思路是对以 1 号员工为根的管理树做 DFS，对于每个节点在「父亲是否买入自己」两种情形下分别计算一个长度为 `budget+1` 的 DP 数组，最后答案取根节点父情形为“不打折”时的最优值。
+
+```python
+from typing import List
+import sys
+
+sys.setrecursionlimit(10000)
+
+
+class Solution:
+    def maxProfit(self, n: int, present: List[int], future: List[int], hierarchy: List[List[int]], budget: int) -> int:
+        # Build the tree
+        children = [[] for _ in range(n)]
+        for u, v in hierarchy:
+            # Convert to 0-based index
+            children[u - 1].append(v - 1)
+
+        # DFS 返回 dp[p][c]:
+        #   p ∈ {0,1} 表示「当前节点的上司是否买了自己」，
+        #   dp[p] 是长度为 budget+1 的数组，dp[p][c] = 在预算恰好使用 c 时的最大总利润
+        def dfs(u: int) -> List[List[int]]:
+            # 先对子节点做 dfs
+            child_dp = [dfs(v) for v in children[u]]
+            # 为两种父亲购买情形各自做一次子树合并
+            dp = [[-10 ** 18] * (budget + 1) for _ in range(2)]
+
+            for parent_bought in (0, 1):
+                # 考虑「不买自己」和「买自己」两种选择
+                # buy=0: cost=0, profit=0, children see parent_bought_child=0
+                # buy=1: cost按情况，profit=future-present_cost, children see parent_bought_child=1
+                # 我们先对这两种情况分别做子节点的背包合并，然后再在最后按成本选最优
+                # tmp_dp[k] 表示当前已合并到某一步，恰耗费 k 时的最大利润
+                tmp_dp = [-10 ** 18] * (budget + 1)
+
+                # 枚举是否在 u 节点买入
+                for buy in (0, 1):
+                    # 计算买入自己的成本和直接利润
+                    if buy == 0:
+                        cost_u, profit_u, child_flag = 0, 0, 0
+                    else:
+                        # 折扣价
+                        price = present[u] if parent_bought == 0 else (present[u] // 2)
+                        cost_u, profit_u, child_flag = price, future[u] - price, 1
+                        # —— 去掉下面这行 ——
+                        # if profit_u < 0: continue
+
+                    # 如果单独买入超预算，跳过
+                    if cost_u > budget:
+                        continue
+
+                    # 初始化 cur_dp
+                    cur_dp = [-10 ** 18] * (budget + 1)
+                    cur_dp[cost_u] = profit_u
+
+                    # 依次将每个子树进行「背包卷积」
+                    for cdp in child_dp:
+                        nxt_dp = [-10 ** 18] * (budget + 1)
+                        # cdp[child_flag] 数组是子节点在 parent_bought=child_flag 下的 dp
+                        child_flag_dp = cdp[child_flag]
+
+                        # 在剩余预算里，子树可选任意开销
+                        for used in range(budget + 1):
+                            if cur_dp[used] < -10 ** 17:
+                                continue
+                            for spend in range(budget - used + 1):
+                                if child_flag_dp[spend] < -10 ** 17:
+                                    continue
+                                val = cur_dp[used] + child_flag_dp[spend]
+                                if val > nxt_dp[used + spend]:
+                                    nxt_dp[used + spend] = val
+                        cur_dp = nxt_dp
+
+                    # 将 cur_dp 合并进 tmp_dp
+                    for c in range(budget + 1):
+                        if cur_dp[c] > tmp_dp[c]:
+                            tmp_dp[c] = cur_dp[c]
+
+                dp[parent_bought] = tmp_dp
+            return dp
+
+        # 根节点（编号0）上司一定没有给它打折 => 用 parent_bought=0 的 dp
+        root_dp = dfs(0)[0]
+
+        # 预算不限于恰好，允许 ≤ budget，所以要再多一次「前缀最大」
+        return max(root_dp[:budget + 1])
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.maxProfit(2, [6, 11], [5, 48], [[1, 2]], 142))  # 42
+```
+
+**复杂度分析：**
+
+- 每个节点有两种「父亲是否买过自己」情形；
+- 对每种情形做两种「自己买／不买」选择；
+- 并将子树的背包状态与当前状态做 O(budget2) 的卷积；
+- 整体时间 O(n×budget2)，在 n, budget≤160 时完全可行。
+
+
+
+在「剪掉亏本交易」的第42行代码。由于给上级“牺牲小利”也可能给下属带来更大利，不能简单地 `if profit_u < 0: continue`。我们把那行去掉，就能在必要时允许父节点“先亏后赚”。
+
+
+
+### T3563.移除相邻字符后字典序最小的字符串
+
+https://leetcode.cn/problems/lexicographically-smallest-string-after-adjacent-removals/
+
+给你一个由小写英文字母组成的字符串 `s`。
+
+你可以进行以下操作任意次（包括零次）：
+
+- 移除字符串中 **任意** 一对 **相邻** 字符，这两个字符在字母表中是 **连续** 的，无论顺序如何（例如，`'a'` 和 `'b'`，或者 `'b'` 和 `'a'`）。
+- 将剩余字符左移以填补空隙。
+
+返回经过最优操作后可以获得的 **字典序最小** 的字符串。
+
+当且仅当在第一个不同的位置上，字符串 `a` 的字母在字母表中出现的位置早于字符串 `b` 的字母，则认为字符串 `a` 的 **字典序小于** 字符串 `b`，。
+如果 `min(a.length, b.length)` 个字符都相同，则较短的字符串字典序更小。
+
+**注意：**字母表被视为循环的，因此 `'a'` 和 `'z'` 也视为连续。
+
+ 
+
+**示例 1：**
+
+**输入：** s = "abc"
+
+**输出：** "a"
+
+**解释：**
+
+- 从字符串中移除 `"bc"`，剩下 `"a"`。
+- 无法进行更多操作。因此，经过所有可能的移除后，字典序最小的字符串是 `"a"`。
+
+**示例 2：**
+
+**输入：** s = "bcda"
+
+**输出：** ""
+
+**解释：**
+
+- 从字符串中移除 `"cd"`，剩下 `"ba"`。
+- 从字符串中移除 `"ba"`，剩下 `""`。
+- 无法进行更多操作。因此，经过所有可能的移除后，字典序最小的字符串是 `""`。
+
+**示例 3：**
+
+**输入：** s = "zdce"
+
+**输出：** "zdce"
+
+**解释：**
+
+- 从字符串中移除 `"dc"`，剩下 `"ze"`。
+- 无法对 `"ze"` 进行更多操作。
+- 然而，由于 `"zdce"` 的字典序小于 `"ze"`。因此，经过所有可能的移除后，字典序最小的字符串是 `"zdce"`。
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 250`
+- `s` 仅由小写英文字母组成。
+
+
+
+```python
+class Solution:
+    def lexicographicallySmallestString(self, s: str) -> str:
+```
+
+
+
+## 第 157 场双周赛-20250524
+
+https://leetcode.cn/contest/biweekly-contest-157/
+
+中国时间：2025-05-24 22:30, 1 小时 30 分
+
+
+
+### M3556.最大质数子字符串之和
+
+sliding window, https://leetcode.cn/problems/sum-of-largest-prime-substrings/description/
+
+
+
+
+
+### M3557.不相交子字符串的最大数量
+
+greedy, https://leetcode.cn/problems/find-maximum-number-of-non-intersecting-substrings/description/
+
+
+
+
+
+### M3558.给边赋权值的方案数 I
+
+bfs, math, https://leetcode.cn/problems/number-of-ways-to-assign-edge-weights-i/description/
+
+
+
+
+
+### T3559.给边赋权值的方案数 II
+
+https://leetcode.cn/problems/number-of-ways-to-assign-edge-weights-ii/
+
+给你一棵有 `n` 个节点的无向树，节点从 1 到 `n` 编号，树以节点 1 为根。树由一个长度为 `n - 1` 的二维整数数组 `edges` 表示，其中 `edges[i] = [ui, vi]` 表示在节点 `ui` 和 `vi` 之间有一条边。
+
+一开始，所有边的权重为 0。你可以将每条边的权重设为 **1** 或 **2**。
+
+两个节点 `u` 和 `v` 之间路径的 **代价** 是连接它们路径上所有边的权重之和。
+
+给定一个二维整数数组 `queries`。对于每个 `queries[i] = [ui, vi]`，计算从节点 `ui` 到 `vi` 的路径中，使得路径代价为 **奇数** 的权重分配方式数量。
+
+返回一个数组 `answer`，其中 `answer[i]` 表示第 `i` 个查询的合法赋值方式数量。
+
+由于答案可能很大，请对每个 `answer[i]` 取模 `109 + 7`。
+
+**注意：** 对于每个查询，仅考虑 `ui` 到 `vi` 路径上的边，忽略其他边。
+
+ 
+
+**示例 1：**
+
+<img src="https://pic.leetcode.cn/1748074049-lsGWuV-screenshot-2025-03-24-at-060006.png" alt="img" style="zoom:50%;" />
+
+**输入：** edges = [[1,2]], queries = [[1,1],[1,2]]
+
+**输出：** [0,1]
+
+**解释：**
+
+- 查询 `[1,1]`：节点 1 到自身没有边，代价为 0，因此合法赋值方式为 0。
+- 查询 `[1,2]`：从节点 1 到节点 2 的路径有一条边（`1 → 2`）。将权重设为 1 时代价为奇数，设为 2 时为偶数，因此合法赋值方式为 1。
+
+**示例 2：**
+
+<img src="https://pic.leetcode.cn/1748074095-sRyffx-screenshot-2025-03-24-at-055820.png" alt="img" style="zoom:50%;" />
+
+**输入：** edges = [[1,2],[1,3],[3,4],[3,5]], queries = [[1,4],[3,4],[2,5]]
+
+**输出：** [2,1,4]
+
+**解释：**
+
+- 查询 `[1,4]`：路径为两条边（`1 → 3` 和 `3 → 4`），(1,2) 或 (2,1) 的组合会使代价为奇数，共 2 种。
+- 查询 `[3,4]`：路径为一条边（`3 → 4`），仅权重为 1 时代价为奇数，共 1 种。
+- 查询 `[2,5]`：路径为三条边（`2 → 1 → 3 → 5`），组合 (1,2,2)、(2,1,2)、(2,2,1)、(1,1,1) 均为奇数代价，共 4 种。
+
+ 
+
+**提示：**
+
+- `2 <= n <= 10^5`
+- `edges.length == n - 1`
+- `edges[i] == [ui, vi]`
+- `1 <= queries.length <= 10^5`
+- `queries[i] == [ui, vi]`
+- `1 <= ui, vi <= n`
+- `edges` 表示一棵合法的树。
+
+
+
+
+
+```python
+class Solution:
+    def assignEdgeWeights(self, edges: List[List[int]], queries: List[List[int]]) -> List[int]:
+```
+
+
+
+
 
 
 
