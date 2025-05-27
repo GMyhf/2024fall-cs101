@@ -10200,7 +10200,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                     
+>                                                                                                                                                                                                                                                                                                        
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -28877,9 +28877,9 @@ if __name__ == "__main__":
 
 
 
-## 3529.统计水平子串和垂直子串重叠格子的数目
+## M3529.统计水平子串和垂直子串重叠格子的数目
 
-KMP, https://leetcode.cn/problems/count-cells-in-overlapping-horizontal-and-vertical-substrings/
+KMP, 差分数组, https://leetcode.cn/problems/count-cells-in-overlapping-horizontal-and-vertical-substrings/
 
 
 
