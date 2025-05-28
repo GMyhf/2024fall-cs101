@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0925 GMT+8 May 27 2025
+Updated 0925 GMT+8 May 28 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -10200,7 +10200,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                        
+>                                                                                                                                                                                                                                                                                                           
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -25660,6 +25660,130 @@ queries = [[0,2,1],[0,2,1],[1,1,3]]
 
 - `k = 1` → 差分后 `[1, 0, 1]`，不能让 `[2, 0, 2]` 变成全0。
 - `k = 2` → 差分后 `[2, 0, 2]`，正好可以让所有位置减到0 → ✅
+
+
+
+## M3372.连接两棵树后最大目标节点数目 I
+
+bfs, https://leetcode.cn/problems/maximize-the-number-of-target-nodes-after-connecting-trees-i/
+
+有两棵 **无向** 树，分别有 `n` 和 `m` 个树节点。两棵树中的节点编号分别为`[0, n - 1]` 和 `[0, m - 1]` 中的整数。
+
+给你两个二维整数 `edges1` 和 `edges2` ，长度分别为 `n - 1` 和 `m - 1` ，其中 `edges1[i] = [ai, bi]` 表示第一棵树中节点 `ai` 和 `bi` 之间有一条边，`edges2[i] = [ui, vi]` 表示第二棵树中节点 `ui` 和 `vi` 之间有一条边。同时给你一个整数 `k` 。
+
+如果节点 `u` 和节点 `v` 之间路径的边数小于等于 `k` ，那么我们称节点 `u` 是节点 `v` 的 **目标节点** 。**注意** ，一个节点一定是它自己的 **目标节点** 。
+
+请你返回一个长度为 `n` 的整数数组 `answer` ，`answer[i]` 表示将第一棵树中的一个节点与第二棵树中的一个节点连接一条边后，第一棵树中节点 `i` 的 **目标节点** 数目的 **最大值** 。
+
+**注意** ，每个查询相互独立。意味着进行下一次查询之前，你需要先把刚添加的边给删掉。
+
+ 
+
+**示例 1：**
+
+**输入：**edges1 = [[0,1],[0,2],[2,3],[2,4]], edges2 = [[0,1],[0,2],[0,3],[2,7],[1,4],[4,5],[4,6]], k = 2
+
+**输出：**[9,7,9,8,8]
+
+**解释：**
+
+- 对于 `i = 0` ，连接第一棵树中的节点 0 和第二棵树中的节点 0 。
+- 对于 `i = 1` ，连接第一棵树中的节点 1 和第二棵树中的节点 0 。
+- 对于 `i = 2` ，连接第一棵树中的节点 2 和第二棵树中的节点 4 。
+- 对于 `i = 3` ，连接第一棵树中的节点 3 和第二棵树中的节点 4 。
+- 对于 `i = 4` ，连接第一棵树中的节点 4 和第二棵树中的节点 4 。
+
+![img](https://assets.leetcode.com/uploads/2024/09/24/3982-1.png)
+
+**示例 2：**
+
+**输入：**edges1 = [[0,1],[0,2],[0,3],[0,4]], edges2 = [[0,1],[1,2],[2,3]], k = 1
+
+**输出：**[6,3,3,3,3]
+
+**解释：**
+
+对于每个 `i` ，连接第一棵树中的节点 `i` 和第二棵树中的任意一个节点。
+
+![img](https://assets.leetcode.com/uploads/2024/09/24/3928-2.png)
+
+ 
+
+**提示：**
+
+- `2 <= n, m <= 1000`
+- `edges1.length == n - 1`
+- `edges2.length == m - 1`
+- `edges1[i].length == edges2[i].length == 2`
+- `edges1[i] = [ai, bi]`
+- `0 <= ai, bi < n`
+- `edges2[i] = [ui, vi]`
+- `0 <= ui, vi < m`
+- 输入保证 `edges1` 和 `edges2` 都表示合法的树。
+- `0 <= k <= 1000`
+
+
+
+```python
+from typing import List
+from collections import deque
+
+class Solution:
+    def maxTargetNodes(self, edges1: List[List[int]], edges2: List[List[int]], k: int) -> List[int]:
+
+        # 1. 构建邻接表
+        n = len(edges1) + 1
+        m = len(edges2) + 1
+        graph1 = [[] for _ in range(n)]
+        graph2 = [[] for _ in range(m)]
+        for u, v in edges1:
+            graph1[u].append(v)
+            graph1[v].append(u)
+        for u, v in edges2:
+            graph2[u].append(v)
+            graph2[v].append(u)
+
+        # 2. 计算每个节点在自身树中，距离 ≤ K 的节点数
+        def count_targets(graph: List[List[int]], size: int, K: int) -> List[int]:
+            res = [0] * size
+            for i in range(size):
+                seen = {i}
+                dq = deque([(i, 0)])
+                cnt = 1  # 包含自己
+                while dq:
+                    u, d = dq.popleft()
+                    if d == K:
+                        continue
+                    for w in graph[u]:
+                        if w not in seen:
+                            seen.add(w)
+                            cnt += 1
+                            dq.append((w, d + 1))
+                res[i] = cnt
+            return res
+
+        A = count_targets(graph1, n, k)
+        # 对第二棵树，我们只关心距离 ≤ k-1
+        if k >= 1:
+            B = count_targets(graph2, m, k - 1)
+        else:
+            # k == 0 时，通过新边到第二棵树的任何节点都路径长为1>0，故无额外目标节点
+            B = [0] * m
+
+        # 3. 连接后从 tree2 能带来的最大目标节点数
+        maxB = max(B)
+
+        # 4. 最终答案：自己树内 + 能带来的外部最多
+        return [a + maxB for a in A]
+```
+
+**说明**
+
+- `A[i]`：第一棵树中节点 `i` 在距离 ≤ k 范围内自身树的目标节点数。
+- `B[j]`：第二棵树中节点 `j` 在距离 ≤ (k − 1) 范围内自身树的目标节点数（因为新加的那条边占 1 条长度）。
+- 对于第一棵树的任意节点 `i`，我们总是选取那个能在第二棵树中带来最多目标节点的连接点，所以答案为 `A[i] + max(B)`。
+
+此解的时间复杂度约为 O(n·(n + deg)) + O(m·(m + deg))，在 n, m ≤ 1000 的约束下能够通过所有测试。
 
 
 
