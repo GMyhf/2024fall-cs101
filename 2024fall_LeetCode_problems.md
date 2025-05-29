@@ -10200,7 +10200,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                           
+>                                                                                                                                                                                                                                                                                                              
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -38178,7 +38178,127 @@ if __name__ == "__main__":
 
 ​        
 
+## T3373.连接两棵树后最大目标节点数目 II
 
+tree, bfs, https://leetcode.cn/problems/maximize-the-number-of-target-nodes-after-connecting-trees-ii/
+
+有两棵 **无向** 树，分别有 `n` 和 `m` 个树节点。两棵树中的节点编号分别为`[0, n - 1]` 和 `[0, m - 1]` 中的整数。
+
+给你两个二维整数 `edges1` 和 `edges2` ，长度分别为 `n - 1` 和 `m - 1` ，其中 `edges1[i] = [ai, bi]` 表示第一棵树中节点 `ai` 和 `bi` 之间有一条边，`edges2[i] = [ui, vi]` 表示第二棵树中节点 `ui` 和 `vi` 之间有一条边。
+
+如果节点 `u` 和节点 `v` 之间路径的边数是偶数，那么我们称节点 `u` 是节点 `v` 的 **目标节点** 。**注意** ，一个节点一定是它自己的 **目标节点** 。
+
+请你返回一个长度为 `n` 的整数数组 `answer` ，`answer[i]` 表示将第一棵树中的一个节点与第二棵树中的一个节点连接一条边后，第一棵树中节点 `i` 的 **目标节点** 数目的 **最大值** 。
+
+**注意** ，每个查询相互独立。意味着进行下一次查询之前，你需要先把刚添加的边给删掉。
+
+ 
+
+**示例 1：**
+
+**输入：**edges1 = [[0,1],[0,2],[2,3],[2,4]], edges2 = [[0,1],[0,2],[0,3],[2,7],[1,4],[4,5],[4,6]]
+
+**输出：**[8,7,7,8,8]
+
+**解释：**
+
+- 对于 `i = 0` ，连接第一棵树中的节点 0 和第二棵树中的节点 0 。
+- 对于 `i = 1` ，连接第一棵树中的节点 1 和第二棵树中的节点 4 。
+- 对于 `i = 2` ，连接第一棵树中的节点 2 和第二棵树中的节点 7 。
+- 对于 `i = 3` ，连接第一棵树中的节点 3 和第二棵树中的节点 0 。
+- 对于 `i = 4` ，连接第一棵树中的节点 4 和第二棵树中的节点 4 。
+
+![img](https://assets.leetcode.com/uploads/2024/09/24/3982-1.png)
+
+**示例 2：**
+
+**输入：**edges1 = [[0,1],[0,2],[0,3],[0,4]], edges2 = [[0,1],[1,2],[2,3]]
+
+**输出：**[3,6,6,6,6]
+
+**解释：**
+
+对于每个 `i` ，连接第一棵树中的节点 `i` 和第二棵树中的任意一个节点。
+
+<img src="https://assets.leetcode.com/uploads/2024/09/24/3928-2.png" alt="img" style="zoom:50%;" />
+
+ 
+
+**提示：**
+
+- `2 <= n, m <= 10^5`
+- `edges1.length == n - 1`
+- `edges2.length == m - 1`
+- `edges1[i].length == edges2[i].length == 2`
+- `edges1[i] = [ai, bi]`
+- `0 <= ai, bi < n`
+- `edges2[i] = [ui, vi]`
+- `0 <= ui, vi < m`
+- 输入保证 `edges1` 和 `edges2` 都表示合法的树。
+
+
+
+
+
+```python
+from typing import List
+from collections import deque
+
+class Solution:
+    def maxTargetNodes(self, edges1: List[List[int]], edges2: List[List[int]]) -> List[int]:
+
+        # 1. 构建邻接表
+        n = len(edges1) + 1
+        m = len(edges2) + 1
+        g1 = [[] for _ in range(n)]
+        g2 = [[] for _ in range(m)]
+        for u, v in edges1:
+            g1[u].append(v)
+            g1[v].append(u)
+        for u, v in edges2:
+            g2[u].append(v)
+            g2[v].append(u)
+
+        # 2. BFS 计算两棵树上每个节点到根的深度，从而得到深度的奇偶性
+        def compute_depth_parity(graph: List[List[int]], size: int) -> List[int]:
+            parity = [-1] * size
+            dq = deque([0])
+            parity[0] = 0  # 根节点深度 0，偶数
+            while dq:
+                u = dq.popleft()
+                for w in graph[u]:
+                    if parity[w] == -1:
+                        parity[w] = parity[u] ^ 1
+                        dq.append(w)
+            return parity
+
+        p1 = compute_depth_parity(g1, n)
+        p2 = compute_depth_parity(g2, m)
+
+        # 3. 统计两棵树中偶深度节点数和奇深度节点数
+        cnt1_even = p1.count(0)
+        cnt1_odd  = n - cnt1_even
+        cnt2_even = p2.count(0)
+        cnt2_odd  = m - cnt2_even
+
+        # 4. 由于对于 tree2 连接时，tree2 中对 j 的“目标节点数” O2[j]
+        #    = number of v in tree2 with dist(j,v) odd
+        #    = if p2[j]==0 then cnt2_odd else cnt2_even，
+        #    因此对任意 j，可取最大值 max(cnt2_even, cnt2_odd)
+        add_from_tree2 = max(cnt2_even, cnt2_odd)
+
+        # 5. 构造结果：对于 tree1 中每个 i，
+        #    在自身树中 depth-parity 相同的节点数 = (p1[i]==0 ? cnt1_even : cnt1_odd)
+        #    加上来自 tree2 的最大贡献
+        ans = []
+        for i in range(n):
+            base = cnt1_even if p1[i] == 0 else cnt1_odd
+            ans.append(base + add_from_tree2)
+
+        return ans
+```
+
+​        
 
 ## 3435.最短公共超序列的字母出现频率
 
