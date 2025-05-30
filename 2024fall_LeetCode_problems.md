@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 0925 GMT+8 May 28 2025
+Updated 0925 GMT+8 May 30 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -10200,7 +10200,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                              
+>                                                                                                                                                                                                                                                                                                                 
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -22588,6 +22588,96 @@ class Solution:
 
         return max(bit_counts)
 ```
+
+
+
+## M2359.找到离给定两个节点最近的节点
+
+graph, https://leetcode.cn/problems/find-closest-node-to-given-two-nodes/
+
+给你一个 `n` 个节点的 **有向图** ，节点编号为 `0` 到 `n - 1` ，每个节点 **至多** 有一条出边。
+
+有向图用大小为 `n` 下标从 **0** 开始的数组 `edges` 表示，表示节点 `i` 有一条有向边指向 `edges[i]` 。如果节点 `i` 没有出边，那么 `edges[i] == -1` 。
+
+同时给你两个节点 `node1` 和 `node2` 。
+
+请你返回一个从 `node1` 和 `node2` 都能到达节点的编号，使节点 `node1` 和节点 `node2` 到这个节点的距离 **较大值最小化**。如果有多个答案，请返回 **最小** 的节点编号。如果答案不存在，返回 `-1` 。
+
+注意 `edges` 可能包含环。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2022/06/07/graph4drawio-2.png" alt="img" style="zoom:50%;" />
+
+```
+输入：edges = [2,2,3,-1], node1 = 0, node2 = 1
+输出：2
+解释：从节点 0 到节点 2 的距离为 1 ，从节点 1 到节点 2 的距离为 1 。
+两个距离的较大值为 1 。我们无法得到一个比 1 更小的较大值，所以我们返回节点 2 。
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2022/06/07/graph4drawio-4.png" alt="img" style="zoom:50%;" />
+
+```
+输入：edges = [1,2,-1], node1 = 0, node2 = 2
+输出：2
+解释：节点 0 到节点 2 的距离为 2 ，节点 2 到它自己的距离为 0 。
+两个距离的较大值为 2 。我们无法得到一个比 2 更小的较大值，所以我们返回节点 2 。
+```
+
+ 
+
+**提示：**
+
+- `n == edges.length`
+- `2 <= n <= 10^5`
+- `-1 <= edges[i] < n`
+- `edges[i] != i`
+- `0 <= node1, node2 < n`
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def closestMeetingNode(self, edges: List[int], node1: int, node2: int) -> int:
+        n = len(edges)
+        
+        # 获取从某个节点出发到各个节点的距离
+        def get_distances(start):
+            dist = [-1] * n
+            current = start
+            d = 0
+            while current != -1 and dist[current] == -1:
+                dist[current] = d
+                d += 1
+                current = edges[current]
+            return dist
+        
+        dist1 = get_distances(node1)
+        dist2 = get_distances(node2)
+        
+        result = -1
+        min_dist = float('inf')
+        
+        for i in range(n):
+            if dist1[i] != -1 and dist2[i] != -1:
+                max_dist = max(dist1[i], dist2[i])
+                if max_dist < min_dist:
+                    min_dist = max_dist
+                    result = i
+                elif max_dist == min_dist and i < result:
+                    result = i
+                    
+        return result
+```
+
+
 
 
 
