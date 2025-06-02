@@ -19028,6 +19028,114 @@ class Solution:
 
 
 
+## M743.网络延迟时间
+
+Dijkstra, https://leetcode.cn/problems/network-delay-time/
+
+有 `n` 个网络节点，标记为 `1` 到 `n`。
+
+给你一个列表 `times`，表示信号经过 **有向** 边的传递时间。 `times[i] = (ui, vi, wi)`，其中 `ui` 是源节点，`vi` 是目标节点， `wi` 是一个信号从源节点传递到目标节点的时间。
+
+现在，从某个节点 `K` 发出一个信号。需要多久才能使所有节点都收到信号？如果不能使所有节点收到信号，返回 `-1`。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2019/05/23/931_example_1.png" alt="img" style="zoom: 67%;" />
+
+```
+输入：times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2
+输出：2
+```
+
+**示例 2：**
+
+```
+输入：times = [[1,2,1]], n = 2, k = 1
+输出：1
+```
+
+**示例 3：**
+
+```
+输入：times = [[1,2,1]], n = 2, k = 2
+输出：-1
+```
+
+ 
+
+**提示：**
+
+- `1 <= k <= n <= 100`
+- `1 <= times.length <= 6000`
+- `times[i].length == 3`
+- `1 <= ui, vi <= n`
+- `ui != vi`
+- `0 <= wi <= 100`
+- 所有 `(ui, vi)` 对都 **互不相同**（即，不含重复边）
+
+
+
+这是一个典型的 **最短路径问题**，我们要计算从起点 `k` 出发，到所有其他节点的最短传递时间。
+
+我们可以使用 **Dijkstra 算法** 来解决这个问题。因为节点编号是 `1` 到 `n`，我们需要建图并用 **最小堆** 来高效找到当前可达的最短路径节点。
+
+✅ 代码实现（Dijkstra 算法）
+
+```python
+import heapq
+from typing import List
+from collections import defaultdict
+
+class Solution:
+    def networkDelayTime(self, times: List[List[int]], n: int, k: int) -> int:
+        # 建图：邻接表
+        graph = defaultdict(list)
+        for u, v, w in times:
+            graph[u].append((v, w))
+
+        # 最短路径字典，记录每个节点被首次到达的最短时间
+        dist = dict()
+
+        # 小根堆，存储的是 (到达时间, 节点)
+        heap = [(0, k)]
+
+        while heap:
+            time, node = heapq.heappop(heap)
+            if node in dist:
+                continue  # 已访问，跳过
+
+            dist[node] = time
+            for nei, wt in graph[node]:
+                if nei not in dist:
+                    heapq.heappush(heap, (time + wt, nei))
+
+        # 如果并非所有节点都被访问，说明有节点无法到达
+        if len(dist) != n:
+            return -1
+        return max(dist.values())
+```
+
+------
+
+🚀 解释
+
+- 使用 Dijkstra 算法找到从 `k` 出发到所有节点的最短时间。
+- 用 `dist` 字典记录每个节点的最短到达时间。
+- 如果最后 `dist` 中的节点数量小于 `n`，说明有节点无法到达，返回 `-1`。
+- 否则，返回所有节点中最晚收到信号的时间，也就是 `dist` 的最大值。
+
+------
+
+🕒 时间复杂度
+
+- 构图时间：`O(E)`，E 为边数
+- Dijkstra 运行时间：`O((E + N) * log N)`
+- 最坏情况下：`O(6000 * log 100)`
+
+
+
 ## 763.划分字母区间
 
 greedy, https://leetcode.cn/problems/partition-labels/
