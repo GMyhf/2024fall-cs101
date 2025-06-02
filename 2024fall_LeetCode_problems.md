@@ -11817,7 +11817,7 @@ class Solution:
 
 
 
-## 75.颜色分类
+## M75.颜色分类
 
 three pointers, https://leetcode.cn/problems/sort-colors/
 
@@ -15858,7 +15858,7 @@ if __name__ == "__main__":
 
 
 
-## 208.实现Trie（前缀树）
+## M208.实现Trie（前缀树）
 
 OOP，字典树，https://leetcode.cn/problems/implement-trie-prefix-tree/
 
@@ -15898,7 +15898,7 @@ trie.search("app");     // 返回 True
 
 - `1 <= word.length, prefix.length <= 2000`
 - `word` 和 `prefix` 仅由小写英文字母组成
-- `insert`、`search` 和 `startsWith` 调用次数 **总计** 不超过 `3 * 104` 次
+- `insert`、`search` 和 `startsWith` 调用次数 **总计** 不超过 `3 * 10^4` 次
 
 
 
