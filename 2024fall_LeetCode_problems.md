@@ -10200,7 +10200,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                    
+>                                                                                                                                                                                                                                                                                                                       
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -13037,9 +13037,9 @@ class Solution:
 
 
 
-## LCR 107.01 矩阵
+## M542.01 矩阵
 
-dp, https://leetcode.cn/problems/2bCMpM/
+dp, https://leetcode-cn.com/problems/01-matrix/
 
 给定一个由 `0` 和 `1` 组成的矩阵 `mat` ，请输出一个大小相同的矩阵，其中每一个格子是 `mat` 中对应位置元素到最近的 `0` 的距离。
 
@@ -13071,14 +13071,12 @@ dp, https://leetcode.cn/problems/2bCMpM/
 
 - `m == mat.length`
 - `n == mat[i].length`
-- `1 <= m, n <= 104`
-- `1 <= m * n <= 104`
+- `1 <= m, n <= 10^4`
+- `1 <= m * n <= 10^4`
 - `mat[i][j] is either 0 or 1.`
 - `mat` 中至少有一个 `0 `
 
  
-
-注意：本题与主站 542 题相同：https://leetcode-cn.com/problems/01-matrix/
 
 
 
