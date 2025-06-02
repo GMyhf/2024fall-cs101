@@ -13078,9 +13078,58 @@ dp, https://leetcode-cn.com/problems/01-matrix/
 
  
 
+124ms，击败64.56%
+
+```python
+from typing import List
+from collections import deque
+
+class Solution:
+    def updateMatrix(self, mat: List[List[int]]) -> List[List[int]]:
+        m, n = len(mat), len(mat[0])
+        dp = [[float('inf')] * n for _ in range(m)]
+        queue = deque()
+
+        # 初始化，把所有 0 加入队列，结构为 (dist, i, j)
+        for i in range(m):
+            for j in range(n):
+                if mat[i][j] == 0:
+                    dp[i][j] = 0
+                    queue.append((0, i, j))  # 明确带 dist，便于调试、阅读
+
+        directions = [(-1,0), (1,0), (0,-1), (0,1)]
+
+        while queue:
+            dist, x, y = queue.popleft()
+
+            # 如果当前距离比 dp 更大，说明已被更新（可选的剪枝）
+            if dist > dp[x][y]:
+                continue
+
+            for dx, dy in directions:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < m and 0 <= ny < n:
+                    if dp[nx][ny] > dist + 1:
+                        dp[nx][ny] = dist + 1
+                        queue.append((dp[nx][ny], nx, ny))  
+
+        return dp
+
+# 测试
+if __name__ == "__main__":
+    mat = [[0,0,0],[0,1,0],[1,1,1]]
+    for row in Solution().updateMatrix(mat):
+        print(row)
+
+```
+
 
 
 是 OJ01088:滑雪 的升级版。因为矩阵每个点的高度有更新，不能只用sort一次，需要使用heapq。
+
+当路径代价不同、更新存在“早晚优先级”时，用堆有优势。否则 BFS 更快。
+
+207ms，击败19.49%
 
 ```python
 import heapq
@@ -13128,6 +13177,8 @@ if __name__ == "__main__":
 ```
 
 
+
+107ms，击败85.95%
 
 ```python
 from typing import List
