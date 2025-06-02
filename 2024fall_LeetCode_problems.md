@@ -10648,7 +10648,7 @@ class Solution:
 
 
 
-## 48.旋转图像
+## M48.旋转图像
 
 https://leetcode.cn/problems/rotate-image/
 
@@ -16447,7 +16447,7 @@ if __name__ == '__main__':
 
 
 
-## 236.二叉树的最近公共祖先
+## M236.二叉树的最近公共祖先
 
 dfs, https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/
 
@@ -16488,7 +16488,7 @@ dfs, https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/
 
 **提示：**
 
-- 树中节点数目在范围 `[2, 105]` 内。
+- 树中节点数目在范围 `[2, 10^5]` 内。
 - `-10^9 <= Node.val <= 10^9`
 - 所有 `Node.val` `互不相同` 。
 - `p != q`
@@ -16496,18 +16496,26 @@ dfs, https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/
 
 
 
-这是一个典型的二叉树问题，要求找到两个节点的最近公共祖先。通过深度优先搜索（DFS）的方法来解决。算法的核心思想是：
+这是一个经典的“**最近公共祖先**”问题，可以用递归解决。基本思路如下：
 
-1. 从根节点开始递归遍历二叉树。
-2. 如果当前节点为空，返回 `None`。
-3. 如果当前节点是 `p` 或 `q`，则返回当前节点（因为节点本身也可以是自己的祖先）。
-4. 对左右子树递归查找。如果左右子树都找到了 `p` 或 `q`，则当前节点就是最近公共祖先。
-5. 如果左子树或右子树找到一个节点，返回那个节点。如果两个子树都返回非空节点，说明当前节点是最近公共祖先。
+------
 
-以下是实现代码：
+🔍 递归思路
+
+对于任意节点 `root`：
+
+- 如果 `root` 是 `None`，或者 `root == p` 或 `root == q`，那么就返回 `root`。
+- 否则，递归查找左子树和右子树：
+  - `left = lowestCommonAncestor(root.left, p, q)`
+  - `right = lowestCommonAncestor(root.right, p, q)`
+- 如果 `left` 和 `right` 都非空，说明 `p` 和 `q` 分别在左右子树中，`root` 就是最近公共祖先。
+- 如果只有一个非空，说明两个节点都在某一边，返回那一边的结果。
+
+------
+
+✅ Python 代码实现
 
 ```python
-# Definition for a binary tree node.
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
         self.val = val
@@ -16516,31 +16524,18 @@ class TreeNode:
 
 class Solution:
     def lowestCommonAncestor(self, root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
-        # 递归终止条件
-        if not root:
-            return None
-        if root == p or root == q:
+        if root is None or root == p or root == q:
             return root
         
-        # 递归查找左右子树
         left = self.lowestCommonAncestor(root.left, p, q)
         right = self.lowestCommonAncestor(root.right, p, q)
-        
-        # 如果左右子树都找到了p或q，当前节点是公共祖先
+
         if left and right:
-            return root
-        
-        # 如果左子树找到了p或q，返回左子树的结果，否则返回右子树的结果
-        return left if left else right
+            return root  # p 和 q 分别在左右子树
+        return left if left else right  # 都在左子树或右子树
 ```
 
-时间复杂度：
 
-- 每个节点最多访问一次，因此时间复杂度是 O(N)，其中 N 是树中的节点数。
-
-空间复杂度：
-
-- 由于递归调用的栈空间，空间复杂度是 O(H)，其中 H 是树的高度。在最坏情况下（树为链状结构），H = N；在平衡二叉树中，H = log(N)。
 
 
 
@@ -24031,7 +24026,7 @@ class Solution:
 
 
 
-## 2906.构造乘积矩阵
+## M2906.构造乘积矩阵
 
 matrices, prefix sum, https://leetcode.cn/problems/construct-product-matrix/
 
@@ -32481,7 +32476,7 @@ class Solution:
 
 
 
-## 84.柱状图中最大的矩形
+## T84.柱状图中最大的矩形
 
 monotonic stack, https://leetcode.cn/problems/largest-rectangle-in-histogram/
 
