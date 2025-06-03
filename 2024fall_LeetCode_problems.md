@@ -10200,7 +10200,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                          
+>                                                                                                                                                                                                                                                                                                                             
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -39181,7 +39181,27 @@ greedy, heap, 差分数组, https://leetcode.cn/problems/zero-array-transformati
 
 
 
+贪心解法，使用了**差分数组 + 最小堆（最大堆模拟）** 的技巧。
 
+------
+
+💡 题目精简理解：
+
+- 每个 `query = [l, r]` 表示可以在 `[l, r]` 范围内，**每个位置最多减 1**，并且不同位置减多少是独立的。
+- 我们可以**删除一些 queries**，目标是让剩下的 queries 能把 `nums` 所有位置减成 0。
+- 问最多可以删除多少个 queries（换句话说，最少保留多少个 queries 也能把 `nums` 变成零数组）。
+
+------
+
+🧠 解题核心思想：
+
+你要通过若干次“最多减 1”的操作，把 `nums[i]` 减成 0。
+
+例如 `nums[i] = 3`，就要找 3 次能操作到 `i` 的 query。
+
+✅ 贪心策略：
+
+遍历 `nums` 时，逐个满足 `nums[i]` 所需的“减法操作”，**优先使用右端点大的 query**（因为右边可以覆盖更多下标，贪心保留这类 query 以备后续使用）。
 
 ```python
 from heapq import heappop, heappush
@@ -39189,30 +39209,55 @@ from typing import List
 
 class Solution:
     def maxRemoval(self, nums: List[int], queries: List[List[int]]) -> int:
+        # 先按左端点 li 升序排序，便于遍历过程中逐步加入可用的 query
         queries.sort()
-        heap = []
-        diff = [0] * (len(nums) + 1)
-        presum = 0
-        j = 0
+        
+        heap = []  # 最大堆（用负数实现），用于保存当前能用的 query（按右端点排序）
+        diff = [0] * (len(nums) + 1)  # 差分数组，记录当前位置累计的“减1”操作次数
+        presum = 0  # 前缀和，表示当前位置 i 前面所有 query 累计的影响值
+        j = 0  # 指针，表示当前处理到第几个 query
+        
+        # 遍历 nums 中每个元素，试图用已有 query 将其减到 0
         for i, num in enumerate(nums):
+            # 差分转前缀和，得到当前位置实际已被减少的次数
             presum += diff[i]
+
+            # 将所有起点为 i 的 query 加入堆中（即在当前位置生效的 query）
             while j < len(queries) and queries[j][0] == i:
+                # Python 默认是小顶堆，为了实现最大堆，使用负数存右端点
                 heappush(heap, -queries[j][1])
                 j += 1
+            
+            # 当前 presum 不足以满足 nums[i] 所需的减次数
+            # 从堆中弹出可以作用于当前位置的 query，贡献一次减操作
             while presum < num and heap and -heap[0] >= i:
-                presum += 1
+                presum += 1  # 当前 nums[i] 获得一次减操作
+                # 更新差分数组：我们在 r + 1 位置减1，表示这个 query 的作用到 r 结束
                 diff[-heappop(heap) + 1] -= 1
+            
+            # 如果所有 query 都用完了，还是无法满足 nums[i]，直接返回 -1
             if presum < num:
                 return -1
+        
+        # 剩下堆中没被使用的 query 就是可以被删除的最大数量
         return len(heap)
 
+# 示例运行
 if __name__ == "__main__":
     sol = Solution()
-    print(sol.maxRemoval([2,0,2], [[0,2],[0,2],[1,1]]))  # Output: 1
-        
+    print(sol.maxRemoval([2,0,2], [[0,2],[0,2],[1,1]]))  # 输出：1
+
 ```
 
-​        
+关键点：
+
+- 贪心选择 **尽可能右的 query** 来覆盖当前 nums[i]。
+- 用差分数组控制每个 query 对未来位置的贡献何时“消失”。
+- 未使用的 query 数量就是可以删掉的最大数量。
+
+
+
+
 
 ## T3373.连接两棵树后最大目标节点数目 II
 
