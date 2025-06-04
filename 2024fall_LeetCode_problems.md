@@ -10200,7 +10200,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                             
+>                                                                                                                                                                                                                                                                                                                                
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -16249,7 +16249,7 @@ if __name__ == '__main__':
 
 
 
-## 230.二叉搜索树中第K小的元素
+## M230.二叉搜索树中第K小的元素
 
 https://leetcode.cn/problems/kth-smallest-element-in-a-bst/
 
@@ -16291,33 +16291,7 @@ https://leetcode.cn/problems/kth-smallest-element-in-a-bst/
 
 
 
-```python
-# Definition for a binary tree node.
-# class TreeNode:
-#     def __init__(self, val=0, left=None, right=None):
-#         self.val = val
-#         self.left = left
-#         self.right = right
-class Solution:
-    def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
-        res = []
-        def pre_order(node):
-            if not node or len(res) == k:
-                return
-            pre_order(node.left)
-            if len(res) == k:
-                return
-            res.append(node.val)
-            if len(res) == k:
-                return
-            pre_order(node.right)
-        
-        pre_order(root)
-        return res[-1]
-        
-```
-
-
+BST的中序遍历是升序的。只需要对BST进行 **中序遍历**，遍历到第 `k` 个节点时返回它即可。
 
 ```python
 # Definition for a binary tree node.
