@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1438 GMT+8 June 3 2025
+Updated 1010 GMT+8 June 7 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -10200,7 +10200,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                                                   
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -25004,6 +25004,94 @@ class Solution:
 ```
 
 
+
+## M3170.删除星号以后字典序最小的字符串
+
+stack, greedy, https://leetcode.cn/problems/lexicographically-minimum-string-after-removing-stars/
+
+给你一个字符串 `s` 。它可能包含任意数量的 `'*'` 字符。你的任务是删除所有的 `'*'` 字符。
+
+当字符串还存在至少一个 `'*'` 字符时，你可以执行以下操作：
+
+- 删除最左边的 `'*'` 字符，同时删除该星号字符左边一个字典序 **最小** 的字符。如果有多个字典序最小的字符，你可以删除它们中的任意一个。
+
+请你返回删除所有 `'*'` 字符以后，剩余字符连接而成的 字典序最小 的字符串。
+
+ 
+
+**示例 1：**
+
+**输入：**s = "aaba*"
+
+**输出：**"aab"
+
+**解释：**
+
+删除 `'*'` 号和它左边的其中一个 `'a'` 字符。如果我们选择删除 `s[3]` ，`s` 字典序最小。
+
+**示例 2：**
+
+**输入：**s = "abc"
+
+**输出：**"abc"
+
+**解释：**
+
+字符串中没有 `'*'` 字符。
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 10^5`
+- `s` 只含有小写英文字母和 `'*'` 字符。
+- 输入保证操作可以删除所有的 `'*'` 字符。
+
+
+
+下面的做法基于题意“每遇到一个最左的 `*`，必须删掉它左侧的字典序最小字符（若有多处，可任选）”，并且为了保证最终结果字典序最小，我们在多处相同最小字符时 **选最靠右的那一个** 来删。做法如下：
+
+```python
+class Solution:
+    def clearStars(self, s: str) -> str:
+        n = len(s)
+        # 对于每个位置，记录是否被删除
+        removed = [False] * n
+        
+        # 26个栈，stack[c] 中存的是字符 chr(ord('a')+c) 出现的位置（按照遍历顺序）
+        stacks = [[] for _ in range(26)]
+        
+        # 遍历字符串，处理字母入栈，遇到 '*' 则做一次删除
+        for i, ch in enumerate(s):
+            if ch == '*':
+                # 找到最小的、且还未空的栈
+                for c in range(26):
+                    if stacks[c]:
+                        # 弹出栈顶（最右边的最小字符）
+                        pos = stacks[c].pop()
+                        removed[pos] = True
+                        break
+                # 当前的 '*' 也标记为删除
+                removed[i] = True
+            else:
+                # 普通字母，入对应栈
+                stacks[ord(ch) - ord('a')].append(i)
+        
+        # 最后把所有没有被删除的字母拼起来
+        res = []
+        for i, ch in enumerate(s):
+            if not removed[i]:
+                res.append(ch)
+        return ''.join(res)
+```
+
+**思路解析：**
+
+1. 用一个 `removed` 数组标记哪些位置已经被删（包括 `*` 本身和被 * 匹配删除 的字母）。
+2. 用 26 个栈分别存储当前扫描过的、还未被删的各个字母的位置；这样若要删掉 “字典序最小” 的字符，只要从 `a` 到 `z` 依次找第一个非空的栈即可；若该字母有多个，就把栈顶（也就是最靠右的那个）弹出，这样更有利于让剩下的字母在前面出现，最终字符串字典序更小。
+3. 扫描完成后，再遍历一遍原串，把所有 `removed[i] == False` 的字母连起来就是答案。
+
+该算法时间复杂度为 O(n×26)，空间复杂度 O(n)，可轻松应对 n≤10^5 的长度。
 
 
 
