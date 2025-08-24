@@ -42,7 +42,7 @@ http://cs101.openjudge.cn/practice/22548/
 
 
 
-### M28701: 炸鸡排
+### T28701: 炸鸡排
 
 greedy, http://cs101.openjudge.cn/practice/28701/
 
