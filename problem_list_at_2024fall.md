@@ -223,7 +223,7 @@ leetcode.cn
 | 0826 | 112A. Petya and Strings        | implementation, strings              | 800  | http://codeforces.com/problemset/problem/112/A   |
 |            | 158A. Next Round               | *special problem, implementation     | 800  | http://codeforces.com/problemset/problem/158/A   |
 | 0825 | 1A. Theatre Square             | math                                 | 1000 | https://codeforces.com/problemset/problem/1/A    |
-|            | 4A. Watermelong                | brute force, math                    | 800  | http://codeforces.com/problemset/problem/4/A     |
+|            | 4A. Watermelon                | brute force, math                    | 800  | http://codeforces.com/problemset/problem/4/A     |
 | 0824 | 50A. Domino piling             | greedy, math                         | 800  | http://codeforces.com/problemset/problem/50/A    |
 |            | 200B. Drinks                   | implementation, math                 | 800  | https://codeforces.com/problemset/problem/200/B  |
 | 0823 | 02733: 判断闰年                | -                                    | 800    | http://cs101.openjudge.cn/2024fallroutine/02733/ |
