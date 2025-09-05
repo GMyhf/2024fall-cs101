@@ -64,7 +64,7 @@ mindmap
     			Quick Sort
     			Heap Sort
     	Game Theory
-    Techniques & Methods{{**TECHNIQUEWS<br>&METHODS**}}
+    Techniques & Methods{{"**TECHNIQUEWS<br> METHODS**"}}
       *Divide and Conquer
       Recursion
       Binary Search
