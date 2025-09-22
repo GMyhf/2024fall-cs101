@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-Updated 1010 GMT+8 June 7 2025
+Updated 1010 GMT+8 Sep 22 2025
 
 2024 fall, Complied by Hongfei Yan
 
@@ -10200,7 +10200,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                      
+>                                                                                                                                                                                                                                                                                                                                         
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -21208,6 +21208,31 @@ binary search, https://leetcode.cn/problems/minimum-limit-of-balls-in-a-bag/
 
 - `1 <= nums.length <= 10^5`
 - `1 <= maxOperations, nums[i] <= 10^9`
+
+
+
+```python
+class Solution:
+    def minimumSize(self, nums: List[int], maxOperations: int) -> int:
+        def can_achieve(threshold):
+            operations = 0
+            for num in nums:
+                if num > threshold:
+                    # 计算将num分成不超过threshold需要的操作次数
+                    operations += (num - 1) // threshold
+            return operations <= maxOperations
+
+        left, right = 1, max(nums) + 1
+        ans = 0
+        while left < right:
+            mid = (left + right) // 2
+            if can_achieve(mid):
+                ans = mid
+                right = mid
+            else:
+                left = mid + 1
+        return ans
+```
 
 
 
