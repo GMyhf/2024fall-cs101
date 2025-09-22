@@ -7,11 +7,13 @@
 
 > Log:
 >
-> 20241102: 在 三 增加了 yield生成器
+> 2025/9/22：建议每位同学创建自己的课程学习仓库，例如：https://github.com/twj-ink/2025spring
 >
-> 20241101: 增加了 3.2 函数参数是可变、不可变对象
+> 2024/11/02: 在 三 增加了 yield生成器
 >
-> 20241024: 晴问 复活了。https://sunnywhy.com 晴问 是零基础同学的福音。算法基础与在线实践，有点难了。
+> 2024/11/01: 增加了 3.2 函数参数是可变、不可变对象
+>
+> 2024/10/24: 晴问 复活了。https://sunnywhy.com 是零基础同学的福音。“算法基础与在线实践”，有点难了。
 >
 > 2024/10/24 部分内容取自, https://github.com/GMyhf/2023fall-cs101/blob/main/recursion_questions.md
 
@@ -217,11 +219,17 @@ if __name__ == "__main__":
 
 
 
+### 2.3 iter 与 next 配合
 
+iter 与 next 配合，顺序操作一次性读入数据，还挺方便。
 
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/bc8e69c5bfa82739da96d8b9ddf29ac4.png" alt="bc8e69c5bfa82739da96d8b9ddf29ac4" style="zoom:50%;" />
 
+如果想查看某个题目的测试数据（往年可以看到其他人提交的代码，2024年10月被屏蔽了。2025年9月解封了），替换链接中数字和最后一个字母，例如查看580C 可以访问
+http://codeforces.com/problemset/status/580/problem/C
 
-
+Codeforces题目是英文，洛谷提供中文。方法是拿到CF题号，如：1749C，直接编辑这个link的相应题号位置，
+https://www.luogu.com.cn/problem/CF1749C
 
 
 
