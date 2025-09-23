@@ -10200,7 +10200,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                               
+>                                                                                                                                                                                                                                                                                                                                                  
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -12138,6 +12138,25 @@ class Solution:
 > - 返回的子集顺序是按二进制掩码顺序排列的，不是按子集大小排序的
 >
 > 这种方法是解决子集问题的经典位运算解法，展示了Python列表推导式和位运算的强大结合。
+
+
+
+【赵凌哲、光华管理学院】枚举选出来的数字组合。用时3分钟。
+
+```python
+class Solution:
+    def subsets(self, nums: List[int]) -> List[List[int]]:
+        ans = []
+        for i in range(2**len(nums)):
+            now = i
+            lst = []
+            for j in range(len(nums)):
+                if now & 1:
+                    lst.append(nums[j])
+                now >>= 1
+            ans.append(lst)
+        return ans
+```
 
 
 
