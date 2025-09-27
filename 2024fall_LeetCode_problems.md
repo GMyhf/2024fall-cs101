@@ -2796,51 +2796,48 @@ stack, two pinters, https://leetcode.cn/problems/move-zeroes/
 
 
 
-维护最左边的空位的位置（下标）。
-
-从左到右遍历 `nums[i]`。同时维护另一个下标 $i_0$（初始值为 0），并保证下标区间 $[i_0,i−1]$ 都是空位，且 $i_0$指向最左边的空位。
-
-每次遇到 nums[i]≠0 的情况，就把 nums[i] 移动到最左边的空位上，也就是交换 nums[i] 和 $nums[i_0]$。交换后把 $i_0$和 i 都加一，从而使【[$i_0$ ,i−1] 都是空位】这一性质仍然成立。
-
-如果 nums[i]=0，无需交换，只把 i 加一。
-
-https://leetcode.cn/problems/move-zeroes/solutions/2969353/kuai-man-zhi-zhen-wei-shi-yao-ke-yi-ba-s-1h8x/
+思路：**快慢指针**。维护一个最左边的空位（慢指针 `i0`），用一个快指针 `i` 遍历数组。
 
 ```python
+from typing import List
+
 class Solution:
     def moveZeroes(self, nums: List[int]) -> None:
-        i0 = 0
-        for i in range(len(nums)):
-            if nums[i]:
-                nums[i], nums[i0] = nums[i0], nums[i]
+        n = len(nums)
+        i0 = 0  # 慢指针，指向最左边的空位
+        for i in range(n):  # 快指针，扫描整个数组
+            if nums[i] != 0:
+                if i != i0:  # 只有当 i > i0 时才需要交换
+                    nums[i0], nums[i] = nums[i], nums[i0]
                 i0 += 1
-
 ```
 
 
+直接维护 `i0`，只要发现非零元素就交换到前面。`i != i0` 时才交换，避免了无意义的自交换。
+
+逻辑只分为两步——遇到非零 → 放到最左空位 → 更新 `i0`，
+非零元素只动一次（要么本身不动，要么交换到正确位置），时间复杂度 `O(n)`，空间 `O(1)`。
+
+
 
 
 
 ```python
+from typing import List
+
 class Solution:
     def moveZeroes(self, nums: List[int]) -> None:
-        """
-        Do not return anything, modify nums in-place instead.
-        """
-        left = 0; right = 0
-        while left < len(nums) and right < len(nums):
-            if not nums[left] and nums[right]:
-                if left > right:
-                    right += 1
-                    continue
-                nums[left], nums[right] = nums[right], nums[left]
-                left += 1
-                right += 1
-                continue
-            if nums[left]:
-                left += 1
-            if not nums[right]:
-                right += 1
+        n = len(nums)
+        left = 0   # 慢指针，指向最左边的空位
+        right = 0  # 快指针，扫描整个数组
+
+        while right < n:
+            if nums[right] != 0:   # 找到非零元素
+                if left != right:  # 只有当 left < right 才需要交换
+                    nums[left], nums[right] = nums[right], nums[left]
+                left += 1          # 更新最左空位
+            right += 1             # 快指针继续扫描
+
 ```
 
 
@@ -10237,7 +10234,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                              
+>                                                                                                                                                                                                                                                                                                                                                                 
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
