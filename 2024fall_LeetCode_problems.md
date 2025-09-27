@@ -1,8 +1,7 @@
 # Problems in leetcode.cn
 
-Updated 1010 GMT+8 Sep 22 2025
-
-2024 fall, Complied by Hongfei Yan
+*Updated 2025-09-27 11:19 GMT+8*
+ *Compiled by Hongfei Yan (2024 Fall)*
 
 
 
@@ -658,10 +657,10 @@ binary search, https://leetcode.cn/problems/search-insert-position/
 
 **提示:**
 
-- `1 <= nums.length <= 104`
-- `-104 <= nums[i] <= 104`
+- `1 <= nums.length <= 10^4`
+- `-10^4 <= nums[i] <= 10^4`
 - `nums` 为 **无重复元素** 的 **升序** 排列数组
-- `-104 <= target <= 104`
+- `-10^4 <= target <= 10^4`
 
 
 
@@ -3545,6 +3544,42 @@ if __name__ == "__main__":
 - **列表推导式**：在列表推导式中直接检查当前三元组的第一个和第二个元素是否匹配给定的`first`和`second`字符串，如果是，则将第三个元素添加到结果列表中。
 
 这种方法不仅减少了手动管理索引的复杂度，还使得代码更加简洁易读，同时也保持了原有的功能和效率。
+
+
+
+【罗锐，工学院，2025 级】思路：
+
+- ~~虽然这题用正则表达式做好像反而挺麻烦的且时间复杂度偏高，但为练习 `re` 库，倒也不妨边看库文档边写这题。~~
+- 首先在文本前面插入空格，接下来匹配空格 + `first` 的模式，获得匹配结束的下一个位置。
+- 具体地，可以通过 `pattern.finditer(text)` 的语句获得所有**不交**匹配对象的迭代器，`match.end()` 为匹配结束的下一个位置。
+- 若匹配结束位置不在文本末尾，接下来截取匹配后面的部分，在这部分的开头匹配空格 + `second` + 空格 + 小写英文字母的非空组合（即 `[a-z]+`），若找到匹配则提取后面的单词作为 `third`。
+- 具体地，可以通过在正则表达式 `f" {second} ([a-z]+)"` 中把后半部分用括号括起来，接下来若确能匹配，便可以使用匹配对象的方法 `matchobj.group(1)` 把它提取出来。这里的 $1$ 表示这是第 $1$ 个被括起来以便提取的部分。
+
+代码：
+
+```python
+class Solution:
+	def findOcurrences(self, text: str, first: str, second: str) -> List[str]:
+		pattern1 = re.compile(f" {first}")
+		pattern2 = re.compile(f" {second} ([a-z]+)")
+
+		text = f" {text}"
+		iter = pattern1.finditer(text)
+
+		result = []
+		for match in iter:
+			if match.end() == len(text):
+				continue
+			
+			remain = text[match.end():]
+			matchobj = re.match(pattern2, remain)
+			if matchobj != None:
+				result.append(matchobj.group(1))
+		
+		return result
+```
+
+
 
 
 
@@ -10200,7 +10235,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                  
+>                                                                                                                                                                                                                                                                                                                                                        
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
