@@ -11936,11 +11936,7 @@ class Solution:
 
 backtracking, https://leetcode.cn/problems/subsets/
 
-给你一个整数数组 `nums` ，数组中的元素 **互不相同** 。返回该数组所有可能的
-
-子集
-
-（幂集）。
+给你一个整数数组 `nums` ，数组中的元素 **互不相同** 。返回该数组所有可能的子集（幂集）。
 
 
 
@@ -12077,7 +12073,7 @@ class Solution:
         ans = []                 # 存储所有子集的结果
         for i in range(0, 2**n): # 遍历所有可能的子集（共2^n个）
             cur = []             # 当前子集
-            prev = format(i, f'0{n}b')  # 将i转为n位二进制字符串（补前导0）
+            prev = f'{i:0{n}b}'   # 将i转为n位二进制字符串（补前导0）
             for j in range(n):   # 检查每一位是否为1
                 if prev[j] == '1':
                     cur.append(nums[j])  # 包含对应元素
