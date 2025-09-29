@@ -1,11 +1,13 @@
 # 2024/10/29 递归
 
-*Updated 2025-09-22 17:28 GMT+8*  
+*Updated 2025-09-29 16:36 GMT+8*  
  *Compiled by Hongfei Yan (2024 Fall)*  
 
 
 
 > Log:
+>
+> 2025/9/29: <mark>因为数算很依赖递归，所以把这个递归课件更新&过一遍</mark>。
 >
 > 2025/9/22：建议每位同学创建自己的课程学习仓库，例如：https://github.com/twj-ink/2025spring
 >
@@ -516,7 +518,7 @@ The stack frames also provide a scope for the variables used by the function. Ev
 
 参数是可变，还是不可变对象，是不一样的，前者在被调用者栈帧中，后者在调用者栈帧中。
 
-> 你提到的关于参数是可变对象还是不可变对象的区别是正确的。在 Python 中，参数传递的方式取决于参数的类型：
+> 在 Python 中，参数传递的方式取决于参数的类型：
 >
 > 1. **不可变对象**（如数字、字符串、元组）：在函数调用时，传递的是值的副本。因此，对不可变对象的修改不会影响调用者。
 > 2. **可变对象**（如列表、字典）：在函数调用时，传递的是对象的引用。因此，对可变对象的修改会影响到调用者。
@@ -609,11 +611,6 @@ The stack frames also provide a scope for the variables used by the function. Ev
 > Inside dfs, col_selected = [0, 2, 3]
 > Inside dfs, col_selected = [0, 3]
 > ```
->
-> 总结
->
-> - **不可变对象**：在函数调用时传递的是值的副本，对参数的修改不会影响调用者。
-> - **可变对象**：在函数调用时传递的是对象的引用，对参数的修改会影响到调用者。为了保持状态的一致性和正确性，通常需要在递归调用返回后恢复这个对象的状态，这就是回溯的过程。
 >
 > 通过<mark>在递归调用前进行修改，在递归调用后恢复（即回溯）</mark>，可以确保每次递归调用返回后，对象的状态是正确的，从而保证算法的正确性。
 
@@ -763,7 +760,7 @@ Figure 1: An Example Arrangement of Disks for the Tower of Hanoi
 
 How do we go about solving this problem recursively? How would you go about solving this problem at all? What is our base case? Let’s think about this problem from the bottom up. Suppose you have a tower of five disks, originally on peg one. If you already knew how to move a tower of four disks to peg two, you could then easily move the bottom disk to peg three, and then move the tower of four from peg two to peg three. But what if you do not know how to move a tower of height four? Suppose that you knew how to move a tower of height three to peg three; then it would be easy to move the fourth disk to peg two and move the three from peg three on top of it. But what if you do not know how to move a tower of three? How about moving a tower of two disks to peg two and then moving the third disk to peg three, and then moving the tower of height two on top of it? But what if you still do not know how to do this? Surely you would agree that moving a single disk to peg three is easy enough, trivial you might even say. This sounds like a base case in the making.
 
-> 我们如何递归地解决这个问题？你将如何着手解决这个问题？我们的基准情形是什么？让我们从底部开始思考这个问题。假设你有一个五层的塔，最初在柱子1上。如果你已经知道如何将四层的塔移动到柱子2上，那么你可以轻松地将最底层的盘子移动到柱子3上，然后再将四层的塔从柱子2移动到柱子3上。但如果你不知道如何移动四层的塔怎么办？假设你知道如何将三层的塔移动到柱子3上；那么很容易将第四层的盘子移动到柱子2上，并将三层的塔移到它上面。但如果你不知道如何移动三层的塔呢？如果将两层的塔移动到柱子2上，然后将第三层的盘子移动到柱子3上，再将两层的塔移到它上面呢？但如果你还是不知道怎么做呢？你肯定会同意，将一个单独的盘子移动到柱子3上是足够简单的，甚至可以说是微不足道的。这听起来像是一个基准情形。
+> 我们如何递归地解决这个问题？你将如何着手解决这个问题？我们的基准情形是什么？让我们<mark>从底部开始思考这个问题</mark>。假设你有一个五层的塔，最初在柱子1上。如果你已经知道如何将四层的塔移动到柱子2上，那么你可以轻松地将最底层的盘子移动到柱子3上，然后再将四层的塔从柱子2移动到柱子3上。但如果你不知道如何移动四层的塔怎么办？假设你知道如何将三层的塔移动到柱子3上；那么很容易将第四层的盘子移动到柱子2上，并将三层的塔移到它上面。但如果你不知道如何移动三层的塔呢？如果将两层的塔移动到柱子2上，然后将第三层的盘子移动到柱子3上，再将两层的塔移到它上面呢？但如果你还是不知道怎么做呢？你肯定会同意，将一个单独的盘子移动到柱子3上是足够简单的，甚至可以说是微不足道的。这听起来像是一个基准情形。
 
 Here is a high-level outline of how to move a tower from the starting pole, to the goal pole, using an intermediate pole:
 
@@ -771,11 +768,11 @@ Here is a high-level outline of how to move a tower from the starting pole, to t
 2. Move the remaining disk to the final pole.
 3. Move the tower of height-1 from the intermediate pole to the final pole using the original pole.
 
-> 下面是一个高层次的概述，说明如何使用中间柱子将高度为 n*n* 的塔从起始柱子移动到目标柱子：
+> 下面是一个高层次的概述，说明如何使用中间柱子将高度为 n 的塔从起始柱子移动到目标柱子：
 >
-> 1. 通过目标柱子将高度为 n−1*n*−1 的塔从起始柱子移动到中间柱子。
+> 1. 通过目标柱子将高度为 n−1 的塔从起始柱子移动到中间柱子。
 > 2. 将剩余的一个盘子从起始柱子移动到最终柱子。
-> 3. 通过起始柱子将高度为 n−1*n*−1 的塔从中间柱子移动到目标柱子。
+> 3. 通过起始柱子将高度为 n−1 的塔从中间柱子移动到目标柱子。
 
 As long as we always obey the rule that the larger disks remain on the bottom of the stack, we can use the three steps above recursively, treating any larger disks as though they were not even there. The only thing missing from the outline above is the identification of a base case. The simplest Tower of Hanoi problem is a tower of one disk. In this case, we need move only a single disk to its final destination. A tower of one disk will be our base case. In addition, the steps outlined above move us toward the base case by reducing the height of the tower in steps 1 and 3. Listing 1 shows the Python code to solve the Tower of Hanoi puzzle.
 
@@ -793,7 +790,7 @@ def moveTower(height,fromPole, toPole, withPole):
 
 Notice that the code in Listing 1 is almost identical to the English description. The key to the simplicity of the algorithm is that we make two different recursive calls, one on line 3 and a second on line 5. On line 3 we move all but the bottom disk on the initial tower to an intermediate pole. The next line simply moves the bottom disk to its final resting place. Then on line 5 we move the tower from the intermediate pole to the top of the largest disk. The base case is detected when the tower height is 0; in this case there is nothing to do, so the `moveTower` function simply returns. The important thing to remember about handling the base case this way is that simply returning from `moveTower` is what finally allows the `moveDisk` function to be called.
 
-> 请注意，清单1中的代码几乎与英文描述完全相同。算法简单性的关键在于我们进行了两次不同的递归调用，一次在第3行，另一次在第5行。在第3行，我们将初始塔上除了最底层盘子以外的所有盘子移动到中间柱子上。下一行则简单地将最底层的盘子移动到它的最终位置。然后在第5行，我们将中间柱子上的塔移动到最大盘子的顶部。当塔的高度为0时，检测到基准情形；在这种情况下，没有什么需要做的，所以 `moveTower` 函数直接返回。以这种方式处理基准情形的重要之处在于，仅仅是返回 `moveTower` 函数就最终允许了 `moveDisk` 函数被调用。
+> 请注意，清单1中的代码几乎与英文描述完全相同。算法简单性的关键在于我们进行了两次不同的递归调用，一次在第3行，另一次在第5行。在第3行，我们将<mark>初始塔上除了最底层盘子以外的所有盘子移动到中间柱子上</mark>。下一行则简单地将最底层的盘子移动到它的最终位置。然后在第5行，我们<mark>将中间柱子上的塔移动到最大盘子的顶部</mark>。当塔的高度为0时，检测到基准情形；在这种情况下，没有什么需要做的，所以 `moveTower` 函数直接返回。以这种方式处理基准情形的重要之处在于，仅仅是返回 `moveTower` 函数就最终允许了 `moveDisk` 函数被调用。
 
 The function `moveDisk`, shown in Listing 2, is very simple. All it does is print out that it is moving a disk from one pole to another. If you type in and run the `moveTower` program you can see that it gives you a very efficient solution to the puzzle.
 
@@ -951,7 +948,7 @@ The teacher points to the blackboard (Fig. 4) and says: "So here is the problem:
 
 So your task is to write a program that calculates the smallest number of disk moves necessary to move all the disks from tower A to C."
 Charlie: "This is incredibly boring—everybody knows that this can be solved using a simple recursion.I deny to code something as simple as this!"
-The teacher sighs: "Well, Charlie, let's think about something for you to do: For you there is a fourth tower D. Calculate the smallest number of disk moves to move all the disks from tower A to tower D using all four towers."
+The teacher sighs: "Well, Charlie, let's think about something for you to do: For you there is a <mark>fourth tower D</mark>. Calculate the smallest number of disk moves to move all the disks from tower A to tower D using all four towers."
 Charlie looks irritated: "Urgh. . . Well, I don't know an optimal algorithm for four towers. . . "
 **Problem**
 So the real problem is that problem solving does not belong to the things Charlie is good at. Actually, the only thing Charlie is really good at is "sitting next to someone who can do the job". And now guess what — exactly! It is you who is sitting next to Charlie, and he is already glaring at you.
@@ -1403,6 +1400,10 @@ for _ in range(int(input())):
     print(ini_y + dfs(ini_x, ini_y, 0))
 ```
 
+> 1 << 30
+>
+> 1,073,741,824
+
 
 
 ### 练习02386: Lake Counting
@@ -1488,7 +1489,7 @@ print(cnt)
 
 matrices/dfs similar, http://cs101.openjudge.cn/practice/05585
 
-在某个区域发现了一些晶矿，已经探明这些晶矿总共有分为两类，为红晶矿和黑晶矿。现在要统计该区域内红晶矿和黑晶矿的个数。假设可以用二维地图m[][]来描述该区域，若m[i][j]为#表示该地点是非晶矿地点，若m[i][j]为r表示该地点是红晶矿地点，若m[i][j]为b表示该地点是黑晶矿地点。一个晶矿是由相同类型的并且上下左右相通的晶矿点组成。现在给你该区域的地图，求红晶矿和黑晶矿的个数。
+在某个区域发现了一些晶矿，已经探明这些晶矿总共有分为两类，为红晶矿和黑晶矿。现在要统计该区域内红晶矿和黑晶矿的个数。假设可以用二维地图m[][]来描述该区域，若`m[i][j]`为#表示该地点是非晶矿地点，若`m[i][j]`为r表示该地点是红晶矿地点，若`m[i][j]`为b表示该地点是黑晶矿地点。一个晶矿是由相同类型的并且上下左右相通的晶矿点组成。现在给你该区域的地图，求红晶矿和黑晶矿的个数。
 
 **输入**
 
@@ -1673,6 +1674,11 @@ for _ in range(int(input())):
     print(ans[int(input()) - 1])
 ```
 
+> **回溯不是靠“撤销”，而是靠“重写”**。
+>  每次尝试新的列时，`A[cur]` 被覆盖，相当于“自动回溯”。
+>
+> 这就是为什么代码虽然没有显式回溯，却能正确运行的原因
+
 
 
 ![image-20231205002333349](https://raw.githubusercontent.com/GMyhf/img/main/img/image-20231205002333349.png)
@@ -1774,7 +1780,7 @@ print(fibonacci(35))  # 现在会非常快
 >
 >    ```python
 >    from functools import lru_cache
->                                  
+>                                     
 >    @lru_cache(maxsize=None)
 >    def fibonacci(n):
 >        if n == 0:
@@ -1798,11 +1804,11 @@ print(fibonacci(35))  # 现在会非常快
 
 http://wjjc.openjudge.cn/2024jgc5/002/
 
-据说，学渣复习期末考试，要用递归复习法，即当他复习知识点A的时候，他发现理解知识点A必须先理解知识点B和知识点C，于是他先去学习知识点B和知识点C，当他复习知识点B的时候，又发现理解知识点B必须先理解知识点D与知识点E，又得先去复习知识点D和知识点E。
+据说，学渣复习期末考试，要用递归复习法，即当他复习知识点 A 的时候，他发现理解知识点 A 必须先理解知识点 B 和知识点 C，于是他先去学习知识点 B 和知识点 C，当他复习知识点B的时候，又发现理解知识点 B 必须先理解知识点 D 与知识点 E，又得先去复习知识点 D 和知识点 E。
 
-现在学渣小明正在通过递归复习法复习知识点n。对任意知识点1 <= k <= n，他复习这个知识点本身需要k小时的时间。但是，小明对这些知识点非常不熟悉，以至于他对任意知识点k， 3 <= k <= n，都必须先复习知识点k - 1和k - 2才能复习知识点k；在复习知识点k - 1的时候，又得先复习知识点k - 2和k - 3才能复习知识点k - 1；以此类推……。注意，即使在复习知识点k - 1的时候他已经复习过了知识点k - 2，在复习知识点k之前他已经忘掉了知识点k - 2，因此他还是会再复习一遍知识点k - 2，并重复上述的递归过程完成新的一轮k - 2的复习后，才会复习知识点k。
+现在学渣小明正在通过递归复习法复习知识点 n。对任意知识点1 <= k <= n，他复习这个知识点本身需要 k 小时的时间。但是，小明对这些知识点非常不熟悉，以至于他对任意知识点 k， 3 <= k <= n，都必须先复习知识点 k - 1和 k - 2 才能复习知识点 k；在复习知识点 k - 1的时候，又得先复习知识点 k - 2 和 k - 3 才能复习知识点 k - 1；以此类推……。注意，即使在复习知识点 k - 1 的时候他已经复习过了知识点 k - 2，在复习知识点k之前他已经忘掉了知识点 k - 2，因此他还是会再复习一遍知识点k - 2，并重复上述的递归过程完成新的一轮 k - 2的复习后，才会复习知识点k。
 
-现在请问他一共需要多少个小时才能完成知识点n的复习？
+现在请问他一共需要多少个小时才能完成知识点 n 的复习？
 
 **输入**
 
@@ -1956,7 +1962,7 @@ F(n) {
 }
 ```
 
-递归代码的调试往往会很头疼，一个很重要的原因是在递归代码中输出的信息会因为多层而混在一起。但如果我们能在输出的调试信息前先输出一些和递归深度相关的数量的空格，就可以看出递归的层级，方便我们调试。例如当递归深度为1时先输出0个空格，递归深度为2时先输出4个空格，递归深度为3时先输出8个空格，以此类推，递归深度每多1，空格的个数就多4个）。
+递归代码的调试往往会很头疼，一个很重要的原因是在递归代码中输出的信息会因为多层而混在一起。但如果我们能<mark>在输出的调试信息前先输出一些和递归深度相关的数量的空格，就可以看出递归的层级</mark>，方便我们调试。例如当递归深度为1时先输出0个空格，递归深度为2时先输出4个空格，递归深度为3时先输出8个空格，以此类推，递归深度每多1，空格的个数就多4个）。
 
 **输入描述**
 
@@ -2156,7 +2162,7 @@ class Solution:
 
 https://sunnywhy.com/sfbj/4/3/132
 
-给定一个正整数n，假设序列S=[1,2,3,...,n]，求S的全排列。
+给定一个正整数 n，假设序列 S = [1,2,3,...,n]，求 S 的全排列。
 
 
 
@@ -2170,9 +2176,10 @@ for i in range(1,n+1):
 
 def arrange(l):
     if len(l) == 1:
-    """
-    当列表中只有一个元素时，使用yield关键字返回这个元素。这里使用了生成器，而不是直接返回（return）值，这意味着函数可以暂停执行并在需要时恢复，这对于处理大量数据或递归调用非常有用。
-    """
+        """
+        当列表中只有一个元素时，使用yield关键字返回这个元素。这里使用了生成器，而不是直接返回（return）值，
+        这意味着函数可以暂停执行并在需要时恢复，这对于处理大量数据或递归调用非常有用。
+        """
         yield l[0]
     else:
         for i in range(len(l)):
@@ -2182,6 +2189,7 @@ def arrange(l):
 
 for ans in arrange(l):
     print(ans)
+
 ```
 
 > `yield` 是 Python 中用于定义生成器函数的关键字。生成器是一种特殊的迭代器，它允许你在函数内部逐步生成值，而不是一次性生成所有值并将它们存储在内存中。当你在函数中使用 `yield` 语句时，这个函数就变成了一个生成器。当调用生成器函数时，它不会立即执行函数体内的代码，而是返回一个生成器对象。只有当这个生成器对象被迭代时，才会执行函数体内的代码，直到遇到 `yield` 语句，此时函数会暂停执行，并返回 `yield` 后面的表达式的值。当再次迭代生成器时，函数会从上次暂停的地方继续执行，直到遇到下一个 `yield` 语句，依此类推，直到函数执行完毕。
