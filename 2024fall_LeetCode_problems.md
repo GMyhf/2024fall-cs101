@@ -1723,9 +1723,9 @@ class Solution:
 
 
 
-## 160.相交链表
+## E160.相交链表
 
-https://leetcode.cn/problems/intersection-of-two-linked-lists/
+two pointers, https://leetcode.cn/problems/intersection-of-two-linked-lists/
 
 给你两个单链表的头节点 `headA` 和 `headB` ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 `null` 。
 
@@ -1944,9 +1944,9 @@ class Solution:
 
 
 
-## 206.反转链表
+## E206.反转链表
 
-linked list, https://leetcode.cn/problems/reverse-linked-list/
+three pinters, recursion, https://leetcode.cn/problems/reverse-linked-list/
 
 给你单链表的头节点 `head` ，请你反转链表，并返回反转后的链表。
 
@@ -10237,7 +10237,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                 
+>                                                                                                                                                                                                                                                                                                                                                                    
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
