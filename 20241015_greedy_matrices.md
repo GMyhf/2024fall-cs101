@@ -1,8 +1,7 @@
 # 2024/10/15 Tuesday 贪心和矩阵
 
-Updated 2215 GMT+8 Mar 16, 2025
-
-2024 fall, Complied by Hongfei Yan
+*Updated 2025-09-30 14:07 GMT+8*
+ *Compiled by Hongfei Yan (2024 Spring)*
 
 
 
@@ -12,7 +11,7 @@ Updated 2215 GMT+8 Mar 16, 2025
 >
 > 2024/10/15 复制自 20231017_notes.md，根据本学期进度进行修改。
 
-2024年10月份，主要是掌握矩阵、贪心题目，最好能涉及到简单的DP题目。
+2024年10月份，主要是掌握<mark>矩阵、贪心题目，最好能涉及到简单的DP题目</mark>。
 
 时间复杂度在上一讲(2024108)，但是上次课时不够，没有展开讲，讲义里面有详细内容，重点是理解O(1)，O(n)，O(logn)。
 
@@ -1593,7 +1592,195 @@ $$
 
 
 
+
+
 ## 4.2 编程题目
+
+### 4.2.1 矩阵乘法运算符
+
+#### E18161: 矩阵运算(先乘再加)
+
+matrices, http://cs101.openjudge.cn/pctbook/E18161/
+
+现有三个矩阵A, B, C，要求矩阵运算A·B+C并输出结果
+
+矩阵运算介绍：
+矩阵乘法运算必须要前一个矩阵的列数与后一个矩阵的行数相同，
+如m行n列的矩阵A与n行p列的矩阵B相乘，可以得到m行p列的矩阵C，
+矩阵C的每个元素都由A的对应行中的元素与B的对应列中的元素一一相乘并求和得到，
+即C\[i][j] = A\[i][0]\*B\[0][j] + A\[i][1]\*B\[1][j] + …… +A\[i][n-1]*B\[n-1][j]
+
+(C\[i][j]表示C矩阵中第i行第j列元素)。
+
+矩阵的加法必须在两个矩阵行数列数均相等的情况下进行，
+如m行n列的矩阵A与m行n列的矩阵B相加，可以得到m行n列的矩阵C，
+矩阵C的每个元素都由A与B对应位置的元素相加得到，
+即C\[i][j] = A\[i][j] + B\[i][j]
+
+**输入**
+
+输入分为三部分，分别是A,B,C三个矩阵的内容。
+每一部分的第一行为两个整数，代表矩阵的行数row和列数col
+接下来row行，每行有col个整数，代表该矩阵这一行的每个元素
+
+**输出**
+
+如果可以完成矩阵计算，输出计算结果，与输入格式类似，不需要输出行数和列数信息。
+如果不能完成矩阵计算，输出"Error!"
+
+样例输入
+
+```
+Sample Input1:
+3 1
+0
+1
+0
+1 2
+1 1
+3 2
+3 1
+3 1
+3 1
+
+Sample Output1:
+3 1
+4 2
+3 1
+```
+
+样例输出
+
+```
+Sample Input2:
+1 1
+0
+2 1
+1
+3
+1 1
+9
+
+Sample Output2:
+Error!
+```
+
+提示
+
+sample1 计算过程
+$| 0 |$                $| 0 0 |$
+$| 1 | · |1 1| = | 1 1 |$
+$| 0 |$                 $| 0 0 |$
+
+$| 0 0 |$     $| 3 1 |$      $| 3 1 |$
+$| 1 1 | + | 3 1 | = | 4 2 |$
+$| 0 0 |$     $| 3 1 |$      $| 3 1 |$
+
+来源：cs101-2017 期末机考备选 & 2018 Mock Exam 2
+
+
+
+思路：矩阵运算，如果没有学过可以百度下矩阵乘法（这是线性代数/高等代数的初步）
+
+```python
+A,B,C = [],[],[]
+
+a,b = map(int, input().split())
+for i in range(a):
+    A.append(list(map(int, input().split())))
+
+c,d = map(int, input().split())
+for i in range(c):
+    B.append(list(map(int, input().split())))
+
+e,f = map(int, input().split())
+for i in range(e):
+    C.append(list(map(int, input().split())))
+
+if b!=c or a!=e or d!=f:
+    print("Error!")
+else:
+    D = [[0 for j in range(f)] for i in range(e)]
+    for i in range(e):
+        for j in range(f):
+            for k in range(b):
+                D[i][j] += A[i][k] * B [k][j]
+            D[i][j] += C[i][j]
+
+    for i in range(e):
+        print(' '.join([str(j) for j in D[i]]))
+```
+
+
+
+ **`@` 运算符** 在 Python 中就是**矩阵乘法**（从 Python 3.5 开始引入 PEP 465），但它只在**支持 `__matmul__` 的对象**中有效，比如 `list` 自己封装的矩阵类。
+
+⚠️ 标准库里的 `list` 并没有定义 `__matmul__`，所以直接对普通嵌套列表写 `A @ B` 会报错。
+
+办法就是自己封装一个矩阵类，实现 `__matmul__` 和 `__add__` 方法。
+
+代码：
+
+```python
+class Matrix:
+    def __init__(self, data):
+        self.data = data
+        self.rows = len(data)
+        self.cols = len(data[0]) if self.rows else 0
+
+    def __matmul__(self, other):  # 定义 A @ B
+        if self.cols != other.rows:
+            raise ValueError("Matrix dimensions do not match for multiplication")
+        result = [[0] * other.cols for _ in range(self.rows)]
+        for i in range(self.rows):
+            for j in range(other.cols):
+                for k in range(self.cols):
+                    result[i][j] += self.data[i][k] * other.data[k][j]
+        return Matrix(result)
+
+    def __add__(self, other):  # 定义 A + B
+        if self.rows != other.rows or self.cols != other.cols:
+            raise ValueError("Matrix dimensions do not match for addition")
+        result = [
+            [self.data[i][j] + other.data[i][j] for j in range(self.cols)]
+            for i in range(self.rows)
+        ]
+        return Matrix(result)
+
+    def __str__(self):  # 打印友好
+        return "\n".join(" ".join(map(str, row)) for row in self.data)
+
+
+# === 读入 ===
+def read_matrix():
+    r, c = map(int, input().split())
+    data = [list(map(int, input().split())) for _ in range(r)]
+    return Matrix(data)
+
+
+A = read_matrix()
+B = read_matrix()
+C = read_matrix()
+
+# === 计算 ===
+try:
+    D = A @ B + C
+    print(D)  # 自动调用 __str__
+except ValueError:
+    print("Error!")
+```
+
+------
+
+`A @ B` 调用 `__matmul__`，就是矩阵乘法
+
+`(A @ B) + C` 调用 `__add__`，就是矩阵加法
+
+如果维度不合法，抛 `ValueError`，就能捕获并输出 `"Error!"`
+
+
+
+
 
 ### 4.2.1 保护圈
 
@@ -2772,19 +2959,18 @@ Therefore, 𝑠=MEX(0,5,4,1,3,2)=6.
 
 ## 5.5 testing_code.py
 
-https://github.com/GMyhf/2024fall-cs101/blob/main/code/testing_code.py
+https://github.com/GMyhf/2025fall-cs101/blob/main/code/testing_code.py
 
 
 
 ```python
-# ZHANG Yuxuan
 import subprocess
 import difflib
 import os
 import sys
 
 def test_code(script_path, infile, outfile):
-    command = ["python", script_path]  # 使用Python解释器运行脚本
+    command = [sys.executable, script_path]  # 使用Python解释器运行脚本
     with open(infile, 'r') as fin, open(outfile, 'r') as fout:
         expected_output = fout.read().strip()
         # 启动一个新的子进程来运行指定的命令
@@ -2818,15 +3004,22 @@ if __name__ == "__main__":
     # 获取当前目录下的所有文件
     files = os.listdir('.')
 
-    # 筛选出 .in 和 .out 文件
-    test_cases = [f for f in files if f.endswith('.in')]
-    test_cases = sorted(test_cases, key=lambda x: int(x.split('.')[0]))
-    #print(test_cases)
-    expected_outputs = [f for f in files if f.endswith('.out')]
-    expected_outputs = sorted(expected_outputs, key=lambda x: int(x.split('.')[0]))
-    #print(expected_outputs)
+    # 建立输入/输出字典
+    input_files = {}
+    output_files = {}
 
-    for infile, outfile in zip(test_cases, expected_outputs):
+    for file in files:
+        if file.endswith(".in"):
+            key = file[:-3]  # 去掉 ".in"
+            input_files[key] = file
+        elif file.endswith(".out"):
+            key = file[:-4]  # 去掉 ".out"
+            output_files[key] = file
+
+    # 遍历公共 key，按字典序排序
+    for key in sorted(set(input_files.keys()) & set(output_files.keys())):
+        infile = input_files[key]
+        outfile = output_files[key]
         if not test_code(script_path, infile, outfile):
             break
 
