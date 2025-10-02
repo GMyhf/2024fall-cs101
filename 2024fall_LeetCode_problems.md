@@ -7776,16 +7776,6 @@ if __name__ == "__main__":
 
 
 
-### M3561.移除相邻字符
-
-stack, https://leetcode.cn/problems/resulting-string-after-adjacent-removals/
-
-
-
-
-
-
-
 # 中等
 
 
@@ -10332,7 +10322,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                       
+>                                                                                                                                                                                                                                                                                                                                                                          
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
