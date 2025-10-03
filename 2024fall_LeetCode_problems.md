@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2025-10-01 11:19 GMT+8*
+*Updated 2025-10-03 11:19 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -1721,6 +1721,34 @@ class Solution:
             head = head.next
         return False
         
+```
+
+
+
+快慢指针
+
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    def hasCycle(self, head: Optional[ListNode]) -> bool:
+        if not head or not head.next:
+            return False
+        
+        slow = head
+        fast = head.next
+
+        while slow != fast:
+            if not fast or not fast.next:
+                return False
+            slow = slow.next
+            fast = fast.next.next
+        
+        return True
 ```
 
 
@@ -10324,7 +10352,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                             
+>                                                                                                                                                                                                                                                                                                                                                                                
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -14769,8 +14797,8 @@ https://leetcode.cn/problems/linked-list-cycle-ii/
 
 **提示：**
 
-- 链表中节点的数目范围在范围 `[0, 104]` 内
-- `-105 <= Node.val <= 105`
+- 链表中节点的数目范围在范围 `[0, 10^4]` 内
+- `-10^5 <= Node.val <= 10^5`
 - `pos` 的值为 `-1` 或者链表中的一个有效索引
 
 
@@ -14791,6 +14819,31 @@ class Solution:
             visited.add(head)
             head = head.next
         return None
+```
+
+
+
+
+
+空间复杂度O(1)。 作者：灵茶山艾府
+链接：https://leetcode.cn/problems/linked-list-cycle-ii/solutions/1999271/mei-xiang-ming-bai-yi-ge-shi-pin-jiang-t-nvsq/
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202510040056407.png" alt="图解环形链表" style="zoom: 25%;" />
+
+```python
+class Solution:
+    def detectCycle(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        slow = fast = head
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+            if fast is slow:  # 相遇
+                while slow is not head:  # 再走 a 步
+                    slow = slow.next
+                    head = head.next
+                return slow
+        return None
+
 ```
 
 
