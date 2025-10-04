@@ -4577,9 +4577,7 @@ hash table, sorting, https://leetcode.cn/problems/finding-3-digit-even-numbers/
 4. 如果符合条件，加入结果列表；
 5. 最后排序返回。
 
----
 
-### Python 实现如下：
 
 ```python
 from typing import List
@@ -10366,7 +10364,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                   
+>                                                                                                                                                                                                                                                                                                                                                                                      
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -17081,7 +17079,7 @@ if __name__ == '__main__':
 
 **提示：**
 
-- `1 <= n <= 105`
+- `1 <= n <= 10^5`
 - `nums.length == n + 1`
 - `1 <= nums[i] <= n`
 - `nums` 中 **只有一个整数** 出现 **两次或多次** ，其余整数均只出现 **一次**
@@ -17270,7 +17268,7 @@ def findDuplicate(nums):
 > =(n−1)L + (L−b)
 > =(n−1)L + c
 > 上面的式子代表什么意思呢？
-> 意思是，如果从一个点从起点出发，令一个点在相遇点出发，那么二者必相遇，并且相遇点为环的入口处。
+> 意思是，如果一个点从起点出发，令一个点在相遇点出发，那么二者必相遇，并且相遇点为环的入口处。
 > 时间复杂度为 O(n)，空间复杂度为 O(1)
 >
 > 
