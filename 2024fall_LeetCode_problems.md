@@ -1356,6 +1356,20 @@ dp, https://leetcode.cn/problems/pascals-triangle/
 
 
 
+思路：关键在于对齐数字
+
+```python
+class Solution:
+    def generate(self, numRows: int) -> List[List[int]]:
+        ans = [[1]*(i+1) for i in range(numRows)]
+        for i in range(numRows):
+            for j in range(1,i):
+                ans[i][j] = ans[i-1][j-1] + ans[i-1][j]
+        return ans
+```
+
+
+
 思路：使用二维列表储存杨辉三角，先将两端赋值为1，然后逐层计算。
 
 ```python
@@ -10352,7 +10366,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                                                                                                   
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
