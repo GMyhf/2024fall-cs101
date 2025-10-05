@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2025-10-03 11:19 GMT+8*
+*Updated 2025-10-05 11:19 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -7955,11 +7955,9 @@ class Solution:
 
 sliding window, https://leetcode.cn/problems/longest-substring-without-repeating-characters/
 
-给定一个字符串 `s` ，请你找出其中不含有重复字符的 **最长** 
+给定一个字符串 `s` ，请你找出其中不含有重复字符的 **最长子串**的长度。
 
-**子串**
-
- 的长度。
+> 子字符串 是字符串中连续的 非空 字符序列。
 
  
 
@@ -10364,7 +10362,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                      
+>                                                                                                                                                                                                                                                                                                                                                                                         
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
