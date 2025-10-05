@@ -300,7 +300,7 @@ class Solution:
 
 ## 25.K个一组翻转链表
 
-https://leetcode.cn/problems/reverse-nodes-in-k-group/description/
+linked list, recursion, https://leetcode.cn/problems/reverse-nodes-in-k-group/description/
 
 给你链表的头节点 `head` ，每 `k` 个节点一组进行翻转，请你返回修改后的链表。
 
@@ -312,7 +312,7 @@ https://leetcode.cn/problems/reverse-nodes-in-k-group/description/
 
 **示例 1：**
 
-<img src="https://assets.leetcode.com/uploads/2020/10/03/reverse_ex1.jpg" alt="img" style="zoom:67%;" />
+<img src="https://assets.leetcode.com/uploads/2020/10/03/reverse_ex1.jpg" alt="img" style="zoom: 50%;" />
 
 ```
 输入：head = [1,2,3,4,5], k = 2
@@ -321,7 +321,7 @@ https://leetcode.cn/problems/reverse-nodes-in-k-group/description/
 
 **示例 2：**
 
-<img src="https://assets.leetcode.com/uploads/2020/10/03/reverse_ex2.jpg" alt="img" style="zoom:67%;" />
+<img src="https://assets.leetcode.com/uploads/2020/10/03/reverse_ex2.jpg" alt="img" style="zoom: 50%;" />
 
 ```
 输入：head = [1,2,3,4,5], k = 3
