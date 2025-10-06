@@ -10391,7 +10391,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                               
+>                                                                                                                                                                                                                                                                                                                                                                                                  
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -14573,7 +14573,7 @@ class Solution:
 
 ## 138.随机链表的复制
 
-https://leetcode.cn/problems/copy-list-with-random-pointer/
+hashing, linked list, https://leetcode.cn/problems/copy-list-with-random-pointer/
 
 给你一个长度为 `n` 的链表，每个节点包含一个额外增加的随机指针 `random` ，该指针可以指向链表中的任何节点或空节点。
 
