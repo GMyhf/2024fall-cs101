@@ -1900,6 +1900,35 @@ class Solution:
 
 
 
+思路：既然两个链表的值均为正数，那么先遍历一次链表A，将其所有值变为相反数。再遍历一次链表B，如果遇到了负数，说明这就是其与A相交的点。注意要把链表A的值改回来。也可以用标准的双指针方法，时间复杂度是一致的。
+
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> Optional[ListNode]:
+        cur = headA
+        while cur:
+            cur.val = -cur.val
+            cur = cur.next
+        cur = headB
+        inter = None
+        while cur:
+            if cur.val < 0:
+                inter = cur
+                break
+            cur = cur.next
+        cur = headA
+        while cur:
+            cur.val = -cur.val
+            cur = cur.next
+        return inter
+```
+
 
 
 ## 169.多数元素
@@ -10362,7 +10391,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                            
+>                                                                                                                                                                                                                                                                                                                                                                                               
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
