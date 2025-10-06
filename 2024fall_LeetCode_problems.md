@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2025-10-05 11:19 GMT+8*
+*Updated 2025-10-06 11:19 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10362,7 +10362,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                         
+>                                                                                                                                                                                                                                                                                                                                                                                            
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -12315,6 +12315,25 @@ class Solution:
             ans.append(lst)
         return ans
 ```
+
+
+
+思路：有动态规划
+
+```python
+ 
+class Solution:
+    def subsets(self, nums: List[int]) -> List[List[int]]:
+        n = len(nums)
+        ans = [[]]
+        for i in range(n):
+            for j in range(len(ans)):
+                ans.append(ans[j] + [nums[i]])
+        return ans
+
+```
+
+
 
 
 
