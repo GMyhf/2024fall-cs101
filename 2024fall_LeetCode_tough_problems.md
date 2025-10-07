@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2025-09-27 11:19 GMT+8*
+*Updated 2025-10-08 01:19 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -198,9 +198,9 @@ if __name__ == "__main__":
 
 
 
-## 23.合并K个升序链表
+## T23.合并K个升序链表
 
-https://leetcode.cn/problems/merge-k-sorted-lists/
+linked list, divide and conquer, merge sort, https://leetcode.cn/problems/merge-k-sorted-lists/
 
 给你一个链表数组，每个链表都已经按升序排列。
 
