@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2025-10-06 11:19 GMT+8*
+*Updated 2025-10-08 01:12 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10391,7 +10391,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                  
+>                                                                                                                                                                                                                                                                                                                                                                                                     
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -10928,7 +10928,7 @@ hash table, sorting, https://leetcode.cn/problems/group-anagrams/
 
 **提示：**
 
-- `1 <= strs.length <= 104`
+- `1 <= strs.length <= 10^4`
 - `0 <= strs[i].length <= 100`
 - `strs[i]` 仅包含小写字母
 
@@ -15059,9 +15059,9 @@ if __name__ == "__main__":
 
 
 
-## 148.排序链表
+## M148.排序链表
 
-https://leetcode.cn/problems/sort-list/
+linked list, two pointers, divide and conquer, sorting, merge sort, https://leetcode.cn/problems/sort-list/
 
 给你链表的头结点 `head` ，请将其按 **升序** 排列并返回 **排序后的链表** 。
 
