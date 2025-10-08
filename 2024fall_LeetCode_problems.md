@@ -10391,7 +10391,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                     
+>                                                                                                                                                                                                                                                                                                                                                                                                        
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -13799,9 +13799,9 @@ if __name__ == "__main__":
 
 
 
-## 128.最长连续序列
+## M128.最长连续序列
 
-hash table, https://leetcode.cn/problems/longest-consecutive-sequence/
+hash table, union find, https://leetcode.cn/problems/longest-consecutive-sequence/
 
 给定一个未排序的整数数组 `nums` ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
 
@@ -13833,80 +13833,127 @@ hash table, https://leetcode.cn/problems/longest-consecutive-sequence/
 
 
 
-```python
-class Solution:
-    def longestConsecutive(self, nums: List[int]) -> int:
-        num_set = set(nums)
-        longest_streak = 0
-
-        for num in num_set:
-            if num - 1 not in num_set:
-                current_num = num
-                current_streak = 1
-
-                while current_num + 1 in num_set:
-                    current_num += 1
-                    current_streak += 1
-
-                longest_streak = max(longest_streak, current_streak)
-
-        return longest_streak
-```
-
-
-
-198.打家劫舍
-
-dp, https://leetcode.cn/problems/house-robber/
-
-你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，**如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警**。
-
-给定一个代表每个房屋存放金额的非负整数数组，计算你 **不触动警报装置的情况下** ，一夜之内能够偷窃到的最高金额。
-
- 
-
-**示例 1：**
-
-```
-输入：[1,2,3,1]
-输出：4
-解释：偷窃 1 号房屋 (金额 = 1) ，然后偷窃 3 号房屋 (金额 = 3)。
-     偷窃到的最高金额 = 1 + 3 = 4 。
-```
-
-**示例 2：**
-
-```
-输入：[2,7,9,3,1]
-输出：12
-解释：偷窃 1 号房屋 (金额 = 2), 偷窃 3 号房屋 (金额 = 9)，接着偷窃 5 号房屋 (金额 = 1)。
-     偷窃到的最高金额 = 2 + 9 + 1 = 12 。
-```
-
- 
-
-**提示：**
-
-- `1 <= nums.length <= 100`
-- `0 <= nums[i] <= 400`
-
-
+哈希+起点法
 
 ```python
-from typing import List
 class Solution:
-    def rob(self, nums: List[int]) -> int:
-        dp = [[0, 0] for _ in range (len(nums) + 1)]
-        for i in range(1, len(nums) + 1):
-            dp[i][0] = max(dp[i-1][0], dp[i - 1][1])
-            dp[i][1] = dp[i - 1][0] + nums[i - 1]
+    def longestConsecutive(self, nums: list[int]) -> int:
+        if not nums:
+            return 0
 
-        return (max(dp[-1][0], dp[-1][1]))
+        s = set(nums)
+        max_len = 0
 
-if __name__ == "__main__":
-    sol = Solution()
-    print(sol.rob([2, 1, 1, 2])) # 3
+        for num in s:
+            # 只有当 num 是连续序列的起点时才扩展
+            if num - 1 not in s:
+                cur = num
+                length = 1
+                while cur + 1 in s:
+                    cur += 1
+                    length += 1
+                max_len = max(max_len, length)
+
+        return max_len
+
 ```
+
+
+
+并查集
+
+```python
+class UnionFind:
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.size = [1] * n
+
+    def find(self, x):
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+
+    def union(self, x, y):
+        rx, ry = self.find(x), self.find(y)
+        if rx != ry:
+            # 小集合并到大集合
+            if self.size[rx] < self.size[ry]:
+                rx, ry = ry, rx
+            self.parent[ry] = rx
+            self.size[rx] += self.size[ry]
+
+
+class Solution:
+    def longestConsecutive(self, nums: list[int]) -> int:
+        if not nums:
+            return 0
+
+        # 去重后编号映射
+        nums = list(set(nums))
+        n = len(nums)
+        idx = {num: i for i, num in enumerate(nums)}
+
+        uf = UnionFind(n)
+
+        # 合并相邻的数字
+        for num in nums:
+            if num + 1 in idx:
+                uf.union(idx[num], idx[num + 1])
+
+        # 最大集合大小
+        return max(uf.size)
+
+```
+
+
+
+思路：区间合并法，类似于合并区间的“线段并法”。
+用字典记录“区间的左右边界长度”，例如：
+
+- 当加入一个新数 `x` 时：
+  - 若左右都没有连续的数，则新建 `[x, x]`；
+  - 若左边有连续数（`x-1`），则合并到左边；
+  - 若右边有连续数（`x+1`），则合并到右边；
+  - 若左右都有，则连接两个区间；
+- 同时更新区间端点的长度信息。
+
+这是一种 **哈希 + 动态合并区间** 的写法，核心思想是“只维护区间两端的长度信息”。
+
+```python
+class Solution:
+    def longestConsecutive(self, nums: list[int]) -> int:
+        s = {}
+        longest = 0
+
+        for x in nums:
+            if x in s:  # 跳过重复
+                continue
+
+            left = s.get(x - 1, 0)
+            right = s.get(x + 1, 0)
+            length = left + right + 1
+            s[x] = length
+
+            # 更新左右边界的长度信息
+            s[x - left] = length
+            s[x + right] = length
+
+            longest = max(longest, length)
+
+        return longest
+```
+
+举例：
+
+输入 `[100, 4, 200, 1, 3, 2]`
+
+- 插入 1：`{1:1}` → longest=1
+- 插入 2：连接左边 → `{1:2, 2:2}`
+- 插入 3：连接左边 → `{1:3, 3:3, 2:2}`
+- 插入 4：→ `{1:4, 4:4, 3:3, 2:2}`
+- 插入 100、200 不影响最长长度。
+
+最终 longest = 4。
 
 
 
@@ -15784,6 +15831,63 @@ class Solution:
         reverse(0, k - 1)  # 翻转前k个元素
         reverse(k, n - 1)  # 翻转剩余的元素
 ```
+
+
+
+## 198.打家劫舍
+
+dp, https://leetcode.cn/problems/house-robber/
+
+你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，**如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警**。
+
+给定一个代表每个房屋存放金额的非负整数数组，计算你 **不触动警报装置的情况下** ，一夜之内能够偷窃到的最高金额。
+
+ 
+
+**示例 1：**
+
+```
+输入：[1,2,3,1]
+输出：4
+解释：偷窃 1 号房屋 (金额 = 1) ，然后偷窃 3 号房屋 (金额 = 3)。
+     偷窃到的最高金额 = 1 + 3 = 4 。
+```
+
+**示例 2：**
+
+```
+输入：[2,7,9,3,1]
+输出：12
+解释：偷窃 1 号房屋 (金额 = 2), 偷窃 3 号房屋 (金额 = 9)，接着偷窃 5 号房屋 (金额 = 1)。
+     偷窃到的最高金额 = 2 + 9 + 1 = 12 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 100`
+- `0 <= nums[i] <= 400`
+
+
+
+```python
+from typing import List
+class Solution:
+    def rob(self, nums: List[int]) -> int:
+        dp = [[0, 0] for _ in range (len(nums) + 1)]
+        for i in range(1, len(nums) + 1):
+            dp[i][0] = max(dp[i-1][0], dp[i - 1][1])
+            dp[i][1] = dp[i - 1][0] + nums[i - 1]
+
+        return (max(dp[-1][0], dp[-1][1]))
+
+if __name__ == "__main__":
+    sol = Solution()
+    print(sol.rob([2, 1, 1, 2])) # 3
+```
+
+
 
 
 
