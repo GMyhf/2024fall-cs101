@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2025-10-08 01:12 GMT+8*
+*Updated 2025-10-08 23:12 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10391,7 +10391,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                           
+>                                                                                                                                                                                                                                                                                                                                                                                                              
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -21712,6 +21712,76 @@ class Solution:
 >
 > 作者：灵茶山艾府
 > 链接：https://leetcode.cn/problems/minimum-limit-of-balls-in-a-bag/solutions/3071967/er-fen-da-an-pythonjavaccgojsrust-by-end-g7l7/
+
+
+
+## M1781.所有子字符串美丽值之和
+
+hash table, string, counting, https://leetcode.cn/problems/sum-of-beauty-of-all-substrings/
+
+一个字符串的 **美丽值** 定义为：出现频率最高字符与出现频率最低字符的出现次数之差。
+
+- 比方说，`"abaacc"` 的美丽值为 `3 - 1 = 2` 。
+
+给你一个字符串 `s` ，请你返回它所有子字符串的 **美丽值** 之和。
+
+ 
+
+**示例 1：**
+
+```
+输入：s = "aabcb"
+输出：5
+解释：美丽值不为零的字符串包括 ["aab","aabc","aabcb","abcb","bcb"] ，每一个字符串的美丽值都为 1 。
+```
+
+**示例 2：**
+
+```
+输入：s = "aabcbaa"
+输出：17
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 500`
+- `s` 只包含小写英文字母。
+
+
+
+
+
+这题是经典的 **字符串枚举 + 频率统计** 问题。
+思路是：对每个起点 `i`，往右扩展终点 `j`，维护一个字母频率表，并在每次扩展时计算当前子串的美丽值。
+
+每次更新只要 `O(26)` 来计算 max-min→ 总体复杂度 `O(n^2 * 26)`，对 `n ≤ 500` 是可以接受的。
+
+------
+
+核心技巧是：双层循环枚举子串，用一个频率数组动态更新每次新增字符的频率，及时计算美丽值。
+
+```python
+class Solution:
+    def beautySum(self, s: str) -> int:
+        n = len(s)
+        total = 0
+
+        for i in range(n):
+            freq = [0] * 26
+            for j in range(i, n):
+                freq[ord(s[j]) - ord('a')] += 1
+
+                # 计算当前子串的美丽值
+                max_f = max(freq)
+                min_f = min(f for f in freq if f > 0)
+                total += max_f - min_f
+
+        return total
+```
+
+
 
 
 
