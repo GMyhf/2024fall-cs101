@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2025-10-08 01:19 GMT+8*
+*Updated 2025-10-25 23:19 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -1642,7 +1642,7 @@ dfs, https://leetcode.cn/problems/binary-tree-maximum-path-sum/
 
 **提示：**
 
-- 树中节点数目范围是 `[1, 3 * 104]`
+- 树中节点数目范围是 `[1, 3 * 10^4]`
 - `-1000 <= Node.val <= 1000`
 
 
