@@ -10391,7 +10391,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                    
+>                                                                                                                                                                                                                                                                                                                                                                                                                       
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -13022,6 +13022,107 @@ if __name__ == '__main__':
     # 打印层次遍历结果
     print(sol.levelOrder(root))
 ```
+
+
+
+思路：这题深搜也很简单
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        ans=[]
+        def dfs(root,depth):
+            if root:
+                if len(ans)<depth:	# 如果当前层还没列表，就创建
+                    ans.append([])
+                ans[depth-1].append(root.val)	# 将当前节点值放入对应层
+                dfs(root.left,depth+1)
+                dfs(root.right,depth+1)
+        dfs(root,1)
+        return ans
+```
+
+> 🚀 DFS 解法思路分析（递归）
+>
+> 虽然“层序”通常用 BFS，但只要能<mark>记录层数（depth），DFS 也能分层</mark>。
+>
+> **核心思想**：
+>
+> 1. 定义 `dfs(node, depth)`
+>    每访问一个节点，就知道它在第几层。
+> 2. 用 `ans` 保存每层的列表。
+>    当 `len(ans) < depth` 时，说明这一层还没建列表 → `ans.append([])`。
+> 3. 把当前节点值加入对应层 → `ans[depth-1].append(root.val)`。
+> 4. 递归访问左右子树，层数加一。
+>
+> ------
+>
+> 🧠 调用过程举例
+>
+> 假设树结构：
+>
+> ```
+>     1
+>    / \
+>   2   3
+> ```
+>
+> 执行顺序：
+>
+> | 调用     | 动作                  | ans         |
+> | -------- | --------------------- | ----------- |
+> | dfs(1,1) | 新建第1层 → 加入[1]   | [[1]]       |
+> | dfs(2,2) | 新建第2层 → 加入[2]   | [[1],[2]]   |
+> | dfs(3,2) | 第2层已存在 → 加入[3] | [[1],[2,3]] |
+>
+> ------
+>
+> 🔁 对比 BFS 写法（常规）
+>
+> BFS 用队列，每次取出当前层的所有节点：
+>
+> ```python
+> from collections import deque
+> 
+> class Solution:
+>     def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+>         if not root:
+>             return []
+>         ans, queue = [], deque([root])
+>         while queue:
+>             level = []
+>             for _ in range(len(queue)):
+>                 node = queue.popleft()
+>                 level.append(node.val)
+>                 if node.left: queue.append(node.left)
+>                 if node.right: queue.append(node.right)
+>             ans.append(level)
+>         return ans
+> ```
+>
+> ------
+>
+> 📘 小结
+>
+> | 比较     | DFS 解法               | BFS 解法                 |
+> | -------- | ---------------------- | ------------------------ |
+> | 关键结构 | 递归 + depth           | 队列 queue               |
+> | 思路     | 深度优先但按层记录     | 按层逐步遍历             |
+> | 优点     | 简洁易写、递归清晰     | 逻辑直观、符合“层序”语义 |
+> | 缺点     | 深度大时递归栈可能溢出 | 稍微冗长些               |
+>
+> ------
+>
+> ✅ 总结一句话：
+> 虽然“层序遍历”传统上是 BFS，但 DFS 通过携带层号参数，也能优雅地实现同样效果。
+
+
 
 
 
