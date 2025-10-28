@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2025-10-25 22:12 GMT+8*
+*Updated 2025-10-28 23:12 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10109,6 +10109,37 @@ backtracking, https://leetcode.cn/problems/permutations/
 
 
 
+思路：递归 + 回溯
+
+使用一个临时路径 `sol` 记录当前排列，通过遍历原数组并跳过已选元素的方式进行搜索。当路径长度等于数组长度时，将当前排列加入结果集。
+
+```python
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        n = len(nums)
+        ans, sol = [], []
+        
+        def backtrack():
+            # 终止条件：当前排列已满
+            if len(sol) == n:
+                ans.append(sol[:])  # 深拷贝
+                return
+            
+            # 尝试每个未被使用的数
+            for x in nums:
+                if x not in sol:        # 剪枝：避免重复使用
+                    sol.append(x)       # 选择
+                    backtrack()         # 递归
+                    sol.pop()           # 回溯
+        
+        backtrack()
+        return ans
+```
+
+全排列视频讲解：https://pku.instructuremedia.com/embed/c76751c9-bc0e-49f1-8a99-624b955de668
+
+
+
 ```python
 class Solution:
     def permute(self, nums: List[int]) -> List[List[int]]:
@@ -10391,7 +10422,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                       
+>                                                                                                                                                                                                                                                                                                                                                                                                                          
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -12119,6 +12150,51 @@ backtracking, https://leetcode.cn/problems/subsets/
 - `1 <= nums.length <= 10`
 - `-10 <= nums[i] <= 10`
 - `nums` 中的所有元素 **互不相同**
+
+
+
+思路：递归回溯（选或不选）
+
+对每个元素有两种选择：**选入子集** 或 **不选入子集**。递归遍历所有位置，到达末尾时将当前路径加入结果。
+
+```python
+class Solution:
+    def subsets(self, nums: List[int]) -> List[List[int]]:
+        n = len(nums)
+        ans, sol = [], []
+        
+        def backtrack(i):
+            # 终止条件：处理完所有元素
+            if i == n:
+                ans.append(sol[:])
+                return
+            
+            # 分支1：不选择 nums[i]
+            backtrack(i + 1)
+            
+            # 分支2：选择 nums[i]
+            sol.append(nums[i])
+            backtrack(i + 1)
+            sol.pop()  # 回溯
+        
+        backtrack(0)
+        return ans
+```
+
+子集视频讲解：https://pku.instructuremedia.com/embed/d8ccd717-3664-41bc-85d2-7170f348327b
+
+
+
+**总结对比（ 46.全排列，79.子集）**
+
+| 问题   | 决策方式         | 终止条件         | 是否需要去重       | 时间复杂度        |
+| ------ | ---------------- | ---------------- | ------------------ | ----------------- |
+| 全排列 | 从剩余元素中选择 | 路径长度 = n     | 是（避免重复使用） | $O(n \times n!)$  |
+| 子集   | 每个元素选/不选  | 索引到达数组末尾 | 否（天然无重）     | $O(2^n \times n)$ |
+
+> ⚠️ 注意：由于每次添加路径都需要复制 `sol[:]`，因此总时间复杂度中乘以 `n`。
+
+
 
 
 
@@ -14381,6 +14457,27 @@ dp, backtracking, https://leetcode.cn/problems/palindrome-partitioning/
 - `s` 仅由小写英文字母组成
 
 
+
+```python
+class Solution:
+    def partition(self, s: str) -> List[List[str]]:
+        n = len(s)
+        ans, sol = [], []
+        def backtrack(i):
+            if i == n:
+                ans.append(sol[:])
+                return
+            
+            for end in range(i+1, n+1):
+                substr = s[i:end]
+                if substr == substr[::-1]:
+                    sol.append(substr)
+                    backtrack(end)
+                    sol.pop()
+        
+        backtrack(0)
+        return ans
+```
 
 
 
