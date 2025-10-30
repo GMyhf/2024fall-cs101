@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2025-10-25 23:19 GMT+8*
+*Updated 2025-10-30 23:19 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -1005,27 +1005,42 @@ backtracking, https://leetcode.cn/problems/n-queens/
 # 曾孜博 24工学院
 class Solution:
     def solveNQueens(self, n: int) -> List[List[str]]:
-        p=[]
-        def dfs(r):
-            if len(r)==n:
+        p = []  # 存放所有解
+        def dfs(r):  # 当前放置到第 len(r) 行
+            if len(r) == n:  # 已放满
                 p.append(['.'*(t-1)+'Q'+'.'*(n-t) for t in r])
                 return
-            for i in range(1,n+1):
-                if i in r:continue
-                for j in range(len(r)):
-                    if abs(i-r[j])==abs(len(r)-j): # 
+            for i in range(1, n+1):  # 枚举列号（1~n）
+                if i in r: continue  # 同列冲突
+                for j in range(len(r)):  # 检查对角线冲突
+                    if abs(i - r[j]) == abs(len(r) - j):  
+                        # 列差 == 行差，说明在对角线上
                         break
-                else:
+                else:  # 没冲突
                     r.append(i)
                     dfs(r)
-                    r.pop()
+                    r.pop()  # 回溯
         dfs([])
         return p
+
 ```
 
-`abs(i - r[j]) == abs(len(r) - j)`：
+逻辑解析
 
-如果当前列 i 和之前某一行的列 r[j] 的差值等于行号差值，则它们在同一对角线上。
+- `r` 是一个列表，`r[k] = t` 表示第 `k` 行的皇后放在第 `t` 列。
+- 同一列冲突：`if i in r`
+- 对角线冲突：`abs(i - r[j]) == abs(len(r) - j)`
+  - “行差 = 列差” ⇒ 在同一对角线。
+- 每次递归进入下一行，直到放满 `n` 个皇后。
+- 转换输出格式：`'.'*(t-1)+'Q'+'.'*(n-t)` 把列号变成字符串形式。
+
+示例
+
+当 n=4 时：
+
+```
+r = [2, 4, 1, 3]  → ".Q.."、"...Q"、"Q..."、"..Q."
+```
 
 
 
