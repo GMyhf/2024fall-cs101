@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2025-11-01 11:23 GMT+8*
+*Updated 2025-11-01 17:41 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10426,7 +10426,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                                                                                                                                                   
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -14563,6 +14563,9 @@ class Solution:
 
 
 第一部分的判断某一段子串是不是回文串的 dp 写法；第二部分是 dfs 找切片。其中第一部分的 dp 的值都是布尔值，这样方便后续判断某一个子串是不是回文串；第二部分应该是双指针的思路，用 i 来遍历所有起点，用 j 来从每一个起点开始遍历第一处断点，这种写法也值得积累。
+
+**`is_palindrome` 这个二维表的“右上三角”部分，是“按列生成”的。**
+也就是说，它是**一列一列（固定 right 列，遍历所有 left 行）**地被计算出来的。
 
 ```python
 class Solution:
