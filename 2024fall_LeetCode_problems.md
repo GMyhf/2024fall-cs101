@@ -13815,6 +13815,268 @@ class Solution:
 
 
 
+## M114.二叉树展开为链表
+
+tree, dfs, linked list, https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/
+
+给你二叉树的根结点 `root` ，请你将它展开为一个单链表：
+
+- 展开后的单链表应该同样使用 `TreeNode` ，其中 `right` 子指针指向链表中下一个结点，而左子指针始终为 `null` 。
+- 展开后的单链表应该与二叉树 [**先序遍历**](https://baike.baidu.com/item/先序遍历/6442839?fr=aladdin) 顺序相同。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2021/01/14/flaten.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：root = [1,2,5,3,4,null,6]
+输出：[1,null,2,null,3,null,4,null,5,null,6]
+```
+
+**示例 2：**
+
+```
+输入：root = []
+输出：[]
+```
+
+**示例 3：**
+
+```
+输入：root = [0]
+输出：[0]
+```
+
+ 
+
+**提示：**
+
+- 树中结点数在范围 `[0, 2000]` 内
+- `-100 <= Node.val <= 100`
+
+ 
+
+**进阶：**你可以使用原地算法（`O(1)` 额外空间）展开这棵树吗？
+
+
+
+
+
+这题（LeetCode 114. Flatten Binary Tree to Linked List）是一个非常经典的“树转链表”题。
+目标是**将二叉树原地展开成一个“右指针单链表”**，顺序等价于**先序遍历**。
+
+------
+
+🔍 一、题意回顾
+
+展开后满足：
+
+```
+root
+ └── right -> next node in preorder
+left -> None
+```
+
+例如：
+
+```
+输入树：
+    1
+   / \
+  2   5
+ / \   \
+3  4    6
+
+展开后：
+1
+ \
+  2
+   \
+    3
+     \
+      4
+       \
+        5
+         \
+          6
+```
+
+------
+
+🧩 二、思路分析
+
+✅ 思路1：先序遍历 + 数组存储节点（简单易懂，但非原地）
+
+1. 先进行一次先序遍历，记录节点顺序。
+2. 再遍历这个列表，把节点依次接起来，左指针清空。
+
+```python
+class Solution:
+    def flatten(self, root: Optional[TreeNode]) -> None:
+        if not root:
+            return
+        
+        nodes = []
+        
+        def preorder(node):
+            if not node:
+                return
+            nodes.append(node)
+            preorder(node.left)
+            preorder(node.right)
+        
+        preorder(root)
+        
+        for i in range(1, len(nodes)):
+            prev, curr = nodes[i-1], nodes[i]
+            prev.left = None
+            prev.right = curr
+```
+
+🟡 优点：思路直观
+🔴 缺点：空间 O(n)，不满足进阶要求。
+
+------
+
+✅ 思路2：递归 DFS 原地展开（推荐理解）
+
+思路：**先展开左右子树，再把左子树拼接到右边。**
+
+关键在于：
+
+1. 暂存右子树；
+2. 把左子树搬到右边；
+3. 找到新右子树的尾巴，把原右子树接上。
+
+```python
+class Solution:
+    def flatten(self, root: Optional[TreeNode]) -> None:
+        if not root:
+            return
+        
+        self.flatten(root.left)
+        self.flatten(root.right)
+        
+        # 保存原右子树
+        temp = root.right
+        
+        # 左子树接到右边
+        root.right = root.left
+        root.left = None
+        
+        # 找到新的右子树的末尾
+        p = root
+        while p.right:
+            p = p.right
+        
+        # 接上原右子树
+        p.right = temp
+```
+
+🟡 优点：逻辑清晰，递归直观
+🔴 缺点：栈空间 O(h)
+
+------
+
+✅ 思路3：反向前序（后序式）递归 — 真正 O(1) 原地算法
+
+我们可以**从后往前**处理树（先处理右子树，再左子树），并用一个 `prev` 指针记录上一个访问过的节点：
+
+```python
+class Solution:
+    def flatten(self, root: Optional[TreeNode]) -> None:
+        self.prev = None
+
+        def dfs(node):
+            if not node:
+                return
+            dfs(node.right)
+            dfs(node.left)
+            node.right = self.prev
+            node.left = None
+            self.prev = node
+
+        dfs(root)
+```
+
+💡解释：
+
+- 后序遍历（右 → 左 → 根）
+- 每次让当前节点的 `right = prev`（即上一个访问的节点）
+- 逐步反向构建“先序链表”
+
+🟢 优点：
+
+- 原地展开，无需额外数组；
+- 栈空间 O(h)，无额外数据结构；
+- 代码简洁高效。
+
+------
+
+✅ 思路4：迭代 + Morris 遍历（最优 O(1) 空间）
+
+使用 Morris Traversal 技巧：
+
+```python
+class Solution:
+    def flatten(self, root: Optional[TreeNode]) -> None:
+        cur = root
+        while cur:
+            if cur.left:
+                # 找左子树最右节点
+                pre = cur.left
+                while pre.right:
+                    pre = pre.right
+                # 拼接
+                pre.right = cur.right
+                cur.right = cur.left
+                cur.left = None
+            cur = cur.right
+```
+
+🟢 优点：真正 O(1) 空间、非递归
+🟡 缺点：理解稍难
+
+------
+
+四、总结对比
+
+| 方法        | 空间 | 是否原地 | 思路难度 | 说明                 |
+| ----------- | ---- | -------- | -------- | -------------------- |
+| 先序存列表  | O(n) | 否       | ⭐        | 容易理解，适合入门   |
+| 递归拼接    | O(h) | 是       | ⭐⭐       | 核心逻辑清晰         |
+| 反向 DFS    | O(h) | 是       | ⭐⭐⭐      | 简洁优雅             |
+| Morris 遍历 | O(1) | 是       | ⭐⭐⭐⭐     | 最优但需理解指针操作 |
+
+------
+
+如果你希望“最推荐写法”，建议选用👇
+
+```python
+class Solution:
+    def flatten(self, root: Optional[TreeNode]) -> None:
+        prev = None
+        def dfs(node):
+            nonlocal prev
+            if not node:
+                return
+            dfs(node.right)
+            dfs(node.left)
+            node.right = prev
+            node.left = None
+            prev = node
+        dfs(root)
+```
+
+✅ 简洁
+✅ 原地
+✅ 符合先序顺序（因为是反向构造）
+✅ 通过所有测试用例
+
+
+
 ## 117.填充每个节点的下一个右侧节点指针II
 
 bfs, https://leetcode.cn/problems/populating-next-right-pointers-in-each-node-ii/
