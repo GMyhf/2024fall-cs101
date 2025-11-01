@@ -10113,6 +10113,10 @@ backtracking, https://leetcode.cn/problems/permutations/
 
 使用一个临时路径 `sol` 记录当前排列，通过遍历原数组并跳过已选元素的方式进行搜索。当路径长度等于数组长度时，将当前排列加入结果集。
 
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202511011249184.jpg" alt="44ca1d68ef935d2b871239b2d188ba22" style="zoom: 15%;" />
+
+
+
 ```python
 class Solution:
     def permute(self, nums: List[int]) -> List[List[int]]:
@@ -12156,6 +12160,10 @@ backtracking, https://leetcode.cn/problems/subsets/
 思路：递归回溯（选或不选）
 
 对每个元素有两种选择：**选入子集** 或 **不选入子集**。递归遍历所有位置，到达末尾时将当前路径加入结果。
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202511011249848.jpg" alt="915e44223ee7989e9ade44ac04b93086" style="zoom:15%;" />
+
+
 
 ```python
 class Solution:
@@ -14427,7 +14435,7 @@ class Solution:
 
 
 
-## 131.分割回文串
+## M131.分割回文串
 
 dp, backtracking, https://leetcode.cn/problems/palindrome-partitioning/
 
@@ -14455,6 +14463,14 @@ dp, backtracking, https://leetcode.cn/problems/palindrome-partitioning/
 
 - `1 <= s.length <= 16`
 - `s` 仅由小写英文字母组成
+
+
+
+【陈林鑫 物理学院】思路：
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202511011253995.png" alt="49be582f81c0905453e4f3f697217f96" style="zoom: 50%;" />
+
+如图所示，对于一个字符串s，依次判断从i=1到i=len(s)+1，s[0:i]是否为回文串，如果是，则在i处分割，前半部分为回文串，将它计入这条递归的列表resi中，剩下的部分s[i:]则继续分割。如果剩下的字符串s[i:]长度为0，则说明分割完毕，返回resi。for循环可以遍历所有情形。
 
 
 
