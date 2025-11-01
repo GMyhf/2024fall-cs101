@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2025-10-28 23:12 GMT+8*
+*Updated 2025-11-01 11:23 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -17,7 +17,7 @@
 
 
 
-# 简单
+# 简单Easy
 
 ## 1.两数之和
 
@@ -7847,7 +7847,7 @@ if __name__ == "__main__":
 
 
 
-# 中等
+# 中等Medium
 
 
 
@@ -10422,7 +10422,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                          
+>                                                                                                                                                                                                                                                                                                                                                                                                                             
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -14576,6 +14576,76 @@ class Solution:
         return res
 
         
+```
+
+
+
+【卞知彰 物理学院】思路：1、在不需要传递切片的时候就不传递切片，考虑到在不同选择的时候需要pop，所以其实path是可以共用的。这也就要注意ans需要定义在最前面。
+
+2、可以使用动态规划的方式，提前用一个n×n的矩阵，表示`s[i,j]`是不是一个回文序列，以免重复判断。同时在判断回文序列的时候，不用反复对比，只需要根据内层已有的结果，再加上两端的结果。实现的时候要注意检索i和j的顺序，应该是j从0到n-1，i从j到0，这样才可以保证所有内部序列都提前被判断过。判断的时候有三种情况。最后要注意表格中i和j的含义和`s[i,j]`略有不同，需要小心加一。
+
+```python
+class Solution:
+    def partition(self, s: str) -> List[List[str]]:
+        n=len(s)
+        ans=[]
+        huiwen=[[False]*n for _ in range(n)]
+        for j in range(n):
+            for i in range(j,-1,-1):
+                if i==j:
+                    huiwen[i][j]=True
+                elif j==i+1 and s[i]==s[j]:
+                    huiwen[i][j]=True
+                elif s[j]==s[i] and huiwen[i+1][j-1]:
+                    huiwen[i][j]=True
+        def backtracking(start,path):
+            if start==n:
+                ans.append(path[:])
+                return
+            for i in range(start,n):
+                if huiwen[start][i]:
+                    path.append(s[start:i+1])
+                    backtracking(i+1, path)
+                    path.pop()
+        backtracking(0,[])
+        return ans
+        
+```
+
+
+
+如果字符串较长，可以使用 **LRU 缓存递归判断**（不建 DP 表）
+
+```python
+from typing import List
+
+class Solution:
+    def partition(self, s: str) -> List[List[str]]:
+        n = len(s)
+        ans = []
+        
+        # 预处理所有回文子串：huiwen[i][j] = s[i:j+1] 是否为回文
+        huiwen = [[False] * n for _ in range(n)]
+        for j in range(n):
+            for i in range(j + 1):
+                if s[i] == s[j] and (j - i < 2 or huiwen[i + 1][j - 1]):
+                    huiwen[i][j] = True
+
+        # 回溯搜索所有分割
+        path = []
+        def dfs(start: int):
+            if start == n:
+                ans.append(path[:])
+                return
+            for end in range(start, n):
+                if huiwen[start][end]:
+                    path.append(s[start:end + 1])
+                    dfs(end + 1)
+                    path.pop()
+        
+        dfs(0)
+        return ans
+
 ```
 
 
