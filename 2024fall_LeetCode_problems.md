@@ -20973,6 +20973,68 @@ dfs, https://leetcode.cn/problems/lowest-common-ancestor-of-deepest-leaves/
 
 
 
+【卞知彰 物院】思路：1、先找出所有的叶子节点，然后对比长度，在最长的节点的路径中，找到第一个大家出现分歧的位置，然后输出相应节点就可以了。2、注意对于二叉树，只需要存储在这个节点是选择了想做还是向右就可以了，同时因为在回溯之外操作了`path`，所以需要把操作pop掉。3、注意各种指标要不要加一或者减一。
+
+```python
+class Solution:
+    def lcaDeepestLeaves(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        paths=[]
+        leaves=[]
+        def backtracking(cur,level,path):
+            if cur.left:
+                path.append('left')
+                backtracking(cur.left,level+1,path)
+                path.pop()
+            if cur.right:
+                path.append('right')
+                backtracking(cur.right,level+1,path)
+                path.pop()
+            if (not cur.left) and (not cur.right):
+                paths.append(path[:])
+                leaves.append(level)
+        backtracking(root,0,[])
+        max_level=max(leaves)
+        ans=[]
+        for i,p in enumerate(paths):
+            if leaves[i]==max_level:
+                ans.append(p)
+        
+        common=0
+        for i in range(max_level):
+            same=True
+            for j in range(len(ans)):
+                if ans[j][i]!=ans[0][i]:
+                    same=False
+                    break
+            if not same:
+                break
+            common+=1
+        go=ans[0]
+        cur=root
+        for i in range(common):
+            if go[i]=='left':
+                cur=cur.left
+            else:
+                cur=cur.right
+        return cur
+```
+
+
+
+优化版本（O(n) 时间 + O(h) 空间）
+
+更高效的做法是 **一次 DFS 同时返回 (深度, 节点)**，不用存路径。
+
+优化思路
+
+对于每个节点：
+
+- 递归得到左、右子树的最深深度与对应的“最近公共祖先”；
+- 比较左右深度：
+  - 若左 > 右：返回左边结果；
+  - 若右 > 左：返回右边结果；
+  - 若左 == 右：返回当前节点（因为这是最深节点的公共祖先）。
+
 ```python
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
