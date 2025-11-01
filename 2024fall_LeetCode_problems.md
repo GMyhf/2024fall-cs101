@@ -10426,7 +10426,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                             
+>                                                                                                                                                                                                                                                                                                                                                                                                                                
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -14630,7 +14630,7 @@ class Solution:
 
 
 
-如果字符串较长，可以使用 **LRU 缓存递归判断**（不建 DP 表）
+
 
 ```python
 from typing import List
@@ -14660,6 +14660,35 @@ class Solution:
                     path.pop()
         
         dfs(0)
+        return ans
+
+```
+
+
+
+如果字符串较长，可以使用 **LRU 缓存递归判断**（不建 DP 表）
+
+```python
+from functools import lru_cache
+
+class Solution:
+    def partition(self, s: str) -> List[List[str]]:
+        n = len(s)
+        ans = []
+        @lru_cache(None)
+        def is_pal(i, j):
+            return i >= j or (s[i] == s[j] and is_pal(i + 1, j - 1))
+
+        def dfs(start, path):
+            if start == n:
+                ans.append(path[:])
+                return
+            for end in range(start, n):
+                if is_pal(start, end):
+                    path.append(s[start:end + 1])
+                    dfs(end + 1, path)
+                    path.pop()
+        dfs(0, [])
         return ans
 
 ```
