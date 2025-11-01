@@ -10426,7 +10426,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                   
+>                                                                                                                                                                                                                                                                                                                                                                                                                                      
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -21383,6 +21383,53 @@ class Solution:
 > - 依赖整数大小（若树太深可能超出 int 范围）；
 > - 逻辑抽象，理解门槛高；
 > - 不易推广到非完全二叉结构的遍历方式（如有指针变化的树）。
+
+
+
+思路：自下向上递归，在最后的叶子结点的高度设置成0，之后对于其他的节点，记录下该节点的高度，并且判定是否高度是最高的，直到左右节点的高度一样，并且同为在当前层的最大高度，这个节点就是最后要输出的节点
+
+```python
+class Solution:
+    def lcaDeepestLeaves(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        def dfs(root):
+            if root == None:
+                return 0,None
+            lefts,left_note = dfs(root.left)
+            rights,right_note = dfs(root.right)
+            if lefts > rights:
+                return lefts+1,left_note
+            elif lefts < rights:
+                return rights+1,right_note
+            return lefts+1,root
+        return dfs(root)[1]
+```
+
+
+
+思路：记录先最大的深度，每次得到的左右子节点的深度相同时保留该节点，如果遇到有更深的节点，就对该节点更新，否则该节点就是我们要输出的节点
+
+```python
+class Solution:
+    def lcaDeepestLeaves(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        max_depth = -1
+        ans = None
+        def dfs(root,depth):
+            nonlocal max_depth,ans
+            if root == None:
+                max_depth = max(depth,max_depth)
+                return depth
+            lefts = dfs(root.left,depth+1)
+            rights = dfs(root.right,depth+1)
+            if lefts == rights == max_depth:
+                ans = root
+            return max(lefts,rights)
+        dfs(root,0)
+        return ans
+```
+
+
+
+
 
 
 
