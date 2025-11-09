@@ -2373,8 +2373,6 @@ dp, https://leetcode.cn/problems/k-inverse-pairs-array/description/
 4. **优化**：
    - 直接计算 `dp[i][j]` 时可能会超时，因此我们可以使用前缀和来优化状态转移。
 
-### 
-
 ```python
 class Solusion:
     def kInversePairs(self, n: int, k: int) -> int:
@@ -2420,7 +2418,7 @@ class Solusion:
 
 
 
-### 
+
 
 ```python
 class Solution:
@@ -18074,7 +18072,6 @@ tree dp, https://www.luogu.com.cn/problem/P1352
 
 输出一行一个整数代表最大的快乐指数。
 
-## 
 
 样例输入 #1
 
