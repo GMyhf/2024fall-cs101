@@ -8685,6 +8685,52 @@ if __name__ == '__main__':
 
 
 
+
+
+【李明阳 25生科学院】
+
+动态规划法穷举，需要列举全部的子串逐个判断。注意到该题目对于程序内存有着极其严格的要求，因此使用滚动数组来存储结果
+用l代表左边界，r代表又边界，闭区间[l,r]确定了字符串从index=l到index=r（包括两端点）这一子串。
+
+①如果子串长度为1则一定为回文序列
+②子串长度为2则只需比较首尾两个字符
+③子串长度大于2时要求首尾相同，并且去掉首尾两个之后剩下的部分也应该是回文序列
+
+如果用（l,r）代表一个子串，需要检查的情况可以列为下面的表格，箭头表示递归的方向。为了一次遍历解决问题，显然应该自下而上遍历。接下来的问题是如何处理以上①②③三种不同情形下的状态转移方程：
+我们在开始时就把最长回文串设置为第一个字母，长度为1，这样可以避免列举情况①
+注意到表格中蓝色方块的位置没有定义，如果补充定义为True，即可统一②③两种情况。所有l=r的情况也应该定义为True，因为单个字符也是回文的。
+因此，我们可以用两个一维数组分别存储当前行和下方一行所有子串是否为回文串的情况，根据前面的分析，所有初始值都应该定义为True。
+注意到最左上角的（0,0）如果递归将会超出滚动数组的范围，因此设置r的最小值为l+1，避免列举长度为1的子串即可解决问题。
+在遍历过程中，只需检查当前子串是不是回文串，如果首尾不相同 or 向左下角递归的那个格子为False，这个就不是回文串，相应地把当前行的对应位置标记为False。遍历完每一行之后将当前行（now）的值赋给下方一行（former），并初始化当前行的情况。
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/a0ce88195fc791a66f6ea4d0431e8f09.png" alt="a0ce88195fc791a66f6ea4d0431e8f09" style="zoom:50%;" />
+
+```python
+class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        le = len(s)
+        if le == 1:
+            return s
+        former_line = [True] * le
+        now_line = [True] * le
+        max_len = 1
+        longest_pali = s[0]
+        for l in range(le - 1, -1, -1):
+            for r in range(le - 1, l, -1):
+                if s[l] != s[r] or former_line[r - 1] == False:
+                    now_line[r] = False
+                elif r - l + 1 > max_len:
+                    max_len = r - l + 1
+                    longest_pali = s[l:r + 1]
+            former_line = now_line
+            now_line = [True] * le
+        return longest_pali
+```
+
+
+
+
+
 ## 6.Z字形变换
 
 strings, https://leetcode.cn/problems/zigzag-conversion/
@@ -10711,7 +10757,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
