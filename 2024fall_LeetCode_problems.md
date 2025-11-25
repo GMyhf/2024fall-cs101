@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2025-11-19 17:15 GMT+8*
+*Updated 2025-11-25 11:49 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -8506,6 +8506,11 @@ if __name__ == "__main__":
 
 这个双指针是从中间往两边跑。
 
+- 当退出循环时，`[left+1, right-1]` 是最后一个有效的回文区间。
+- 回文长度 = `(right - 1) - (left + 1) + 1 = right - left - 1`
+
+**时间复杂度**：O(n²)：外层循环 O(n)，每次扩展最坏 O(n)
+
 
 
 Manacher算法
@@ -8543,6 +8548,10 @@ class Solution:
         return s[start+1:end+1:2]
 
 ```
+
+
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/11ff33bfd9ab8363182880d8c1dd9938.png" alt="11ff33bfd9ab8363182880d8c1dd9938" style="zoom:50%;" />
 
 
 
@@ -10700,7 +10709,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                     
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
