@@ -8553,6 +8553,8 @@ class Solution:
 
 <img src="https://raw.githubusercontent.com/GMyhf/img/main/img/11ff33bfd9ab8363182880d8c1dd9938.png" alt="11ff33bfd9ab8363182880d8c1dd9938" style="zoom:50%;" />
 
+在大回文 [L, R] 内部，左右完全对称，所以 i_sym 的回文结构会被“复制”到 i 的位置——只要不超出边界 R。
+
 
 
 > 这段代码是用于解决“最长回文子串”问题的一个Python实现。它使用了Manacher算法的变种，通过在每个字符间插入特殊字符（这里是`#`）来处理奇数和偶数长度的回文字符串。让我们逐段解析这个解决方案：
