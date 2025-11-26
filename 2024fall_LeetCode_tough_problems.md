@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2025-11-19 18:21 GMT+8*
+*Updated 2025-11-27 00:52 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -6574,6 +6574,154 @@ if __name__ == "__main__":
     transactions = [[2, 1], [5, 0], [4, 2]]
     print(Solution().minimumMoney(transactions))  # Output: 10
 ```
+
+
+
+
+
+## 2435.矩阵中和能被K整除的路径
+
+dp, https://leetcode.cn/problems/paths-in-matrix-whose-sum-is-divisible-by-k/
+
+给你一个下标从 **0** 开始的 `m x n` 整数矩阵 `grid` 和一个整数 `k` 。你从起点 `(0, 0)` 出发，每一步只能往 **下** 或者往 **右** ，你想要到达终点 `(m - 1, n - 1)` 。
+
+请你返回路径和能被 `k` 整除的路径数目，由于答案可能很大，返回答案对 `109 + 7` **取余** 的结果。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202511270050553.png" alt="img" style="zoom:67%;" />
+
+```
+输入：grid = [[5,2,4],[3,0,5],[0,7,2]], k = 3
+输出：2
+解释：有两条路径满足路径上元素的和能被 k 整除。
+第一条路径为上图中用红色标注的路径，和为 5 + 2 + 4 + 5 + 2 = 18 ，能被 3 整除。
+第二条路径为上图中用蓝色标注的路径，和为 5 + 3 + 0 + 5 + 2 = 15 ，能被 3 整除。
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202511270051164.png" alt="img" style="zoom:67%;" />
+
+```
+输入：grid = [[0,0]], k = 5
+输出：1
+解释：红色标注的路径和为 0 + 0 = 0 ，能被 5 整除。
+```
+
+**示例 3：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202511270051639.png" alt="img" style="zoom:67%;" />
+
+```
+输入：grid = [[7,3,4,9],[2,3,6,2],[2,3,7,0]], k = 1
+输出：10
+解释：每个数字都能被 1 整除，所以每一条路径的和都能被 k 整除。
+```
+
+ 
+
+**提示：**
+
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 5 * 104`
+- `1 <= m * n <= 5 * 104`
+- `0 <= grid[i][j] <= 100`
+- `1 <= k <= 50`
+
+
+
+
+
+这是一个经典的动态规划（Dynamic Programming, DP）问题。
+
+**解题思路**
+
+我们需要计算从左上角到右下角的所有路径中，路径和能被 $k$ 整除的路径数量。
+
+1. **定义状态**：
+   我们可以定义一个三维数组 `dp[i][j][r]`。
+
+   *   `i` 和 `j` 表示当前所在的网格坐标 $(i, j)$。
+   *   `r` 表示从起点 $(0, 0)$ 到当前点 $(i, j)$ 的路径和模 $k$ 的余数（$0 \le r < k$）。
+   *   `dp[i][j][r]` 的值表示满足上述条件的路径数量。
+
+2. **状态转移**：
+   要到达位置 $(i, j)$，只能从 **上方** $(i-1, j)$ 或 **左方** $(i, j-1)$ 移动过来。
+   假设当前格子的数值为 `val = grid[i][j]`。
+   如果我们希望在 $(i, j)$ 处的路径和模 $k$ 余数为 `new_r`，那么前一步（上方或左方）的路径和模 $k$ 的余数 `old_r` 必须满足：
+   `(old_r + val) % k == new_r`。
+
+   因此，我们可以遍历前一步所有可能的余数 `r`（从 0 到 $k-1$），计算出当前步的新余数 `new_r = (r + val) % k`，并将前一步的路径数累加到当前状态中：
+   $$dp[i][j][(r + val) \% k] = (dp[i-1][j][r] + dp[i][j-1][r]) \% MOD$$
+
+3. **初始化**：
+   起点 $(0, 0)$ 的路径和就是 `grid[0][0]`。
+   所以 `dp[0][0][grid[0][0] % k] = 1`，其余为 0。
+
+4. **结果**：
+   最终答案为 `dp[m-1][n-1][0]`，即到达右下角且路径和模 $k$ 余数为 0 的路径数。
+
+**Python 代码**
+
+```python
+class Solution:
+    def numberOfPaths(self, grid: List[List[int]], k: int) -> int:
+        # 定义模数
+        MOD = 10**9 + 7
+        
+        # 获取矩阵的行数 m 和列数 n
+        m, n = len(grid), len(grid[0])
+        
+        # 初始化 DP 数组
+        # dp[i][j][r] 表示到达坐标 (i, j) 时，路径和模 k 余数为 r 的路径数量
+        # 维度为 m x n x k
+        dp = [[[0] * k for _ in range(n)] for _ in range(m)]
+        
+        # 初始化起点 (0, 0)
+        # 起点的路径和即为 grid[0][0]，计算其模 k 的余数
+        dp[0][0][grid[0][0] % k] = 1
+        
+        # 遍历每一个格子
+        for i in range(m):
+            for j in range(n):
+                # 跳过起点，因为已经初始化过了
+                if i == 0 and j == 0:
+                    continue
+                
+                # 当前格子的数值
+                val = grid[i][j]
+                
+                # 遍历前一步（上方或左方）所有可能的余数 r
+                for r in range(k):
+                    # 计算加上当前格子数值后的新余数
+                    new_r = (r + val) % k
+                    
+                    # 统计路径数
+                    count = 0
+                    
+                    # 如果不是第一行，可以从上方 (i-1, j) 走下来
+                    if i > 0:
+                        count = (count + dp[i-1][j][r]) % MOD
+                    
+                    # 如果不是第一列，可以从左方 (i, j-1) 走过来
+                    if j > 0:
+                        count = (count + dp[i][j-1][r]) % MOD
+                    
+                    # 更新当前状态
+                    dp[i][j][new_r] = count
+                    
+        # 返回到达右下角 (m-1, n-1) 且路径和能被 k 整除（余数为 0）的路径数
+        return dp[m-1][n-1][0]
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(m \times n \times k)$。我们需要遍历网格的每个格子，对于每个格子，我们遍历 $k$ 个可能的余数。题目中 $m \times n \le 5 \times 10^4$，且 $k \le 50$，总计算量约为 $2.5 \times 10^6$，在时间限制内。
+*   **空间复杂度**：$O(m \times n \times k)$。我们需要一个三维数组来存储状态。虽然可以使用滚动数组优化空间到 $O(n \times k)$，但在题目给定的约束下（内存通常足够），直接使用三维数组代码更清晰且不会超限。
 
 
 
