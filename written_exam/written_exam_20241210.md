@@ -1,8 +1,7 @@
 # 20241210 计算概论B笔试资料
 
-Updated 1521 GMT+8 Sep 13, 2025
-
-2024 fall, Complied by Hongfei Yan
+*Updated 2025-12-05 16:05 GMT+8*  
+ *Compiled by Hongfei Yan (2024 fall)*  
 
 
 
@@ -2677,7 +2676,7 @@ print(smax)
 5.下面说法正确的是: 
 	A) 一个Python程序是由若干个名称为__main__的主函数和若干个自定义函数(可缺省)组成。
 	B) Python语言对字母的大小写不敏感。
-	<mark>C)</mark> Python 3.x 中的字符串类型str是基于Unicode的，这意味着每个字符（包括汉字）都被看作是一个单独的字符，而不管它实际上由多少字节组成。
+	<mark>C)</mark> 在 Python 中，str 是 Unicode 码点（code point）的序列，每个元素是一个码点。大多数用户可见的字符（称为字形簇，grapheme cluster）由单个码点构成，但有些则由多个码点组合而成。
 	D) 计算机病毒是指通过计算机传播的危害人体健康的一种病毒。
 
 > 原题是针对C语言描述。在UTF-8编码下，一个汉字可能占用3个或更多字节；而在GBK等编码下，一个汉字占用2个字节。
