@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2025-12-15 13:12 GMT+8*
+*Updated 2025-12-15 15:12 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10757,7 +10757,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -22752,6 +22752,127 @@ class Solution:
 4. **返回结果**：最终返回最小生成树的总距离。
 
 这种方法确保了我们找到的是连接所有点的最小总费用，且任意两点之间有且仅有一条简单路径。
+
+
+
+## M1642.可以到达的最远建筑
+
+greedy, heap, https://leetcode.cn/problems/furthest-building-you-can-reach/
+
+给你一个整数数组 `heights` ，表示建筑物的高度。另有一些砖块 `bricks` 和梯子 `ladders` 。
+
+你从建筑物 `0` 开始旅程，不断向后面的建筑物移动，期间可能会用到砖块或梯子。
+
+当从建筑物 `i` 移动到建筑物 `i+1`（下标 **从 0 开始** ）时：
+
+- 如果当前建筑物的高度 **大于或等于** 下一建筑物的高度，则不需要梯子或砖块
+- 如果当前建筑的高度 **小于** 下一个建筑的高度，您可以使用 **一架梯子** 或 **`(h[i+1] - h[i])` 个砖块**
+
+如果以最佳方式使用给定的梯子和砖块，返回你可以到达的最远建筑物的下标（下标 **从 0 开始** ）。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.cn/aliyun-lc-upload/uploads/2020/10/31/q4.gif)
+
+```
+输入：heights = [4,2,7,6,9,14,12], bricks = 5, ladders = 1
+输出：4
+解释：从建筑物 0 出发，你可以按此方案完成旅程：
+- 不使用砖块或梯子到达建筑物 1 ，因为 4 >= 2
+- 使用 5 个砖块到达建筑物 2 。你必须使用砖块或梯子，因为 2 < 7
+- 不使用砖块或梯子到达建筑物 3 ，因为 7 >= 6
+- 使用唯一的梯子到达建筑物 4 。你必须使用砖块或梯子，因为 6 < 9
+无法越过建筑物 4 ，因为没有更多砖块或梯子。
+```
+
+**示例 2：**
+
+```
+输入：heights = [4,12,2,7,3,18,20,3,19], bricks = 10, ladders = 2
+输出：7
+```
+
+**示例 3：**
+
+```
+输入：heights = [14,3,19,3], bricks = 17, ladders = 0
+输出：3
+```
+
+ 
+
+**提示：**
+
+- `1 <= heights.length <= 10^5`
+- `1 <= heights[i] <= 10^6`
+- `0 <= bricks <= 10^9`
+- `0 <= ladders <= heights.length`
+
+
+
+
+
+核心思想（贪心 + 最小堆）。关键观察：
+
+- **梯子**：可以无视高度差，越大的高度差越“值钱”
+- **砖块**：必须消耗 `高度差` 数量，适合用在 **小高度差**
+
+**最优策略**：把梯子留给“最大的上升”，砖块用于较小的上升。
+
+实现技巧：
+
+1. 遇到上升（`diff > 0`）时，**先假设用梯子**
+2. 把这个高度差放入一个 **最小堆**
+3. 如果「使用梯子的次数」超过了 `ladders`
+   - 把 **最小的那个上升** 改用砖块
+   - 从 `bricks` 中扣掉该高度差
+4. 如果砖块不够，说明到此为止
+
+```python
+from typing import List
+import heapq
+
+class Solution:
+    def furthestBuilding(self, heights: List[int], bricks: int, ladders: int) -> int:
+        # 最小堆：记录所有“需要上升”的高度差
+        # 堆中元素表示：目前假设用“梯子”跨过的高度差
+        heap = []
+
+        # 遍历相邻建筑
+        for i in range(len(heights) - 1):
+            # 当前到下一栋的高度差
+            diff = heights[i + 1] - heights[i]
+
+            # 如果是下降或持平，不需要任何资源
+            if diff <= 0:
+                continue
+
+            # 遇到上升，先假设用梯子
+            heapq.heappush(heap, diff)
+
+            # 如果使用梯子的次数超过可用梯子数量
+            if len(heap) > ladders:
+                # 把最小的“梯子上升”改为用砖块
+                bricks -= heapq.heappop(heap)
+
+                # 如果砖块不够，无法继续前进
+                if bricks < 0:
+                    return i
+
+        # 如果顺利走完，返回最后一栋建筑的下标
+        return len(heights) - 1
+```
+
+------
+
+复杂度分析
+
+- **时间复杂度**：`O(n log n)`
+  - 每个高度差最多进堆 / 出堆一次
+- **空间复杂度**：`O(ladders)`
+  - 堆中最多存 `ladders + 1` 个元素
 
 
 
