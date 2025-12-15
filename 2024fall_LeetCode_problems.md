@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2025-12-15 15:12 GMT+8*
+*Updated 2025-12-15 23:02 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10757,7 +10757,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -19514,6 +19514,56 @@ dp, bfs, https://leetcode-cn.com/problems/01-matrix/
 - `mat` 中至少有一个 `0 `
 
  
+
+ 思路：从所有 0 同时出发做多源 BFS，一次性计算出所有 1 到最近 0 的距离。
+
+------
+
+多源 BFS（Multi-source BFS），核心思想：
+
+- 把所有 **0 的位置**作为 BFS 的起点（初始队列）。
+- 所有 0 的距离为 0。
+- 然后向外一层层扩展，每扩展一层，距离 +1。
+- 这样每个格子只被访问一次，**时间复杂度 O(nm)**。
+
+```python
+from collections import deque
+from typing import List
+
+class Solution:
+    def updateMatrix(self, mat: List[List[int]]) -> List[List[int]]:
+        n = len(mat)
+        m = len(mat[0])
+        
+        # 初始化结果矩阵，0 的位置为 0，1 的位置设为 -1（表示未访问）
+        result = [[-1] * m for _ in range(n)]
+        queue = deque()
+        
+        # 将所有 0 入队，并初始化 result
+        for i in range(n):
+            for j in range(m):
+                if mat[i][j] == 0:
+                    result[i][j] = 0
+                    queue.append((i, j))
+        
+        # 四个方向
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+        
+        # 多源 BFS
+        while queue:
+            x, y = queue.popleft()
+            for dx, dy in directions:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < n and 0 <= ny < m and result[nx][ny] == -1:
+                    result[nx][ny] = result[x][y] + 1
+                    queue.append((nx, ny))
+        
+        return result
+```
+
+
+
+
 
 124ms，击败64.56%
 
