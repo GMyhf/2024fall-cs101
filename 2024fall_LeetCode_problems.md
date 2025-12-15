@@ -8285,8 +8285,8 @@ t 3       ■ ■
 > 1) left = 0, right = 2 → "bab"
 >
 > - s[0] == s[2]
-> - (right - left > 1) → 看 is_palindrome[1][1]
-> - is_palindrome[1][1] = True
+> - (right - left > 1) → 看 `is_palindrome[1][1]`
+> - `is_palindrome[1][1] = True`
 >   → 整段为 True
 >
 > 2) left = 1, right = 2 → "ab"
@@ -8320,7 +8320,7 @@ t 3       ■ ■
 > 2) left = 1 → "aba"
 >
 > - s[1] == s[3]
-> - 需要 is_palindrome[2][2] = True
+> - 需要 `is_palindrome[2][2] = True`
 >   → True
 >
 > 3) left = 2 → "ba"
@@ -10757,7 +10757,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
