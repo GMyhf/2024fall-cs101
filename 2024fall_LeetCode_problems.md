@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2025-11-25 11:49 GMT+8*
+*Updated 2025-12-15 13:12 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10757,7 +10757,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                              
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -22154,6 +22154,132 @@ class Solution:
         
         return dp[-1][-1]
 ```
+
+
+
+## M1202.交换字符串中的元素
+
+dsu, https://leetcode.cn/problems/smallest-string-with-swaps/
+
+给你一个字符串 `s`，以及该字符串中的一些「索引对」数组 `pairs`，其中 `pairs[i] = [a, b]` 表示字符串中的两个索引（编号从 0 开始）。
+
+你可以 **任意多次交换** 在 `pairs` 中任意一对索引处的字符。
+
+返回在经过若干次交换后，`s` 可以变成的按字典序最小的字符串。
+
+**示例 1:**
+
+```
+输入：s = "dcab", pairs = [[0,3],[1,2]]
+输出："bacd"
+解释： 
+交换 s[0] 和 s[3], s = "bcad"
+交换 s[1] 和 s[2], s = "bacd"
+```
+
+**示例 2：**
+
+```
+输入：s = "dcab", pairs = [[0,3],[1,2],[0,2]]
+输出："abcd"
+解释：
+交换 s[0] 和 s[3], s = "bcad"
+交换 s[0] 和 s[2], s = "acbd"
+交换 s[1] 和 s[2], s = "abcd"
+```
+
+**示例 3：**
+
+```
+输入：s = "cba", pairs = [[0,1],[1,2]]
+输出："abc"
+解释：
+交换 s[0] 和 s[1], s = "bca"
+交换 s[1] 和 s[2], s = "bac"
+交换 s[0] 和 s[1], s = "abc"
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 10^5`
+- `0 <= pairs.length <= 10^5`
+- `0 <= pairs[i][0], pairs[i][1] < s.length`
+- `s` 中只含有小写英文字母
+
+
+
+思路：
+
+1. 遍历一遍字符串，将字符按“根节点”归类到字典中。
+2. 对字典中每个根节点对应的字符列表进行 **倒序排序**（这样 pop() 操作是 `O(1)` 的）。
+3. 再次从 0 到 n-1 遍历索引 i，找到其根节点，从对应的字符列表中弹出一个最小字符。
+
+```python
+from collections import defaultdict
+from typing import List
+
+class UnionFind:
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.rank = [1] * n  # 优化：添加 rank 数组控制树高
+    
+    def find(self, x):
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])  # 路径压缩
+        return self.parent[x]
+    
+    def union(self, x, y):
+        rx, ry = self.find(x), self.find(y)
+        if rx != ry:
+            # 优化：按秩合并，将矮树挂在高树下
+            if self.rank[rx] < self.rank[ry]:
+                rx, ry = ry, rx
+            self.parent[ry] = rx
+            if self.rank[rx] == self.rank[ry]:
+                self.rank[rx] += 1
+
+class Solution:
+    def smallestStringWithSwaps(self, s: str, pairs: List[List[int]]) -> str:
+        n = len(s)
+        uf = UnionFind(n)
+        
+        # 1. 构建连通图
+        for a, b in pairs:
+            uf.union(a, b)
+            
+        # 2. 将字符按连通分量的根节点分组
+        # 结构： {root_index: [char1, char2, ...]}
+        groups = defaultdict(list)
+        for i, char in enumerate(s):
+            root = uf.find(i)
+            groups[root].append(char)
+        
+        # 3. 对每个组的字符进行倒序排序
+        # 倒序是为了后面可以使用 pop() 高效地获取最小值
+        for root in groups:
+            groups[root].sort(reverse=True)
+            
+        # 4. 重组字符串
+        # 直接遍历 0 到 n-1，查询当前位置属于哪个组，拿出该组当前最小的字符
+        res = []
+        for i in range(n):
+            root = uf.find(i)
+            # pop() 取出列表最后一个元素（即最小字符），复杂度 O(1)
+            res.append(groups[root].pop())
+            
+        return "".join(res)
+```
+
+复杂度分析
+
+- **时间复杂度**: `O(Nlog⁡N)`
+  - 并查集操作几乎是线性的 `O(N⋅α(N))`。
+  - 主要的时间消耗在于对字符列表的排序。如果连通分量很大，接近 `N`，那么排序就是 `O(Nlog⁡N)`。
+  - 重组过程是线性的 `O(N)`。
+- **空间复杂度**: `O(N)`
+  - 用于存储并查集父节点数组、rank数组以及分组的字符字典。
 
 
 
