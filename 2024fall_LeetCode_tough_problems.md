@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2025-12-7 14:45 GMT+8*
+*Updated 2025-12-22 17:19 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -4517,6 +4517,70 @@ topological sort, dp, https://leetcode.cn/problems/largest-color-value-in-a-dire
 - `0 <= m <= 10^5`
 - `colors` 只含有小写英文字母。
 - `0 <= aj, bj < n`
+
+
+
+题面：在有向图中寻找路径使得节点颜色出现次数最大值最大  
+
+思路：拓扑排序+动态规划，维护每个节点各颜色出现次数的最大值
+
+```python
+from collections import deque
+from typing import List
+
+class Solution:
+    def largestPathValue(self, colors: str, edges: List[List[int]]) -> int:
+        n = len(colors)
+        # 1. 构建邻接表和入度数组
+        adj = [[] for _ in range(n)]
+        indegree = [0] * n
+        
+        for u, v in edges:
+            adj[u].append(v)
+            indegree[v] += 1
+        
+        # 2. 初始化队列，将所有入度为0的节点加入
+        q = deque([i for i in range(n) if indegree[i] == 0])
+        
+        # 3. DP 数组: dp[i][j] 表示以节点 i 结尾的路径中，颜色 j 出现的最大次数
+        # 颜色映射: 'a' -> 0, ..., 'z' -> 25
+        dp = [[0] * 26 for _ in range(n)]
+        
+        processed_count = 0
+        ans = 0
+        
+        while q:
+            u = q.popleft()
+            processed_count += 1
+            
+            # 处理当前节点 u 的颜色
+            u_color = ord(colors[u]) - ord('a')
+            dp[u][u_color] += 1
+            
+            # 更新全局最大值
+            ans = max(ans, dp[u][u_color])
+            
+            # 遍历邻居节点
+            for v in adj[u]:
+                # 状态转移：将 u 的所有颜色状态传递给 v
+                # 因为只有 26 种颜色，这个循环是常数级的，不会超时
+                for c in range(26):
+                    if dp[u][c] > dp[v][c]:
+                        dp[v][c] = dp[u][c]
+                
+                # 拓扑排序逻辑
+                indegree[v] -= 1
+                if indegree[v] == 0:
+                    q.append(v)
+        
+        # 4. 判断是否有环
+        if processed_count < n:
+            return -1
+            
+        return ans
+```
+
+
 
 
 
