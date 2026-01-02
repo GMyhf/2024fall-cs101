@@ -1,15 +1,15 @@
 # Problems in leetcode.cn
 
-*Updated 2025-12-15 23:02 GMT+8*
+*Updated 2026-01-02 22:15 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
 
 > Logs:
 >
-> 2025/9/27, 现在此md文件有1.5+MB，typora打开太慢了。我<mark>把“困难”+开始题目，分到`2024fall_LeetCode_tough_problems.md`</mark>
+> 2025/9/27, 现在此md文件有1.5+MB，typora打开太慢了。我<mark>把“挑战”开始题目，分到`2024fall_LeetCode_tough_problems.md`</mark>
 >
-> 2025/2/10，除了力扣的题目，后面部分也放了几个其他网站的题目，如：洛谷
+> 2025/2/10，除了力扣的题目，“挑战”题目之后，放了几个其他网站的题目，如：洛谷
 >
 > 2025/1/27, 力扣题目难度分数，https://zerotrac.github.io/leetcode_problem_rating/#/
 >
@@ -685,6 +685,68 @@ if __name__ == "__main__":
     sol = Solution()
     print(sol.searchInsert([1,3], 2)) # 1
 ```
+
+
+
+## E66.加一
+
+https://leetcode.cn/problems/plus-one/
+
+给定一个表示 **大整数** 的整数数组 `digits`，其中 `digits[i]` 是整数的第 `i` 位数字。这些数字按从左到右，从最高位到最低位排列。这个大整数不包含任何前导 `0`。
+
+将大整数加 1，并返回结果的数字数组。
+
+ 
+
+**示例 1：**
+
+```
+输入：digits = [1,2,3]
+输出：[1,2,4]
+解释：输入数组表示数字 123。
+加 1 后得到 123 + 1 = 124。
+因此，结果应该是 [1,2,4]。
+```
+
+**示例 2：**
+
+```
+输入：digits = [4,3,2,1]
+输出：[4,3,2,2]
+解释：输入数组表示数字 4321。
+加 1 后得到 4321 + 1 = 4322。
+因此，结果应该是 [4,3,2,2]。
+```
+
+**示例 3：**
+
+```
+输入：digits = [9]
+输出：[1,0]
+解释：输入数组表示数字 9。
+加 1 得到了 9 + 1 = 10。
+因此，结果应该是 [1,0]。
+```
+
+ 
+
+**提示：**
+
+- `1 <= digits.length <= 100`
+- `0 <= digits[i] <= 9`
+- `digits` 不包含任何前导 `0`。
+
+
+
+```python
+class Solution:
+    def plusOne(self, digits: List[int]) -> List[int]:
+        num_str = ''.join(map(str,digits))
+        num = int(num_str) + 1
+        return list(map(int, str(num)))
+```
+
+
 
 
 
@@ -3533,6 +3595,94 @@ class Solution:
         return nums
 
 ```
+
+
+
+## E961.在长度 2N 的数组中找出重复 N次的元素
+
+https://leetcode.cn/problems/n-repeated-element-in-size-2n-array/
+
+给你一个整数数组 `nums` ，该数组具有以下属性：
+
+- `nums.length == 2 * n`.
+- `nums` 包含 `n + 1` 个 **不同的** 元素
+- `nums` 中恰有一个元素重复 `n` 次
+
+找出并返回重复了 `n` 次的那个元素。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,2,3,3]
+输出：3
+```
+
+**示例 2：**
+
+```
+输入：nums = [2,1,2,5,3,2]
+输出：2
+```
+
+**示例 3：**
+
+```
+输入：nums = [5,1,5,2,5,3,5,4]
+输出：5
+```
+
+ 
+
+**提示：**
+
+- `2 <= n <= 5000`
+- `nums.length == 2 * n`
+- `0 <= nums[i] <= 10^4`
+- `nums` 由 `n + 1` 个 **不同的** 元素组成，且其中一个元素恰好重复 `n` 次
+
+
+
+```python
+class Solution:
+    def repeatedNTimes(self, nums: List[int]) -> int:
+        nums.sort()
+        ans = nums[0]
+        for n in nums[1:]:
+            if ans == n:
+                return ans
+            else:
+                ans = n
+```
+
+
+
+【灵茶山艾府】https://leetcode.cn/problems/n-repeated-element-in-size-2n-array/solutions/3870905/si-chong-fang-fa-ha-xi-ji-he-mo-er-tou-p-f95m/
+
+摩尔投票，先完成169题目，再来这个题目。
+
+为了让出现 n 次的那个数变成绝对众数，我们可以分类讨论：
+
+如果 nums[0] 在下标 [1,n−1] 中出现过，那么返回 nums[0]。
+否则，去掉 nums[0]，剩下 2n−1 个数，出现次数为 n 的那个数变成绝对众数，可以用 169 题的算法解决。
+这两件事情可以在同一个循环中完成。
+
+```python
+class Solution:
+    def repeatedNTimes(self, nums: List[int]) -> int:
+        ans = hp = 0
+        for x in nums[1:]:  # 也可以写 for i in range(1, len(nums)) 避免切片
+            if x == nums[0]:
+                return x
+            if hp == 0:  # x 是初始擂主，生命值为 1
+                ans, hp = x, 1
+            else:  # 比武，同门加血，否则扣血
+                hp += 1 if x == ans else -1
+        return ans
+```
+
+
 
 
 
@@ -10757,7 +10907,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
