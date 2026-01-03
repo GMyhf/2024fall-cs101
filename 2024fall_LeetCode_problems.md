@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-01-02 22:15 GMT+8*
+*Updated 2026-01-04 01:16 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10907,7 +10907,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -22541,6 +22541,191 @@ class Solution:
 ```
 
 
+
+
+
+## M1390.四因数
+
+bruteforce, sieve, math, https://leetcode.cn/problems/four-divisors/
+
+给你一个整数数组 `nums`，请你返回该数组中恰有四个因数的这些整数的各因数之和。如果数组中不存在满足题意的整数，则返回 `0` 。
+
+ 示例 1：
+
+```
+输入：nums = [21,4,7]
+输出：32
+解释：
+21 有 4 个因数：1, 3, 7, 21
+4 有 3 个因数：1, 2, 4
+7 有 2 个因数：1, 7
+答案仅为 21 的所有因数的和。
+```
+
+**示例 2:**
+
+```
+输入: nums = [21,21]
+输出: 64
+```
+
+**示例 3:**
+
+```
+输入: nums = [1,2,3,4,5]
+输出: 0
+```
+
+ 提示：**
+
+- `1 <= nums.length <= 10^4`
+- `1 <= nums[i] <= 10^5`
+
+
+
+采用 **对每个数单独试除** 的方式（即“暴力预处理”），时间复杂度约为：
+
+$$ O(N \cdot \sqrt{N}) \quad \text{其中 } N = 10^5 $$
+
+附加建议：使用 `math.isqrt` 替代 `int(math.sqrt(n))`（避免浮点误差）
+
+```python
+from typing import List
+import math
+
+class Solution:
+    def sumFourDivisors(self, nums: List[int]) -> int:
+        RIGHT = 100001  # 修复：支持到 100000
+        dp = [0] * RIGHT
+        for n in range(6, RIGHT):  # 6 是最小的有 4 个因数的数（6=2*3）
+            cnt, tot = 2, 1 + n  # 1 和 n 总是因数
+            over = False
+            # 遍历到 sqrt(n)
+            for i in range(2, int(math.isqrt(n)) + 1):  # 推荐用 isqrt（Python 3.8+）
+                if n % i == 0:
+                    if i == n // i:
+                        # 平方数，只加一个因数
+                        cnt += 1
+                        tot += i
+                    else:
+                        cnt += 2
+                        tot += i + n // i
+                    if cnt > 4:
+                        over = True
+                        break
+            if not over and cnt == 4:
+                dp[n] = tot
+
+        return sum(dp[x] for x in nums)
+```
+
+
+
+
+
+更优方法：**线性筛 + 因数个数/和的积性函数性质**
+
+**核心思想**：
+
+> **恰好有 4 个正因数的数只有两种形式**：
+>
+> 1. $ n = p \cdot q $，其中 $p, q$ 是**不同的质数** → 因数：$1, p, q, pq$
+> 2. $ n = p^3 $，其中 $p$ 是质数 → 因数：$1, p, p^2, p^3$
+
+
+
+优化方案一：**枚举合法结构（推荐）**
+
+步骤：
+
+1. 用埃氏筛或欧拉筛预处理出所有 $\leq 10^5$ 的质数。
+2. 枚举所有 $p^3 \leq 10^5$，记录其因数和 $1 + p + p^2 + p^3$。
+3. 枚举所有 $p < q$ 且 $p \cdot q \leq 10^5$，记录其因数和 $1 + p + q + pq = (1+p)(1+q)$。
+4. 对 `nums` 中每个数查表求和。
+
+优点：
+
+- 时间复杂度大幅降低（质数个数约 9592 个，两重循环约 $10^7$ 级别，但实际剪枝后远小于此）
+- 逻辑清晰，无冗余计算
+
+代码实现：
+
+```python
+from typing import List
+
+class Solution:
+    def sumFourDivisors(self, nums: List[int]) -> int:
+        MAX = 100000
+        # Step 1: Sieve to get primes up to MAX
+        is_prime = [True] * (MAX + 1)
+        is_prime[0] = is_prime[1] = False
+        for i in range(2, int(MAX**0.5) + 1):
+            if is_prime[i]:
+                for j in range(i * i, MAX + 1, i):
+                    is_prime[j] = False
+        
+        primes = [i for i, p in enumerate(is_prime) if p]
+        prime_set = set(primes)
+
+        # Step 2: Build result map for numbers with exactly 4 divisors
+        four_div_sum = [0] * (MAX + 1)
+
+        # Case 1: n = p^3
+        for p in primes:
+            n = p * p * p
+            if n > MAX:
+                break
+            four_div_sum[n] = 1 + p + p * p + n
+
+        # Case 2: n = p * q, p < q
+        m = len(primes)
+        for i in range(m):
+            p = primes[i]
+            if p * p > MAX:  # 因为 q > p, 所以 p*q >= p*(p+1) > p^2
+                break
+            for j in range(i + 1, m):
+                q = primes[j]
+                n = p * q
+                if n > MAX:
+                    break
+                four_div_sum[n] = (1 + p) * (1 + q)  # = 1 + p + q + pq
+
+        # Step 3: Sum up for nums
+        return sum(four_div_sum[x] for x in nums)
+```
+
+------
+
+为什么这个更快？
+
+- 质数个数 $\pi(10^5) \approx 9592$
+- 对于 `p*q` 枚举：
+  - 当 `p=2`，`q` 最多到 `50000` → 约 5000 个
+  - 当 `p=100`，`q` 最多到 `1000` → 很少
+  - 总对数远小于 $10^7$，实际约 **~200,000** 对
+- `p^3` 更少（$p \leq \sqrt[3]{10^5} \approx 46$）
+
+整体预处理非常快！
+
+------
+
+优化方案二：**使用最小质因数筛（LPF）在线分解**
+
+如果你希望支持更大的范围或动态查询，可以用 **线性筛预处理最小质因数（lpf）**，然后对每个 `n` 快速分解质因数，再判断是否符合 4 因数结构。
+
+但对本题（固定上限 $10^5$），**方案一更简单高效**。
+
+------
+
+总结：如何优化？
+
+| 方法                     | 思路                   | 时间复杂度                    | 推荐度 |
+| ------------------------ | ---------------------- | ----------------------------- | ------ |
+| 原始暴力                 | 对每个数试除           | $O(N\sqrt{N})$                | ⭐      |
+| **枚举合法结构（推荐）** | 利用数学性质生成合法数 | $O(\pi(N)^2)$（实际很小）     | ⭐⭐⭐⭐⭐  |
+| 最小质因数筛             | 预处理 lpf，快速分解   | $O(N \log \log N + Q \log N)$ | ⭐⭐⭐    |
+
+> **强烈建议采用“枚举合法结构”法**，既高效又体现数学洞察力。
 
 
 
