@@ -3812,9 +3812,3 @@ find_max_of_three()
 
 
 
-
-
-
-
-
-
