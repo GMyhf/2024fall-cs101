@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-01-05 14:52 GMT+8*
+*Updated 2026-01-06 13:09 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10907,7 +10907,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -22354,6 +22354,117 @@ class Solution:
         
         return dp[-1][-1]
 ```
+
+
+
+## M1161.最大层内元素和
+
+bfs, binary tree, https://leetcode.cn/problems/maximum-level-sum-of-a-binary-tree/
+
+给你一个二叉树的根节点 `root`。设根节点位于二叉树的第 `1` 层，而根节点的子节点位于第 `2` 层，依此类推。
+
+返回总和 **最大** 的那一层的层号 `x`。如果有多层的总和一样大，返回其中 **最小** 的层号 `x`。
+
+**示例 1：**
+
+**<img src="https://assets.leetcode.cn/aliyun-lc-upload/uploads/2019/08/17/capture.jpeg" alt="img" style="zoom:50%;" />**
+
+```
+输入：root = [1,7,0,7,-8,null,null]
+输出：2
+解释：
+第 1 层各元素之和为 1，
+第 2 层各元素之和为 7 + 0 = 7，
+第 3 层各元素之和为 7 + -8 = -1，
+所以我们返回第 2 层的层号，它的层内元素之和最大。
+```
+
+**示例 2：**
+
+```
+输入：root = [989,null,10250,98693,-89388,null,null,null,-32127]
+输出：2
+```
+
+ 
+
+**提示：**
+
+- 树中的节点数在 `[1, 10^4]`范围内
+- `-10^5 <= Node.val <= 10^5`
+
+
+
+这个问题可以通过**广度优先搜索 (BFS)**，即层序遍历来高效解决。
+
+**解题思路**
+
+1.  **层序遍历**：使用队列（Queue）来按层遍历二叉树。
+2.  **计算层和**：在处理每一层时，记录该层所有节点的值之和。
+3.  **更新最大值**：
+    *   初始化一个 `max_sum` 为负无穷（或者第一层的值），`max_level` 为 1。
+    *   遍历过程中，如果当前层的和 **严格大于** `max_sum`，则更新 `max_sum` 为当前层和，并将 `ans` 更新为当前层号。
+    *   由于我们是从第 1 层向后遍历的，当遇到相同的 `max_sum` 时，我们不更新 `ans`，这样自然就保留了**最小**的层号。
+
+**代码实现**
+
+```python
+from collections import deque
+
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class Solution:
+    def maxLevelSum(self, root: Optional[TreeNode]) -> int:
+        if not root:
+            return 0
+        
+        # 初始化最大和为负无穷，最大层号为 1
+        max_sum = -float('inf')
+        max_level = 1
+        
+        # BFS 队列
+        queue = deque([root])
+        current_level = 1
+        
+        while queue:
+            level_size = len(queue)
+            level_sum = 0
+            
+            # 处理当前层的所有节点
+            for _ in range(level_size):
+                node = queue.popleft()
+                level_sum += node.val
+                
+                # 将下一层的节点加入队列
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+            
+            # 比较并更新。注意：仅在大于时更新，以保证和相同时取最小层号
+            if level_sum > max_sum:
+                max_sum = level_sum
+                max_level = current_level
+            
+            current_level += 1
+            
+        return max_level
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(N)$，其中 $N$ 是树中的节点个数。每个节点都会进入队列并被处理一次。
+*   **空间复杂度**：$O(W)$，其中 $W$ 是树的最大宽度。在最坏的情况下（满二叉树），队列中最多会同时存在 $N/2$ 个节点。
+
+**关键点提示**
+
+*   **负数处理**：题目提示节点值范围包含负数（$-10^5 \le Node.val \le 10^5$），所以 `max_sum` 的初始值不能简单设为 0，而应该设为一个非常小的数或第一层的和。
+*   **层号要求**：要求返回最小的层号。通过 `if level_sum > max_sum`（不带等于号）的逻辑，我们在遇到相同和的后续层时不会覆盖之前的 `max_level`，从而满足“返回最小层号”的要求。
 
 
 
