@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-01-06 13:09 GMT+8*
+*Updated 2026-01-07 15:04 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10907,7 +10907,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -22652,6 +22652,124 @@ class Solution:
 ```
 
 
+
+## M1339.分裂二叉树的最大乘积
+
+dfs, binary tree, https://leetcode.cn/problems/maximum-product-of-splitted-binary-tree/
+
+给你一棵二叉树，它的根为 `root` 。请你删除 1 条边，使二叉树分裂成两棵子树，且它们子树和的乘积尽可能大。
+
+由于答案可能会很大，请你将结果对 10^9 + 7 取模后再返回。
+
+**示例 1：**
+
+**![img](https://assets.leetcode.cn/aliyun-lc-upload/uploads/2020/02/02/sample_1_1699.png)**
+
+```
+输入：root = [1,2,3,4,5,6]
+输出：110
+解释：删除红色的边，得到 2 棵子树，和分别为 11 和 10 。它们的乘积是 110 （11*10）
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.cn/aliyun-lc-upload/uploads/2020/02/02/sample_2_1699.png" alt="img" style="zoom:60%;" />
+
+```
+输入：root = [1,null,2,3,4,null,null,5,6]
+输出：90
+解释：移除红色的边，得到 2 棵子树，和分别是 15 和 6 。它们的乘积为 90 （15*6）
+```
+
+**示例 3：**
+
+```
+输入：root = [2,3,9,10,7,8,6,5,4,11,1]
+输出：1025
+```
+
+**示例 4：**
+
+```
+输入：root = [1,1]
+输出：1
+```
+
+ 
+
+**提示：**
+
+- 每棵树最多有 `50000` 个节点，且至少有 `2` 个节点。
+- 每个节点的值在 `[1, 10000]` 之间。
+
+
+
+这道题的核心思路是：**任一边的断开都会将树分为一棵“子树”和“剩余部分”**。
+若已知整棵树的总和为 `total_sum`，且某棵子树的和为 `subtree_sum`，则断开该子树根节点与其父节点之间的边后，得到的两部分之积为：
+$$Product = subtree\_sum \times (total\_sum - subtree\_sum)$$
+
+为了最大化这个乘积，需要遍历所有可能的子树和。
+
+**解题步骤**
+
+1.  **计算总和**：首先通过一次深度优先搜索（DFS）计算出整棵树的所有节点之和 `total_sum`。
+2.  **记录所有子树和**：在计算过程中，记录下每一个节点作为根时其子树的和。
+3.  **计算最大乘积**：遍历记录下来的所有子树和，代入公式计算乘积，并找出最大值。
+4.  **取模**：将最终结果对 $10^9 + 7$ 取模。
+
+**代码实现**
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class Solution:
+    def maxProduct(self, root: Optional[TreeNode]) -> int:
+        all_sums = []
+
+        # 辅助函数：计算当前节点及所有后代的总和
+        def get_sum(node):
+            if not node:
+                return 0
+            
+            # 当前子树之和 = 左子树之和 + 右子树之和 + 当前节点值
+            current_sum = get_sum(node.left) + get_sum(node.right) + node.val
+            # 将每一个可能的子树和记录下来
+            all_sums.append(current_sum)
+            return current_sum
+
+        # 1. 第一次遍历：计算总和并记录所有子树和
+        total_sum = get_sum(root)
+        
+        # 2. 遍历所有记录的子树和，寻找最大乘积
+        # 注意：公式为 s * (total_sum - s)
+        max_prod = 0
+        for s in all_sums:
+            product = s * (total_sum - s)
+            if product > max_prod:
+                max_prod = product
+        
+        # 3. 对结果取模
+        return max_prod % (10**9 + 7)
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(N)$，其中 $N$ 是二叉树的节点数。需要遍历每个节点一次来计算子树和，然后再遍历一次 `all_sums` 列表（长度也为 $N$）。
+*   **空间复杂度**：$O(N)$。主要开销是存储所有子树和的列表 `all_sums` 以及递归调用时的栈空间（最坏情况下树呈链状，深度为 $N$）。
+
+**重点提示**
+
+1.  **取模时机**：必须在**计算完所有乘积并找出最大值后**再取模。如果在比较过程中就取模，会由于取模运算破坏数值的大小关系，导致结果错误。
+2.  **数值范围**：
+    *   节点数最多 $50,000$，每个节点值最大 $10,000$。
+    *   `total_sum` 最大约为 $5 \times 10^8$。
+    *   `max_prod` 最大约为 $(2.5 \times 10^8)^2 = 6.25 \times 10^{16}$。
+    *   在 Python 中，整数支持任意精度，因此可以直接计算。如果在 C++ 或 Java 中，需要使用 `long long` 或 `long` 来存储乘积，防止溢出。
 
 
 
