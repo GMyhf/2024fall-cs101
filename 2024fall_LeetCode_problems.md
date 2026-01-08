@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-01-07 15:04 GMT+8*
+*Updated 2026-01-09 00:37 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10907,7 +10907,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -21375,6 +21375,238 @@ class Solution:
 ```
 
 这个算法的时间复杂度是 O(n)，空间复杂度也是 O(n)，可以高效处理最大长度为 10^5 的输入。
+
+
+
+## M865.具有所有最深节点的最小子树
+
+dfs, binary tree, https://leetcode.cn/problems/smallest-subtree-with-all-the-deepest-nodes/
+
+给定一个根为 `root` 的二叉树，每个节点的深度是 **该节点到根的最短距离** 。
+
+返回包含原始树中所有 **最深节点** 的 *最小子树* 。
+
+如果一个节点在 **整个树** 的任意节点之间具有最大的深度，则该节点是 **最深的** 。
+
+一个节点的 **子树** 是该节点加上它的所有后代的集合。
+
+ 
+
+**示例 1：**
+
+<img src="https://s3-lc-upload.s3.amazonaws.com/uploads/2018/07/01/sketch1.png" alt="img" style="zoom:50%;" />
+
+```
+输入：root = [3,5,1,6,2,0,8,null,null,7,4]
+输出：[2,7,4]
+解释：
+我们返回值为 2 的节点，在图中用黄色标记。
+在图中用蓝色标记的是树的最深的节点。
+注意，节点 5、3 和 2 包含树中最深的节点，但节点 2 的子树最小，因此我们返回它。
+```
+
+**示例 2：**
+
+```
+输入：root = [1]
+输出：[1]
+解释：根节点是树中最深的节点。
+```
+
+**示例 3：**
+
+```
+输入：root = [0,1,3,null,2]
+输出：[2]
+解释：树中最深的节点为 2 ，有效子树为节点 2、1 和 0 的子树，但节点 2 的子树最小。
+```
+
+ **提示：**
+
+- 树中节点的数量在 `[1, 500]` 范围内。
+- `0 <= Node.val <= 500`
+- 每个节点的值都是 **独一无二** 的。
+
+
+
+这个问题可以通过一次 **DFS（深度优先搜索）** 递归来高效解决。
+
+**解题思路**
+
+我们的目标是找到包含所有“最深节点”的最小子树。
+
+1.  **观察规律**：
+    *   对于任意一个节点 `node`：
+        *   如果它 **左子树的最大深度** 等于 **右子树的最大深度**，说明最深节点均匀分布在左右子树中，那么 `node` 就是包含它下方所有最深节点的最小子树根节点。
+        *   如果 **左子树更深**，说明所有的最深节点都在左子树中，我们需要继续在左子树中找。
+        *   如果 **右子树更深**，说明所有的最深节点都在右子树中，我们需要继续在右子树中找。
+
+2.  **算法设计**：
+    *   编写一个递归函数 `dfs(node)`，它返回两个值：
+        1.  `depth`: 以当前节点为根的子树的最大深度。
+        2.  `lca`: 包含该子树中所有最深节点的最小子树根节点。
+    *   **递归过程**：
+        *   如果当前节点为空，返回深度 `0` 和 `None`。
+        *   递归获取左子树的结果 `(left_depth, left_lca)`。
+        *   递归获取右子树的结果 `(right_depth, right_lca)`。
+        *   **判断逻辑**：
+            *   如果 `left_depth > right_depth`：返回 `(left_depth + 1, left_lca)`。
+            *   如果 `right_depth > left_depth`：返回 `(right_depth + 1, right_lca)`。
+            *   如果 `left_depth == right_depth`：说明当前节点 `node` 就是包含左右两边最深节点的最小子树根，返回 `(left_depth + 1, node)`。
+
+**代码实现**
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class Solution:
+    def subtreeWithAllDeepest(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        def dfs(node):
+            # 返回值格式：(当前子树的最大深度, 包含该子树所有最深节点的最小子树根)
+            if not node:
+                return 0, None
+            
+            left_depth, left_lca = dfs(node.left)
+            right_depth, right_lca = dfs(node.right)
+            
+            # 情况 1：左子树更深，最深节点一定都在左边
+            if left_depth > right_depth:
+                return left_depth + 1, left_lca
+            
+            # 情况 2：右子树更深，最深节点一定都在右边
+            if right_depth > left_depth:
+                return right_depth + 1, right_lca
+            
+            # 情况 3：左右深度一样，当前节点就是两边最深节点的共同祖先
+            # 注意：如果左右都是 0（叶子节点），当前节点也是它自身的最小子树根
+            return left_depth + 1, node
+
+        # 我们只需要 dfs 返回的第二个值（即那个最小子树的根）
+        return dfs(root)[1]
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(N)$，其中 $N$ 是二叉树中的节点数。我们只对树进行了一次完整的深度优先遍历，每个节点被访问一次。
+*   **空间复杂度**：$O(H)$，其中 $H$ 是树的高度。这是由于递归调用栈的开销。在最坏的情况下（树退化为链表），复杂度为 $O(N)$；在平衡树的情况下，复杂度为 $O(\log N)$。
+
+**总结**
+
+这道题的核心在于利用递归**自底向上**地传递深度信息和子树根节点信息。当一个节点发现左右子树提供的深度一致时，它就“晋升”为当前深度下所有最深节点的潜在最小子树根。
+
+
+
+
+
+为了能够直接运行并测试这个样例，提供了完整的代码实现。
+
+这段代码包含三个部分：
+
+1. **TreeNode 类定义**：标准的二叉树节点结构。
+2. **Solution 类**：包含核心算法逻辑（DFS）。
+3. **测试代码**：包含一个将列表（LeetCode 格式）转换为二叉树的工具函数，以及主程序。
+
+```python
+from typing import Optional, List, Deque
+from collections import deque
+
+
+# 1. 定义二叉树节点
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+
+class Solution:
+    def subtreeWithAllDeepest(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        def dfs(node):
+            # 返回值: (该子树的最大深度, 包含所有最深节点的最小子树根节点)
+            if not node:
+                return 0, None
+
+            left_depth, left_lca = dfs(node.left)
+            right_depth, right_lca = dfs(node.right)
+
+            if left_depth > right_depth:
+                # 最深节点全在左边
+                return left_depth + 1, left_lca
+            elif right_depth > left_depth:
+                # 最深节点全在右边
+                return right_depth + 1, right_lca
+            else:
+                # 左右一样深，或者左右都为空，或者左右最深点深度一致
+                # 此时当前节点就是包含左右两边所有最深点的最小子树根
+                return left_depth + 1, node
+
+        # 调用递归并返回结果节点
+        depth, result_node = dfs(root)
+        return result_node
+
+
+# --- 为了运行样例，我们需要一些辅助函数 ---
+
+def build_tree(nodes: List[Optional[int]]) -> Optional[TreeNode]:
+    """将 LeetCode 列表格式转换为二叉树"""
+    if not nodes:
+        return None
+    root = TreeNode(nodes[0])
+    queue = deque([root])
+    i = 1
+    while queue and i < len(nodes):
+        node = queue.popleft()
+        if i < len(nodes) and nodes[i] is not None:
+            node.left = TreeNode(nodes[i])
+            queue.append(node.left)
+        i += 1
+        if i < len(nodes) and nodes[i] is not None:
+            node.right = TreeNode(nodes[i])
+            queue.append(node.right)
+        i += 1
+    return root
+
+
+def tree_to_list(root: Optional[TreeNode]) -> List[int]:
+    """将二叉树转回列表（层序遍历），用于验证输出"""
+    if not root:
+        return []
+    res = []
+    queue = deque([root])
+    while queue:
+        node = queue.popleft()
+        if node:
+            res.append(node.val)
+            queue.append(node.left)
+            queue.append(node.right)
+        else:
+            # 这里简化处理，不保留末尾多余的 None
+            pass
+    return res
+
+
+if __name__ == "__main__":
+    # 样例输入
+    input_list = [3, 5, 1, 6, 2, 0, 8, None, None, 7, 4]
+    root = build_tree(input_list)
+
+    # 执行算法
+    sol = Solution()
+    result = sol.subtreeWithAllDeepest(root)
+
+    # 打印结果
+    if result:
+        print(f"最小子树的根节点值: {result.val}")
+        print(f"该子树的层序遍历结果: {tree_to_list(result)}")
+    else:
+        print("Empty Tree")
+        
+```
 
 
 
