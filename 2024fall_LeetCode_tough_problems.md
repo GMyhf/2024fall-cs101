@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-01-03 19:28 GMT+8*
+*Updated 2026-01-09 00:11 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -4610,6 +4610,135 @@ class Solution:
     *   它不关心中间第 500 行、第 501 行具体是多少。
     *   它利用数学结合律，把 $M \times M \times ... \times M$ 合并计算，直接“跳跃”到第 $n$ 行。
     *   这是解决**线性递推问题**（如斐波那契数列、爬楼梯、铺砖块）在大数据范围下的标准最优解。
+
+
+
+## T1458.两个子序列的最大点积
+
+dp, https://leetcode.cn/problems/max-dot-product-of-two-subsequences/
+
+给你两个数组 `nums1` 和 `nums2` 。
+
+请你返回 `nums1` 和 `nums2` 中两个长度相同的 **非空** 子序列的最大点积。
+
+数组的非空子序列是通过删除原数组中某些元素（可能一个也不删除）后剩余数字组成的序列，但不能改变数字间相对顺序。比方说，`[2,3,5]` 是 `[1,2,3,4,5]` 的一个子序列而 `[1,5,3]` 不是。
+
+**示例 1：**
+
+```
+输入：nums1 = [2,1,-2,5], nums2 = [3,0,-6]
+输出：18
+解释：从 nums1 中得到子序列 [2,-2] ，从 nums2 中得到子序列 [3,-6] 。
+它们的点积为 (2*3 + (-2)*(-6)) = 18 。
+```
+
+**示例 2：**
+
+```
+输入：nums1 = [3,-2], nums2 = [2,-6,7]
+输出：21
+解释：从 nums1 中得到子序列 [3] ，从 nums2 中得到子序列 [7] 。
+它们的点积为 (3*7) = 21 。
+```
+
+**示例 3：**
+
+```
+输入：nums1 = [-1,-1], nums2 = [1,1]
+输出：-1
+解释：从 nums1 中得到子序列 [-1] ，从 nums2 中得到子序列 [1] 。
+它们的点积为 -1 。
+```
+
+ **提示：**
+
+- `1 <= nums1.length, nums2.length <= 500`
+- `-1000 <= nums1[i], nums2[i] <= 1000`
+
+ 
+
+**点积：**
+
+> **定义**：设向量 $\mathbf{a} = [a_1, a_2, \ldots, a_n]$ 和 $\mathbf{b} = [b_1, b_2, \ldots, b_n]$，它们的点积（内积）定义为：
+>
+> $$ \mathbf{a} \cdot \mathbf{b} = \sum_{i=1}^{n} a_i b_i = a_1 b_1 + a_2 b_2 + \cdots + a_n b_n $$
+>
+> 其中，$\sum$ 表示求和符号。
+
+
+
+
+
+这是一道典型的**动态规划**（Dynamic Programming）题目。我们需要在两个数组中寻找子序列，保持相对顺序不变，使得它们的点积最大。
+
+**1. 状态定义**
+
+定义 `dp[i][j]` 为考虑 `nums1` 的前 `i+1` 个元素（即 `nums1[0...i]`）和 `nums2` 的前 `j+1` 个元素（即 `nums2[0...j]`）时，能得到的**非空**子序列的最大点积。
+
+**2. 状态转移方程**
+
+对于当前的元素对 `nums1[i]` 和 `nums2[j]`，我们有几种选择来决定 `dp[i][j]` 的值：
+
+1.  **使用 `nums1[i]` 和 `nums2[j]` 进行配对：**
+    *   **作为新子序列的开始：** 结果是 `nums1[i] * nums2[j]`。如果之前的累积结果是负数，我们宁愿重新开始。
+    *   **延续之前的子序列：** 如果之前的最大点积 `dp[i-1][j-1]` 是正数，我们可以将当前积加到之前的结果上，即 `nums1[i] * nums2[j] + dp[i-1][j-1]`。
+    *   综合这两点，如果选择配对 `nums1[i]` 和 `nums2[j]`，这部分的贡献是 `nums1[i] * nums2[j] + max(0, dp[i-1][j-1])`。
+
+2.  **不使用 `nums1[i]`：**
+    *   这意味着最大点积由 `nums1[0...i-1]` 和 `nums2[0...j]` 产生。我们继承 `dp[i-1][j]` 的值。
+
+3.  **不使用 `nums2[j]`：**
+    *   这意味着最大点积由 `nums1[0...i]` 和 `nums2[0...j-1]` 产生。我们继承 `dp[i][j-1]` 的值。
+
+**综上所述，状态转移方程为：**
+
+$$dp[i][j] = \max \begin{cases} nums1[i] \times nums2[j] + \max(0, dp[i-1][j-1]) & \text{(选中 i, j)} \\ dp[i-1][j] & \text{(丢弃 i)} \\ dp[i][j-1] & \text{(丢弃 j)} \end{cases}$$
+
+*(注意边界条件处理：当 i=0 或 j=0 时，不存在 i-1 或 j-1 的情况)*
+
+**3. 代码实现**
+
+```python
+class Solution:
+    def maxDotProduct(self, nums1: List[int], nums2: List[int]) -> int:
+        n, m = len(nums1), len(nums2)
+        
+        # 初始化 DP 数组
+        # dp[i][j] 代表 nums1[0...i] 和 nums2[0...j] 的最大点积
+        dp = [[0] * m for _ in range(n)]
+        
+        for i in range(n):
+            for j in range(m):
+                # 计算当前两个数字的乘积
+                product = nums1[i] * nums2[j]
+                
+                # 选项1：以当前这一对 (i, j) 作为结尾
+                # 如果 dp[i-1][j-1] > 0，则加上它；否则只取 product（相当于重新开始一个子序列）
+                # 这里先赋值给 current_max，稍后更新进 dp 数组
+                prev_diag = dp[i-1][j-1] if (i > 0 and j > 0) else 0
+                current_max = product + max(0, prev_diag)
+                
+                # 初始化 dp[i][j]
+                dp[i][j] = current_max
+                
+                # 选项2：不使用 nums1[i]，继承上方的结果
+                if i > 0:
+                    dp[i][j] = max(dp[i][j], dp[i-1][j])
+                
+                # 选项3：不使用 nums2[j]，继承左方的结果
+                if j > 0:
+                    dp[i][j] = max(dp[i][j], dp[i][j-1])
+        
+        return dp[n-1][m-1]
+```
+
+**4. 复杂度分析**
+
+*   **时间复杂度：** $O(N \times M)$，其中 $N$ 和 $M$ 分别是 `nums1` 和 `nums2` 的长度。我们需要填充整个二维数组。
+*   **空间复杂度：** $O(N \times M)$，用于存储 DP 状态数组。
+    *   *注：由于 `dp[i][j]` 只依赖于当前行和上一行的状态，空间复杂度可以优化到 $O(M)$，但在本题数据规模（N, M <= 500）下，二维数组是完全可以接受的且更易于理解。*
+
+
 
 
 
