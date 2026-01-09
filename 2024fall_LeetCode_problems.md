@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-01-09 00:37 GMT+8*
+*Updated 2026-01-10 00:50 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10907,7 +10907,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -20265,6 +20265,198 @@ Explanation of Changes:
 1. **Tuple for `nums` and `su`**: We maintain the inputs to the recursive function as tuples, which are hashable and can be used in `lru_cache`. This ensures that the recursion doesn’t recompute already visited states.
 2. **Early exit**: The condition `if nums[0] > target` ensures that if the largest number is greater than the target sum, we immediately return `False` (this avoids unnecessary computation).
 3. **Optimized backtracking**: We exit the loop early if `su[i] == 0` to avoid repeating attempts to place the same number in already empty positions in `su`.
+
+
+
+## M712.两个字符串的最小ASCII删除和
+
+dp, https://leetcode.cn/problems/minimum-ascii-delete-sum-for-two-strings/)
+
+给定两个字符串`s1` 和 `s2`，返回 *使两个字符串相等所需删除字符的 **ASCII** 值的最小和* 。
+
+**示例 1:**
+
+```
+输入: s1 = "sea", s2 = "eat"
+输出: 231
+解释: 在 "sea" 中删除 "s" 并将 "s" 的值(115)加入总和。
+在 "eat" 中删除 "t" 并将 116 加入总和。
+结束时，两个字符串相等，115 + 116 = 231 就是符合条件的最小和。
+```
+
+**示例 2:**
+
+```
+输入: s1 = "delete", s2 = "leet"
+输出: 403
+解释: 在 "delete" 中删除 "dee" 字符串变成 "let"，
+将 100[d]+101[e]+101[e] 加入总和。在 "leet" 中删除 "e" 将 101[e] 加入总和。
+结束时，两个字符串都等于 "let"，结果即为 100+101+101+101 = 403 。
+如果改为将两个字符串转换为 "lee" 或 "eet"，我们会得到 433 或 417 的结果，比答案更大。
+```
+
+**提示:**
+
+- `0 <= s1.length, s2.length <= 1000`
+- `s1` 和 `s2` 由小写英文字母组成
+
+
+
+```
+class Solution:
+    def minimumDeleteSum(self, s1: str, s2: str) -> int:
+```
+
+
+
+这道题是经典的**动态规划（Dynamic Programming）**问题，类似于“最长公共子序列 (LCS)”或“编辑距离”，但其目标是最小化删除字符的 ASCII 总和。
+
+**解题思路**
+
+我们可以定义一个二维数组 `dp[i][j]`，表示将字符串 `s1` 的前 `i` 个字符和 `s2` 的前 `j` 个字符变得相等所需删除字符的最小 ASCII 总和。
+
+**1. 状态定义**
+
+- `dp[i][j]`：使 `s1[0...i-1]` 和 `s2[0...j-1]` 达到相等所需的最小 ASCII 删除和。
+
+**2. 状态转移方程**
+
+- **如果 `s1[i-1] == s2[j-1]`**：
+  这两个字符已经相等，不需要删除，因此：
+  `dp[i][j] = dp[i-1][j-1]`
+- **如果 `s1[i-1] != s2[j-1]`**：
+  我们有两种选择，取其中的最小值：
+  1. 删除 `s1[i-1]`：代价为 `dp[i-1][j] + ord(s1[i-1])`
+  2. 删除 `s2[j-1]`：代价为 `dp[i][j-1] + ord(s2[j-1])`
+     即：`dp[i][j] = min(dp[i-1][j] + ord(s1[i-1]), dp[i][j-1] + ord(s2[j-1]))`
+
+**3. 边界条件（初始化）**
+
+- `dp[0][0] = 0`：两个空字符串相等，代价为 0。
+- `dp[0][j]`（`s1`为空）：必须删除 `s2` 的前 `j` 个所有字符，即 `dp[0][j] = dp[0][j-1] + ord(s2[j-1])`。
+- `dp[i][0]`（`s2`为空）：必须删除 `s1` 的前 `i` 个所有字符，即 `dp[i][0] = dp[i-1][0] + ord(s1[i-1])`。
+
+**代码实现**
+
+```python
+class Solution:
+    def minimumDeleteSum(self, s1: str, s2: str) -> int:
+        m, n = len(s1), len(s2)
+        
+        # 创建 dp 矩阵，大小为 (m+1) x (n+1)
+        dp = [[0] * (n + 1) for _ in range(m + 1)]
+        
+        # 初始化边界条件
+        # 当 s2 为空时，s1 需要删除所有字符
+        for i in range(1, m + 1):
+            dp[i][0] = dp[i-1][0] + ord(s1[i-1])
+            
+        # 当 s1 为空时，s2 需要删除所有字符
+        for j in range(1, n + 1):
+            dp[0][j] = dp[0][j-1] + ord(s2[j-1])
+            
+        # 填充 dp 矩阵
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                if s1[i-1] == s2[j-1]:
+                    # 如果当前字符相等，不需要删除
+                    dp[i][j] = dp[i-1][j-1]
+                else:
+                    # 如果不相等，取删除 s1[i-1] 或删除 s2[j-1] 的最小值
+                    dp[i][j] = min(
+                        dp[i-1][j] + ord(s1[i-1]), 
+                        dp[i][j-1] + ord(s2[j-1])
+                    )
+                    
+        return dp[m][n]
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(m \times n)$，其中 $m$ 和 $n$ 分别是两个字符串的长度。我们需要遍历整个二维 `dp` 数组。
+*   **空间复杂度**：$O(m \times n)$，用于存储 `dp` 状态矩阵。
+    *   *注：空间复杂度可以进一步优化到 $O(n)$，因为 `dp[i]` 只依赖于 `dp[i-1]`，但为了代码可读性，通常采用二维数组实现。*
+
+**进阶思考：最大公共子序列法**
+
+这个问题也可以转化为：**求两个字符串的“最大 ASCII 总和的公共子序列”**。
+
+1. 计算 `s1` 的总 ASCII 和 `sum1`，`s2` 的总 ASCII 和 `sum2`。
+2. 找到一个公共子序列，使其字符的 ASCII 之和最大（设为 `max_common_ascii`）。
+3. 最终答案 = `sum1 + sum2 - 2 * max_common_ascii`。
+   这种做法的逻辑与上面的直接 DP 是等价的。
+
+
+
+最大公共子序列法的思路是：要使删除的 ASCII 值之和**最小**，等效于保留的公共子序列的 ASCII 值之和**最大**。
+
+**算法逻辑**
+
+1.  计算 `s1` 的所有字符 ASCII 总和 `sum1`。
+2.  计算 `s2` 的所有字符 ASCII 总和 `sum2`。
+3.  利用动态规划求出 `s1` 和 `s2` 的**最大 ASCII 公共子序列和**（记为 `max_common_ascii`）。
+4.  最终结果 = `(sum1 - max_common_ascii) + (sum2 - max_common_ascii)`，即 `sum1 + sum2 - 2 * max_common_ascii`。
+
+**代码实现**
+
+```python
+class Solution:
+    def minimumDeleteSum(self, s1: str, s2: str) -> int:
+        m, n = len(s1), len(s2)
+        
+        # 1. 计算两个字符串的总 ASCII 和
+        sum1 = sum(ord(c) for c in s1)
+        sum2 = sum(ord(c) for c in s2)
+        
+        # 2. 定义 dp[i][j] 为 s1[0...i-1] 和 s2[0...j-1] 的最大公共子序列 ASCII 和
+        dp = [[0] * (n + 1) for _ in range(m + 1)]
+        
+        # 3. 状态转移
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                if s1[i-1] == s2[j-1]:
+                    # 如果字符相等，将其 ASCII 值加入公共子序列
+                    dp[i][j] = dp[i-1][j-1] + ord(s1[i-1])
+                else:
+                    # 如果不相等，取左边或上边的最大值
+                    dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+        
+        max_common_ascii = dp[m][n]
+        
+        # 4. 返回公式计算结果
+        return sum1 + sum2 - 2 * max_common_ascii
+```
+
+**空间优化版 (滚动数组)**
+
+由于 `dp[i][j]` 只依赖于左方、上方和左上方，我们可以将空间复杂度从 $O(m \times n)$ 优化到 $O(n)$。
+
+```python
+class Solution:
+    def minimumDeleteSum(self, s1: str, s2: str) -> int:
+        m, n = len(s1), len(s2)
+        sum_total = sum(ord(c) for c in s1) + sum(ord(c) for c in s2)
+        
+        # 仅使用一维数组
+        dp = [0] * (n + 1)
+        
+        for i in range(1, m + 1):
+            prev = 0  # 相当于二维中的 dp[i-1][j-1]
+            for j in range(1, n + 1):
+                temp = dp[j] # 记录未更新前的 dp[j]，即下一轮的 dp[i-1][j-1]
+                if s1[i-1] == s2[j-1]:
+                    dp[j] = prev + ord(s1[i-1])
+                else:
+                    dp[j] = max(dp[j], dp[j-1])
+                prev = temp
+                
+        return sum_total - 2 * dp[n]
+```
+
+**两种方法的对比**
+
+*   **直接 DP 法**：直接计算“删除的最小代价”，代码逻辑更直观地对应题目要求。
+*   **最大公共子序列法**：将问题转化为寻找“保留的最大价值”，在处理“公共子序列”类问题时思路更通用，且公式 `Sum - 2*LCS` 在解决此类“使两者相等”的问题中非常经典（例如 [LeetCode 583. 两个字符串的删除操作](https://leetcode.cn/problems/delete-operation-for-two-strings/) 也是这个套路）。
 
 
 
