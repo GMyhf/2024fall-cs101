@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-01-09 00:11 GMT+8*
+*Updated 2026-01-11 13:23 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -1481,7 +1481,7 @@ monotonic stack, dp, [https://leetcode.cn/problems/maximal-rectangle/description
 
 **示例 1：**
 
-![img](https://raw.githubusercontent.com/GMyhf/img/main/img/1722912576-boIxpm-image.png)
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/1722912576-boIxpm-image.png" alt="img" style="zoom:50%;" />
 
  输入：matrix = [["1","0","1","0","0"],["1","0","1","1","1"],["1","1","1","1","1"],["1","0","0","1","0"]]  
  输出：6  
@@ -1507,6 +1507,81 @@ monotonic stack, dp, [https://leetcode.cn/problems/maximal-rectangle/description
   
 - `matrix[i][j]` 为 `'0'` 或 `'1'`
   
+
+
+
+这个问题可以转化成多个**“柱状图中的最大矩形”**（LeetCode 84题）问题。
+
+**解题思路**
+
+1.  **转化问题**：我们可以把矩阵的每一行作为“地面”，从地面向上连续的 `'1'` 形成的长度看作是“柱子”的高度。
+2.  **动态更新高度**：
+    *   遍历矩阵的每一行。
+    *   维护一个数组 `heights`，其中 `heights[j]` 表示第 `j` 列在当前行及以上连续的 `'1'` 的个数。
+    *   如果 `matrix[i][j] == '1'`，则 `heights[j] += 1`。
+    *   如果 `matrix[i][j] == '0'`，则 `heights[j] = 0`（因为矩形必须是连续的，遇到 '0' 必须断开）。
+3.  **计算最大矩形**：
+    *   对于每一行更新完的 `heights` 数组，它就是一个标准的柱状图。
+    *   利用**单调栈**（Monotonic Stack）算法，在 $O(cols)$ 的时间内算出该柱状图中最大的矩形面积。
+4.  **全局最大值**：在遍历每一行的过程中，不断更新全局最大面积。
+
+**Python 代码实现**
+
+```python
+class Solution:
+    def maximalRectangle(self, matrix: List[List[str]]) -> int:
+        if not matrix or not matrix[0]:
+            return 0
+        
+        rows = len(matrix)
+        cols = len(matrix[0])
+        heights = [0] * cols
+        max_area = 0
+        
+        for i in range(rows):
+            for j in range(cols):
+                # 更新当前行各列的高度
+                if matrix[i][j] == '1':
+                    heights[j] += 1
+                else:
+                    heights[j] = 0
+            
+            # 计算以当前行为底的最大矩形面积 (LeetCode 84 题逻辑)
+            max_area = max(max_area, self.largestRectangleArea(heights))
+            
+        return max_area
+
+    def largestRectangleArea(self, heights: List[int]) -> int:
+        """
+        使用单调栈计算柱状图中最大的矩形面积
+        """
+        # 在左右两端加哨兵节点，简化边界处理
+        h = [0] + heights + [0]
+        stack = []
+        res = 0
+        
+        for i in range(len(h)):
+            # 如果当前高度小于栈顶高度，说明找到了栈顶高度的右边界
+            while stack and h[i] < h[stack[-1]]:
+                cur_height = h[stack.pop()]
+                # 栈顶被弹出后，现在的栈顶就是左边界
+                width = i - stack[-1] - 1
+                res = max(res, cur_height * width)
+            stack.append(i)
+            
+        return res
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(rows \times cols)$。
+    *   我们遍历了矩阵的每一行（$rows$ 次）。
+    *   在每一行中，更新高度需要 $O(cols)$，计算单调栈需要 $O(cols)$。
+    *   总时间为 $O(rows \times cols)$。
+*   **空间复杂度**：$O(cols)$。
+    *   需要一个 `heights` 数组存储每一列的高度，以及一个单调栈。它们的长度都是列数 $cols$。
+
+
 
 这是“**最大矩形 (Maximal Rectangle)**”问题，核心思路是：**将每一行当作“直方图底部”**，用单调栈方法（largest rectangle in histogram）求解。 每行都更新“柱状高度”，再用栈求最大矩形面积。
 
