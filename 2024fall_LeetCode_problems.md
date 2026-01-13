@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-01-12 14:32 GMT+8*
+*Updated 2026-01-13 16:18 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10964,7 +10964,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -30226,6 +30226,119 @@ if __name__ == "__main__":
     print(sol.assignElements([2, 3, 5, 7], [5, 3, 3]))  # [-1, 1, 0, -1]
 
 ```
+
+
+
+## M3453.分割正方形 I
+
+binary search, https://leetcode.cn/problems/separate-squares-i/
+
+给你一个二维整数数组 `squares` ，其中 `squares[i] = [xi, yi, li]` 表示一个与 x 轴平行的正方形的左下角坐标和正方形的边长。
+
+找到一个**最小的** y 坐标，它对应一条水平线，该线需要满足它以上正方形的总面积 **等于** 该线以下正方形的总面积。
+
+答案如果与实际答案的误差在 `10-5` 以内，将视为正确答案。
+
+**注意**：正方形 **可能会** 重叠。重叠区域应该被 **多次计数** 。
+
+ 
+
+**示例 1：**
+
+**输入：** squares = [[0,0,1],[2,2,1]]
+
+**输出：** 1.00000
+
+**解释：**
+
+![img](https://pic.leetcode.cn/1739609465-UaFzhk-4062example1drawio.png)
+
+任何在 `y = 1` 和 `y = 2` 之间的水平线都会有 1 平方单位的面积在其上方，1 平方单位的面积在其下方。最小的 y 坐标是 1。
+
+**示例 2：**
+
+**输入：** squares = [[0,0,2],[1,1,1]]
+
+**输出：** 1.16667
+
+**解释：**
+
+![img](https://pic.leetcode.cn/1739609527-TWqefZ-4062example2drawio.png)
+
+面积如下：
+
+- 线下的面积：`7/6 * 2 (红色) + 1/6 (蓝色) = 15/6 = 2.5`。
+- 线上的面积：`5/6 * 2 (红色) + 5/6 (蓝色) = 15/6 = 2.5`。
+
+由于线以上和线以下的面积相等，输出为 `7/6 = 1.16667`。
+
+ 
+
+**提示：**
+
+- `1 <= squares.length <= 5 * 10^4`
+- `squares[i] = [xi, yi, li]`
+- `squares[i].length == 3`
+- `0 <= xi, yi <= 10^9`
+- `1 <= li <= 10^9`
+- 所有正方形的总面积不超过 `10^12`。
+
+
+
+浮点数二分查找。
+
+> - 代码：while left < right 和 left = mid + 1。是**整数二分**的写法。在处理要求精度为 $10^{−5}$ 的题目时，+ 1 是一个巨大的步长。
+> - **正确逻辑**：浮点数二分不需要 + 1，而是直接 left = mid 或 right = mid。通常为了保证精度，会直接固定循环次数（如 100 次）。
+> - **精度保证**：100 次迭代对于最高 `2×10^9` 的范围来说，精度可以达到 $\frac{2×10^9}{2^{100}}$，这比 $10^{−5}$ 小得多。
+
+**边最高的正方形，其顶边不一定是最高的**。遍历时候，找到所有正方形中最高的顶边（即 y + l 的最大值）作为 right。
+
+```python
+from typing import List
+
+class Solution:
+    def separateSquares(self, squares: List[List[int]]) -> float:
+        # 1. 排序（虽然不是必须的，但可以让 check 函数更快跳出）
+        squares.sort(key=lambda x: x[1])
+        
+        # 2. 正确计算总面积和搜索范围的右边界
+        total_area = 0
+        max_y = 0
+        for x, y, l in squares:
+            total_area += l * l # 面积是 l 的平方
+            if y + l > max_y:
+                max_y = y + l
+        
+        target = total_area / 2
+
+        def check(mid):
+            current_area_below = 0
+            for x, y, l in squares:
+                if mid <= y:
+                    break # 排序后的优化：如果当前正方形底边已高于 mid，后面的一定也高于
+                elif mid >= y + l:
+                    current_area_below += l * l # 全在下面，加全额面积
+                else:
+                    current_area_below += (mid - y) * l # 被切开，加部分面积
+            return current_area_below >= target
+
+        # 3. 浮点数二分逻辑
+        left = squares[0][1] # 最小的 y
+        right = max_y        # 最大的 y + l
+        
+        # 循环 100 次可以提供极高的精度 (远远超过 10^-5)
+        for _ in range(100):
+            mid = (left + right) / 2
+            if check(mid):
+                # 如果面积够了，尝试减小 mid 看看有没有更小的满足条件的 y
+                right = mid
+            else:
+                left = mid
+
+        return right # 在这种写法中，right 和 left 最终会收敛到同一个值
+```
+
+
 
 
 
