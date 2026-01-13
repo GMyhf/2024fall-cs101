@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-01-11 13:23 GMT+8*
+*Updated 2026-01-14 01:21 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -11375,6 +11375,99 @@ if __name__ == '__main__':
 
 
 
+## T3806.增加操作后最大按位与的结果
+
+greedy, https://leetcode.cn/problems/maximum-bitwise-and-after-increment-operations/
+
+给你一个整数数组 `nums` 和两个整数 `k` 与 `m`。
+
+你 **最多** 可以执行 `k` 次操作。在每次操作中，你可以选择任意下标 `i` 并将 `nums[i]` **增加** 1。
+
+返回在执行最多 `k` 次操作后，任意大小为 `m` 的 **子集** 的 **按位与** 结果的 **最大** 可能值。
+
+数组的 **子集** 是指从数组中选择的一组元素。
+
+ 
+
+**示例 1：**
+
+**输入：** nums = [3,1,2], k = 8, m = 2
+
+**输出：** 6
+
+**解释：**
+
+- 我们需要一个大小为 `m = 2` 的子集。选择下标 `[0, 2]`。
+- 使用 3 次操作将 `nums[0] = 3` 增加到 6，并使用 4 次操作将 `nums[2] = 2` 增加到 6。
+- 总共使用的操作次数为 7，不大于 `k = 8`。
+- 这两个选定的值变为 `[6, 6]`，它们的按位与结果是 `6`，这是可能的最大值。
+
+**示例 2：**
+
+**输入：** nums = [1,2,8,4], k = 7, m = 3
+
+**输出：** 4
+
+**解释：**
+
+- 我们需要一个大小为 `m = 3` 的子集。选择下标 `[0, 1, 3]`。
+- 使用 3 次操作将 `nums[0] = 1` 增加到 4，使用 2 次操作将 `nums[1] = 2` 增加到 4，并保持 `nums[3] = 4` 不变。
+- 总共使用的操作次数为 5，不大于 `k = 7`。
+- 这三个选定的值变为 `[4, 4, 4]`，它们的按位与结果是 4，这是可能的最大值。
+
+**示例 3：**
+
+**输入：** nums = [1,1], k = 3, m = 2
+
+**输出：** 2
+
+**解释：**
+
+- 我们需要一个大小为 `m = 2` 的子集。选择下标 `[0, 1]`。
+- 将两个值分别从 1 增加到 2，各使用 1 次操作。
+- 总共使用的操作次数为 2，不大于 `k = 3`。
+- 这两个选定的值变为 `[2, 2]`，它们的按位与结果是 2，这是可能的最大值。
+
+ 
+
+**提示：**
+
+- `1 <= n == nums.length <= 5 * 10^4`
+- `1 <= nums[i] <= 10^9`
+- `1 <= k <= 10^9`
+- `1 <= m <= n`
+
+
+
+灵茶山艾府的视频讲解挺清楚，针对这个题目 3806. 增加操作后最大按位与的结果。位操作，试填法。
+
+```python
+class Solution:
+    def maximumAND(self, nums: List[int], k: int, m: int) -> int:
+        ops = [0] * len(nums)  # 每个数的操作次数
+        ans = 0
+        max_width = (max(nums) + k // m).bit_length()
+        for bit in range(max_width - 1, -1, -1):
+            target = ans | (1 << bit)  # 注意 target 要带着 ans 已经填好的 1
+            for i, x in enumerate(nums):
+                j = (target & ~x).bit_length()
+                # j-1 是从高到低第一个 target 是 1 且 x 是 0 的比特位
+                # target = 10110
+                #      x = 11010
+                #            ^
+                #           j-1
+                # x 二进制中的高于 j-1 的位不变，其余位增大到和 target 一样
+                # 上面的例子要把 010 变成 110
+                mask = (1 << j) - 1
+                ops[i] = (target & mask) - (x & mask)
+
+            # 贪心，取前 m 小的操作次数
+            ops.sort()
+            if sum(ops[:m]) <= k:
+                ans = target  # 答案的 bit 位可以填 1
+        return ans
+```
+
 
 
 
@@ -16906,9 +16999,9 @@ if __name__ == "__main__":
 
 
 
-### Q3.分割正方形II
+### T3454.分割正方形II
 
-https://leetcode.cn/contest/biweekly-contest-150/problems/separate-squares-ii/
+线段树, 二分查找, 扫描线, https://leetcode.cn/contest/biweekly-contest-150/problems/separate-squares-ii/
 
 
 
