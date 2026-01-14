@@ -10590,6 +10590,392 @@ class Solution:
 
 
 
+### T3454.分割正方形II
+
+线段树, 二分查找, 扫描线, https://leetcode.cn/contest/biweekly-contest-150/problems/separate-squares-ii/
+
+
+
+给你一个二维整数数组 `squares` ，其中 `squares[i] = [xi, yi, li]` 表示一个与 x 轴平行的正方形的左下角坐标和正方形的边长。
+
+找到一个**最小的** y 坐标，它对应一条水平线，该线需要满足它以上正方形的总面积 **等于** 该线以下正方形的总面积。
+
+答案如果与实际答案的误差在 `10-5` 以内，将视为正确答案。
+
+**注意**：正方形 **可能会** 重叠。重叠区域只 **统计一次** 。
+
+ 
+
+**示例 1：**
+
+**输入：** squares = [[0,0,1],[2,2,1]]
+
+**输出：** 1.00000
+
+**解释：**
+
+![img](https://pic.leetcode.cn/1739609602-zhNmeC-4065example1drawio.png)
+
+任何在 `y = 1` 和 `y = 2` 之间的水平线都会有 1 平方单位的面积在其上方，1 平方单位的面积在其下方。最小的 y 坐标是 1。
+
+**示例 2：**
+
+**输入：** squares = [[0,0,2],[1,1,1]]
+
+**输出：** 1
+
+**解释：**
+
+![img](https://pic.leetcode.cn/1739609605-ezeVgk-4065example2drawio.png)
+
+由于蓝色正方形和红色正方形有重叠区域且重叠区域只统计一次。所以直线 `y = 1` 将正方形分割成两部分且面积相等。
+
+ 
+
+**提示：**
+
+- `1 <= squares.length <= 5 * 10^4`
+- `squares[i] = [xi, yi, li]`
+- `squares[i].length == 3`
+- `0 <= xi, yi <= 10^9`
+- `1 <= li <= 10^9`
+
+
+
+这个问题属于经典的**计算几何**问题，核心在于求解**矩形面积并**（Union of Rectangles）以及如何找到平分面积的水平线。
+
+**解题思路**
+
+1.  **扫描线算法 (Sweep Line)**：
+    由于正方形可能重叠，且重叠部分只计算一次，我们需要计算的是所有正方形并集的总面积。经典的解决方法是使用扫描线配合线段树。
+    *   将每个正方形的左右边界 $x$ 和 $x+l$ 离散化，作为线段树的区间节点。
+    *   将每个正方形的上下边界 $y$ 和 $y+l$ 作为事件点，从低到高排序。
+
+2.  **线段树 (Segment Tree)**：
+    线段树维护的是在当前 $y$ 轴高度下，$x$ 轴上被正方形覆盖的总长度（Union Length）。
+    *   线段树节点存储 `count`：当前区间被完全覆盖的次数。
+    *   线段树节点存储 `length`：当前区间内被覆盖的实际几何长度。
+    *   当扫描线从 $y_i$ 移动到 $y_{i+1}$ 时，这段高度内的面积 = 线段树根节点的 `length` $\times (y_{i+1} - y_i)$。
+
+3.  **计算平分线**：
+    *   **第一步**：通过一次完整的扫描，计算出总面积 $S_{total}$。
+    *   **第二步**：我们要找的是一个 $y$，使得其下方的面积恰好为 $S_{total} / 2$。
+    *   **第三步**：再次遍历扫描线产生的各个“高度层”（slices）。累加每一层的面积，直到某一层的累加面积将超过 $S_{total} / 2$。
+    *   **第四步**：在该层内部，面积随 $y$ 线性增长。假设当前层起始高度为 $y_{start}$，宽度为 $W$，剩余所需面积为 $S_{rem}$，则答案 $y = y_{start} + \frac{S_{rem}}{W}$。
+
+**代码核心逻辑**
+
+*   **离散化**：对所有的 $x$ 坐标排序去重，构建线段树。
+*   **迭代版线段树**：在 Python 中，递归开销很大。使用数组实现的迭代版线段树可以显著提升性能，应对 $5 \times 10^4$ 的数据规模。
+*   **精度处理**：题目要求误差在 $10^{-5}$ 以内。我们在计算过程中尽量使用整数（例如总面积乘以2避免浮点数），最后一步再计算除法。
+
+**Python 代码实现**
+
+```python
+from typing import List
+
+class SegmentTree:
+    """线段树用于维护区间覆盖的并集长度"""
+    def __init__(self, xs):
+        self.n = len(xs) - 1
+        # size 是线段树叶子节点的数量（2的幂）
+        self.size = 1 << (self.n - 1).bit_length()
+        self.xs = xs
+        self.count = [0] * (2 * self.size)    # 记录区间被覆盖次数
+        self.length = [0.0] * (2 * self.size) # 记录区间被覆盖的长度
+        self.unit = [0.0] * (2 * self.size)   # 记录区间本身的几何宽度
+        
+        for i in range(self.n):
+            self.unit[self.size + i] = xs[i+1] - xs[i]
+        for i in range(self.size - 1, 0, -1):
+            self.unit[i] = self.unit[2 * i] + self.unit[2 * i + 1]
+
+    def update(self, l, r, val):
+        """标准区间更新（这里利用了扫描线成对出现的特性，不需要复杂的懒标记）"""
+        l += self.size
+        r += self.size
+        l0, r0 = l, r
+        while l <= r:
+            if l % 2 == 1:
+                self.count[l] += val
+                self._push_up(l)
+                l += 1
+            if r % 2 == 0:
+                self.count[r] += val
+                self._push_up(r)
+                r -= 1
+            l //= 2
+            r //= 2
+        
+        # 向上更新受影响的祖先节点
+        l0 //= 2
+        r0 //= 2
+        while l0 > 0:
+            self._push_up(l0)
+            if r0 > l0:
+                self._push_up(r0)
+            l0 //= 2
+            r0 //= 2
+
+    def _push_up(self, i):
+        if self.count[i] > 0:
+            # 如果该节点被完全覆盖，长度就是该节点的总宽度
+            self.length[i] = self.unit[i]
+        else:
+            # 否则长度由左右子节点求和得出
+            if i < self.size:
+                self.length[i] = self.length[2 * i] + self.length[2 * i + 1]
+            else:
+                self.length[i] = 0
+
+class Solution:
+    def separateSquares(self, squares: List[List[int]]) -> float:
+        x_coords = set()
+        events = []
+        for x, y, l in squares:
+            x_coords.add(x)
+            x_coords.add(x + l)
+            events.append((y, 1, x, x + l))     # 下边入场
+            events.append((y + l, -1, x, x + l)) # 上边离场
+        
+        # 1. X 轴坐标离散化
+        sorted_x = sorted(list(x_coords))
+        x_map = {val: i for i, val in enumerate(sorted_x)}
+        
+        # 2. 扫描线计算每一层 y 的覆盖宽度
+        events.sort()
+        st = SegmentTree(sorted_x)
+        
+        slices = [] # 存储 (y_low, y_high, width)
+        total_area = 0
+        last_y = events[0][0]
+        
+        i = 0
+        while i < len(events):
+            curr_y = events[i][0]
+            # 计算当前高度层与上一层之间的面积并
+            if curr_y > last_y:
+                width = st.length[1] # 根节点的长度即为当前 X 轴总覆盖长度
+                if width > 0:
+                    area = width * (curr_y - last_y)
+                    total_area += area
+                    slices.append((last_y, curr_y, width))
+                last_y = curr_y
+            
+            # 处理当前高度的所有事件
+            while i < len(events) and events[i][0] == curr_y:
+                _, type, x1, x2 = events[i]
+                st.update(x_map[x1], x_map[x2] - 1, type)
+                i += 1
+        
+        # 3. 寻找分割线 y
+        half_area = total_area / 2.0
+        accumulated_area = 0
+        for y_start, y_end, w in slices:
+            slice_area = w * (y_end - y_start)
+            if accumulated_area + slice_area >= half_area - 1e-11:
+                # 答案就在这个层级之间
+                needed = half_area - accumulated_area
+                return y_start + needed / w
+            accumulated_area += slice_area
+            
+        return float(slices[-1][1])
+```
+
+**复杂度分析**
+
+1.  **时间复杂度**：
+    *   坐标离散化：$O(N \log N)$，其中 $N$ 是正方形数量。
+    *   排序事件：$O(N \log N)$。
+    *   扫描线：共有 $2N$ 个事件，每个事件在线段树中操作时间为 $O(\log N)$，总计 $O(N \log N)$。
+    *   总体复杂度：$O(N \log N)$。
+
+2.  **空间复杂度**：
+    *   线段树和事件列表均需 $O(N)$ 的空间。
+
+**关键点提示**
+
+*   **最小的 y 坐标**：如果存在一个区间 $[y_1, y_2]$ 使得该区间内任何水平线都能平分面积（即该区间内没有任何正方形），题目要求输出最小的 $y$，即 $y_1$。在代码逻辑中，由于只有 `width > 0` 的层才会增加面积，如果 `half_area` 刚好在 `width` 变为 0 之前达到，返回的就是最小的 $y$。
+*   **重复计算**：扫描线 + 线段树是处理“面积并（Union Area）”的标准做法，能完美处理重叠部分只算一次的要求。
+
+
+
+
+
+下面给出一种思路：我们希望对所有正方形求“并集面积”，并设
+
+$$
+f(c)=\text{并集中} \{(x,y):y\le c\} \text{ 的面积}
+$$
+
+显然，当 \(c\) 从最小的 \(y\) 开始不断增大时，\(f(c)\) 单调不减，而且只在正方形边界（也就是所有 \(y_i\) 和 \(y_i+l_i\)）处发生变化。设所有正方形的并集总面积为 \(A\)（注意重叠部分只算一次），我们要求一个最小的 \(c\) 使得
+$$
+f(c)=\frac{A}{2}\,.
+$$
+
+一个常见做法是：先把每个正方形“截取”到 \(y\le c\) 后得到矩形（若 \(c\ge y_i+l_i\) 则取整个正方形，否则取 \([x_i,x_i+l_i]\times [y_i,c]\)），然后对所有“矩形”计算它们的并集面积。直接每次都算并集面积效率不高，我们可以利用扫描线算法沿着 \(y\) 方向求出 \(f(c)\) 的“分段函数”：  
+
+- 横向的“贡献”由各个正方形在 \(x\) 方向投影得到区间；  
+- 固定 \(y\) 时，当前“激活”的正方形给出若干区间的并集，其长度 \(L(y)\) 即为这一行在 \(x\) 方向的总覆盖长度；  
+- 那么 \(f(c)=\int_{y=y_{\min}}^{c}L(y)\,dy\)，而 \(L(y)\) 在每个区间（由正方形的下边界与上边界构成）内保持不变。
+
+为此，我们构造“事件”：对于每个正方形 \([x,y,l]\) ，在 \(y=y\) 时将区间 \([x,x+l]\) 加入，在 \(y=y+l\) 时移除。用“线段树”维护当前所有活动区间在 \(x\) 轴上的并集长度。注意，由于 \(x\) 坐标范围可能很大，我们需要先将所有的 \(x\) 与 \(x+l\) 做离散化。
+
+扫描过程中：
+
+1. 令 \(prev\_y\) 为当前扫描起点，累计面积 \(area=0\)；
+2. 对于每个不同的事件 \(y\) 值（记为 \(cur\_y\)），当前的并集横向长度为 \(L\)（由线段树维护），则在区间 \([prev\_y,cur\_y]\) 上面积增加 \(L\,(cur\_y-prev\_y)\)；
+3. 同时记录下每一“段”信息 \((y_{\rm start},y_{\rm end},L, \text{area\_at\_}y_{\rm start})\)；
+4. 更新线段树（处理所有 \(y=cur\_y\) 的事件），令 \(prev\_y=cur\_y\)。
+
+最后设总面积 \(A\)，目标 \(target=A/2\)。由于在每个区间内 \(f(y)\) 关于 \(y\) 是线性的，我们只需找出落在某个区间上的 \(c\) 满足
+$$
+f(y_{\rm start})+L\,(c-y_{\rm start})=target\,,
+$$
+也就是
+$$
+c=y_{\rm start}+\frac{target-f(y_{\rm start})}{L}\,.
+$$
+若某区间内 \(L=0\)（说明该 \(y\) 段没有新增面积），则只有当 \(f(y_{\rm start})=target\) 时，答案就是 \(y_{\rm start}\)；否则继续往后找。
+
+下面给出完整的 Python 代码：
+
+```python
+from bisect import bisect_left
+from typing import List
+
+class Solution:
+    def separateSquares(self, squares: List[List[int]]) -> float:
+        """
+        squares[i] = [x, y, l] 表示一个正方形（左下角 (x,y)，边长 l），
+        其中重叠区域只统计一次。
+        返回一个最小的 y=c，使得正方形并集中 y<=c 的面积正好为总面积的一半，
+        误差在 1e-5 内。
+        """
+        events = []  # 每个事件： (y, type, x_start, x_end)
+        xs_set = set()
+        for x, y, l in squares:
+            xs_set.add(x)
+            xs_set.add(x + l)
+            events.append((y, 1, x, x + l))  # 在 y 处加入区间 [x, x+l]
+            events.append((y + l, -1, x, x + l))  # 在 y+l 处移除区间 [x, x+l]
+        xs = sorted(xs_set)
+        m = len(xs) - 1  # 分段数
+    
+        # 辅助函数：将坐标转换为离散化后下标
+        def get_index(val):
+            return bisect_left(xs, val)
+    
+        events.sort(key=lambda e: e[0])
+    
+        # 构造线段树，用于维护 x 轴上当前活动区间的并集长度
+        size = m * 4
+        cover = [0] * (size)
+        seg_length = [0] * (size)
+    
+        def update(idx, l, r, ql, qr, delta):
+            if ql >= r or qr <= l:
+                return
+            if ql <= l and r <= qr:
+                cover[idx] += delta
+            else:
+                mid = (l + r) // 2
+                update(idx * 2, l, mid, ql, qr, delta)
+                update(idx * 2 + 1, mid, r, ql, qr, delta)
+            if cover[idx] > 0:
+                seg_length[idx] = xs[r] - xs[l]
+            else:
+                if r - l == 1:
+                    seg_length[idx] = 0
+                else:
+                    seg_length[idx] = seg_length[idx * 2] + seg_length[idx * 2 + 1]
+    
+        # 扫描线：分段记录 f(y) = 累计面积，及区间 [y_start, y_end) 上横向长度 L
+        segments = []  # 每个元组：(y_start, y_end, L, area_at_y_start)
+        n_events = len(events)
+        i = 0
+        prev_y = events[0][0]
+        cum_area = 0.0  # 累计面积 f(y)
+        while i < n_events:
+            cur_y = events[i][0]
+            if cur_y != prev_y:
+                L = seg_length[1]  # 当前 x 轴并集总长度
+                segments.append((prev_y, cur_y, L, cum_area))
+                cum_area += L * (cur_y - prev_y)
+                prev_y = cur_y
+            # 同一 y 上可能有多个事件，一并处理
+            while i < n_events and events[i][0] == cur_y:
+                _, typ, x1, x2 = events[i]
+                l_idx = get_index(x1)
+                r_idx = get_index(x2)
+                update(1, 0, m, l_idx, r_idx, typ)
+                i += 1
+    
+        total_area = cum_area
+        target = total_area / 2.0
+    
+        # 在 segments 中寻找满足 f(y) = target 的最小 y
+        ans = None
+        for y_start, y_end, L, area_start in segments:
+            # 若该段上 f(y) 恒定
+            if abs(area_start - target) < 1e-12:
+                ans = y_start
+                break
+            if area_start < target <= area_start + L * (y_end - y_start):
+                if L == 0:
+                    # 区间内面积不增加，只有当 f(y)==target 时才成立
+                    if abs(area_start - target) < 1e-12:
+                        ans = y_start
+                        break
+                else:
+                    ans = y_start + (target - area_start) / L
+                    break
+        if ans is None:
+            ans = prev_y
+        return ans
+
+
+# ===== 测试样例 =====
+if __name__ == '__main__':
+    sol = Solution()
+    # 示例 1
+    squares1 = [[0, 0, 1], [2, 2, 1]]
+    res1 = sol.separateSquares(squares1)
+    print("{:.5f}".format(res1))  # 预期 1.00000
+
+    # 示例 2
+    # 注意：对于 squares = [[0,0,2],[1,1,1]]，
+    # 若重叠部分只算一次，则并集就是一个 [0,2]×[0,2] 的正方形，总面积 4，
+    # 分割线应当为 y = 1（即面积下部2，上部2）。
+    squares2 = [[0, 0, 2], [1, 1, 1]]
+    res2 = sol.separateSquares(squares2)
+    print("{:.5f}".format(res2))  # 预期 1.00000
+
+```
+
+说明
+
+1. **离散化与事件**  
+   每个正方形产生两类事件：在 $y=y_i$ 时“加入”区间 $[x_i,x_i+l_i]$，在 $y=y_i+l_i$ 时“移除”。同时离散化所有涉及的 \(x\) 坐标，构造线段树区间 \([x, x+l]\) 的离散下标。
+
+2. **线段树维护并集长度**  
+   线段树数组中，若某结点的覆盖计数大于 0，则该区间在 \(x\) 轴上已被完全覆盖（贡献长度为该区间真实长度）；否则递归从子结点求和。这样可以在 \(O(\log m)\) 内更新区间。
+
+3. **扫描线求“面积函数”**  
+   扫描过程中，每经过一段 \([prev_y, cur_y]\) ，当前 \(x\) 轴上的并集长度 \(L\) 保持不变，面积增加 \(L\,(cur_y-prev_y)\)。记录下每一段信息，最后得到 \(f(y)\) 的分段表示。
+
+4. **求解分割线 \(c\)**  
+   设总面积为 \(A\)，目标面积 $target=A/2$。在某段 $[y_{\rm start}, y_{\rm end}]$ 上，若 $f(y)$ 从 $area_{start}$ 增加到 $area_{start}+L\,(y_{\rm end}-y_{\rm start})$ 且目标在此区间内，则直接解线性方程得：
+   $
+   c=y_{\rm start}+\frac{target-area_{start}}{L}\,.
+   $
+
+这样就能得到“重叠部分只统计一次”的分割线，且若有多个满足要求的 \(c\) ，返回最小的一个。
+
+
+
+
+
 ## 3504.子字符串连接后的最长回文串II
 
 dp, greedy, https://leetcode.cn/problems/longest-palindrome-after-substring-concatenation-ii/
@@ -17132,226 +17518,6 @@ if __name__ == "__main__":
 ### T3454.分割正方形II
 
 线段树, 二分查找, 扫描线, https://leetcode.cn/contest/biweekly-contest-150/problems/separate-squares-ii/
-
-
-
-给你一个二维整数数组 `squares` ，其中 `squares[i] = [xi, yi, li]` 表示一个与 x 轴平行的正方形的左下角坐标和正方形的边长。
-
-找到一个**最小的** y 坐标，它对应一条水平线，该线需要满足它以上正方形的总面积 **等于** 该线以下正方形的总面积。
-
-答案如果与实际答案的误差在 `10-5` 以内，将视为正确答案。
-
-**注意**：正方形 **可能会** 重叠。重叠区域只 **统计一次** 。
-
- 
-
-**示例 1：**
-
-**输入：** squares = [[0,0,1],[2,2,1]]
-
-**输出：** 1.00000
-
-**解释：**
-
-![img](https://pic.leetcode.cn/1739609602-zhNmeC-4065example1drawio.png)
-
-任何在 `y = 1` 和 `y = 2` 之间的水平线都会有 1 平方单位的面积在其上方，1 平方单位的面积在其下方。最小的 y 坐标是 1。
-
-**示例 2：**
-
-**输入：** squares = [[0,0,2],[1,1,1]]
-
-**输出：** 1
-
-**解释：**
-
-![img](https://pic.leetcode.cn/1739609605-ezeVgk-4065example2drawio.png)
-
-由于蓝色正方形和红色正方形有重叠区域且重叠区域只统计一次。所以直线 `y = 1` 将正方形分割成两部分且面积相等。
-
- 
-
-**提示：**
-
-- `1 <= squares.length <= 5 * 10^4`
-- `squares[i] = [xi, yi, li]`
-- `squares[i].length == 3`
-- `0 <= xi, yi <= 10^9`
-- `1 <= li <= 10^9`
-
-
-
-下面给出一种思路：我们希望对所有正方形求“并集面积”，并设
-
-\[
-f(c)=\text{并集中} \{(x,y):y\le c\} \text{ 的面积}
-\]
-
-显然，当 \(c\) 从最小的 \(y\) 开始不断增大时，\(f(c)\) 单调不减，而且只在正方形边界（也就是所有 \(y_i\) 和 \(y_i+l_i\)）处发生变化。设所有正方形的并集总面积为 \(A\)（注意重叠部分只算一次），我们要求一个最小的 \(c\) 使得
-\[
-f(c)=\frac{A}{2}\,.
-\]
-
-一个常见做法是：先把每个正方形“截取”到 \(y\le c\) 后得到矩形（若 \(c\ge y_i+l_i\) 则取整个正方形，否则取 \([x_i,x_i+l_i]\times [y_i,c]\)），然后对所有“矩形”计算它们的并集面积。直接每次都算并集面积效率不高，我们可以利用扫描线算法沿着 \(y\) 方向求出 \(f(c)\) 的“分段函数”：  
-
-- 横向的“贡献”由各个正方形在 \(x\) 方向投影得到区间；  
-- 固定 \(y\) 时，当前“激活”的正方形给出若干区间的并集，其长度 \(L(y)\) 即为这一行在 \(x\) 方向的总覆盖长度；  
-- 那么 \(f(c)=\int_{y=y_{\min}}^{c}L(y)\,dy\)，而 \(L(y)\) 在每个区间（由正方形的下边界与上边界构成）内保持不变。
-
-为此，我们构造“事件”：对于每个正方形 \([x,y,l]\) ，在 \(y=y\) 时将区间 \([x,x+l]\) 加入，在 \(y=y+l\) 时移除。用“线段树”维护当前所有活动区间在 \(x\) 轴上的并集长度。注意，由于 \(x\) 坐标范围可能很大，我们需要先将所有的 \(x\) 与 \(x+l\) 做离散化。
-
-扫描过程中：
-
-1. 令 \(prev\_y\) 为当前扫描起点，累计面积 \(area=0\)；
-2. 对于每个不同的事件 \(y\) 值（记为 \(cur\_y\)），当前的并集横向长度为 \(L\)（由线段树维护），则在区间 \([prev\_y,cur\_y]\) 上面积增加 \(L\,(cur\_y-prev\_y)\)；
-3. 同时记录下每一“段”信息 \((y_{\rm start},y_{\rm end},L, \text{area\_at\_}y_{\rm start})\)；
-4. 更新线段树（处理所有 \(y=cur\_y\) 的事件），令 \(prev\_y=cur\_y\)。
-
-最后设总面积 \(A\)，目标 \(target=A/2\)。由于在每个区间内 \(f(y)\) 关于 \(y\) 是线性的，我们只需找出落在某个区间上的 \(c\) 满足
-\[
-f(y_{\rm start})+L\,(c-y_{\rm start})=target\,,
-\]
-也就是
-\[
-c=y_{\rm start}+\frac{target-f(y_{\rm start})}{L}\,.
-\]
-若某区间内 \(L=0\)（说明该 \(y\) 段没有新增面积），则只有当 \(f(y_{\rm start})=target\) 时，答案就是 \(y_{\rm start}\)；否则继续往后找。
-
-下面给出完整的 Python 代码：
-
-```python
-from bisect import bisect_left
-from typing import List
-
-class Solution:
-    def separateSquares(self, squares: List[List[int]]) -> float:
-        """
-        squares[i] = [x, y, l] 表示一个正方形（左下角 (x,y)，边长 l），
-        其中重叠区域只统计一次。
-        返回一个最小的 y=c，使得正方形并集中 y<=c 的面积正好为总面积的一半，
-        误差在 1e-5 内。
-        """
-        events = []  # 每个事件： (y, type, x_start, x_end)
-        xs_set = set()
-        for x, y, l in squares:
-            xs_set.add(x)
-            xs_set.add(x + l)
-            events.append((y, 1, x, x + l))  # 在 y 处加入区间 [x, x+l]
-            events.append((y + l, -1, x, x + l))  # 在 y+l 处移除区间 [x, x+l]
-        xs = sorted(xs_set)
-        m = len(xs) - 1  # 分段数
-    
-        # 辅助函数：将坐标转换为离散化后下标
-        def get_index(val):
-            return bisect_left(xs, val)
-    
-        events.sort(key=lambda e: e[0])
-    
-        # 构造线段树，用于维护 x 轴上当前活动区间的并集长度
-        size = m * 4
-        cover = [0] * (size)
-        seg_length = [0] * (size)
-    
-        def update(idx, l, r, ql, qr, delta):
-            if ql >= r or qr <= l:
-                return
-            if ql <= l and r <= qr:
-                cover[idx] += delta
-            else:
-                mid = (l + r) // 2
-                update(idx * 2, l, mid, ql, qr, delta)
-                update(idx * 2 + 1, mid, r, ql, qr, delta)
-            if cover[idx] > 0:
-                seg_length[idx] = xs[r] - xs[l]
-            else:
-                if r - l == 1:
-                    seg_length[idx] = 0
-                else:
-                    seg_length[idx] = seg_length[idx * 2] + seg_length[idx * 2 + 1]
-    
-        # 扫描线：分段记录 f(y) = 累计面积，及区间 [y_start, y_end) 上横向长度 L
-        segments = []  # 每个元组：(y_start, y_end, L, area_at_y_start)
-        n_events = len(events)
-        i = 0
-        prev_y = events[0][0]
-        cum_area = 0.0  # 累计面积 f(y)
-        while i < n_events:
-            cur_y = events[i][0]
-            if cur_y != prev_y:
-                L = seg_length[1]  # 当前 x 轴并集总长度
-                segments.append((prev_y, cur_y, L, cum_area))
-                cum_area += L * (cur_y - prev_y)
-                prev_y = cur_y
-            # 同一 y 上可能有多个事件，一并处理
-            while i < n_events and events[i][0] == cur_y:
-                _, typ, x1, x2 = events[i]
-                l_idx = get_index(x1)
-                r_idx = get_index(x2)
-                update(1, 0, m, l_idx, r_idx, typ)
-                i += 1
-    
-        total_area = cum_area
-        target = total_area / 2.0
-    
-        # 在 segments 中寻找满足 f(y) = target 的最小 y
-        ans = None
-        for y_start, y_end, L, area_start in segments:
-            # 若该段上 f(y) 恒定
-            if abs(area_start - target) < 1e-12:
-                ans = y_start
-                break
-            if area_start < target <= area_start + L * (y_end - y_start):
-                if L == 0:
-                    # 区间内面积不增加，只有当 f(y)==target 时才成立
-                    if abs(area_start - target) < 1e-12:
-                        ans = y_start
-                        break
-                else:
-                    ans = y_start + (target - area_start) / L
-                    break
-        if ans is None:
-            ans = prev_y
-        return ans
-
-
-# ===== 测试样例 =====
-if __name__ == '__main__':
-    sol = Solution()
-    # 示例 1
-    squares1 = [[0, 0, 1], [2, 2, 1]]
-    res1 = sol.separateSquares(squares1)
-    print("{:.5f}".format(res1))  # 预期 1.00000
-
-    # 示例 2
-    # 注意：对于 squares = [[0,0,2],[1,1,1]]，
-    # 若重叠部分只算一次，则并集就是一个 [0,2]×[0,2] 的正方形，总面积 4，
-    # 分割线应当为 y = 1（即面积下部2，上部2）。
-    squares2 = [[0, 0, 2], [1, 1, 1]]
-    res2 = sol.separateSquares(squares2)
-    print("{:.5f}".format(res2))  # 预期 1.00000
-
-```
-
-说明
-
-1. **离散化与事件**  
-   每个正方形产生两类事件：在 $y=y_i$ 时“加入”区间 $[x_i,x_i+l_i]$，在 $y=y_i+l_i$ 时“移除”。同时离散化所有涉及的 \(x\) 坐标，构造线段树区间 \([x, x+l]\) 的离散下标。
-
-2. **线段树维护并集长度**  
-   线段树数组中，若某结点的覆盖计数大于 0，则该区间在 \(x\) 轴上已被完全覆盖（贡献长度为该区间真实长度）；否则递归从子结点求和。这样可以在 \(O(\log m)\) 内更新区间。
-
-3. **扫描线求“面积函数”**  
-   扫描过程中，每经过一段 \([prev_y, cur_y]\) ，当前 \(x\) 轴上的并集长度 \(L\) 保持不变，面积增加 \(L\,(cur_y-prev_y)\)。记录下每一段信息，最后得到 \(f(y)\) 的分段表示。
-
-4. **求解分割线 \(c\)**  
-   设总面积为 \(A\)，目标面积 $target=A/2$。在某段 $[y_{\rm start}, y_{\rm end}]$ 上，若 $f(y)$ 从 $area_{start}$ 增加到 $area_{start}+L\,(y_{\rm end}-y_{\rm start})$ 且目标在此区间内，则直接解线性方程得：
-   $
-   c=y_{\rm start}+\frac{target-area_{start}}{L}\,.
-   $
-
-这样就能得到“重叠部分只统计一次”的分割线，且若有多个满足要求的 \(c\) ，返回最小的一个。
-
-
 
 
 
