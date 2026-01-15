@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-01-13 16:18 GMT+8*
+*Updated 2026-01-15 17:09 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10964,7 +10964,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -27686,6 +27686,131 @@ x + y + z = n
 - 减去 1 人超 `limit` 的方案：`3 * C(n - (limit+1) + 2, 2)`
 - 加回 2 人超 `limit` 的方案：`3 * C(n - 2*(limit+1) + 2, 2)`
 - 减去 3 人超 `limit` 的方案（通常是 0）
+
+
+
+## M2943.最大化网格图中正方形空洞的面积
+
+sorting, https://leetcode.cn/problems/maximize-area-of-square-hole-in-grid/
+
+给你两个整数 `n` 和 `m`，以及两个整数数组 `hBars` 和 `vBars`。网格由 `n + 2` 条水平线和 `m + 2`条竖直线组成，形成 1x1 的单元格。网格中的线条从 `1` 开始编号。
+
+你可以从 `hBars` 中 **删除** 一些水平线条，并从 `vBars` 中删除一些竖直线条。注意，其他线条是固定的，无法删除。
+
+返回一个整数表示移除一些线条（可以不移除任何线条）后，网格中 **正方形空洞的最大面积** 。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2023/11/05/screenshot-from-2023-11-05-22-40-25.png)
+
+**输入:** n = 2, m = 1, hBars = [2,3], vBars = [2]
+
+**输出:** 4
+
+**解释:**
+
+左侧图片展示了网格的初始状态。水平线是 `[1,2,3,4]`，竖直线是 `[1,2,3]`。
+
+构造最大正方形空洞的一种方法是移除水平线 2 和竖直线 2。
+
+**示例 2：**
+
+![img](https://assets.leetcode.com/uploads/2023/11/04/screenshot-from-2023-11-04-17-01-02.png)
+
+**输入:** n = 1, m = 1, hBars = [2], vBars = [2]
+
+**输出:** 4
+
+**解释:**
+
+移除水平线 2 和竖直线 2，可以得到最大正方形空洞。
+
+**示例 3：**
+
+![img](https://assets.leetcode.com/uploads/2024/03/12/unsaved-image-2.png)
+
+**输入:** n = 2, m = 3, hBars = [2,3], vBars = [2,4]
+
+**输出:** 4
+
+**解释:**
+
+构造最大正方形空洞的一种方法是移除水平线 3 和竖直线 4。
+
+ 
+
+**提示：**
+
+- `1 <= n <= 10^9`
+- `1 <= m <= 10^9`
+- `1 <= hBars.length <= 100`
+- `2 <= hBars[i] <= n + 1`
+- `1 <= vBars.length <= 100`
+- `2 <= vBars[i] <= m + 1`
+- `hBars` 中所有值互不相同。
+- `vBars` 中所有值互不相同。
+
+
+
+这个问题可以通过寻找 **连续可移除线条的最大长度** 来解决。
+
+**解题思路**
+
+1.  **理解“空洞”的形成**：
+    *   网格原本由 $1 \times 1$ 的小方格组成。
+    *   如果我们移除 $k$ 条**连续**的水平线（例如线 $i, i+1, \dots, i+k-1$），那么在垂直方向上，原本由这些线隔开的单元格就会连通，形成一个高度为 $k+1$ 的间隙。
+    *   同理，移除 $k$ 条**连续**的竖直线，会形成一个宽度为 $k+1$ 的间隙。
+
+2.  **正方形的约束**：
+    *   要形成一个边长为 $S$ 的正方形空洞，我们需要在水平方向上至少有一个长度为 $S$ 的间隙，且在垂直方向上至少有一个长度为 $S$ 的间隙。
+    *   因此，最大正方形的边长 $S = \min(\text{最大水平间隙}, \text{最大垂直间隙})$。
+
+3.  **算法步骤**：
+    *   分别对 `hBars` 和 `vBars` 进行排序。
+    *   在 `hBars` 中找出最长的连续整数序列。假设最长连续长度为 `maxH`，则最大的水平间隙为 `maxH + 1`。
+    *   在 `vBars` 中找出最长的连续整数序列。假设最长连续长度为 `maxV`，则最大的垂直间隙为 `maxV + 1`。
+    *   最大正方形边长 $S = \min(maxH + 1, maxV + 1)$。
+    *   返回 $S^2$。
+
+**Python 代码实现**
+
+```python
+class Solution:
+    def maximizeSquareHoleArea(self, n: int, m: int, hBars: List[int], vBars: List[int]) -> int:
+        def get_max_consecutive(bars):
+            # 1. 排序，以便寻找连续的数字
+            bars.sort()
+            max_len = 1
+            current_len = 1
+            
+            # 2. 遍历数组寻找最长连续序列
+            for i in range(1, len(bars)):
+                if bars[i] == bars[i-1] + 1:
+                    current_len += 1
+                else:
+                    current_len = 1
+                if current_len > max_len:
+                    max_len = current_len
+            
+            # 3. 移除 k 条连续线会产生 k + 1 的跨度
+            return max_len + 1
+
+        # 计算水平和垂直方向的最大跨度
+        max_h_gap = get_max_consecutive(hBars)
+        max_v_gap = get_max_consecutive(vBars)
+        
+        # 正方形的边长受限于较短的那一边
+        side = min(max_h_gap, max_v_gap)
+        
+        return side * side
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(H \log H + V \log V)$，其中 $H$ 是 `hBars` 的长度，$V$ 是 `vBars` 的长度。主要耗时在排序上（题目中 $H, V \le 100$，因此该算法极其高效）。
+*   **空间复杂度**：$O(1)$ 或 $O(H+V)$，取决于排序算法的具体实现（在 Python 中 `sort()` 通常需要 $O(N)$ 的辅助空间）。
 
 
 
