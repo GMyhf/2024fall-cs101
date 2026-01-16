@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-01-15 17:09 GMT+8*
+*Updated 2026-01-16 16:13 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10964,7 +10964,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -28089,12 +28089,125 @@ class Solution:
         return count
 ```
 
----
-
-⏱️ 复杂度分析
+**复杂度分析**
 
 - **时间复杂度**：O(n)，每个元素最多被访问两次（一次由 `right` 进入窗口，一次由 `left` 移出窗口）
 - **空间复杂度**：O(1)，仅使用几个变量保存状态
+
+
+
+## M2975.移除栅栏得到的正方形田地的最大面积
+
+https://leetcode.cn/problems/maximum-square-area-by-removing-fences-from-a-field/
+
+有一个大型的 `(m - 1) x (n - 1)` 矩形田地，其两个对角分别是 `(1, 1)` 和 `(m, n)` ，田地内部有一些水平栅栏和垂直栅栏，分别由数组 `hFences` 和 `vFences` 给出。
+
+水平栅栏为坐标 `(hFences[i], 1)` 到 `(hFences[i], n)`，垂直栅栏为坐标 `(1, vFences[i])` 到 `(m, vFences[i])` 。
+
+返回通过 **移除** 一些栅栏（**可能不移除**）所能形成的最大面积的 **正方形** 田地的面积，或者如果无法形成正方形田地则返回 `-1`。
+
+由于答案可能很大，所以请返回结果对 `109 + 7` **取余** 后的值。
+
+**注意：**田地外围两个水平栅栏（坐标 `(1, 1)` 到 `(1, n)` 和坐标 `(m, 1)` 到 `(m, n)` ）以及两个垂直栅栏（坐标 `(1, 1)` 到 `(m, 1)` 和坐标 `(1, n)` 到 `(m, n)` ）所包围。这些栅栏 **不能** 被移除。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2023/11/05/screenshot-from-2023-11-05-22-40-25.png)
+
+```
+输入：m = 4, n = 3, hFences = [2,3], vFences = [2]
+输出：4
+解释：移除位于 2 的水平栅栏和位于 2 的垂直栅栏将得到一个面积为 4 的正方形田地。
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2023/11/22/maxsquareareaexample1.png" alt="img" style="zoom:67%;" />
+
+```
+输入：m = 6, n = 7, hFences = [2], vFences = [4]
+输出：-1
+解释：可以证明无法通过移除栅栏形成正方形田地。
+```
+
+ 
+
+**提示：**
+
+- `3 <= m, n <= 10^9`
+- `1 <= hFences.length, vFences.length <= 600`
+- `1 < hFences[i] < m`
+- `1 < vFences[i] < n`
+- `hFences` 和 `vFences` 中的元素是唯一的。
+
+
+
+这道题的核心思路是寻找**水平栅栏间距**与**垂直栅栏间距**的**最大交集**。
+
+**解题思路**
+
+1.  **明确边界条件**：
+    田地的边界是由坐标 $1$ 和 $m$（水平方向），以及 $1$ 和 $n$（垂直方向）组成的。这些边界栅栏不能移除。因此，我们需要将 $1$ 和 $m$ 加入水平栅栏集合，将 $1$ 和 $n$ 加入垂直栅栏集合。
+
+2.  **计算所有可能的间距**：
+    *   对于水平方向，任选两个栅栏坐标 $h_i$ 和 $h_j$，它们之间的距离为 $|h_i - h_j|$。我们需要找出所有可能的水平间距并存入一个集合（Set）中，以便快速查询。
+    *   对于垂直方向，同样计算任两个栅栏坐标之间的距离 $|v_i - v_j|$。
+
+3.  **寻找最大正方形**：
+    正方形的特征是四条边相等。因此，如果一个长度 $L$ 同时存在于水平间距集合和垂直间距集合中，那么这个 $L$ 就可以构成一个正方形的边长。
+    我们遍历所有可能的垂直间距，检查它是否在水平间距集合中。如果是，则记录下最大的那个。
+
+4.  **复杂度分析**：
+    *   水平栅栏数量 $H \le 600$，垂直栅栏数量 $V \le 600$。
+    *   计算水平间距的时间复杂度为 $O(H^2)$，约为 $3.6 \times 10^5$。
+    *   计算垂直间距并比对的时间复杂度为 $O(V^2)$，同样约为 $3.6 \times 10^5$。
+    *   总时间复杂度为 $O(H^2 + V^2)$，在 $10^6$ 数量级内，Python 可以在规定时间内完成。
+
+**代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def maximizeSquareArea(self, m: int, n: int, hFences: List[int], vFences: List[int]) -> int:
+        MOD = 1_000_000_007
+        
+        # 1. 包含边界栅栏并排序
+        h = sorted(hFences + [1, m])
+        v = sorted(vFences + [1, n])
+        
+        # 2. 计算所有可能的水平间距，存入集合中提高查询效率
+        h_diffs = set()
+        h_len = len(h)
+        for i in range(h_len):
+            for j in range(i + 1, h_len):
+                h_diffs.add(h[j] - h[i])
+        
+        # 3. 计算所有可能的垂直间距，并寻找在水平间距中出现过的最大值
+        max_l = -1
+        v_len = len(v)
+        for i in range(v_len):
+            for j in range(i + 1, v_len):
+                diff = v[j] - v[i]
+                if diff in h_diffs:
+                    if diff > max_l:
+                        max_l = diff
+        
+        # 4. 如果找到了合法的边长，返回面积对 MOD 取余的结果；否则返回 -1
+        if max_l == -1:
+            return -1
+        
+        return (max_l * max_l) % MOD
+
+```
+
+**关键点总结**
+
+*   **为什么用 Set？** Set 的查询效率是 $O(1)$，如果使用 List 查询，总复杂度会变成 $O(H^2 \cdot V^2)$，这会导致超时。
+*   **排序的作用**：虽然不排序也能通过嵌套循环计算出所有差值，但排序后我们可以固定 `j > i` 从而只计算正数差值，使逻辑更清晰。
+*   **大数处理**：Python 自动支持大整数运算，因此我们可以先计算 `max_l * max_l` 再取余。注意 `max_l` 本身最高可达 $10^9$，面积最高可达 $10^{18}$。
 
 
 
