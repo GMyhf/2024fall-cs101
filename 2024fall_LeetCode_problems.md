@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-01-17 14:30 GMT+8*
+*Updated 2026-01-18 00:46 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10964,7 +10964,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -24332,6 +24332,151 @@ class Solution:
                 total += max_f - min_f
 
         return total
+```
+
+
+
+## M1895.最大的幻方
+
+prefix sum, https://leetcode.cn/problems/largest-magic-square/
+
+一个 `k x k` 的 **幻方** 指的是一个 `k x k` 填满整数的方格阵，且每一行、每一列以及两条对角线的和 **全部相等** 。幻方中的整数 **不需要互不相同** 。显然，每个 `1 x 1` 的方格都是一个幻方。
+
+给你一个 `m x n` 的整数矩阵 `grid` ，请你返回矩阵中 **最大幻方** 的 **尺寸** （即边长 `k`）。
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2021/05/29/magicsquare-grid.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：grid = [[7,1,4,5,6],[2,5,1,6,4],[1,5,4,3,2],[1,2,7,3,4]]
+输出：3
+解释：最大幻方尺寸为 3 。
+每一行，每一列以及两条对角线的和都等于 12 。
+- 每一行的和：5+1+6 = 5+4+3 = 2+7+3 = 12
+- 每一列的和：5+5+2 = 1+4+7 = 6+3+3 = 12
+- 对角线的和：5+4+3 = 6+4+2 = 12
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2021/05/29/magicsquare2-grid.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：grid = [[5,1,3,1],[9,3,3,1],[1,3,3,8]]
+输出：2
+```
+
+ 
+
+**提示：**
+
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 50`
+- `1 <= grid[i][j] <= 10^6`
+
+
+
+这是一道关于矩阵和前缀和（Prefix Sum）的题目。
+
+**解题思路**
+
+题目要求找到矩阵中最大的“幻方”子网格。幻方的定义是：每一行、每一列、以及两条对角线的和都相等。
+
+考虑到题目给出的数据范围非常小（$m, n \le 50$），我们可以使用暴力枚举配合前缀和优化的方法来解决。
+
+1.  **前缀和预处理**：
+    *   为了快速计算任意一行或一列的区间和，我们可以预处理出**行前缀和** (`row_pre`) 和 **列前缀和** (`col_pre`)。
+    *   `row_pre[i][j+1]` 表示第 `i` 行前 `j` 个元素的和。这样，第 `i` 行从列 `c` 到 `c+k-1` 的和可以通过 `row_pre[i][c+k] - row_pre[i][c]` 在 $O(1)$ 时间内得出。
+    *   同理，列前缀和用于快速计算列的区间和。
+
+2.  **枚举策略**：
+    *   我们希望找到**最大**的幻方，因此应该从可能的**最大尺寸**开始枚举。
+    *   设幻方边长为 $k$，最大可能的 $k$ 是 $\min(m, n)$，最小是 2（如果找不到任何大于1的幻方，返回1）。
+    *   外层循环枚举 $k$ 从 $\min(m, n)$ 递减到 2。
+    *   内层循环枚举所有可能的左上角坐标 $(r, c)$。
+
+3.  **验证幻方**：
+    对于确定的左上角 $(r, c)$ 和边长 $k$：
+    *   首先计算第一行的和作为 `target`（目标和）。
+    *   **检查行**：遍历该子网格的其余所有行，检查和是否等于 `target`。如果有任意一行不等于，则该子网格不是幻方。
+    *   **检查列**：遍历该子网格的所有列，检查和是否等于 `target`。
+    *   **检查对角线**：计算主对角线和副对角线的元素和，检查是否等于 `target`。注意：由于 $N$ 很小，对角线可以直接遍历求和，不需要额外的前缀和数组。
+    *   如果所有检查都通过，由于我们是从大到小枚举的 $k$，直接返回当前的 $k$ 即可。
+
+4.  **复杂度分析**：
+    *   时间复杂度：$O(M \cdot N \cdot \min(M, N)^2)$。最坏情况下约为 $50^4 = 6.25 \times 10^6$，在 Python 的处理能力范围内。
+    *   空间复杂度：$O(M \cdot N)$ 用于存储前缀和数组。
+
+**代码实现**
+
+```python
+class Solution:
+    def largestMagicSquare(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        
+        # 1. 预处理行前缀和
+        # row_pre[i][j] 表示第 i 行，grid[i][0] 到 grid[i][j-1] 的和
+        row_pre = [[0] * (n + 1) for _ in range(m)]
+        for i in range(m):
+            for j in range(n):
+                row_pre[i][j+1] = row_pre[i][j] + grid[i][j]
+        
+        # 2. 预处理列前缀和
+        # col_pre[i][j] 表示第 j 列，grid[0][j] 到 grid[i-1][j] 的和
+        col_pre = [[0] * n for _ in range(m + 1)]
+        for j in range(n):
+            for i in range(m):
+                col_pre[i+1][j] = col_pre[i][j] + grid[i][j]
+        
+        # 3. 从大到小枚举边长 k
+        for k in range(min(m, n), 1, -1):
+            # 枚举左上角坐标 (r, c)
+            # 行能到的最大位置是 m - k
+            # 列能到的最大位置是 n - k
+            for r in range(m - k + 1):
+                for c in range(n - k + 1):
+                    # 获取目标和（以第一行的和为基准）
+                    target = row_pre[r][c+k] - row_pre[r][c]
+                    
+                    is_magic = True
+                    
+                    # 检查每一行
+                    for i in range(r + 1, r + k):
+                        if (row_pre[i][c+k] - row_pre[i][c]) != target:
+                            is_magic = False
+                            break
+                    if not is_magic: continue
+                    
+                    # 检查每一列
+                    for j in range(c, c + k):
+                        if (col_pre[r+k][j] - col_pre[r][j]) != target:
+                            is_magic = False
+                            break
+                    if not is_magic: continue
+                    
+                    # 检查主对角线 (左上 -> 右下)
+                    d1 = 0
+                    for i in range(k):
+                        d1 += grid[r+i][c+i]
+                    if d1 != target:
+                        continue
+                        
+                    # 检查副对角线 (右上 -> 左下)
+                    d2 = 0
+                    for i in range(k):
+                        d2 += grid[r+i][c+k-1-i]
+                    if d2 != target:
+                        continue
+                    
+                    # 如果所有检查都通过，返回当前 k
+                    return k
+                    
+        # 如果没有找到大于 1 的幻方，返回 1
+        return 1
 ```
 
 
