@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-01-16 16:13 GMT+8*
+*Updated 2026-01-17 14:30 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10964,7 +10964,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -29172,6 +29172,140 @@ if __name__ == "__main__":
 
 - 每个节点最多被访问两次（奇数步和偶数步），因此总共有 `n * m * 2` 个状态。
 - 使用堆优化的 Dijkstra 算法，总时间复杂度为 `O(n * m * log(n * m))`，在 `n, m <= 750` 下是可以通过的。
+
+
+
+## M3047.求交集区域内的最大正方形面积
+
+https://leetcode.cn/problems/find-the-largest-area-of-square-inside-two-rectangles/
+
+在二维平面上存在 `n` 个矩形。给你两个下标从 **0** 开始的二维整数数组 `bottomLeft` 和 `topRight`，两个数组的大小都是 `n x 2` ，其中 `bottomLeft[i]` 和 `topRight[i]` 分别代表第 `i` 个矩形的 **左下角** 和 **右上角** 坐标。
+
+我们定义 **向右** 的方向为 x 轴正半轴（**x 坐标增加**），**向左** 的方向为 x 轴负半轴（**x 坐标减少**）。同样地，定义 **向上** 的方向为 y 轴正半轴（**y 坐标增加**）**，向下** 的方向为 y 轴负半轴（**y 坐标减少**）。
+
+你可以选择一个区域，该区域由两个矩形的 **交集** 形成。你需要找出能够放入该区域 **内** 的 **最大** 正方形面积，并选择最优解。
+
+返回能够放入交集区域的正方形的 **最大** 可能面积，如果矩形之间不存在任何交集区域，则返回 `0`。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2024/01/05/example12.png)
+
+```
+输入：bottomLeft = [[1,1],[2,2],[3,1]], topRight = [[3,3],[4,4],[6,6]]
+输出：1
+解释：边长为 1 的正方形可以放入矩形 0 和矩形 1 的交集区域，或矩形 1 和矩形 2 的交集区域。因此最大面积是边长 * 边长，即 1 * 1 = 1。
+可以证明，边长更大的正方形无法放入任何交集区域。
+```
+
+**示例 2：**
+
+![img](https://assets.leetcode.com/uploads/2024/01/04/rectanglesexample2.png)
+
+```
+输入：bottomLeft = [[1,1],[2,2],[1,2]], topRight = [[3,3],[4,4],[3,4]]
+输出：1
+解释：边长为 1 的正方形可以放入矩形 0 和矩形 1，矩形 1 和矩形 2，或所有三个矩形的交集区域。因此最大面积是边长 * 边长，即 1 * 1 = 1。
+可以证明，边长更大的正方形无法放入任何交集区域。
+请注意，区域可以由多于两个矩形的交集构成。
+```
+
+**示例 3：**
+
+![img](https://assets.leetcode.com/uploads/2024/01/04/rectanglesexample3.png)
+
+```
+输入：bottomLeft = [[1,1],[3,3],[3,1]], topRight = [[2,2],[4,4],[4,2]]
+输出：0
+解释：不存在相交的矩形，因此，返回 0 。
+```
+
+ 
+
+**提示：**
+
+- `n == bottomLeft.length == topRight.length`
+- `2 <= n <= 10^3`
+- `bottomLeft[i].length == topRight[i].length == 2`
+- `1 <= bottomLeft[i][0], bottomLeft[i][1] <= 10^7`
+- `1 <= topRight[i][0], topRight[i][1] <= 10^7`
+- `bottomLeft[i][0] < topRight[i][0]`
+- `bottomLeft[i][1] < topRight[i][1]`
+
+
+
+这是一道几何问题，主要考察如何计算两个矩形的交集，并在该交集中找到最大的正方形。
+
+**解题思路**
+
+1.  **矩形交集的计算**：
+    对于两个矩形，设第一个矩形的左下角为 $(ax_1, ay_1)$，右上角为 $(ax_2, ay_2)$；第二个矩形的左下角为 $(bx_1, by_1)$，右上角为 $(bx_2, by_2)$。
+    它们的交集也是一个矩形（或者不存在），其坐标范围如下：
+    *   交集左下角 $x$：$ix_1 = \max(ax_1, bx_1)$
+    *   交集左下角 $y$：$iy_1 = \max(ay_1, by_1)$
+    *   交集右上角 $x$：$ix_2 = \min(ax_2, bx_2)$
+    *   交集右上角 $y$：$iy_2 = \min(ay_2, by_2)$
+
+2.  **判断交集有效性**：
+    交集的宽度 $w = ix_2 - ix_1$，高度 $h = iy_2 - iy_1$。
+    只有当 $w > 0$ 且 $h > 0$ 时，这两个矩形才存在有效的重叠区域。
+
+3.  **计算最大正方形**：
+    在一个宽为 $w$、高为 $h$ 的矩形区域内，能放入的最大正方形的边长受限于矩形的短边。
+    因此，最大正方形边长 $side = \min(w, h)$。
+
+4.  **遍历所有对**：
+    题目要求我们找任意两个矩形交集中的最大正方形。由于 $n$ 的范围较小 ($2 \le n \le 1000$)，我们可以直接使用双重循环遍历所有可能的矩形对 $(i, j)$，计算它们的交集，并更新全局的最大边长。时间复杂度为 $O(n^2)$，在 $n=1000$ 时计算量约为 $5 \times 10^5$，完全符合时间要求。
+
+**代码实现**
+
+```python
+class Solution:
+    def largestSquareArea(self, bottomLeft: List[List[int]], topRight: List[List[int]]) -> int:
+        n = len(bottomLeft)
+        max_side = 0
+        
+        # 遍历所有矩形对 (i, j)
+        for i in range(n):
+            # 获取矩形 i 的坐标
+            ax1, ay1 = bottomLeft[i]
+            ax2, ay2 = topRight[i]
+            
+            for j in range(i + 1, n):
+                # 获取矩形 j 的坐标
+                bx1, by1 = bottomLeft[j]
+                bx2, by2 = topRight[j]
+                
+                # 计算交集的左下角 (取最大值)
+                inter_x1 = max(ax1, bx1)
+                inter_y1 = max(ay1, by1)
+                
+                # 计算交集的右上角 (取最小值)
+                inter_x2 = min(ax2, bx2)
+                inter_y2 = min(ay2, by2)
+                
+                # 计算交集的宽和高
+                width = inter_x2 - inter_x1
+                height = inter_y2 - inter_y1
+                
+                # 如果存在有效交集
+                if width > 0 and height > 0:
+                    # 正方形边长由宽和高中的较小值决定
+                    current_side = min(width, height)
+                    # 更新最大边长
+                    if current_side > max_side:
+                        max_side = current_side
+                        
+        # 返回最大面积 (边长的平方)
+        return max_side * max_side
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(n^2)$。我们需要遍历所有唯一的矩形对，对数约为 $\frac{n(n-1)}{2}$。
+*   **空间复杂度**：$O(1)$。除了存储输入外，我们只使用了常数个变量来存储坐标和最大值。
 
 
 
