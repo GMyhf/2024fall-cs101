@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-01-18 20:58 GMT+8*
+*Updated 2026-01-19 00:50 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -11025,7 +11025,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -23255,6 +23255,195 @@ class Solution:
   - 重组过程是线性的 `O(N)`。
 - **空间复杂度**: `O(N)`
   - 用于存储并查集父节点数组、rank数组以及分组的字符字典。
+
+
+
+## M1292.元素和小于等于阈值的正方形的最大边长
+
+prefix sum, https://leetcode.cn/problems/maximum-side-length-of-a-square-with-sum-less-than-or-equal-to-threshold/
+
+给你一个大小为 `m x n` 的矩阵 `mat` 和一个整数阈值 `threshold`。
+
+请你返回元素总和小于或等于阈值的正方形区域的最大边长；如果没有这样的正方形区域，则返回 **0** 。
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.cn/aliyun-lc-upload/uploads/2019/12/15/e1.png)
+
+```
+输入：mat = [[1,1,3,2,4,3,2],[1,1,3,2,4,3,2],[1,1,3,2,4,3,2]], threshold = 4
+输出：2
+解释：总和小于或等于 4 的正方形的最大边长为 2，如图所示。
+```
+
+**示例 2：**
+
+```
+输入：mat = [[2,2,2,2,2],[2,2,2,2,2],[2,2,2,2,2],[2,2,2,2,2],[2,2,2,2,2]], threshold = 1
+输出：0
+```
+
+ 
+
+**提示：**
+
+- `m == mat.length`
+- `n == mat[i].length`
+- `1 <= m, n <= 300`
+- `0 <= mat[i][j] <= 10^4`
+- `0 <= threshold <= 10^5` 
+
+
+
+这是一个经典的 **二维前缀和 (2D Prefix Sum)** 结合 **二分查找** 或 **滑动窗口优化** 的问题。
+
+**解题思路**
+
+1. **二维前缀和 (2D Prefix Sum)**：
+   由于需要频繁计算矩阵中某个正方形区域的元素和，如果每次暴力计算，时间复杂度过高。利用二维前缀和，我们可以在 $O(1)$ 的时间内求出任意子矩形的和。
+   定义 `P[i][j]` 为矩阵中以 `(0, 0)` 为左上角，`(i-1, j-1)` 为右下角的矩形区域和（为了处理边界方便，`P` 数组的大小通常设为 `(m+1) x (n+1)`）。
+
+   *   递推公式：`P[i][j] = P[i-1][j] + P[i][j-1] - P[i-1][j-1] + mat[i-1][j-1]`
+   *   求任意正方形（边长 `k`，右下角坐标 `(r, c)`）的和：
+       `Sum = P[r][c] - P[r-k][c] - P[r][c-k] + P[r-k][c-k]`
+
+2. **寻找最大边长**：
+   我们可以使用 **贪心/滑动优化** 的方法：
+
+   *   遍历矩阵的每一个点作为正方形的**右下角**。
+   *   记录当前找到的最大边长 `ans`。
+   *   对于当前点 `(i, j)`，我们尝试去检查是否存在一个边长为 `ans + 1` 的正方形满足条件（和 $\le$ threshold）。
+   *   如果满足，说明我们找到了更大的正方形，将 `ans` 加 1。
+   *   如果不满足，我们不需要减小 `ans`，因为题目要求的是**最大**边长，我们只关心能否让它变大。
+
+   这种方法的时间复杂度是 $O(m \times n)$，因为只需要遍历一次矩阵。
+   （也可以使用二分查找来寻找最大边长 $k$，时间复杂度为 $O(m \cdot n \cdot \log(\min(m, n)))$，也是可以通过的，但优化法代码更简洁）。
+
+**代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def maxSideLength(self, mat: List[List[int]], threshold: int) -> int:
+        m, n = len(mat), len(mat[0])
+        # 构造二维前缀和数组，多加一行一列以处理边界情况
+        # P[i][j] 表示从 mat[0][0] 到 mat[i-1][j-1] 的矩形元素和
+        P = [[0] * (n + 1) for _ in range(m + 1)]
+        
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                P[i][j] = P[i-1][j] + P[i][j-1] - P[i-1][j-1] + mat[i-1][j-1]
+        
+        ans = 0
+        # 遍历每一个点作为正方形的右下角
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                # 尝试检查边长为 ans + 1 的正方形
+                target_len = ans + 1
+                
+                # 只有当当前坐标足以容纳 target_len 长度的正方形时才检查
+                if i >= target_len and j >= target_len:
+                    # 计算以 (i, j) 为右下角，边长为 target_len 的正方形的和
+                    # 左上角对应的 P 索引为 (i - target_len, j - target_len)
+                    r1, c1 = i - target_len, j - target_len
+                    
+                    current_sum = P[i][j] - P[r1][j] - P[i][c1] + P[r1][c1]
+                    
+                    if current_sum <= threshold:
+                        ans += 1
+                        
+        return ans
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(m \times n)$。
+    *   构建前缀和数组需要 $O(m \times n)$。
+    *   遍历矩阵并更新 `ans` 也需要 $O(m \times n)$，内部计算和是 $O(1)$ 的。
+*   **空间复杂度**：$O(m \times n)$。
+    *   需要一个额外的二维数组 `P` 来存储前缀和。
+
+
+
+
+
+这是一个使用 **二分查找 (Binary Search)** 配合 **二维前缀和** 的解法。
+
+**思路解析**
+
+1.  **单调性**：
+    如果存在一个边长为 `k` 的正方形其元素和小于等于 `threshold`，那么是否有必要去检查边长为 `k-1` 的情况？通常我们只关心更大的边长。
+    反之，如果**所有**边长为 `k` 的正方形元素和都大于 `threshold`，那么边长为 `k+1` 的正方形（包含更多非负整数）肯定也大于 `threshold`。
+    这种**单调性**决定了我们可以对“边长”进行二分查找。
+
+2.  **算法流程**：
+    *   先构建二维前缀和数组 `P`，以便在 $O(1)$ 时间内计算任意子正方形的和。
+    *   设定二分查找的范围：`low = 0`，`high = min(m, n)`。
+    *   在二分过程中，对于中间值 `mid`，检查矩阵中是否存在任意一个边长为 `mid` 的正方形满足条件：
+        *   如果有，说明 `mid` 可行，尝试更大的边长（`low = mid + 1`，记录答案）。
+        *   如果没有，说明 `mid` 太大，必须缩小边长（`high = mid - 1`）。
+
+**代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def maxSideLength(self, mat: List[List[int]], threshold: int) -> int:
+        m, n = len(mat), len(mat[0])
+        
+        # 1. 构建二维前缀和数组 P
+        # P[i][j] 表示 mat[0..i-1][0..j-1] 矩形区域的和
+        P = [[0] * (n + 1) for _ in range(m + 1)]
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                P[i][j] = P[i-1][j] + P[i][j-1] - P[i-1][j-1] + mat[i-1][j-1]
+        
+        # 2. 定义 check 函数：判断是否存在边长为 length 的正方形满足条件
+        def check(length: int) -> bool:
+            if length == 0:
+                return True
+            
+            # 遍历所有可能的正方形右下角坐标 (i, j)
+            # i, j 是前缀和数组 P 的下标，对应 mat 中的下标 i-1, j-1
+            # 要形成边长为 length 的正方形，i 和 j 必须至少为 length
+            for i in range(length, m + 1):
+                for j in range(length, n + 1):
+                    # 利用前缀和计算正方形区域和
+                    # 右下角 (i, j)，左上角 (i-length, j-length)
+                    # 对应的矩阵区域：行 [i-length, i-1], 列 [j-length, j-1]
+                    current_sum = P[i][j] - P[i-length][j] - P[i][j-length] + P[i-length][j-length]
+                    
+                    if current_sum <= threshold:
+                        return True
+            return False
+
+        # 3. 二分查找最大边长
+        low, high = 0, min(m, n)
+        ans = 0
+        
+        while low <= high:
+            mid = (low + high) // 2
+            if check(mid):
+                ans = mid       # mid 可行，记录答案
+                low = mid + 1   # 尝试更大的边长
+            else:
+                high = mid - 1  # mid 不可行，缩小边长
+                
+        return ans
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(m \cdot n \cdot \log(\min(m, n)))$
+    *   前缀和预处理：$O(m \cdot n)$。
+    *   二分查找次数：$O(\log(\min(m, n)))$。
+    *   每次 `check` 函数内部遍历矩阵：$O(m \cdot n)$。
+    *   总和：$O(m \cdot n \cdot \log(\min(m, n)))$。由于 $m, n \le 300$，$\log(300) \approx 8.2$，这个复杂度也是可以通过的。
+*   **空间复杂度**：$O(m \cdot n)$
+    *   用于存储二维前缀和数组。
 
 
 
