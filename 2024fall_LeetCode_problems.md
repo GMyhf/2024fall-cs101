@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-01-20 12:12 GMT+8*
+*Updated 2026-01-22 13:04 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -7718,9 +7718,9 @@ if __name__ == '__main__':
 
 
 
-## 3507.移除最小数对使数组有序I
+## E3507.移除最小数对使数组有序 I
 
-https://leetcode.cn/problems/minimum-pair-removal-to-sort-array-i/
+implementation, linked list, https://leetcode.cn/problems/minimum-pair-removal-to-sort-array-i/
 
 给你一个数组 `nums`，你可以执行以下操作任意次数：
 
@@ -7765,59 +7765,107 @@ https://leetcode.cn/problems/minimum-pair-removal-to-sort-array-i/
 
 
 
+这个问题是一个**模拟（Simulation）**类型的题目。题目规定了每次操作必须选择数组中“和最小”的“相邻”元素对（若有多个，取最左边），并将它们替换为两数之和。由于操作规则是完全确定的（贪心且带唯一平局处理），且数组长度较小（$N \le 50$），我们可以直接根据规则进行模拟，直到数组满足非递减条件。
+
+**解题思路**
+
+1.  **终止条件**：首先检查数组是否已经是**非递减**的（即对所有 $i$，满足 `nums[i] <= nums[i+1]`）。如果是，则当前操作次数即为结果。
+2.  **寻找操作目标**：
+    *   遍历当前数组中所有相邻的数对 `(nums[i], nums[i+1])`。
+    *   计算它们的和，并记录最小值以及该最小值首次出现的位置（索引 $i$）。
+3.  **执行操作**：
+    *   将索引 $i$ 处的元素修改为这两个元素的和。
+    *   从数组中移除索引 $i+1$ 处的元素（数组长度减 1）。
+    *   操作次数加 1。
+4.  **循环**：重复上述过程，直到数组达到非递减状态。由于每次操作数组长度都会减少，且长度为 1 的数组天然是非递减的，因此程序一定会终止。
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(N^2)$。数组长度 $N \le 50$，最多进行 $N-1$ 次操作。每次操作中需要扫描数组寻找最小和（$O(N)$）以及判断是否有序（$O(N)$）。总复杂度约为 $50 \times 100$，远小于性能限制。
+*   **空间复杂度**：$O(N)$。主要用于存储数组的副本。
+
+Python **代码实现**
+
 ```python
 from typing import List
 
+class Solution:
+    def minimumPairRemoval(self, nums: List[int]) -> int:
+        # 将输入转为列表以便进行原地修改和弹出操作
+        arr = list(nums)
+        ans = 0
+        
+        while True:
+            # 1. 检查数组是否已经是非递减的
+            is_sorted = True
+            for i in range(len(arr) - 1):
+                if arr[i] > arr[i + 1]:
+                    is_sorted = False
+                    break
+            
+            # 如果有序，则返回当前累计的操作次数
+            if is_sorted:
+                return ans
+            
+            # 2. 寻找和最小的相邻元素对，若有多个则取最左侧的
+            # 初始化最小和为无穷大，记录起始索引 k
+            min_sum = float('inf')
+            k = -1
+            
+            for i in range(len(arr) - 1):
+                current_sum = arr[i] + arr[i + 1]
+                # 使用严格小于判断，保证在和相等时保留最左侧的索引
+                if current_sum < min_sum:
+                    min_sum = current_sum
+                    k = i
+            
+            # 3. 执行替换操作：用和替换这对元素
+            # 将第 k 个元素改为和，并删除第 k+1 个元素
+            arr[k] = min_sum
+            arr.pop(k + 1)
+            
+            # 增加操作次数
+            ans += 1
+```
+
+
+
+
+
+```python
+from typing import List
 
 class Solution:
     def minimumPairRemoval(self, nums: List[int]) -> int:
-        def is_sorted(arr: List[int]) -> bool:
-            """Check if the array is sorted in non-decreasing order."""
-            return all(arr[i] <= arr[i + 1] for i in range(len(arr) - 1))
-
-        cnt = 0  # Count of pair removals
-
-        while True:
-            n = len(nums)
-
-            # Early exit conditions
-            if n == 1 or (n == 2 and nums[0] <= nums[1]):
-                break
-            elif n == 2 and nums[0] > nums[1]:
-                cnt += 1
+        cnt = 0
+        arr = nums[:]  # 避免修改原数组（可选）
+        
+        while len(arr) > 1:
+            # 检查是否已经非递减（无逆序对）
+            is_non_decreasing = all(arr[i] <= arr[i + 1] for i in range(len(arr) - 1))
+            if is_non_decreasing:
                 break
 
-            # If the array is already sorted, no further operations are needed
-            if is_sorted(nums):
-                break
+            # 找到和最小的相邻对
+            min_sum = float('inf')
+            idx = 0
+            for i in range(len(arr) - 1):
+                s = arr[i] + arr[i + 1]
+                if s < min_sum:
+                    min_sum = s
+                    idx = i
 
-            # Find the pair with the smallest sum
-            min_pair_sum = float('inf')
-            min_pair_idx = (0, 1)
-
-            for i in range(n - 1):
-                current_sum = nums[i] + nums[i + 1]
-                if current_sum < min_pair_sum:
-                    min_pair_sum = current_sum
-                    min_pair_idx = (i, i + 1)
-
-            # Replace the pair with their sum
-            i, j = min_pair_idx
-            nums = nums[:i] + [min_pair_sum] + nums[j + 1:]
-
-            # Increment the operation count
+            # 合并 arr[idx] 和 arr[idx+1]
+            new_val = arr[idx] + arr[idx + 1]
+            arr = arr[:idx] + [new_val] + arr[idx + 2:]
             cnt += 1
 
         return cnt
 
 
 if __name__ == "__main__":
-    s = Solution()
-    print(s.minimumPairRemoval([5, 2, 3, 1]))  # Example test case
-    print(s.minimumPairRemoval([1, 2, 2]))
-    print(s.minimumPairRemoval([1, 1, 4, 4, 2, -4, -1]))
-    print(s.minimumPairRemoval([3, 6, 4, -6, 2, -4, 5, -7, -3, 6, 3, -4]))
-
+    sol = Solution()
+    print(sol.minimumPairRemoval([-2, 1, 2, -1, -1, -2, -2, -1, -1, 1, 1]))  # 示例
 ```
 
 
@@ -11209,7 +11257,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
