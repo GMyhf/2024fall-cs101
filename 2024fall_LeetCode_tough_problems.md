@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-01-14 23:45 GMT+8*
+*Updated 2026-01-23 18:01 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -11113,7 +11113,7 @@ class Solution:
 
 
 
-## 3510.移除最小数对使数组有序II
+## T3510.移除最小数对使数组有序II
 
 doubly-linked list + heap, https://leetcode.cn/problems/minimum-pair-removal-to-sort-array-ii/
 
@@ -11465,6 +11465,135 @@ if __name__ == "__main__":
    - 当前 `v[i] + v[R[i]] == sum`（防止值被更新）。  
 3. **局部更新逆序对**：维护一个 `bad` 计数，只在合并点的左右各三条边上做增减，不用每次全局扫描。  
 4. **时间复杂度**：每次合并都做 $O(\log n)$ 的堆操作，最多合并 n 次，整体 $O(n\log n)$。  
+
+
+
+**核心思路**
+
+对于数组长度达到 $10^5$ 的情况，原本 $O(N^2)$ 的暴力模拟会超时。我们需要使用**双向链表**配合**最小堆**（优先队列），将寻找“最小和数对”以及“更新数组”的操作优化到 $O(\log N)$。
+
+**1. 数据结构：**
+
+*   **双向链表（Node 类）**：维护当前的数组元素及其相邻关系。在执行合并操作时，链表可以实现 $O(1)$ 的节点删除。
+*   **最小堆（heapq）**：存储所有相邻对的 `(和, 左节点原始索引, eid标识, 左节点对象, 右节点对象)`。
+    *   **和**：第一关键字，确保每次取出最小。
+    *   **原始索引**：第二关键字，用于在和相等时实现“取最左边”的规则（因为节点的相对顺序在合并过程中保持不变）。
+*   **逆序计数器（v_count）**：记录当前链表中满足 `arr[i] > arr[i+1]` 的位置数量。当 `v_count == 0` 时，数组即为非递减。
+
+**2. 有效性校验：**
+
+由于合并操作会改变相邻关系，堆中会存在大量过时的无效对。我们通过 `L.next is R` 以及 `L.val + R.val == s` 来判断从堆中弹出的对是否依然有效。
+
+**3. 合并逻辑：**
+
+当合并 $L$ 和 $R$ 时，会影响三个相邻关系：$(L.prev, L)$, $(L, R)$, $(R, R.next)$。
+
+*   先从 `v_count` 中减去这三个位置的逆序贡献。
+*   将 `L.val` 更新为 `L.val + R.val`，并将 $R$ 从链表中删除。
+*   **关键点**：必须将 $R$ 的指针设为 `None`，防止后续堆校验将其误认为有效节点。
+*   重新计算 $(L.prev, L)$ 和 $(L, L.next)$ 的逆序贡献并加回 `v_count`。
+
+---
+
+**Python 代码实现**
+
+```python
+import heapq
+from typing import List
+
+class Node:
+    # 优化内存
+    __slots__ = ['val', 'idx', 'prev', 'next']
+    def __init__(self, val, idx):
+        self.val = val
+        self.idx = idx
+        self.prev = None
+        self.next = None
+
+class Solution:
+    def minimumPairRemoval(self, nums: List[int]) -> int:
+        # 用户要求的中间变量存储
+        wexthorbin = nums
+        
+        n = len(nums)
+        if n < 2:
+            return 0
+            
+        # 判定函数：判定相邻两个节点是否违反非递减原则
+        def is_bad(a, b):
+            if a is None or b is None:
+                return False
+            return a.val > b.val
+
+        # 1. 初始化双向链表
+        nodes = [Node(v, i) for i, v in enumerate(nums)]
+        v_count = 0
+        for i in range(n - 1):
+            nodes[i].next = nodes[i+1]
+            nodes[i+1].prev = nodes[i]
+            if nodes[i].val > nodes[i+1].val:
+                v_count += 1
+        
+        # 如果初始状态已是有序
+        if v_count == 0:
+            return 0
+            
+        # 2. 初始化最小堆 (和, 左侧原始索引, eid标识, 左节点, 右节点)
+        pq = []
+        eid = 0 # 用于处理在和与索引相同时对比 Node 对象可能引发的 TypeError
+        for i in range(n - 1):
+            heapq.heappush(pq, (nodes[i].val + nodes[i+1].val, i, eid, nodes[i], nodes[i+1]))
+            eid += 1
+            
+        ops = 0
+        while v_count > 0 and pq:
+            s, _, _, L, R = heapq.heappop(pq)
+            
+            # 3. 有效性校验：
+            # R 必须紧跟在 L 后面，且它们的当前和必须等于 s
+            if L.next is not R or (L.val + R.val) != s:
+                continue
+            
+            # 4. 合并操作：先扣除涉及 L, R 的旧违规计数
+            if is_bad(L.prev, L): v_count -= 1
+            if is_bad(L, R): v_count -= 1
+            if is_bad(R, R.next): v_count -= 1
+            
+            # 执行物理合并：将 R 合并到 L
+            L.val = s
+            L.next = R.next
+            if R.next:
+                R.next.prev = L
+            
+            # 彻底将 R 置为空，防止“幻影对”通过 L.next is R 校验
+            R.prev = None
+            R.next = None
+            
+            # 5. 重新计算受影响区域的新违规计数
+            if is_bad(L.prev, L): v_count += 1
+            if is_bad(L, L.next): v_count += 1
+            
+            ops += 1
+            if v_count == 0:
+                break
+                
+            # 6. 将受影响的新相邻对推入堆
+            if L.prev:
+                heapq.heappush(pq, (L.prev.val + L.val, L.prev.idx, eid, L.prev, L))
+                eid += 1
+            if L.next:
+                heapq.heappush(pq, (L.val + L.next.val, L.idx, eid, L, L.next))
+                eid += 1
+                
+        return ops
+```
+
+---
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(N \log N)$。每个元素最多作为 $R$ 移除一次，每次堆操作的时间复杂度为 $O(\log N)$。
+*   **空间复杂度**：$O(N)$。链表节点和堆中存储的元组数量均与 $N$ 成线性关系。
 
 
 
