@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-01-26 10:37 GMT+8*
+*Updated 2026-01-27 14:22 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -11449,7 +11449,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -34784,6 +34784,132 @@ class Solution:
 
         return False
 ```
+
+
+
+## M3650.边反转的最小路径总成本
+
+dijkstra, https://leetcode.cn/problems/minimum-cost-path-with-edge-reversals/
+
+给你一个包含 `n` 个节点的有向带权图，节点编号从 `0` 到 `n - 1`。同时给你一个数组 `edges`，其中 `edges[i] = [ui, vi, wi]` 表示一条从节点 `ui` 到节点 `vi` 的有向边，其成本为 `wi`。
+
+每个节点 `ui` 都有一个 **最多可使用一次** 的开关：当你到达 `ui` 且尚未使用其开关时，你可以对其一条入边 `vi` → `ui`激活开关，将该边反转为 `ui` → `vi` 并 **立即** 穿过它。
+
+反转仅对那一次移动有效，使用反转边的成本为 `2 * wi`。
+
+返回从节点 `0` 到达节点 `n - 1` 的 **最小** 总成本。如果无法到达，则返回 -1。
+
+**示例 1:**
+
+**输入:** n = 4, edges = [[0,1,3],[3,1,1],[2,3,4],[0,2,2]]
+
+**输出:** 5
+
+**解释:** 
+
+**![img](https://assets.leetcode.com/uploads/2025/05/07/e1drawio.png)**
+
+- 使用路径 `0 → 1` (成本 3)。
+- 在节点 1，将原始边 `3 → 1` 反转为 `1 → 3` 并穿过它，成本为 `2 * 1 = 2`。
+- 总成本为 `3 + 2 = 5`。
+
+**示例 2:**
+
+**输入:** n = 4, edges = [[0,2,1],[2,1,1],[1,3,1],[2,3,3]]
+
+**输出:** 3
+
+**解释:**
+
+- 不需要反转。走路径 `0 → 2` (成本 1)，然后 `2 → 1` (成本 1)，再然后 `1 → 3` (成本 1)。
+- 总成本为 `1 + 1 + 1 = 3`。
+
+ 
+
+**提示:**
+
+- `2 <= n <= 5 * 10^4`
+- `1 <= edges.length <= 10^5`
+- `edges[i] = [ui, vi, wi]`
+- `0 <= ui, vi <= n - 1`
+- `1 <= wi <= 1000`
+
+
+
+根据题目描述，我们需要在图中找到从节点 `0` 到节点 `n-1` 的最小路径成本。图中存在两种移动方式：
+
+1.  **正常移动**：沿着给定的有向边 $u \to v$ 行走，成本为 $w$。
+2.  **反转移动**：在到达节点 $u$ 时，如果该节点仍有可用的开关（每个节点最多使用一次），可以将一条入边 $v \to u$ 反转为 $u \to v$ 并立即通过，成本为 $2w$。
+
+**核心逻辑分析：**
+
+- **图的转化**：对于输入的每一条边 `[u, v, w]`：
+  - 它是一条从 $u$ 到 $v$ 的正常边，成本为 $w$。
+  - 它对于节点 $v$ 来说是一条“入边”。在节点 $v$ 处，我们可以使用 $v$ 的开关将其反转，从而从 $v$ 移动到 $u$，成本为 $2w$。
+- **开关限制**：虽然每个节点的开关只能使用一次，但在最短路径问题中，由于所有边权均为正数（$w \ge 1$），最优路径一定不会包含环路。这意味着在最优路径上，我们最多只会离开每个节点一次。因此，无论是通过正常边离开还是通过反转边离开，每个节点的开关自然也就最多只会被触发一次。
+- **算法选择**：由于边权为正，我们可以将问题建模为标准的单源最短路径问题，使用 **Dijkstra 算法** 求解。
+
+**算法步骤：**
+
+1.  建立邻接表：对于每条边 `[u, v, w]`，添加两条有向边：
+    - `u -> v`，权重为 `w`。
+    - `v -> u`，权重为 `2 * w`。
+2.  运行 Dijkstra 算法，计算从节点 `0` 到 `n-1` 的最短距离。
+3.  如果 `n-1` 可达，返回其最短距离；否则返回 `-1`。
+
+**代码实现：**
+
+```python
+import heapq
+from typing import List
+
+class Solution:
+    def minCost(self, n: int, edges: List[List[int]]) -> int:
+        # 建立邻接表
+        # adj[i] 存储从节点 i 出发可以到达的邻居及其对应的成本
+        adj = [[] for _ in range(n)]
+        for u, v, w in edges:
+            # 1. 正常边：从 u 到 v，成本为 w
+            adj[u].append((v, w))
+            # 2. 反转边：在节点 v 使用开关，将入边 u -> v 反转为 v -> u，成本为 2*w
+            adj[v].append((u, 2 * w))
+        
+        # Dijkstra 算法
+        # dist[i] 存储从节点 0 到节点 i 的最小总成本
+        dist = [float('inf')] * n
+        dist[0] = 0
+        
+        # 优先队列：存储 (当前总成本, 当前节点)
+        pq = [(0, 0)]
+        
+        while pq:
+            current_cost, u = heapq.heappop(pq)
+            
+            # 如果当前弹出的成本已经大于记录的最小成本，跳过
+            if current_cost > dist[u]:
+                continue
+            
+            # 如果到达终点，可以直接返回（Dijkstra 保证第一次到达时成本最低）
+            if u == n - 1:
+                return current_cost
+            
+            # 遍历当前节点的所有邻居
+            for v, weight in adj[u]:
+                new_cost = current_cost + weight
+                if new_cost < dist[v]:
+                    dist[v] = new_cost
+                    heapq.heappush(pq, (new_cost, v))
+        
+        # 判断终点是否可达
+        result = dist[n - 1]
+        return result if result != float('inf') else -1
+
+```
+
+**复杂度分析：**
+
+-   **时间复杂度**：$O(E \log V)$，其中 $E$ 是总边数（包含反转边后为 $2 \times edges.length$），$V$ 是节点数 $n$。在本题范围内，$E \approx 2 \times 10^5$，$V = 5 \times 10^4$，Dijkstra 算法能够高效运行。
+-   **空间复杂度**：$O(V + E)$，用于存储邻接表和距离数组。
 
 
 
