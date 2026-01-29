@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-01-27 14:22 GMT+8*
+*Updated 2026-01-29 18:27 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -11449,7 +11449,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -29151,6 +29151,338 @@ class Solution:
 *   **大数处理**：Python 自动支持大整数运算，因此我们可以先计算 `max_l * max_l` 再取余。注意 `max_l` 本身最高可达 $10^9$，面积最高可达 $10^{18}$。
 
 
+
+## M2976.转换字符串的最小成本 I
+
+https://leetcode.cn/problems/minimum-cost-to-convert-string-i/
+
+给你两个下标从 **0** 开始的字符串 `source` 和 `target` ，它们的长度均为 `n` 并且由 **小写** 英文字母组成。
+
+另给你两个下标从 **0** 开始的字符数组 `original` 和 `changed` ，以及一个整数数组 `cost` ，其中 `cost[i]` 代表将字符 `original[i]` 更改为字符 `changed[i]` 的成本。
+
+你从字符串 `source` 开始。在一次操作中，**如果** 存在 **任意** 下标 `j` 满足 `cost[j] == z` 、`original[j] == x` 以及 `changed[j] == y` 。你就可以选择字符串中的一个字符 `x` 并以 `z` 的成本将其更改为字符 `y` 。
+
+返回将字符串 `source` 转换为字符串 `target` 所需的 **最小** 成本。如果不可能完成转换，则返回 `-1` 。
+
+**注意**，可能存在下标 `i` 、`j` 使得 `original[j] == original[i]` 且 `changed[j] == changed[i]` 。
+
+ 
+
+**示例 1：**
+
+```
+输入：source = "abcd", target = "acbe", original = ["a","b","c","c","e","d"], changed = ["b","c","b","e","b","e"], cost = [2,5,5,1,2,20]
+输出：28
+解释：将字符串 "abcd" 转换为字符串 "acbe" ：
+- 更改下标 1 处的值 'b' 为 'c' ，成本为 5 。
+- 更改下标 2 处的值 'c' 为 'e' ，成本为 1 。
+- 更改下标 2 处的值 'e' 为 'b' ，成本为 2 。
+- 更改下标 3 处的值 'd' 为 'e' ，成本为 20 。
+产生的总成本是 5 + 1 + 2 + 20 = 28 。
+可以证明这是可能的最小成本。
+```
+
+**示例 2：**
+
+```
+输入：source = "aaaa", target = "bbbb", original = ["a","c"], changed = ["c","b"], cost = [1,2]
+输出：12
+解释：要将字符 'a' 更改为 'b'：
+- 将字符 'a' 更改为 'c'，成本为 1 
+- 将字符 'c' 更改为 'b'，成本为 2 
+产生的总成本是 1 + 2 = 3。
+将所有 'a' 更改为 'b'，产生的总成本是 3 * 4 = 12 。
+```
+
+**示例 3：**
+
+```
+输入：source = "abcd", target = "abce", original = ["a"], changed = ["e"], cost = [10000]
+输出：-1
+解释：无法将 source 字符串转换为 target 字符串，因为下标 3 处的值无法从 'd' 更改为 'e' 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= source.length == target.length <= 10^5`
+- `source`、`target` 均由小写英文字母组成
+- `1 <= cost.length== original.length == changed.length <= 2000`
+- `original[i]`、`changed[i]` 是小写英文字母
+- `1 <= cost[i] <= 10^6`
+- `original[i] != changed[i]`
+
+
+
+这道题的核心思路是将其转化为一个**图论中的全源最短路径问题**。`337ms 击败94.67%`
+
+**解题思路**
+
+1.  **建模为图**：
+    *   由于字符串只包含 26 个小写英文字母，我们可以将每个字母（'a' 到 'z'）视为图中的一个**节点**（共 26 个节点）。
+    *   转换规则 `original[i] -> changed[i]` 且成本为 `cost[i]`，可以看作是从节点 `original[i]` 到 `changed[i]` 的一条**有向边**，边权为 `cost[i]`。
+    *   由于可能存在多条从字符 $x$ 到 $y$ 的规则，我们只保留权重最小的那条边。
+
+2.  **计算最短路径**：
+    *   我们需要知道任意两个字符之间的最小转换成本。因为节点数量非常少（只有 26 个），使用 **Floyd-Warshall 算法** 是最简单且高效的选择。
+    *   Floyd-Warshall 的时间复杂度为 $O(V^3)$，其中 $V=26$，计算量约为 $17576$，这在算法面试和竞赛中是极小的。
+
+3.  **累加成本**：
+    *   遍历 `source` 和 `target` 的每一个字符。
+    *   如果 `source[i]` 与 `target[i]` 不同，就从计算好的最短路径矩阵中查找对应的转换成本。
+    *   如果在矩阵中发现某个转换的成本是无穷大（即不可达），则说明无法完成转换，返回 -1。
+    *   将所有位置的最小成本相加即得到最终答案。
+
+**Python 代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def minimumCost(self, source: str, target: str, original: List[str], changed: List[str], cost: List[int]) -> int:
+        # 定义无穷大
+        INF = float('inf')
+        
+        # 初始化距离矩阵 26x26
+        # dist[i][j] 表示字符 ord('a')+i 转换到 ord('a')+j 的最小成本
+        dist = [[INF] * 26 for _ in range(26)]
+        
+        # 每个字符转换到自身的成本为 0
+        for i in range(26):
+            dist[i][i] = 0
+            
+        # 根据给定的 original, changed, cost 填充初始边权
+        for u, v, w in zip(original, changed, cost):
+            u_idx = ord(u) - ord('a')
+            v_idx = ord(v) - ord('a')
+            # 如果存在多条路径，保留成本最小的那条
+            if w < dist[u_idx][v_idx]:
+                dist[u_idx][v_idx] = w
+                
+        # Floyd-Warshall 算法计算全源最短路径
+        for k in range(26):
+            for i in range(26):
+                if dist[i][k] == INF: continue # 优化：如果 i 到 k 不通，跳过
+                for j in range(26):
+                    if dist[i][k] + dist[k][j] < dist[i][j]:
+                        dist[i][j] = dist[i][k] + dist[k][j]
+                        
+        # 计算总成本
+        total_cost = 0
+        for s, t in zip(source, target):
+            if s != t:
+                s_idx = ord(s) - ord('a')
+                t_idx = ord(t) - ord('a')
+                res = dist[s_idx][t_idx]
+                if res == INF:
+                    return -1
+                total_cost += res
+                
+        return total_cost
+
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(M + V^3 + N)$
+    *   $M$ 是 `cost` 数组的长度，用于初始化图（最多 2000）。
+    *   $V^3$ 是 Floyd-Warshall 算法的复杂度，这里 $V=26$。
+    *   $N$ 是字符串 `source` 的长度，用于遍历求和（最多 $10^5$）。
+    *   总体时间复杂度在 $10^5$ 级别，完全符合要求。
+*   **空间复杂度**：$O(V^2)$
+    *   主要是存储 26x26 的距离矩阵，空间占用极小。
+
+**关键点提示**
+
+*   **多重边处理**：题目提示可能存在相同的 `original[i]` 和 `changed[i]` 但 `cost` 不同，在初始化 `dist` 矩阵时必须取 `min`。
+*   **不可达处理**：如果最后 `dist[s_idx][t_idx]` 仍为 `INF`，说明无法转换，直接返回 `-1`。
+*   **Python 优化**：在 Floyd-Warshall 的循环中加入 `if dist[i][k] == INF: continue` 可以略微提升效率。
+
+
+
+
+
+使用 Dijkstra 算法也是一个非常好的选择。由于我们需要知道从任一字符到其他字符的最短路径，我们可以对 **26 个字母中的每一个** 都作为起点运行一次 Dijkstra。`463ms 击败64.00%`
+
+**为什么用 Dijkstra？**
+
+1. **效率**：虽然 Floyd-Warshall 的 $O(V^3)$ 在 $V=26$ 时很快，但 Dijkstra 在边数较少或需要更灵活地处理图结构时表现极佳。
+2. **适用性**：如果未来字符集变大（比如支持 Unicode），Floyd-Warshall 会变慢，而 Dijkstra（配合堆优化）更具扩展性。
+
+**实现思路**
+
+1. **建图**：使用邻接表存储字符转换关系。如果存在多条相同的转换路径，保留最小权重。
+2. **多源 Dijkstra**：遍历 26 个字母，如果该字母在 `source` 中出现过，则以它为起点运行一次 Dijkstra 算法，算出它到其他 25 个字母的最短距离。
+3. **记忆化**：为了避免重复计算，我们可以用一个字典或数组 `min_dist[start_char]` 存储已经计算出的最短路径结果。
+
+**Python 代码实现**
+
+```python
+import heapq
+from typing import List
+
+class Solution:
+    def minimumCost(self, source: str, target: str, original: List[str], changed: List[str], cost: List[int]) -> int:
+        # 1. 建图（邻接表）
+        adj = [[] for _ in range(26)]
+        for u, v, w in zip(original, changed, cost):
+            u_idx = ord(u) - ord('a')
+            v_idx = ord(v) - ord('a')
+            adj[u_idx].append((v_idx, w))
+        
+        # 2. 定义 Dijkstra 函数，计算从 start 节点到所有节点的距离
+        def dijkstra(start_node):
+            distances = [float('inf')] * 26
+            distances[start_node] = 0
+            pq = [(0, start_node)]  # (cost, node)
+            
+            while pq:
+                d, u = heapq.heappop(pq)
+                
+                if d > distances[u]:
+                    continue
+                
+                for v, weight in adj[u]:
+                    if distances[u] + weight < distances[v]:
+                        distances[v] = distances[u] + weight
+                        heapq.heappush(pq, (distances[v], v))
+            return distances
+
+        # 3. 预计算所有可能的起点
+        # 因为只有 26 个字母，直接计算 26 次 Dijkstra 是很快的
+        shortest_paths = {}
+        for i in range(26):
+            shortest_paths[i] = dijkstra(i)
+            
+        # 4. 累加结果
+        total_cost = 0
+        for s, t in zip(source, target):
+            if s == t:
+                continue
+            
+            s_idx, t_idx = ord(s) - ord('a'), ord(t) - ord('a')
+            res = shortest_paths[s_idx][t_idx]
+            
+            if res == float('inf'):
+                return -1
+            total_cost += res
+            
+        return total_cost
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(V \cdot (E \log V) + N)$
+    *   $V = 26$（字符集大小）。
+    *   $E$ 是 `original` 数组的长度（最多 2000）。
+    *   $N$ 是字符串 `source` 的长度（最多 $10^5$）。
+    *   计算过程：$26 \times (2000 \cdot \log 26) \approx 2 \times 10^5$，加上遍历字符串的 $10^5$，总计在 $3 \times 10^5$ 左右。这在 Python 中运行非常轻松。
+*   **空间复杂度**：$O(V^2 + E)$
+    *   用于存储邻接表和全源最短路径矩阵。
+
+**Dijkstra vs Floyd-Warshall 在本题中的表现**
+
+*   **Floyd-Warshall**：代码更简洁，对于 $V=26$ 这种极小规模的稠密图（或节点数固定的图）是首选。
+*   **Dijkstra**：在节点多、边稀疏的情况下更快。在本题中，由于 $V$ 恒定为 26，两者的性能差异在实际运行中几乎可以忽略不计。
+
+**注意**：在上面的 Dijkstra 实现中，由于同一个方向可能存在多条边，我们在邻接表中存了所有边。虽然 Dijkstra 能正确处理这种情况，但如果为了极致优化，也可以在建图时先用 `min` 过滤掉重复边。
+
+
+
+
+
+在建图时**先用 `min` 过滤掉重复边**是更好的做法。`400ms，击败88.00%`
+
+虽然 Dijkstra 算法本身能够处理重边（它会自动选择最短的那条），但先过滤重边有以下两个好处：
+
+1.  **减小图的规模**：原本 `original` 数组长度可达 2000，过滤后，由于只有 26 个字母，任意两点之间最多只有一条边，总边数最多只有 $26 \times 25 = 650$ 条。
+2.  **提高 Dijkstra 效率**：Dijkstra 的复杂度与边数 $E$ 相关（$O(E \log V)$）。减少了边数，优先队列（堆）的大小和弹出次数都会减少。
+
+**推荐的建图流程**
+
+我们可以使用一个 **26x26 的邻接矩阵** 来进行预过滤，然后再将其转化为 Dijkstra 使用的 **邻接表**。
+
+**代码实现：**
+
+```python
+import heapq
+from typing import List
+
+class Solution:
+    def minimumCost(self, source: str, target: str, original: List[str], changed: List[str], cost: List[int]) -> int:
+        # 1. 预处理：利用邻接矩阵过滤重复边，保留最小值
+        # graph[u][v] 表示从字符 u 到 v 的直接转换最小成本
+        INF = float('inf')
+        matrix = [[INF] * 26 for _ in range(26)]
+        
+        for u, v, c in zip(original, changed, cost):
+            u_idx = ord(u) - ord('a')
+            v_idx = ord(v) - ord('a')
+            if c < matrix[u_idx][v_idx]:
+                matrix[u_idx][v_idx] = c
+        
+        # 2. 转化为邻接表（为了更符合 Dijkstra 的通用写法）
+        adj = [[] for _ in range(26)]
+        for i in range(26):
+            for j in range(26):
+                if matrix[i][j] != INF:
+                    adj[i].append((j, matrix[i][j]))
+        
+        # 3. Dijkstra 函数
+        def dijkstra(start):
+            dist = [INF] * 26
+            dist[start] = 0
+            pq = [(0, start)]
+            while pq:
+                d, u = heapq.heappop(pq)
+                if d > dist[u]:
+                    continue
+                for v, weight in adj[u]:
+                    if dist[u] + weight < dist[v]:
+                        dist[v] = dist[u] + weight
+                        heapq.heappush(pq, (dist[v], v))
+            return dist
+
+        # 4. 计算全源最短路径（记忆化或预计算）
+        # 只有 source 中出现过的字符才需要作为起点跑 Dijkstra，这里为了方便直接算 26 个
+        memo = [dijkstra(i) for i in range(26)]
+        
+        # 5. 统计总成本
+        ans = 0
+        for s, t in zip(source, target):
+            if s == t: continue
+            c = memo[ord(s) - ord('a')][ord(t) - ord('a')]
+            if c == INF: return -1
+            ans += c
+            
+        return ans
+```
+
+**深度思考：既然用了矩阵过滤，为什么不直接用 Floyd？**
+
+这是一个很有意思的切入点：
+
+1.  **如果你已经构建了 26x26 的矩阵来过滤边**：此时距离 Floyd-Warshall 算法只有三层简单的 `for` 循环（$26^3 = 17576$ 次计算）。
+2.  **如果你选择 Dijkstra**：你需要写堆操作、处理访问状态等。
+
+**结论建议：**
+
+*   在**本题（节点数固定且极小，只有 26 个）**的情况下，**Floyd-Warshall** 其实比 Dijkstra 更简洁、更不容易出错。
+*   如果**节点数很大（比如几万个）但边很稀疏**，那么**预过滤重边 + Dijkstra** 则是标准的工业级解法。
+
+**过滤重边的小技巧：**
+在 Python 中，如果你不想用 26x26 矩阵，也可以用字典来过滤：
+
+```python
+edges = {}
+for u, v, c in zip(original, changed, cost):
+    if c < edges.get((u, v), float('inf')):
+        edges[(u, v)] = c
+# 然后遍历 edges.items() 建图
+```
+
+这种方式在字符集很大（比如不局限于 26 个字母）时更节省空间。
 
 
 
