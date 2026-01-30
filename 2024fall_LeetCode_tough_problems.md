@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-01-28 23:14 GMT+8*
+*Updated 2026-01-30 17:38 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -8063,6 +8063,202 @@ if __name__ == "__main__":
         print(sol.maxSpending(values2))  # Output: 386
 
 ```
+
+
+
+## T2977.转换字符串的最小成本 II
+
+Floyd-Warshall, DP, Trie, https://leetcode.cn/problems/minimum-cost-to-convert-string-ii/
+
+给你两个下标从 **0** 开始的字符串 `source` 和 `target` ，它们的长度均为 `n` 并且由 **小写** 英文字母组成。
+
+另给你两个下标从 **0** 开始的字符串数组 `original` 和 `changed` ，以及一个整数数组 `cost` ，其中 `cost[i]` 代表将字符串 `original[i]`更改为字符串 `changed[i]` 的成本。
+
+你从字符串 `source` 开始。在一次操作中，**如果** 存在 **任意** 下标 `j` 满足 `cost[j] == z` 、`original[j] == x` 以及 `changed[j] == y` ，你就可以选择字符串中的 **子串** `x` 并以 `z` 的成本将其更改为 `y` 。 你可以执行 **任意数量** 的操作，但是任两次操作必须满足 **以下两个** 条件 **之一** ：
+
+- 在两次操作中选择的子串分别是 `source[a..b]` 和 `source[c..d]` ，满足 `b < c` **或** `d < a` 。换句话说，两次操作中选择的下标 **不相交** 。
+- 在两次操作中选择的子串分别是 `source[a..b]` 和 `source[c..d]` ，满足 `a == c` **且** `b == d` 。换句话说，两次操作中选择的下标**相同** 。
+
+返回将字符串 `source` 转换为字符串 `target` 所需的 **最小** 成本。如果不可能完成转换，则返回 `-1` 。
+
+**注意**，可能存在下标 `i` 、`j` 使得 `original[j] == original[i]` 且 `changed[j] == changed[i]` 。
+
+ 
+
+**示例 1：**
+
+```
+输入：source = "abcd", target = "acbe", original = ["a","b","c","c","e","d"], changed = ["b","c","b","e","b","e"], cost = [2,5,5,1,2,20]
+输出：28
+解释：将 "abcd" 转换为 "acbe"，执行以下操作：
+- 将子串 source[1..1] 从 "b" 改为 "c" ，成本为 5 。
+- 将子串 source[2..2] 从 "c" 改为 "e" ，成本为 1 。
+- 将子串 source[2..2] 从 "e" 改为 "b" ，成本为 2 。
+- 将子串 source[3..3] 从 "d" 改为 "e" ，成本为 20 。
+产生的总成本是 5 + 1 + 2 + 20 = 28 。 
+可以证明这是可能的最小成本。
+```
+
+**示例 2：**
+
+```
+输入：source = "abcdefgh", target = "acdeeghh", original = ["bcd","fgh","thh"], changed = ["cde","thh","ghh"], cost = [1,3,5]
+输出：9
+解释：将 "abcdefgh" 转换为 "acdeeghh"，执行以下操作：
+- 将子串 source[1..3] 从 "bcd" 改为 "cde" ，成本为 1 。
+- 将子串 source[5..7] 从 "fgh" 改为 "thh" ，成本为 3 。可以执行此操作，因为下标 [5,7] 与第一次操作选中的下标不相交。
+- 将子串 source[5..7] 从 "thh" 改为 "ghh" ，成本为 5 。可以执行此操作，因为下标 [5,7] 与第一次操作选中的下标不相交，且与第二次操作选中的下标相同。
+产生的总成本是 1 + 3 + 5 = 9 。
+可以证明这是可能的最小成本。
+```
+
+**示例 3：**
+
+```
+输入：source = "abcdefgh", target = "addddddd", original = ["bcd","defgh"], changed = ["ddd","ddddd"], cost = [100,1578]
+输出：-1
+解释：无法将 "abcdefgh" 转换为 "addddddd" 。
+如果选择子串 source[1..3] 执行第一次操作，以将 "abcdefgh" 改为 "adddefgh" ，你无法选择子串 source[3..7] 执行第二次操作，因为两次操作有一个共用下标 3 。
+如果选择子串 source[3..7] 执行第一次操作，以将 "abcdefgh" 改为 "abcddddd" ，你无法选择子串 source[1..3] 执行第二次操作，因为两次操作有一个共用下标 3 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= source.length == target.length <= 1000`
+- `source`、`target` 均由小写英文字母组成
+- `1 <= cost.length == original.length == changed.length <= 100`
+- `1 <= original[i].length == changed[i].length <= source.length`
+- `original[i]`、`changed[i]` 均由小写英文字母组成
+- `original[i] != changed[i]`
+- `1 <= cost[i] <= 10^6`
+
+
+
+为了解决这个问题，我们需要在考虑字符串替换规则的同时，遵循操作区间“不相交”或“完全相同”的限制。这意味着对于 `source` 中的任何一段子串，我们要么不改变它（如果它与 `target` 对应位置字符相同），要么将其视为一个整体，通过给定的规则进行一系列转换。
+
+**算法思路**
+
+1.  **构建转换图**：
+    将 `original` 和 `changed` 数组中的所有唯一字符串视为图中的节点。节点总数最多为 $2 \times 100 = 200$。
+2.  **计算最短路径 (Floyd-Warshall)**：
+    由于转换规则可以叠加（例如 $A \to B \to C$），我们需要找到任何两个字符串之间的最小转换成本。由于节点数较少，使用 Floyd-Warshall 算法可以预计算出任意两点间的最小开销 `dist[u][v]`。
+3.  **高效子串匹配 (Trie 树)**：
+    在转换过程中，我们需要在 `source` 和 `target` 的对应位置查找是否存在于转换表中的子串。为了避免大量的字符串切片和哈希操作，我们使用 **Trie 树** 存储所有出现在 `original` 或 `changed` 中的字符串。
+4.  **动态规划 (DP)**：
+    定义 $dp[i]$ 为将 `source` 的前 $i$ 个字符转换为 `target` 的前 $i$ 个字符的最小成本。
+    *   **初始状态**：$dp[0] = 0$。
+    *   **转移方程**：
+        1.  如果 `source[i] == target[i]`，则可以选择不进行操作：$dp[i+1] = \min(dp[i+1], dp[i])$。
+        2.  尝试所有可能的子串替换：对于每一个起始位置 $i$，如果 `source[i..i+L-1]` 和 `target[i..i+L-1]` 都在我们的转换图中（通过 Trie 树查找），则：$dp[i+L] = \min(dp[i+L], dp[i] + \text{dist}(\text{source\_sub}, \text{target\_sub}))$。
+
+**代码实现**
+
+```python
+from typing import List
+
+class TrieNode:
+    __slots__ = ['children', 'id']
+    def __init__(self):
+        self.children = {}
+        self.id = -1  # 存储字符串在转换图中的唯一 ID
+
+class Solution:
+    def minimumCost(self, source: str, target: str, original: List[str], changed: List[str], cost: List[int]) -> int:
+        n = len(source)
+        
+        # 1. 收集所有唯一的字符串并映射到 ID
+        unique_strs = list(set(original) | set(changed))
+        str_to_id = {s: i for i, s in enumerate(unique_strs)}
+        m = len(unique_strs)
+        
+        # 2. 使用 Floyd-Warshall 算法计算字符串间的最小转换成本
+        INF = 10**16
+        dist = [[INF] * m for _ in range(m)]
+        for i in range(m):
+            dist[i][i] = 0
+            
+        for o, c, co in zip(original, changed, cost):
+            u, v = str_to_id[o], str_to_id[c]
+            if co < dist[u][v]:
+                dist[u][v] = co
+                
+        for k in range(m):
+            dist_k = dist[k]
+            for i in range(m):
+                dist_i = dist[i]
+                if dist_i[k] == INF: continue
+                dist_ik = dist_i[k]
+                for j in range(m):
+                    if dist_ik + dist_k[j] < dist_i[j]:
+                        dist_i[j] = dist_ik + dist_k[j]
+                        
+        # 3. 将所有涉及到的字符串插入 Trie 树，方便后续快速匹配子串
+        root = TrieNode()
+        for s, idx in str_to_id.items():
+            curr = root
+            for char in s:
+                if char not in curr.children:
+                    curr.children[char] = TrieNode()
+                curr = curr.children[char]
+            curr.id = idx
+            
+        # 4. 预处理：寻找 source 和 target 中所有可能的转换匹配点
+        matches = [[] for _ in range(n)]
+        for i in range(n):
+            # 查找以 i 为起点的 source 子串
+            s_found = {}
+            curr = root
+            for j in range(i, n):
+                if source[j] not in curr.children: break
+                curr = curr.children[source[j]]
+                if curr.id != -1:
+                    s_found[j - i + 1] = curr.id
+            
+            if not s_found: continue
+                
+            # 查找以 i 为起点的 target 子串，并匹配长度
+            curr = root
+            for j in range(i, n):
+                if target[j] not in curr.children: break
+                curr = curr.children[target[j]]
+                if curr.id != -1:
+                    length = j - i + 1
+                    if length in s_found:
+                        s_id, t_id = s_found[length], curr.id
+                        if dist[s_id][t_id] < INF:
+                            matches[i].append((length, dist[s_id][t_id]))
+
+        # 5. 动态规划
+        dp = [INF] * (n + 1)
+        dp[0] = 0
+        for i in range(n):
+            if dp[i] == INF: continue
+            
+            # 情况 1: 如果当前字符相同，成本为 0
+            if source[i] == target[i]:
+                if dp[i] < dp[i+1]:
+                    dp[i+1] = dp[i]
+            
+            # 情况 2: 应用转换规则（覆盖区间 [i, i+length-1]）
+            for length, c in matches[i]:
+                if dp[i] + c < dp[i + length]:
+                    dp[i + length] = dp[i] + c
+                    
+        return dp[n] if dp[n] < INF else -1
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：
+    *   Floyd-Warshall: $O(M^3)$，其中 $M$ 是唯一字符串的数量（不超过 200），约为 $8 \times 10^6$。
+    *   Trie 匹配: $O(N \cdot L_{max})$，其中 $N=1000$，$L_{max}$ 是规则中字符串的最大长度，约为 $10^6$。
+    *   DP 转移: $O(N \cdot K)$，其中 $K$ 是规则数量，约为 $10^5$。
+    *   总复杂度约为 $10^7$ 量级，在 Python 3 的时限内可以顺利通过。
+*   **空间复杂度**：$O(M^2 + N \cdot M)$，主要用于存储距离矩阵和匹配信息，约几 MB，非常节省空间。
+
+
 
 
 
