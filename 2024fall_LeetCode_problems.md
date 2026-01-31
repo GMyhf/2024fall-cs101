@@ -3599,6 +3599,107 @@ class Solution:
 
 
 
+## E744.寻找比目标字母大的最小字母
+
+binary search, https://leetcode.cn/problems/find-smallest-letter-greater-than-target/
+
+给你一个字符数组 `letters`，该数组按**非递减顺序**排序，以及一个字符 `target`。`letters` 里**至少有两个不同**的字符。
+
+返回 `letters` 中大于 `target` 的最小的字符。如果不存在这样的字符，则返回 `letters` 的第一个字符。
+
+ 
+
+**示例 1：**
+
+```
+输入: letters = ['c', 'f', 'j']，target = 'a'
+输出: 'c'
+解释：letters 中字典上比 'a' 大的最小字符是 'c'。
+```
+
+**示例 2:**
+
+```
+输入: letters = ['c','f','j'], target = 'c'
+输出: 'f'
+解释：letters 中字典顺序上大于 'c' 的最小字符是 'f'。
+```
+
+**示例 3:**
+
+```
+输入: letters = ['x','x','y','y'], target = 'z'
+输出: 'x'
+解释：letters 中没有一个字符在字典上大于 'z'，所以我们返回 letters[0]。
+```
+
+ 
+
+**提示：**
+
+- `2 <= letters.length <= 10^4`
+- `letters[i]` 是一个小写字母
+- `letters` 按**非递减顺序**排序
+- `letters` 最少包含两个不同的字母
+- `target` 是一个小写字母
+
+
+
+
+
+n小于10^6的情况，线性遍历的实际运行效率更高。
+
+
+
+执行用时分布`0ms 击败100.00%`
+
+```python
+class Solution:
+    def nextGreatestLetter(self, letters: List[str], target: str) -> str:
+        for c in letters:
+            if c > target:
+                return c
+        else:
+            return letters[0]
+```
+
+
+
+执行用时分布`3ms 击败8.94%`
+
+```python
+class Solution:
+    def nextGreatestLetter(self, letters: List[str], target: str) -> str:
+        left, right = 0, len(letters)-1
+        ans = letters[0]
+        while left <= right:
+            mid = (left + right) // 2
+            if letters[mid] > target:
+                ans = letters[mid]
+                right = mid -1
+            else:
+                left = mid + 1
+        
+        return ans
+```
+
+
+
+使用了 C 实现的 `bisect` 模块，速度会比手写二分快。执行用时分布`0ms 击败100.00%`
+
+```python
+import bisect
+
+class Solution:
+    def nextGreatestLetter(self, letters: List[str], target: str) -> str:
+        idx = bisect.bisect_right(letters, target)
+        return letters[idx % len(letters)]
+```
+
+
+
+
+
 ## 922.按奇偶排序数组II
 
 two pointers, https://leetcode.cn/problems/sort-array-by-parity-ii/
@@ -11449,7 +11550,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -29154,7 +29255,7 @@ class Solution:
 
 ## M2976.转换字符串的最小成本 I
 
-https://leetcode.cn/problems/minimum-cost-to-convert-string-i/
+floyd, https://leetcode.cn/problems/minimum-cost-to-convert-string-i/
 
 给你两个下标从 **0** 开始的字符串 `source` 和 `target` ，它们的长度均为 `n` 并且由 **小写** 英文字母组成。
 
