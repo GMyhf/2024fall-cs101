@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-01-30 17:38 GMT+8*
+*Updated 2026-02-02 20:38 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -8383,6 +8383,158 @@ class Solution:
 - 最终答案就是 $\#([0..hi]) - \#([0..lo-1])$。
 
 这样可以正确且高效地处理 $1 \le \text{start} \le \text{finish} \le 10^{15}$ 的所有情况。
+
+
+
+## T3013.将数组分成最小总代价的子数组 II
+
+sliding window, heap, https://leetcode.cn/problems/divide-an-array-into-subarrays-with-minimum-cost-ii/
+
+给你一个下标从 **0** 开始长度为 `n` 的整数数组 `nums` 和两个 **正** 整数 `k` 和 `dist` 。
+
+一个数组的 **代价** 是数组中的 **第一个** 元素。比方说，`[1,2,3]` 的代价为 `1` ，`[3,4,1]` 的代价为 `3` 。
+
+你需要将 `nums` 分割成 `k` 个 **连续且互不相交** 的子数组，满足 **第二** 个子数组与第 `k` 个子数组中第一个元素的下标距离 **不超过** `dist` 。换句话说，如果你将 `nums` 分割成子数组 `nums[0..(i1 - 1)], nums[i1..(i2 - 1)], ..., nums[ik-1..(n - 1)]` ，那么它需要满足 `ik-1 - i1 <= dist` 。
+
+请你返回这些子数组的 **最小** 总代价。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,3,2,6,4,2], k = 3, dist = 3
+输出：5
+解释：将数组分割成 3 个子数组的最优方案是：[1,3] ，[2,6,4] 和 [2] 。这是一个合法分割，因为 ik-1 - i1 等于 5 - 2 = 3 ，等于 dist 。总代价为 nums[0] + nums[2] + nums[5] ，也就是 1 + 2 + 2 = 5 。
+5 是分割成 3 个子数组的最小总代价。
+```
+
+**示例 2：**
+
+```
+输入：nums = [10,1,2,2,2,1], k = 4, dist = 3
+输出：15
+解释：将数组分割成 4 个子数组的最优方案是：[10] ，[1] ，[2] 和 [2,2,1] 。这是一个合法分割，因为 ik-1 - i1 等于 3 - 1 = 2 ，小于 dist 。总代价为 nums[0] + nums[1] + nums[2] + nums[3] ，也就是 10 + 1 + 2 + 2 = 15 。
+分割 [10] ，[1] ，[2,2,2] 和 [1] 不是一个合法分割，因为 ik-1 和 i1 的差为 5 - 1 = 4 ，大于 dist 。
+15 是分割成 4 个子数组的最小总代价。
+```
+
+**示例 3：**
+
+```
+输入：nums = [10,8,18,9], k = 3, dist = 1
+输出：36
+解释：将数组分割成 4 个子数组的最优方案是：[10] ，[8] 和 [18,9] 。这是一个合法分割，因为 ik-1 - i1 等于 2 - 1 = 1 ，等于 dist 。总代价为 nums[0] + nums[1] + nums[2] ，也就是 10 + 8 + 18 = 36 。
+分割 [10] ，[8,18] 和 [9] 不是一个合法分割，因为 ik-1 和 i1 的差为 3 - 1 = 2 ，大于 dist 。
+36 是分割成 3 个子数组的最小总代价。
+```
+
+ 
+
+**提示：**
+
+- `3 <= n <= 10^5`
+- `1 <= nums[i] <= 10^9`
+- `3 <= k <= n`
+- `k - 2 <= dist <= n - 2`
+
+
+
+为了最小化总代价，我们需要将数组分成 $k$ 个连续子数组。代价是每个子数组第一个元素的总和。
+由于第一个子数组总是从下标 $0$ 开始，因此 $nums[0]$ 总是包含在总代价中。
+我们需要在范围 $[1, n-1]$ 中选择 $k-1$ 个下标作为剩余 $k-1$ 个子数组的起始位置。设这些下标为 $i_1, i_2, \dots, i_{k-1}$。
+题目限制条件为 $i_{k-1} - i_1 \le dist$。这意味着这 $k-1$ 个下标必须位于一个长度为 $dist+1$ 的窗口内。
+
+**核心思路：**
+
+1. 我们要在数组 $nums[1 \dots n-1]$ 中滑动一个长度为 $dist+1$ 的窗口。
+2. 对于每一个窗口，我们从中选出 $k-1$ 个最小的元素，它们的和加上 $nums[0]$ 就是该窗口下的最小代价。
+3. 我们遍历所有可能的窗口，并维护所有窗口代价的全局最小值。
+4. 为了高效地维护窗口内前 $m = k-1$ 个最小元素的和，我们可以使用**树状数组（BIT）**配合**离散化**，利用树状数组上的**二分倍增（Binary Lifting）**在 $O(\log n)$ 时间内找到前 $m$ 小元素的和。
+
+**代码实现：**
+
+```python
+import math
+from typing import List
+
+class Solution:
+    def minimumCost(self, nums: List[int], k: int, dist: int) -> int:
+        n = len(nums)
+        m = k - 1
+        # 我们在 nums[1:] 中选择 k-1 个起始下标
+        arr = nums[1:]
+        
+        # 1. 离散化：处理 nums[i] 过大的问题，映射到 [1, U] 范围
+        sorted_unique = sorted(list(set(arr)))
+        U = len(sorted_unique)
+        rank = {v: i + 1 for i, v in enumerate(sorted_unique)}
+        
+        # 2. 树状数组维护频率和数值总和
+        # t_cnt[i] 维护离散化后索引 i 对应的频率前缀和
+        # t_sum[i] 维护离散化后索引 i 对应的 (数值 * 频率) 前缀和
+        t_cnt = [0] * (U + 1)
+        t_sum = [0] * (U + 1)
+        
+        # 预计算用于树状数组二分倍增的步长
+        bit_len = U.bit_length()
+        bit_powers = [1 << i for i in range(bit_len - 1, -1, -1)]
+        
+        min_window_sum = float('inf')
+        
+        # 3. 滑动窗口
+        for i in range(n - 1):
+            # 添加当前元素 arr[i] 到树状数组
+            val = arr[i]
+            idx = rank[val]
+            cur = idx
+            while cur <= U:
+                t_cnt[cur] += 1
+                t_sum[cur] += val
+                cur += cur & (-cur)
+            
+            # 如果窗口大小超过 dist + 1，移除窗口左侧失效元素
+            if i > dist:
+                val_r = arr[i - dist - 1]
+                idx_r = rank[val_r]
+                cur = idx_r
+                while cur <= U:
+                    t_cnt[cur] -= 1
+                    t_sum[cur] -= val_r
+                    cur += cur & (-cur)
+            
+            # 当窗口达到指定大小（或滑动过程中）进行查询
+            if i >= dist:
+                # 4. 树状数组二分倍增：寻找前 m 个最小元素的和
+                pos = 0
+                curr_cnt = 0
+                curr_sum = 0
+                for p in bit_powers:
+                    next_pos = pos + p
+                    if next_pos <= U:
+                        cnt = t_cnt[next_pos]
+                        if curr_cnt + cnt < m:
+                            pos = next_pos
+                            curr_cnt += cnt
+                            curr_sum += t_sum[pos]
+                
+                # 补足剩余所需的元素个数（来自下一个离散化数值）
+                # 注意：pos 是已经完全包含的离散化索引数量，下一个索引是 pos+1
+                # 对应 sorted_unique 的下标是 pos
+                s_total = curr_sum + (m - curr_cnt) * sorted_unique[pos]
+                if s_total < min_window_sum:
+                    min_window_sum = s_total
+        
+        return nums[0] + int(min_window_sum)
+
+```
+
+**复杂度分析：**
+
+- **时间复杂度**：$O(n \log n)$。排序和建立映射表需要 $O(n \log n)$；滑动窗口进行 $n$ 次操作，每次树状数组更新和二分倍增查询均为 $O(\log n)$。
+- **空间复杂度**：$O(n)$。用于存储离散化映射、树状数组以及窗口内的统计信息。
+
+
 
 
 
