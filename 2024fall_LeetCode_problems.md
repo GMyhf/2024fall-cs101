@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-02-01 20:30 GMT+8*
+*Updated 2026-02-03 13:42 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -8703,6 +8703,220 @@ if __name__ == "__main__":
 
 
 
+## E3637.三段式数组 I
+
+implementation, https://leetcode.cn/problems/trionic-array-i/
+
+给你一个长度为 `n` 的整数数组 `nums`。
+
+如果存在索引 `0 < p < q < n − 1`，使得数组满足以下条件，则称其为 **三段式数组（trionic）**：
+
+- `nums[0...p]` **严格** 递增，
+- `nums[p...q]` **严格** 递减，
+- `nums[q...n − 1]` **严格** 递增。
+
+如果 `nums` 是三段式数组，返回 `true`；否则，返回 `false`。
+
+ 
+
+**示例 1:**
+
+**输入:** nums = [1,3,5,4,2,6]
+
+**输出:** true
+
+**解释:**
+
+选择 `p = 2`, `q = 4`：
+
+- `nums[0...2] = [1, 3, 5]` 严格递增 (`1 < 3 < 5`)。
+- `nums[2...4] = [5, 4, 2]` 严格递减 (`5 > 4 > 2`)。
+- `nums[4...5] = [2, 6]` 严格递增 (`2 < 6`)。
+
+**示例 2:**
+
+**输入:** nums = [2,1,3]
+
+**输出:** false
+
+**解释:**
+
+无法选出能使数组满足三段式要求的 `p` 和 `q` 。
+
+ 
+
+**提示:**
+
+- `3 <= n <= 100`
+- `-1000 <= nums[i] <= 1000`
+
+
+
+```
+class Solution:
+    def isTrionic(self, nums: List[int]) -> bool:
+```
+
+
+
+0ms 击败100.00%
+
+```python
+class Solution:
+    def isTrionic(self, nums: List[int]) -> bool:
+        trionic = 0
+        n = len(nums)
+        for i in range(1, n):
+            if nums[i-1] == nums[i]:
+                return False
+
+            if trionic == 1 and nums[i-1] < nums[i]:
+                continue
+            if trionic == 2 and nums[i-1] > nums[i]:
+                continue
+            if trionic == 3 and nums[i-1] < nums[i]:
+                continue
+
+            if trionic == 0 and nums[i-1] > nums[i]:
+                return False
+            elif trionic == 0 and nums[i-1] < nums[i]:
+                trionic = 1
+                continue
+            
+            if trionic == 1 and nums[i-1] < nums[i]:
+                return False
+            elif trionic == 1 and nums[i-1] > nums[i]:
+                trionic = 2
+                continue
+            
+            if trionic == 2 and nums[i-1] >= nums[i]:
+                return False
+            elif trionic == 2 and nums[i-1] < nums[i]:
+                trionic = 3
+                continue
+            
+            if trionic == 3 and nums[i-1] > nums[i]:
+                return False
+        
+        return True if trionic == 3 else False
+```
+
+
+
+3ms 击败33.33%
+
+```python
+from typing import List
+
+class Solution:
+    def isTrionic(self, nums: List[int]) -> bool:
+        n = len(nums)
+        if n < 3:
+            return False  # 至少需要 4 个元素才能有 3 段（如 a<b>c<d）
+        
+        state = 0  # 0: 初始（期待上升），1: 上升，2: 下降，3: 再次上升
+        
+        for i in range(1, n):
+            if nums[i] == nums[i - 1]:
+                return False
+            
+            if state == 0:
+                if nums[i] > nums[i - 1]:
+                    state = 1
+                else:
+                    return False  # 第一步不能下降
+            
+            elif state == 1:
+                if nums[i] > nums[i - 1]:
+                    continue  # 继续上升
+                elif nums[i] < nums[i - 1]:
+                    state = 2  # 转入下降段
+            
+            elif state == 2:
+                if nums[i] < nums[i - 1]:
+                    continue  # 继续下降
+                elif nums[i] > nums[i - 1]:
+                    state = 3  # 转入第二次上升
+            
+            elif state == 3:
+                if nums[i] > nums[i - 1]:
+                    continue  # 继续第二次上升
+                else:
+                    return False  # 第三段不能下降或持平
+        
+        return state == 3
+```
+
+
+
+0ms 击败100.00%
+
+根据题目要求，我们需要判断一个数组是否可以被划分为三个连续的段：**严格递增**、**严格递减**、**严格递增**。
+
+**解题思路**
+
+1.  **定义分界点**：
+    我们需要寻找两个索引 $p$ 和 $q$，使得 $0 < p < q < n - 1$。
+    *   第一段 `nums[0...p]` 是严格递增的。
+    *   第二段 `nums[p...q]` 是严格递减的。
+    *   第三段 `nums[q...n-1]` 是严格递增的。
+
+2.  **贪心策略**：
+    由于要求是**严格**的，分界点 $p$ 和 $q$ 在满足条件的数组中是唯一的：
+    *   $p$ 必须是数组从开头开始的第一个局部极大值点（即递增结束的地方）。
+    *   $q$ 必须是 $p$ 之后第一个遇到的局部极小值点（即递减结束的地方）。
+    *   如果我们在到达数组末尾之前就走完了这三个阶段，或者某个阶段无法形成（例如没有递减就到了结尾），则该数组不是“三段式”。
+
+3.  **算法步骤**：
+    *   初始化指针 `i = 0`。
+    *   **阶段 1（严格递增）**：向后移动 `i`，直到不再满足 `nums[i] < nums[i+1]`。此时的 `i` 就是候选的 $p$。如果 $i=0$（没有增加）或 $i \ge n-2$（没有给后续段留出空间），返回 `false`。
+    *   **阶段 2（严格递减）**：从 $p$ 开始，向后移动 `i`，直到不再满足 `nums[i] > nums[i+1]`。此时的 `i` 就是候选的 $q$。如果 $i=p$（没有减少）或 $i \ge n-1$（没有给第三段留出空间），返回 `false`。
+    *   **阶段 3（严格递增）**：从 $q$ 开始，向后移动 `i`，直到不再满足 `nums[i] < nums[i+1]`。
+    *   **最终判断**：如果最后 `i` 成功到达了数组的最后一个元素索引 $n-1$，说明符合条件。
+
+**Python 代码实现**
+
+```python
+class Solution:
+    def isTrionic(self, nums: List[int]) -> bool:
+        n = len(nums)
+        # 索引 0 < p < q < n - 1 要求 n 至少为 4
+        if n < 4:
+            return False
+        
+        i = 0
+        
+        # 1. 严格递增段 nums[0...p]
+        while i + 1 < n and nums[i] < nums[i+1]:
+            i += 1
+        
+        # p = i, p 必须大于 0 且后面至少还要留两个位置给 q 和 n-1
+        p = i
+        if p == 0 or p >= n - 2:
+            return False
+        
+        # 2. 严格递减段 nums[p...q]
+        while i + 1 < n and nums[i] > nums[i+1]:
+            i += 1
+        
+        # q = i, q 必须大于 p 且后面至少要留一个位置给 n-1
+        q = i
+        if q == p or q >= n - 1:
+            return False
+        
+        # 3. 严格递增段 nums[q...n-1]
+        while i + 1 < n and nums[i] < nums[i+1]:
+            i += 1
+            
+        # 必须正好扫描到数组末尾
+        return i == n - 1
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(n)$。我们只需对数组进行一次线性扫描。
+*   **空间复杂度**：$O(1)$。只使用了常数级别的额外空间。
+
 
 
 # 中等Medium
@@ -11615,7 +11829,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
