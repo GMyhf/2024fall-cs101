@@ -12539,6 +12539,10 @@ if __name__ == '__main__':
 作者：灵茶山艾府
 链接：https://leetcode.cn/problems/trionic-array-ii/solutions/3741020/fen-zu-xun-huan-on-shi-jian-o1-kong-jian-ewr5/
 
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/6308ac15a16fd0c3576d35479ef85204.png" alt="6308ac15a16fd0c3576d35479ef85204" style="zoom:50%;" />
+
+
+
 ```python
 class Solution:
     def maxSumTrionic(self, nums: List[int]) -> int:
