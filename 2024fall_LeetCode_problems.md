@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-02-07 16:57 GMT+8*
+*Updated 2026-02-08 11:16 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -1352,6 +1352,126 @@ class Solution:
         
         return root
 ```
+
+
+
+## E110.平衡二叉树
+
+binary tree, https://leetcode.cn/problems/balanced-binary-tree/
+
+给定一个二叉树，判断它是否是 平衡二叉树 
+
+ 
+
+**示例 1：**
+
+<img src="https://assets.leetcode.com/uploads/2020/10/06/balance_1.jpg" alt="img" style="zoom: 67%;" />
+
+```
+输入：root = [3,9,20,null,null,15,7]
+输出：true
+```
+
+**示例 2：**
+
+<img src="https://assets.leetcode.com/uploads/2020/10/06/balance_2.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：root = [1,2,2,3,3,null,null,4,4]
+输出：false
+```
+
+**示例 3：**
+
+```
+输入：root = []
+输出：true
+```
+
+ 
+
+**提示：**
+
+- 树中的节点数在范围 `[0, 5000]` 内
+- `-104 <= Node.val <= 10^4`
+
+
+
+这个问题可以通过递归来解决。
+
+**1. 核心概念**
+
+一个二叉树是**平衡**的，当且仅当：
+
+1. 它的左子树是平衡的。
+2. 它的右子树是平衡的。
+3. 左子树和右子树的高度差（绝对值）不超过 1。
+
+**2. 解题思路：自底向上（最优解）**
+
+如果我们采用自顶向下的方法，会对同一个节点多次调用高度函数，导致时间复杂度较高 $O(n^2)$。
+
+**自底向上**的方法类似于后序遍历（左-右-中）：
+
+- 对于当前遍历到的节点，先递归地判断其左右子树是否平衡。
+- 如果左子树或右子树中有一个不平衡，则整个树不平衡，直接返回 `-1`（标记位）。
+- 如果都是平衡的，检查当前节点的左右子树高度差：
+  - 差值大于 1：返回 `-1`。
+  - 差值小于等于 1：返回当前节点的高度（即 `max(左子树高度, 右子树高度) + 1`）。
+
+**3. 代码实现**
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class Solution:
+    def isBalanced(self, root: Optional[TreeNode]) -> bool:
+        # 辅助函数：计算高度的同时判断是否平衡
+        def getHeight(node) -> int:
+            if not node:
+                return 0
+            
+            # 1. 递归获取左子树高度
+            left_height = getHeight(node.left)
+            # 如果左子树已经不平衡了，直接向上层层返回 -1
+            if left_height == -1:
+                return -1
+            
+            # 2. 递归获取右子树高度
+            right_height = getHeight(node.right)
+            # 如果右子树已经不平衡了，直接返回 -1
+            if right_height == -1:
+                return -1
+            
+            # 3. 检查当前节点是否平衡
+            # 如果左右高度差 > 1，说明以当前节点为根的子树不平衡
+            if abs(left_height - right_height) > 1:
+                return -1
+            
+            # 4. 如果平衡，返回当前节点的高度
+            return max(left_height, right_height) + 1
+
+        # 如果返回值不是 -1，说明整棵树平衡
+        return getHeight(root) != -1
+```
+
+**4. 复杂度分析**
+
+*   **时间复杂度：$O(n)$**
+    其中 $n$ 是二叉树中的节点个数。每个节点只会被访问一次，计算高度的时间复杂度是 $O(1)$。
+*   **空间复杂度：$O(n)$**
+    在最坏情况下（树呈现链状），递归栈的深度为 $n$。如果树是完全平衡的，空间复杂度为 $O(\log n)$。
+
+**5. 为什么这是最优解？**
+
+因为我们只需一次遍历（Post-order traversal）。在求高度的过程中顺便把平衡性给检查了，一旦发现任何一个子树不平衡，就立即通过 `-1` 信号“剪枝”停止后续多余的计算。
+
+
 
 
 
@@ -11892,7 +12012,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
