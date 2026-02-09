@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-02-08 11:16 GMT+8*
+*Updated 2026-02-10 11:16 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -12012,7 +12012,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -24610,6 +24610,109 @@ class Solution:
     *   `total_sum` 最大约为 $5 \times 10^8$。
     *   `max_prod` 最大约为 $(2.5 \times 10^8)^2 = 6.25 \times 10^{16}$。
     *   在 Python 中，整数支持任意精度，因此可以直接计算。如果在 C++ 或 Java 中，需要使用 `long long` 或 `long` 来存储乘积，防止溢出。
+
+
+
+## M1382.将二叉搜索树变平衡
+
+binary search tree, divide and conquer, https://leetcode.cn/problems/balance-a-binary-search-tree/
+
+给你一棵二叉搜索树，请你返回一棵 **平衡后** 的二叉搜索树，新生成的树应该与原来的树有着相同的节点值。如果有多种构造方法，请你返回任意一种。
+
+如果一棵二叉搜索树中，每个节点的两棵子树高度差不超过 `1` ，我们就称这棵二叉搜索树是 **平衡的** 。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/balance1-tree.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：root = [1,null,2,null,3,null,4,null,null]
+输出：[2,1,3,null,null,null,4]
+解释：这不是唯一的正确答案，[3,1,4,null,2,null,null] 也是一个可行的构造方案。
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/balanced2-tree.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入: root = [2,1,3]
+输出: [2,1,3]
+```
+
+ 
+
+**提示：**
+
+- 树节点的数目在 `[1, 104]` 范围内。
+- `1 <= Node.val <= 10^5`
+
+
+
+这道题的解题思路可以分为两个主要步骤：
+
+1.  **中序遍历（In-order Traversal）**：由于二叉搜索树（BST）的中序遍历结果是一个**有序数组**，我们首先通过中序遍历将树中所有的节点值提取出来，存入一个列表。
+2.  **分治法构建平衡 BST**：有了有序数组后，为了让生成的树尽可能平衡，我们可以每次取数组的**中间元素**作为当前子树的根节点，然后递归地用左半部分数组构建左子树，用右半部分数组构建右子树。
+
+**代码实现**
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class Solution:
+    def balanceBST(self, root: TreeNode) -> TreeNode:
+        # 1. 中序遍历提取有序数值列表
+        nums = []
+        def inorder(node):
+            if not node:
+                return
+            inorder(node.left)
+            nums.append(node.val)
+            inorder(node.right)
+        
+        inorder(root)
+        
+        # 2. 通过有序数组构建平衡 BST（类似二分查找的过程）
+        def build(left, right):
+            if left > right:
+                return None
+            
+            # 选择中间位置的数字作为根节点，确保左右子树节点数量差距最小
+            mid = (left + right) // 2
+            node = TreeNode(nums[mid])
+            
+            # 递归构建左子树和右子树
+            node.left = build(left, mid - 1)
+            node.right = build(mid + 1, right)
+            
+            return node
+        
+        return build(0, len(nums) - 1)
+```
+
+**复杂度分析**
+
+*   **时间复杂度：$O(N)$**
+    *   中序遍历需要访问每个节点一次，耗时 $O(N)$。
+    *   构建平衡 BST 的过程中，每个数组元素也只会被访问一次，耗时 $O(N)$。
+    *   其中 $N$ 是二叉树中的节点个数。
+
+*   **空间复杂度：$O(N)$**
+    *   我们需要一个大小为 $N$ 的数组 `nums` 来存储中序遍历的结果。
+    *   递归调用的栈深度：中序遍历最坏情况下为 $O(N)$（当树退化为链表时），构建平衡树的递归深度为 $O(\log N)$。因此总空间复杂度为 $O(N)$。
+
+**为什么这样做是平衡的？**
+
+当我们总是选择有序数组的中间元素作为根时，左边和右边的元素个数之差最多为 1。这意味着左子树和右子树的节点总数非常接近，递归下去就能保证每一个节点的左右子树高度差不超过 1，从而符合平衡二叉树的定义。
+
+
 
 
 
