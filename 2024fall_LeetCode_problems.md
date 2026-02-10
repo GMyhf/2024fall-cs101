@@ -2176,7 +2176,7 @@ class Solution:
 
 ## 169.多数元素
 
-https://leetcode.cn/problems/majority-element/
+Boyer-Moore, https://leetcode.cn/problems/majority-element/
 
 给定一个大小为 `n` 的数组 `nums` ，返回其中的多数元素。多数元素是指在数组中出现次数 **大于** `⌊ n/2 ⌋` 的元素。
 
@@ -2228,6 +2228,83 @@ class Solution:
 ```
 
 性质保证正确性：由于多数元素 **出现次数超过 ⌊n/2⌋**，所以即使有抵消，其仍然会成为最终 `candidate`。
+
+> **Boyer-Moore 投票算法**（Boyer-Moore Majority Vote Algorithm）是一种高效的算法，专门用于在一个序列中寻找**多数元素**（Majority Element）。
+>
+> 所谓的“多数元素”，是指在一个长度为 $n$ 的数组中，出现次数**大于** $\lfloor n/2 \rfloor$ 的元素。
+>
+> **1. 核心思想：两两抵消**
+>
+> 该算法的核心直觉非常简单：**在数组中，如果每次都删去两个不同的元素，最后剩下的如果还有元素，那么这个元素就可能是多数元素。**
+>
+> 因为多数元素的出现次数超过了一半，即便它和其他所有非多数元素一对一“同归于尽”，最后剩下的也一定会是它。
+>
+> ---
+>
+> **2. 算法步骤**
+>
+> 算法通常分为两个阶段：
+>
+> **第一阶段：寻找候选人 (Candidate)**
+>
+> 初始化两个变量：`candidate`（候选人）和 `count`（票数计数器，初始为 0）。
+> 遍历数组中的每个元素 `x`：
+> 1. 如果 `count == 0`，则将当前元素 `x` 设为 `candidate`，并将 `count` 设为 1。
+> 2. 如果 `x == candidate`，则 `count++`。
+> 3. 如果 `x != candidate`，则 `count--`。
+>
+> **第二阶段：验证候选人 (Verification)**
+>
+> 第一阶段结束后得到的 `candidate` **不一定**就是多数元素（例如数组为 `[1, 2, 3]` 时，最后候选人可能是 3，但它不是多数元素）。
+> *   **如果题目保证一定存在多数元素**，则无需第二阶段，`candidate` 即为答案。
+> *   **如果不保证存在**，则需要再次遍历数组，统计 `candidate` 出现的实际次数。如果次数 $> n/2$，则它是多数元素；否则，该数组不存在多数元素。
+>
+> ---
+>
+> **3. 复杂度分析**
+>
+> *   **时间复杂度：$O(n)$**。只需要遍历一次数组即可找到候选人（如果需要验证，则遍历两次），依然是线性的。
+> *   **空间复杂度：$O(1)$**。只使用了两个变量（`candidate` 和 `count`），不需要额外的哈希表或排序空间。
+>
+> ---
+>
+> **4. 代码示例 (Python)**
+>
+> ```python
+> def majority_element(nums):
+>     candidate = None
+>     count = 0
+>     
+>     # 第一阶段：投票
+>     for num in nums:
+>         if count == 0:
+>             candidate = num
+>             count = 1
+>         elif num == candidate:
+>             count += 1
+>         else:
+>             count -= 1
+>             
+>     # 第二阶段：验证（可选）
+>     if nums.count(candidate) > len(nums) // 2:
+>         return candidate
+>     else:
+>         return None
+> ```
+>
+> ---
+>
+> **5. 直观类比：帮派混战**
+>
+> 想象一个战场上有好几个帮派。每个士兵遇到**同帮派**的人就会聚在一起（`count++`），遇到**不同帮派**的人就会同归于尽（`count--`）。
+> *   如果一个帮派的人数超过了所有人的一半，那么无论其他帮派如何联合，最后战场上剩下的那个人一定属于这个人数最多的帮派。
+>
+> **6. 算法扩展**
+>
+> *   **寻找出现次数超过 $n/3$ 的元素**：可以维护两个候选人和两个计数器。如果有两个候选人出现次数都超过 $n/3$，它们加起来不超过 $2n/3$，剩余元素也不足 $n/3$。同理可推广到寻找出现次数超过 $n/k$ 的元素。
+> *   **LeetCode 相关题目**：
+>     *   [169. 多数元素](https://leetcode.cn/problems/majority-element/)（$n/2$ 情况）
+>     *   [229. 多数元素 II](https://leetcode.cn/problems/majority-element-ii/)（$n/3$ 情况）
 
 
 
@@ -3882,7 +3959,7 @@ class Solution:
 
 ## E961.在长度 2N 的数组中找出重复 N次的元素
 
-https://leetcode.cn/problems/n-repeated-element-in-size-2n-array/
+Boyer-Moore, https://leetcode.cn/problems/n-repeated-element-in-size-2n-array/
 
 给你一个整数数组 `nums` ，该数组具有以下属性：
 
@@ -12012,7 +12089,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
