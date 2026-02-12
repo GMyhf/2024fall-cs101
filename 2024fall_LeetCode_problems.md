@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-02-12 11:29 GMT+8*
+*Updated 2026-02-12 19:03 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -3327,6 +3327,73 @@ class Solution:
             right += 1             # 快指针继续扫描
 
 ```
+
+
+
+## E303.区域和检索 - 数组不可变
+
+prefix sum, https://leetcode.cn/problems/range-sum-query-immutable/
+
+给定一个整数数组  `nums`，处理以下类型的多个查询:
+
+1. 计算索引 `left` 和 `right` （包含 `left` 和 `right`）之间的 `nums` 元素的 **和** ，其中 `left <= right`
+
+实现 `NumArray` 类：
+
+- `NumArray(int[] nums)` 使用数组 `nums` 初始化对象
+- `int sumRange(int left, int right)` 返回数组 `nums` 中索引 `left` 和 `right` 之间的元素的 **总和**，包含 `left` 和 `right` 两点（也就是 `nums[left] + nums[left + 1] + ... + nums[right]` )
+
+ 
+
+**示例 1：**
+
+```
+输入：
+["NumArray", "sumRange", "sumRange", "sumRange"]
+[[[-2, 0, 3, -5, 2, -1]], [0, 2], [2, 5], [0, 5]]
+输出：
+[null, 1, -1, -3]
+
+解释：
+NumArray numArray = new NumArray([-2, 0, 3, -5, 2, -1]);
+numArray.sumRange(0, 2); // return 1 ((-2) + 0 + 3)
+numArray.sumRange(2, 5); // return -1 (3 + (-5) + 2 + (-1)) 
+numArray.sumRange(0, 5); // return -3 ((-2) + 0 + 3 + (-5) + 2 + (-1))
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 10^4`
+- `-10^5 <= nums[i] <= 10^5`
+- `0 <= left <= right < nums.length`
+- 最多调用 `10^4` 次 `sumRange` 方法
+
+
+
+```python
+class NumArray:
+
+    def __init__(self, nums: List[int]):
+        n = len(nums)
+        s = [0]*(n+1)
+        for i, num in enumerate(nums):
+            s[i+1] = s[i] + num
+        
+        self.s = s
+
+    def sumRange(self, left: int, right: int) -> int:
+        return self.s[right+1] - self.s[left]
+        
+
+
+# Your NumArray object will be instantiated and called as such:
+# obj = NumArray(nums)
+# param_1 = obj.sumRange(left,right)
+```
+
+
 
 
 
@@ -12089,7 +12156,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
