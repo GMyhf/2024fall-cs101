@@ -20942,6 +20942,94 @@ class Solution:
 
 
 
+## M525.连续数组
+
+prefix sum, hash table, https://leetcode.cn/problems/contiguous-array/
+
+给定一个二进制数组 `nums` , 找到含有相同数量的 `0` 和 `1` 的最长连续子数组，并返回该子数组的长度。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [0,1]
+输出：2
+说明：[0, 1] 是具有相同数量 0 和 1 的最长连续子数组。
+```
+
+**示例 2：**
+
+```
+输入：nums = [0,1,0]
+输出：2
+说明：[0, 1] (或 [1, 0]) 是具有相同数量 0 和 1 的最长连续子数组。
+```
+
+**示例 3：**
+
+```
+输入：nums = [0,1,1,1,1,1,0,0,0]
+输出：6
+解释：[1,1,1,0,0,0] 是具有相同数量 0 和 1 的最长连续子数组。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 10^5`
+- `nums[i]` 不是 `0` 就是 `1`
+
+
+
+这是一个经典的 **前缀和 + 哈希表** 问题。
+
+**思路：**
+
+我们要找的是：**0 和 1 数量相等的最长连续子数组**。
+
+- 把所有的 `0` 看作 `-1`。
+- 那么问题就转化为：**找和为 0 的最长子数组**。
+- 这是因为：如果一段子数组中 0 和 1 个数相等，那么把 0 变成 -1 后，总和就是 0。
+
+**哈希表只记录首次出现位置**：确保相同前缀和之间的距离最大。
+
+**前缀和差值为 0** => 子数组和为 0 => 原数组中 0 和 1 个数相等。
+
+**Python 代码实现：**
+
+```python
+class Solution:
+    def findMaxLength(self, nums: List[int]) -> int:
+        n = len(nums)
+        nums = [1 if x else -1 for x in nums]
+
+        s = [0]*(n+1)
+        for i, x in enumerate(nums):
+            s[i+1] = s[i] + x
+        
+        ans = 0
+        first_index = {}
+
+        for i, x in enumerate(s):
+            if x in first_index:
+                ans = max(ans, i - first_index[x])
+            else:
+                first_index[x] = i
+
+        return ans
+```
+
+**复杂度分析：**
+
+- **时间复杂度**：O(n)，一次遍历。
+- **空间复杂度**：O(n)，哈希表最多存 n+1 个前缀和。
+
+
+
+
+
 ## 541.反转字符串II
 
 https://leetcode.cn/problems/reverse-string-ii/
