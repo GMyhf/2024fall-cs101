@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-02-12 19:03 GMT+8*
+*Updated 2026-02-12 23:00 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -12156,7 +12156,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -19706,6 +19706,299 @@ if __name__ == "__main__":
     sol = Solution()
     print(sol.lengthOfLIS([10, 9, 2, 5, 3, 7, 101, 18])) # 4
 ```
+
+
+
+## M307.区域和检索 - 数组可修改
+
+binary indexed tree, segment tree, https://leetcode.cn/problems/range-sum-query-mutable/
+
+给你一个数组 `nums` ，请你完成两类查询。
+
+1. 其中一类查询要求 **更新** 数组 `nums` 下标对应的值
+2. 另一类查询要求返回数组 `nums` 中索引 `left` 和索引 `right` 之间（ **包含** ）的nums元素的 **和** ，其中 `left <= right`
+
+实现 `NumArray` 类：
+
+- `NumArray(int[] nums)` 用整数数组 `nums` 初始化对象
+- `void update(int index, int val)` 将 `nums[index]` 的值 **更新** 为 `val`
+- `int sumRange(int left, int right)` 返回数组 `nums` 中索引 `left` 和索引 `right` 之间（ **包含** ）的nums元素的 **和** （即，`nums[left] + nums[left + 1], ..., nums[right]`）
+
+ 
+
+**示例 1：**
+
+```
+输入：
+["NumArray", "sumRange", "update", "sumRange"]
+[[[1, 3, 5]], [0, 2], [1, 2], [0, 2]]
+输出：
+[null, 9, null, 8]
+
+解释：
+NumArray numArray = new NumArray([1, 3, 5]);
+numArray.sumRange(0, 2); // 返回 1 + 3 + 5 = 9
+numArray.update(1, 2);   // nums = [1,2,5]
+numArray.sumRange(0, 2); // 返回 1 + 2 + 5 = 8
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 3 * 10^4`
+- `-100 <= nums[i] <= 100`
+- `0 <= index < nums.length`
+- `-100 <= val <= 100`
+- `0 <= left <= right < nums.length`
+- 调用 `update` 和 `sumRange` 方法次数不大于 `3 * 10^4` 
+
+
+
+这个问题要求实现一个支持“单点修改”和“区域检索”的数据结构。
+
+对于此类问题，普通的数组实现中：
+
+*   **数组/前缀和**：`update` 是 $O(n)$，`sumRange` 是 $O(1)$。
+*   **普通数组**：`update` 是 $O(1)$，`sumRange` 是 $O(n)$。
+
+当两者调用次数都很多时（本题均为 $3 \times 10^4$），需要更高效的数据结构。最常用的两种方案是：**树状数组 (Binary Indexed Tree / Fenwick Tree)** 和 **线段树 (Segment Tree)**。
+
+---
+
+### 方法一：树状数组 (Binary Indexed Tree)
+
+树状数组是处理“动态前缀和”最简洁的工具。其核心思想是利用二进制低位的 `lowbit` 来管理不同长度的区间和。
+
+*   **时间复杂度**：
+    *   初始化：$O(n)$ 或 $O(n \log n)$
+    *   `update`：$O(\log n)$
+    *   `sumRange`：$O(\log n)$
+*   **空间复杂度**：$O(n)$
+
+```python
+class NumArray:
+    def __init__(self, nums: List[int]):
+        self.nums = nums
+        self.n = len(nums)
+        # tree 数组下标从 1 开始，所以长度为 n + 1
+        self.tree = [0] * (self.n + 1)
+        # 初始化树状数组
+        for i, val in enumerate(nums):
+            self._add(i + 1, val)
+
+    def _lowbit(self, x: int) -> int:
+        return x & -x
+
+    def _add(self, index: int, delta: int):
+        """在树状数组的 index 位置增加 delta"""
+        while index <= self.n:
+            self.tree[index] += delta
+            index += self._lowbit(index)
+
+    def _query(self, index: int) -> int:
+        """查询前缀和 [0...index]"""
+        res = 0
+        while index > 0:
+            res += self.tree[index]
+            index -= self._lowbit(index)
+        return res
+
+    def update(self, index: int, val: int) -> None:
+        # 计算增量 delta
+        delta = val - self.nums[index]
+        self.nums[index] = val
+        # 树状数组内部是 1-indexed
+        self._add(index + 1, delta)
+
+    def sumRange(self, left: int, right: int) -> int:
+        # sum(left, right) = query(right) - query(left - 1)
+        return self._query(right + 1) - self._query(left)
+```
+
+---
+
+### 方法二：线段树 (Segment Tree)
+
+线段树更具通用性（例如可以处理区间最值等），但在实现上比树状数组稍微复杂一点。这里提供一个基于数组存储的递归版线段树。
+
+*   **时间复杂度**：
+    *   初始化：$O(n)$
+    *   `update`：$O(\log n)$
+    *   `sumRange`：$O(\log n)$
+*   **空间复杂度**：$O(n)$（通常开 4n 空间）
+
+```python
+class NumArray:
+    def __init__(self, nums: List[int]):
+        self.n = len(nums)
+        if self.n == 0: return
+        self.tree = [0] * (4 * self.n)
+        self._build(nums, 0, 0, self.n - 1)
+
+    def _build(self, nums, node, start, end):
+        if start == end:
+            self.tree[node] = nums[start]
+            return
+        mid = (start + end) // 2
+        left_node = 2 * node + 1
+        right_node = 2 * node + 2
+        self._build(nums, left_node, start, mid)
+        self._build(nums, right_node, mid + 1, end)
+        self.tree[node] = self.tree[left_node] + self.tree[right_node]
+
+    def update(self, index: int, val: int) -> None:
+        self._update(0, 0, self.n - 1, index, val)
+
+    def _update(self, node, start, end, index, val):
+        if start == end:
+            self.tree[node] = val
+            return
+        mid = (start + end) // 2
+        left_node = 2 * node + 1
+        right_node = 2 * node + 2
+        if index <= mid:
+            self._update(left_node, start, mid, index, val)
+        else:
+            self._update(right_node, mid + 1, end, index, val)
+        self.tree[node] = self.tree[left_node] + self.tree[right_node]
+
+    def sumRange(self, left: int, right: int) -> int:
+        return self._query(0, 0, self.n - 1, left, right)
+
+    def _query(self, node, start, end, l, r):
+        if r < start or l > end:
+            return 0
+        if l <= start and end <= r:
+            return self.tree[node]
+        mid = (start + end) // 2
+        return self._query(2 * node + 1, start, mid, l, r) + \
+               self._query(2 * node + 2, mid + 1, end, l, r)
+```
+
+### 总结
+
+*   如果面试中遇到，**树状数组** 是首选，因为代码量极少，且性能非常出色（常数小）。
+*   **分块 (Square Root Decomposition)** 也是一种解法，复杂度为 $O(\sqrt{n})$，但在本题规模下性能略逊于树结构。
+
+
+
+> 线段树（Segment Tree）的代码初看确实比较抽象，因为它把一个平面的数组“折叠”成了一棵树。
+>
+> 我用**“公司管理层”**的例子带你拆解这段代码，保证你能秒懂。
+>
+> ---
+>
+> ### 1. 核心思想：层层管理
+>
+> 假设数组 `nums = [1, 3, 5, 7]`：
+>
+> *   **底层员工（叶子节点）：** 就是数组里的具体数值。
+> *   **小组长：** 管理 2 个员工，记录他们的工资总和。
+> *   **大经理（根节点）：** 管理所有小组长，记录全公司的工资总和。
+>
+> **为什么要这么做？**
+> 如果你要改一个人的工资，只需要通知他的小组长、经理等少数几个人（$O(\log n)$），而不需要重新计算全公司的总和。
+>
+> ---
+>
+> ### 2. 核心变量的含义
+>
+> 在函数参数中，你会反复看到这几个词：
+>
+> *   `node`: 当前“管理者”在 `self.tree` 这个数组里的**工号（下标）**。
+> *   `start` 和 `end`: 当前管理者**负责的范围**（比如：我负责管理下标从 0 到 3 的员工）。
+> *   `mid`: 把管理范围**一分为二**的中点。
+> *   `left_node` / `right_node`: 分别是左手下属和右手下属的工号。
+>
+> ---
+>
+> ### 3. 图解代码逻辑
+>
+> #### A. 初始化 (`_build`)：建立公司层级
+>
+> 代码把数组看成一棵完全二叉树。如果父节点工号是 `node`，那么：
+>
+> *   左下属工号：`2 * node + 1`
+> *   右下属工号：`2 * node + 2`
+>
+> ```python
+> def _build(self, nums, node, start, end):
+>     if start == end: # 递归到底层，这就是具体的员工
+>         self.tree[node] = nums[start]
+>         return
+>     mid = (start + end) // 2
+>     # 让两个下属去统计他们负责的范围
+>     self._build(nums, 2*node+1, start, mid)
+>     self._build(nums, 2*node+2, mid+1, end)
+>     # 经理的值 = 左下属的值 + 右下属的值
+>     self.tree[node] = self.tree[2*node+1] + self.tree[2*node+2]
+> ```
+>
+> #### B. 更新 (`_update`)：修改一个值
+>
+> 如果你改了 `nums[index]`，你得顺着这棵树往上爬，更新所有管这个 `index` 的经理。
+>
+> ```python
+> def _update(self, node, start, end, index, val):
+>     if start == end: # 找到了那个具体的员工，修改他的工资
+>         self.tree[node] = val
+>         return
+>     mid = (start + end) // 2
+>     # 看看 index 在左半区还是右半区
+>     if index <= mid:
+>         self._update(2*node+1, start, mid, index, val)
+>     else:
+>         self._update(2*node+2, mid+1, end, index, val)
+>     # 员工改了，经理的值也要重算
+>     self.tree[node] = self.tree[2*node+1] + self.tree[2*node+2]
+> ```
+>
+> #### C. 查询 (`_query`)：求区间和
+>
+> 这是线段树最快的地方。如果要查 `[left, right]`：
+>
+> 1.  如果当前经理管的范围**完全在** `[left, right]` 内部，直接报数。
+> 2.  如果当前经理管的范围**完全不在**范围内，报 0。
+> 3.  如果**跨越了**（一部分在，一部分不在），就分别问左右下属。
+>
+> ```python
+> def _query(self, node, start, end, l, r):
+>     if r < start or l > end: # 查的范围跟我管的范围没交集
+>         return 0
+>     if l <= start and end <= r: # 我管的范围全在查的范围内，直接给你总和
+>         return self.tree[node]
+>     
+>     # 否则，一部分在我这，一部分在别处，分头去问下属
+>     mid = (start + end) // 2
+>     return self._query(2*node+1, start, mid, l, r) + \
+>            self._query(2*node+2, mid+1, end, l, r)
+> ```
+>
+> ---
+>
+> ### 4. 常见疑问解答
+>
+> **Q: 为什么 `tree` 的大小要开 `4 * n`？**
+> A: 因为这棵树是一棵满二叉树的结构。虽然数组只有 `n` 个元素，但为了保证能用 `2*node+1` 这种简单的公式索引到所有下属（包括那些空出来的位子），数学证明最坏情况下需要接近 `4n` 的空间。
+>
+> **Q: 线段树和树状数组（BIT）哪个好？**
+>
+> *   **树状数组：** 代码更短，速度极快，空间省。但只能做区间求和（或者前缀和能推导的操作）。
+> *   **线段树：** 逻辑更直观，功能最强。它不仅能求和，还能求**区间最大值/最小值**等（这些树状数组很难做）。
+>
+> **总结：**
+> 这段代码实际上是用数组模拟了一个递归结构。每一个 `node` 都是树上的一个节点，它存的是一段区间的和。查询和修改都只需要走树的高度（即 $\log n$），所以非常快。
+
+
+
+
+
+灵神讲的很清楚，证明我没看。里面还有视频讲解的链接。
+
+带你发明树状数组！附数学证明
+
+https://leetcode.cn/problems/range-sum-query-mutable/solutions/2524481/dai-ni-fa-ming-shu-zhuang-shu-zu-fu-shu-lyfll/
 
 
 
