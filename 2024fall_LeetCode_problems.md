@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-02-10 10:54 GMT+8*
+*Updated 2026-02-12 11:29 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -12089,7 +12089,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -37308,6 +37308,135 @@ class Solution:
         min_v = min(nums)
         return (max_v - min_v)*k
 ```
+
+
+
+## M3713.最长的平衡子串 I
+
+https://leetcode.cn/problems/longest-balanced-substring-i/
+
+给你一个由小写英文字母组成的字符串 `s`。
+
+如果一个 **子串** 中所有 **不同** 字符出现的次数都 **相同** ，则称该子串为 **平衡** 子串。
+
+请返回 `s` 的 **最长平衡子串** 的 **长度** 。
+
+**子串** 是字符串中连续的、**非空** 的字符序列。
+
+ 
+
+**示例 1：**
+
+**输入：** s = "abbac"
+
+**输出：** 4
+
+**解释：**
+
+最长的平衡子串是 `"abba"`，因为不同字符 `'a'` 和 `'b'` 都恰好出现了 2 次。
+
+**示例 2：**
+
+**输入：** s = "zzabccy"
+
+**输出：** 4
+
+**解释：**
+
+最长的平衡子串是 `"zabc"`，因为不同字符 `'z'`、`'a'`、`'b'` 和 `'c'` 都恰好出现了 1 次。
+
+**示例 3：**
+
+**输入：** s = "aba"
+
+**输出：** 2
+
+**解释：**
+
+最长的平衡子串之一是 `"ab"`，因为不同字符 `'a'` 和 `'b'` 都恰好出现了 1 次。另一个最长的平衡子串是 `"ba"`。
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 1000`
+- `s` 仅由小写英文字母组成。
+
+
+
+这个问题要求找到字符串 `s` 中最长的“平衡子串”的长度。所谓的平衡子串是指：在该子串中，所有**出现过**的字符，它们的出现次数都必须相同。
+
+**解题思路**
+
+由于字符串长度 $n$ 的最大值为 $1000$，我们可以采用时间复杂度为 $O(n^2)$ 的暴力枚举方法。具体步骤如下：
+
+1.  **枚举起点**：使用外层循环遍历子串的起始位置 $i$（从 $0$ 到 $n-1$）。
+2.  **枚举终点**：使用内层循环遍历子串的结束位置 $j$（从 $i$ 到 $n-1$）。
+3.  **统计频率**：在内层循环移动 $j$ 的过程中，动态维护当前子串 `s[i...j]` 中每个字符出现的次数（使用一个长度为 26 的数组）。
+4.  **判断平衡**：
+    *   记录当前子串中出现的**不同字符的数量**（`distinct_count`）。
+    *   记录当前子串的总长度（`length = j - i + 1`）。
+    *   一个子串平衡的必要条件是：`length` 必须能被 `distinct_count` 整除。
+    *   如果能整除，计算理想频率 `target = length / distinct_count`。然后检查数组中所有出现过的字符次数是否都等于 `target`。
+5.  **更新结果**：如果满足平衡条件，则更新最大长度。
+
+**Python 代码实现**
+
+```python
+class Solution:
+    def longestBalanced(self, s: str) -> int:
+        n = len(s)
+        max_len = 0
+        
+        # 枚举子串的起点
+        for i in range(n):
+            counts = [0] * 26  # 记录 a-z 的出现次数
+            distinct_count = 0  # 记录当前子串中不同字符的种类数
+            
+            # 枚举子串的终点
+            for j in range(i, n):
+                char_idx = ord(s[j]) - ord('a')
+                
+                # 如果是新出现的字符，种类数加 1
+                if counts[char_idx] == 0:
+                    distinct_count += 1
+                counts[char_idx] += 1
+                
+                length = j - i + 1
+                
+                # 平衡子串的必要条件：长度必须是字符种类数的倍数
+                if length % distinct_count == 0:
+                    target = length // distinct_count
+                    is_balanced = True
+                    
+                    # 检查所有出现过的字符频率是否都等于 target
+                    for k in range(26):
+                        if counts[k] > 0 and counts[k] != target:
+                            is_balanced = False
+                            break
+                    
+                    if is_balanced:
+                        if length > max_len:
+                            max_len = length
+                            
+        return max_len
+
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(26 \cdot n^2)$。其中 $n$ 是字符串长度。我们有两层嵌套循环（$n^2$），内部进行了一次最多 26 次的频率检查。对于 $n=1000$，计算量约为 $2.6 \times 10^7$，在 LeetCode 的 Python 环境下可以通过。
+*   **空间复杂度**：$O(1)$。我们只使用了一个固定大小（26）的数组来统计字符频率。
+
+**示例解析**
+
+以 `s = "zzabccy"` 为例：
+
+*   当子串为 `"zabc"` 时：'z', 'a', 'b', 'c' 各出现 1 次。种类数 = 4，长度 = 4。$4 \div 4 = 1$，所有字符频率均为 1，满足平衡，长度 4。
+*   当子串为 `"abcc"` 时：'a', 'b' 各 1 次，'c' 出现 2 次。种类数 = 3，长度 = 4。$4$ 不能被 $3$ 整除，不满足平衡。
+*   最终返回最大长度 4。
+
+
 
 
 
