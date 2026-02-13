@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-02-12 23:00 GMT+8*
+*Updated 2026-02-13 16:50 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -12156,7 +12156,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -37885,6 +37885,154 @@ class Solution:
 *   最终返回最大长度 4。
 
 
+
+## M3714.最长的平衡子串 II
+
+hash table, string, prefix sum, https://leetcode.cn/problems/longest-balanced-substring-ii/
+
+给你一个只包含字符 `'a'`、`'b'` 和 `'c'` 的字符串 `s`。
+
+如果一个 **子串** 中所有 **不同** 字符出现的次数都 **相同**，则称该子串为 **平衡** 子串。
+
+请返回 `s` 的 **最长平衡子串** 的 **长度** 。
+
+**子串** 是字符串中连续的、**非空** 的字符序列。
+
+ 
+
+**示例 1：**
+
+**输入：** s = "abbac"
+
+**输出：** 4
+
+**解释：**
+
+最长的平衡子串是 `"abba"`，因为不同字符 `'a'` 和 `'b'` 都恰好出现了 2 次。
+
+**示例 2：**
+
+**输入：** s = "aabcc"
+
+**输出：** 3
+
+**解释：**
+
+最长的平衡子串是 `"abc"`，因为不同字符 `'a'`、`'b'` 和 `'c'` 都恰好出现了 1 次。
+
+**示例 3：**
+
+**输入：** s = "aba"
+
+**输出：** 2
+
+**解释：**
+
+最长的平衡子串之一是 `"ab"`，因为不同字符 `'a'` 和 `'b'` 都恰好出现了 1 次。另一个最长的平衡子串是 `"ba"`。
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 10^5`
+- `s` 仅包含字符 `'a'`、`'b'` 和 `'c'`。
+
+
+
+题目要求在只包含 `'a'`、`'b'`、`'c'` 的字符串中找到最长的“平衡子串”。平衡子串的定义是：该子串中出现的**所有不同字符**的次数都相等。
+
+**解题思路**
+
+根据平衡子串的定义，子串中可能包含的不同字符集有 7 种情况：
+
+1.  **只有一个字符**：`{'a'}`、`{'b'}` 或 `{'c'}`。
+2.  **只有两个字符**：`{'a', 'b'}`、`{'a', 'c'}` 或 `{'b', 'c'}`。
+3.  **包含三个字符**：`{'a', 'b', 'c'}`。
+
+我们可以分别处理这三种情况：
+
+1.  **单字符子串**：任何只由一种字符组成的连续序列都是平衡的（因为只有一种不同字符，且其出现次数自相等）。最长的此类子串即为字符串中**最长的连续相同字符序列**。
+2.  **双字符子串**：例如对于字符集 `{'a', 'b'}`，子串必须包含 `'a'` 和 `'b'` 且不包含 `'c'`。
+    *   **处理方法**：以 `'c'` 作为分隔符将字符串切分成若干段。在每一段内（只含 `'a'` 和 `'b'`），我们寻找满足 `count('a') == count('b')` 的最长子串。这可以使用**前缀和之差**的方法：维护 `diff = count('a') - count('b')`，当两个位置的 `diff` 相等时，说明中间这段的 `'a'` 和 `'b'` 数量相等。
+3.  **三字符子串**：子串必须同时包含 `'a'`、`'b'`、`'c'` 且数量相等。
+    *   **处理方法**：同样使用前缀和。维护两个差值：`d1 = count('a') - count('b')` 和 `d2 = count('b') - count('c')`。当两个位置的 `(d1, d2)` 元组相等时，说明中间这段的 `a, b, c` 增加量相同。
+
+**算法步骤**
+
+1.  初始化 `ans = 0`。
+2.  **处理单字符**：遍历一遍字符串，记录当前连续相同字符的长度，更新 `ans`。
+3.  **处理双字符**：针对三组对 `(a,b,c)`, `(a,c,b)`, `(b,c,a)`，使用 `split(other)` 分段，在每段内用哈希表记录 `diff` 第一次出现的索引，计算最长平衡长度。
+4.  **处理三字符**：在全串上维护 `(count(a)-count(b), count(b)-count(c))` 的哈希表，记录第一次出现的索引，更新 `ans`。
+
+**代码实现**
+
+```python
+class Solution:
+    def longestBalanced(self, s: str) -> int:
+        n = len(s)
+        ans = 0
+        
+        # 1. 处理单字符子串（如 "aaaa"）
+        if n > 0:
+            cur_len = 1
+            for i in range(1, n):
+                if s[i] == s[i-1]:
+                    cur_len += 1
+                else:
+                    ans = max(ans, cur_len)
+                    cur_len = 1
+            ans = max(ans, cur_len)
+
+        # 2. 处理双字符子串（如 "aabb"）
+        # 分别考虑 {a,b}, {a,c}, {b,c} 三种组合
+        for c1, c2, other in [('a', 'b', 'c'), ('a', 'c', 'b'), ('b', 'c', 'a')]:
+            # 通过 other 字符切割，保证段内只有 c1 和 c2
+            for seg in s.split(other):
+                if not seg: continue
+                # 在段内找 count(c1) == count(c2) 的最长子串
+                first = {0: -1}
+                diff = 0
+                for i, char in enumerate(seg):
+                    if char == c1:
+                        diff += 1
+                    else: # char == c2
+                        diff -= 1
+                    
+                    if diff in first:
+                        # 如果 diff 相同，说明中间 c1 和 c2 增加量相同
+                        # 且由于段内只有这两种字符，长度 > 0 意味着两种字符都出现了
+                        ans = max(ans, i - first[diff])
+                    else:
+                        first[diff] = i
+
+        # 3. 处理三字符子串（如 "abcabc"）
+        # 维护两个差值状态 (cnt_a - cnt_b, cnt_b - cnt_c)
+        first_tri = {(0, 0): -1}
+        da, db = 0, 0
+        for i, char in enumerate(s):
+            if char == 'a':
+                da += 1
+            elif char == 'b':
+                da -= 1
+                db += 1
+            else: # char == 'c'
+                db -= 1
+            
+            state = (da, db)
+            if state in first_tri:
+                # 若状态相同，则 a, b, c 增加量 delta 相等
+                # 若 i > first_tri[state]，则 delta 必然 > 0
+                ans = max(ans, i - first_tri[state])
+            else:
+                first_tri[state] = i
+                    
+        return ans
+```
+
+**复杂度分析**
+
+-   **时间复杂度**：$O(n)$。我们对字符串进行了有限次数（约 5 次）的线性扫描。哈希表的操作平均为 $O(1)$。
+-   **空间复杂度**：$O(n)$。主要用于存储 `split` 产生的中间字符串和哈希表的状态记录。在 $n=10^5$ 的量级下，内存占用在可接受范围内。
 
 
 
