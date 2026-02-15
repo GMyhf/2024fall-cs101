@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-02-14 19:50 GMT+8*
+*Updated 2026-02-15 12:06 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -745,6 +745,100 @@ class Solution:
         num = int(num_str) + 1
         return list(map(int, str(num)))
 ```
+
+
+
+## E67.二进制求和
+
+bit manipulation, string, simulation, https://leetcode.cn/problems/add-binary/
+
+
+
+给你两个二进制字符串 `a` 和 `b` ，以二进制字符串的形式返回它们的和。
+
+ 
+
+**示例 1：**
+
+```
+输入:a = "11", b = "1"
+输出："100"
+```
+
+**示例 2：**
+
+```
+输入：a = "1010", b = "1011"
+输出："10101"
+```
+
+ 
+
+**提示：**
+
+- `1 <= a.length, b.length <= 10^4`
+- `a` 和 `b` 仅由字符 `'0'` 或 `'1'` 组成
+- 字符串如果不是 `"0"` ，就不含前导零
+
+
+
+这是一个经典的**二进制加法模拟题**，可以像做十进制加法一样，从右往左逐位相加，并处理进位。
+
+------
+
+**解题思路：**
+
+1. **初始化**：
+   - 用一个变量 `carry` 表示进位（初始为 0）。
+   - 用两个指针 `i`, `j` 分别从字符串 `a` 和 `b` 的末尾开始向前遍历。
+   - 用一个列表 `res` 存储结果的每一位（因为字符串拼接效率低，先用 list 再 join）。
+2. **循环条件**：
+   - 当 `i >= 0` 或 `j >= 0` 或 `carry != 0` 时继续（防止最后还有进位）。
+3. **每一步计算**：
+   - 取当前位的数字（如果指针有效，否则为 0）。
+   - 计算总和：`total = bit_a + bit_b + carry`
+   - 当前位结果是 `total % 2`，进位是 `total // 2`
+   - 将当前位插入结果（注意顺序，我们是从低位到高位算的，所以最后要反转）
+4. **返回结果**：
+   - 把 `res` 反转后拼成字符串。
+
+------
+
+**Python 代码实现：**
+
+```python
+class Solution:
+    def addBinary(self, a: str, b: str) -> str:
+        i, j = len(a) - 1, len(b) - 1
+        carry = 0
+        res = []
+        
+        while i >= 0 or j >= 0 or carry:
+            bit_a = int(a[i]) if i >= 0 else 0
+            bit_b = int(b[j]) if j >= 0 else 0
+            
+            total = bit_a + bit_b + carry
+            res.append(str(total % 2))
+            carry = total // 2
+            
+            i -= 1
+            j -= 1
+        
+        return ''.join(reversed(res))
+```
+
+**复杂度分析：**
+
+- **时间复杂度**：O(max(m, n))，其中 m、n 是 a 和 b 的长度。
+- **空间复杂度**：O(max(m, n))，用于存储结果。
+
+------
+
+这个解法清晰、高效，且符合题目“不含前导零”的要求（因为我们是从实际计算得出的结果，不会多出前导零，除非结果就是 "0"，但题目保证输入非 "0" 时无前导零，而我们的算法在 a="0", b="0" 时也会正确返回 "0"）。
+
+如有需要，也可以用位运算实现（将字符串转为整数再用 `bin()`），但当字符串很长（如 10^4 位）时会溢出或效率低，**模拟加法是最稳妥的方法**。
+
+
 
 
 
@@ -12156,7 +12250,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
