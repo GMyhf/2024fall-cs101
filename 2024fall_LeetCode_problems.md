@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-02-17 15:06 GMT+8*
+*Updated 2026-02-18 14:37 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -4145,6 +4145,117 @@ class Solution:
         return True  # 如果从头到尾都是回文，直接返回 True
 
 ```
+
+
+
+## E693.交替位二进制数
+
+bit manipulation, https://leetcode.cn/problems/binary-number-with-alternating-bits/
+
+给定一个正整数，检查它的二进制表示是否总是 0、1 交替出现：换句话说，就是二进制表示中相邻两位的数字永不相同。
+
+ 
+
+**示例 1：**
+
+```
+输入：n = 5
+输出：true
+解释：5 的二进制表示是：101
+```
+
+**示例 2：**
+
+```
+输入：n = 7
+输出：false
+解释：7 的二进制表示是：111.
+```
+
+**示例 3：**
+
+```
+输入：n = 11
+输出：false
+解释：11 的二进制表示是：1011.
+```
+
+ 
+
+**提示：**
+
+- `1 <= n <= 2^31 - 1`
+
+
+
+```python
+class Solution:
+    def hasAlternatingBits(self, n: int) -> bool:
+        s = bin(n)[2:]
+        for i in range(1, len(s)):
+            if s[i] == s[i-1]:
+                return False
+        else:
+            return True
+```
+
+
+
+你的代码逻辑是正确的，但可以进一步优化以提升简洁性和性能。以下是几种优化方式：
+
+------
+
+**优化版本 1：使用 `all()` 函数（更 Pythonic）**
+
+```python
+class Solution:
+    def hasAlternatingBits(self, n: int) -> bool:
+        s = bin(n)[2:]
+        return all(s[i] != s[i - 1] for i in range(1, len(s)))
+```
+
+**优点**：
+
+- 更简洁、可读性高。
+- 利用短路求值，遇到第一个 `False` 就停止。
+
+------
+
+**优化版本 2：位运算（更高效，不转字符串）**
+
+交替比特的特性是：
+如果 `n` 是交替比特（如 `101010`），那么 `n ^ (n >> 1)` 应该得到全 1 的数（如 `111111`）。
+而全 1 的数加 1 后会变成 2 的幂（如 `111111 + 1 = 1000000`），此时 `(x & (x + 1)) == 0`。
+
+```python
+class Solution:
+    def hasAlternatingBits(self, n: int) -> bool:
+        x = n ^ (n >> 1)
+        return x & (x + 1) == 0
+```
+
+**优点**：
+
+- 时间复杂度 O(1)，空间 O(1)。
+- 不依赖字符串转换，效率更高，尤其对大整数更优。
+
+**原理示例**：
+
+- `n = 0b101010`
+- `n >> 1 = 0b010101`
+- `x = n ^ (n>>1) = 0b111111`
+- `x + 1 = 0b1000000`
+- `x & (x+1) = 0b111111 & 0b1000000 = 0` → 符合条件
+
+------
+
+推荐使用 **位运算版本（优化版本 2）**，因为它：
+
+- 更快
+- 更省内存
+- 更体现算法思维
+
+如果你追求可读性且数据规模不大，版本 1 也是很好的选择。
 
 
 
@@ -12441,7 +12552,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
