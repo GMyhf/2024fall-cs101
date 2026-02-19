@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-02-18 14:37 GMT+8*
+*Updated 2026-02-19 12:19 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -4256,6 +4256,106 @@ class Solution:
 - 更体现算法思维
 
 如果你追求可读性且数据规模不大，版本 1 也是很好的选择。
+
+
+
+## E696.计数二进制子串
+
+two pointers, https://leetcode.cn/problems/count-binary-substrings/
+
+给定一个字符串 `s`，统计并返回具有相同数量 `0` 和 `1` 的非空（连续）子字符串的数量，并且这些子字符串中的所有 `0` 和所有 `1` 都是成组连续的。
+
+重复出现（不同位置）的子串也要统计它们出现的次数。
+
+**示例 1：**
+
+```
+输入：s = "00110011"
+输出：6
+解释：6 个子串满足具有相同数量的连续 1 和 0 ："0011"、"01"、"1100"、"10"、"0011" 和 "01" 。
+注意，一些重复出现的子串（不同位置）要统计它们出现的次数。
+另外，"00110011" 不是有效的子串，因为所有的 0（还有 1 ）没有组合在一起。
+```
+
+**示例 2：**
+
+```
+输入：s = "10101"
+输出：4
+解释：有 4 个子串："10"、"01"、"10"、"01" ，具有相同数量的连续 1 和 0 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 10^5`
+- `s[i]` 为 `'0'` 或 `'1'`
+
+
+
+
+
+利用**分组计数**的思想：
+
+- 遍历字符串，将连续相同字符的长度记录下来，例如 `"00110011"` → `[2, 2, 2, 2]`
+- 对于相邻两组（比如 2 个 0 和 2 个 1），它们能组成的合法子串数量是 `min(前一组长度, 后一组长度)`
+- 例如 `[2,2]` → min(2,2)=2（即 `"01"` 和 `"0011"`）
+- 再比如 `[3,1]` → min(3,1)=1（只能组成 `"01"`）
+
+------
+
+**代码**
+
+```python
+class Solution:
+    def countBinarySubstrings(self, s: str) -> int:
+        # Step 1: 计算连续字符的长度（分组）
+        groups = []
+        i = 0
+        n = len(s)
+        while i < n:
+            j = i
+            while j < n and s[j] == s[i]:
+                j += 1
+            groups.append(j - i)
+            i = j
+        
+        # Step 2: 遍历相邻组，累加 min(prev, curr)
+        cnt = 0
+        for i in range(1, len(groups)):
+            cnt += min(groups[i - 1], groups[i])
+        
+        return cnt
+```
+
+**时间复杂度**
+
+- **O(n)** 时间，**O(k)** 空间（k 是分组数，最坏 O(n)）
+- 远优于原方案的 O(n²)
+
+------
+
+**进一步空间优化（可选）**
+
+可以不用存储整个 `groups` 列表，只需保留前一个 group 的长度：
+
+```python
+class Solution:
+    def countBinarySubstrings(self, s: str) -> int:
+        prev, curr = 0, 1
+        cnt = 0
+        for i in range(1, len(s)):
+            if s[i] == s[i - 1]:
+                curr += 1
+            else:
+                cnt += min(prev, curr)
+                prev, curr = curr, 1
+        cnt += min(prev, curr)  # 最后一组也要处理
+        return cnt
+```
+
+这个版本空间复杂度 **O(1)**，更优！
 
 
 
@@ -12552,7 +12652,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
