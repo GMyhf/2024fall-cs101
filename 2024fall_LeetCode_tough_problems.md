@@ -693,8 +693,8 @@ class Solution:
 
 **提示：**
 
-- `1 <= nums.length <= 105`
-- `-231 <= nums[i] <= 231 - 1`
+- `1 <= nums.length <= 10^5`
+- `-2^31 <= nums[i] <= 2^31 - 1`
 
 
 
@@ -737,7 +737,7 @@ https://leetcode.cn/problems/first-missing-positive/solutions/304743/que-shi-de-
 
 在遍历完成之后，如果数组中的每一个数都是负数，那么答案是 N+1，否则答案是第一个正数的位置加 1。
 
-![fig1](https://assets.leetcode-cn.com/solution-static/41/41_fig1.png)
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/41_fig1.png" alt="fig1" style="zoom: 33%;" />
 
 
 
