@@ -4460,7 +4460,7 @@ class Solution:
 
 ## E762.二进制表示中质数个计算置位
 
-https://leetcode.cn/problems/prime-number-of-set-bits-in-binary-representation/
+bit manipulation, https://leetcode.cn/problems/prime-number-of-set-bits-in-binary-representation/
 
 给你两个整数 `left` 和 `right` ，在闭区间 `[left, right]` 范围内，统计并返回 **计算置位位数为质数** 的整数个数。
 
@@ -8148,6 +8148,74 @@ class Solution:
 > 5.  验证：$3 \lor (3+1) = 3 \lor 4 = 7$。正确。
 >
 > **结论**：这份代码使用了 `(n+1) & -(n+1)` 巧妙地定位了需要修改的那一位，避免了循环，在性能上更优（虽然在 LeetCode 这道题的量级下差别不大），是一种更“硬核”的写法。
+
+
+
+## E3370.仅含置位位的最小整数
+
+bit manipulation, https://leetcode.cn/problems/smallest-number-with-all-set-bits/
+
+给你一个正整数 `n`。
+
+返回 **大于等于** `n` 且二进制表示仅包含 **置位** 位的 **最小** 整数 `x` 。
+
+**置位** 位指的是二进制表示中值为 `1` 的位。
+
+ 
+
+**示例 1：**
+
+**输入：** n = 5
+
+**输出：** 7
+
+**解释：**
+
+7 的二进制表示是 `"111"`。
+
+**示例 2：**
+
+**输入：** n = 10
+
+**输出：** 15
+
+**解释：**
+
+15 的二进制表示是 `"1111"`。
+
+**示例 3：**
+
+**输入：** n = 3
+
+**输出：** 3
+
+**解释：**
+
+3 的二进制表示是 `"11"`。
+
+ 
+
+**提示：**
+
+- `1 <= n <= 1000`
+
+
+
+```python
+class Solution:
+    def smallestNumber(self, n: int) -> int:
+        len = n.bit_length()
+        s = '1'*len
+        return int(s, 2)
+```
+
+
+
+```python
+class Solution:
+    def smallestNumber(self, n: int) -> int:
+        return (1 << n.bit_length()) - 1
+```
 
 
 
@@ -12834,7 +12902,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
