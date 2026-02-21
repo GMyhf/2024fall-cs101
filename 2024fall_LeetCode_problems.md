@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-02-19 12:19 GMT+8*
+*Updated 2026-02-21 15:13 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -4457,6 +4457,188 @@ class Solution:
 ```
 
 
+
+## E762.二进制表示中质数个计算置位
+
+https://leetcode.cn/problems/prime-number-of-set-bits-in-binary-representation/
+
+给你两个整数 `left` 和 `right` ，在闭区间 `[left, right]` 范围内，统计并返回 **计算置位位数为质数** 的整数个数。
+
+**计算置位位数** 就是二进制表示中 `1` 的个数。
+
+- 例如， `21` 的二进制表示 `10101` 有 `3` 个计算置位。
+
+ 
+
+**示例 1：**
+
+```
+输入：left = 6, right = 10
+输出：4
+解释：
+6 -> 110 (2 个计算置位，2 是质数)
+7 -> 111 (3 个计算置位，3 是质数)
+9 -> 1001 (2 个计算置位，2 是质数)
+10-> 1010 (2 个计算置位，2 是质数)
+共计 4 个计算置位为质数的数字。
+```
+
+**示例 2：**
+
+```
+输入：left = 10, right = 15
+输出：5
+解释：
+10 -> 1010 (2 个计算置位, 2 是质数)
+11 -> 1011 (3 个计算置位, 3 是质数)
+12 -> 1100 (2 个计算置位, 2 是质数)
+13 -> 1101 (3 个计算置位, 3 是质数)
+14 -> 1110 (3 个计算置位, 3 是质数)
+15 -> 1111 (4 个计算置位, 4 不是质数)
+共计 5 个计算置位为质数的数字。
+```
+
+ 
+
+**提示：**
+
+- `1 <= left <= right <= 10^6`
+- `0 <= right - left <= 10^4`
+
+
+
+```python
+class Solution:
+    def countPrimeSetBits(self, left: int, right: int) -> int:
+        primes = []
+        numbers = [True]*(10**2 + 1)
+        numbers[0] = numbers[1] = False
+
+        def seive(numbers):
+            for i in range(2, int(1e2 + 1)):
+                if numbers[i]:
+                    primes.append(i)
+                for j in range(len(primes)):
+                    if i * primes[j] > int(1e2):
+                        break
+                    numbers[i * primes[j]] = False
+                    if i % primes[j] == 0:
+                        break
+
+        seive(numbers)
+        count = 0
+        for i in range(left, right + 1):
+            ones = bin(i).count('1')
+            if numbers[ones]:
+                count += 1
+
+        return count
+
+```
+
+
+
+**关键观察**
+
+- `right <= 10^6`
+- `10^6 < 2^20`
+
+所以一个数最多只有 **20 个二进制位**
+
+也就是说：
+
+> 置位个数最多是 20
+
+因此我们只需要判断：
+
+```
+2, 3, 5, 7, 11, 13, 17, 19
+```
+
+这 8 个质数即可。
+
+------
+
+方法一：最清晰写法（推荐）
+
+利用 Python 自带的 `bit_count()`（比 `bin(x).count('1')` 更快）
+
+```python
+class Solution:
+    def countPrimeSetBits(self, left: int, right: int) -> int:
+        primes = {2, 3, 5, 7, 11, 13, 17, 19}
+        
+        ans = 0
+        for x in range(left, right + 1):
+            if x.bit_count() in primes:
+                ans += 1
+                
+        return ans
+```
+
+------
+
+**时间复杂度**
+
+```
+区间长度 ≤ 10^4
+每个数 bit_count 是 O(1)
+```
+
+总体：
+
+```
+O(right - left)
+```
+
+非常轻松。
+
+------
+
+**进阶操作（位掩码黑科技）**
+
+我们可以用一个整数做“质数表”：
+
+```
+665772 = 0b10100010100010101100
+```
+
+这个数的第 k 位表示 k 是否是质数。
+
+代码：
+
+```python
+class Solution:
+    def countPrimeSetBits(self, left: int, right: int) -> int:
+        mask = 665772  # 预计算好的质数位掩码
+        
+        ans = 0
+        for x in range(left, right + 1):
+            if (mask >> x.bit_count()) & 1:
+                ans += 1
+                
+        return ans
+```
+
+------
+
+**原理**
+
+如果 k 是质数：
+
+```
+mask 的第 k 位 = 1
+```
+
+判断：
+
+```
+(mask >> k) & 1
+```
+
+是否为 1。
+
+这是一种 **位运算常见 trick**。
 
 
 
@@ -12652,7 +12834,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
