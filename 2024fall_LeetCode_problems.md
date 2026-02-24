@@ -5048,6 +5048,8 @@ binary, tree, https://leetcode.cn/problems/sum-of-root-to-leaf-binary-numbers/
 
 
 
+**`path` 是可变列表，在递归中被多个分支共享**。需要回溯。
+
 ```python
 # Definition for a binary tree node.
 # class TreeNode:
@@ -13210,7 +13212,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
