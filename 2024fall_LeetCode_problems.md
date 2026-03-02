@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-03-01 12:52 GMT+8*
+*Updated 2026-03-02 11:14 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -13285,7 +13285,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -27042,6 +27042,127 @@ print(browserHistory.back(2))  # 返回 "google.com"
 print(browserHistory.back(7))  # 返回 "leetcode.com"
 
 ```
+
+
+
+## M1536.排布二进制网格的最少交换次数
+
+greedy, matrix, https://leetcode.cn/problems/minimum-swaps-to-arrange-a-binary-grid/
+
+给你一个 `n x n` 的二进制网格 `grid`，每一次操作中，你可以选择网格的 **相邻两行** 进行交换。
+
+一个符合要求的网格需要满足主对角线以上的格子全部都是 **0** 。
+
+请你返回使网格满足要求的最少操作次数，如果无法使网格符合要求，请你返回 **-1** 。
+
+主对角线指的是从 `(1, 1)` 到 `(n, n)` 的这些格子。
+
+ 
+
+**示例 1：**
+
+![img](https://raw.githubusercontent.com/GMyhf/img/main/img/fw.jpg)
+
+```
+输入：grid = [[0,0,1],[1,1,0],[1,0,0]]
+输出：3
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/e2.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：grid = [[0,1,1,0],[0,1,1,0],[0,1,1,0],[0,1,1,0]]
+输出：-1
+解释：所有行都是一样的，交换相邻行无法使网格符合要求。
+```
+
+**示例 3：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/e3.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：grid = [[1,0,0],[1,1,0],[1,1,1]]
+输出：0
+```
+
+ 
+
+**提示：**
+
+- `n == grid.length`
+- `n == grid[i].length`
+- `1 <= n <= 200`
+- `grid[i][j]` 要么是 `0` 要么是 `1` 。
+
+
+
+题目要求我们通过**交换相邻行**的方式，使矩阵的主对角线以上的元素全部为 $0$。
+
+**题目分析**
+
+根据题目对“主对角线以上均为 0”的描述，若把矩阵视作以 $0$ 为起始索引，则对于任意的第 $i$ 行，其列索引 $j > i$ 的元素都必须为 $0$。
+也就是说，第 $i$ 行的**末尾连续 $0$ 的个数**至少应当为 $n - 1 - i$。
+
+由于我们只能**交换相邻的行**，这等价于在一个数组中，通过相邻交换把数字移动到满足条件的位置，且要求交换的次数最少。
+
+1. **预处理：** 我们可以遍历矩阵，将每一行转换成该行末尾连续 $0$ 的个数，存入一个数组 `zeros` 中。
+2. **贪心策略：** 我们从第 $0$ 行开始往下遍历，对于第 $i$ 行，我们需要一个末尾连续 $0$ 个数 $\ge n - 1 - i$ 的行。为了使交换次数最少，我们应当在 `zeros` 数组中从位置 $i$ 开始往后寻找**第一个**满足条件的行。找到后，将其通过相邻交换“提升”到第 $i$ 行的位置。
+3. **正确性保证：** 为什么寻找“第一个”满足条件的行是最优的？因为需要连续 $0$ 的数量条件是从大到小递减的（$n-1, n-2, \dots, 0$）。如果我们越过第一个满足条件的行去拿更后面的行，不仅当前步骤增加了不必要的交换次数，而且还会把原本满足当前严格条件的那个前面的行给“挤”下去，这对后续更宽松的条件并没有带来任何好处。
+4. **无法完成：** 如果在寻找过程中，某一行的要求无法被满足（即从 $i$ 到 $n-1$ 都找不到符合要求的行），则说明永远无法排列成目标网格，直接返回 `-1`。
+
+**Python 3 代码实现**
+
+```python
+class Solution:
+    def minSwaps(self, grid: List[List[int]]) -> int:
+        n = len(grid)
+        zeros =[]
+        
+        # 1. 预处理：计算每一行末尾连续 0 的个数
+        for row in grid:
+            count = 0
+            # 从后往前遍历
+            for j in range(n - 1, -1, -1):
+                if row[j] == 0:
+                    count += 1
+                else:
+                    break
+            zeros.append(count)
+            
+        ans = 0
+        
+        # 2. 遍历每一行，寻找符合条件的行并进行模拟交换
+        for i in range(n):
+            target = n - 1 - i
+            
+            # 在当前及之后的行中寻找第一个满足 0 的个数 >= target 的行
+            match = -1
+            for j in range(i, n):
+                if zeros[j] >= target:
+                    match = j
+                    break
+            
+            # 如果找不到，说明无法满足条件，返回 -1
+            if match == -1:
+                return -1
+                
+            # 累加需要的交换次数（即距离差）
+            ans += match - i
+            
+            # 模拟交换过程：将匹配到的行抽出，插入到当前需要的索引 i 处
+            # 相当于 match 到 i+1 的元素依次往下平移了一格
+            val = zeros.pop(match)
+            zeros.insert(i, val)
+            
+        return ans
+```
+
+**复杂度**
+
+- **时间复杂度：** $O(n^2)$。首先预处理寻找每行末尾 $0$ 的个数需耗费 $O(n^2)$ 的时间；接着对于外层长度为 $n$ 的循环中，寻找匹配的行和模拟列表交换 (`pop` 和 `insert` 操作) 也是 $O(n)$，故总计为 $O(n^2)$ 时间。在 $n \le 200$ 的数据范围内运算极快，性能绝佳。
+- **空间复杂度：** $O(n)$。我们使用了一个一维数组 `zeros` 来存储每行符合末尾连续 $0$ 的个数。
 
 
 
