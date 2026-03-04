@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-03-03 13:50 GMT+8*
+*Updated 2026-03-04 15:01 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -5802,6 +5802,67 @@ class Solution:
                 for k in range(j+1, n):
                     if abs(arr[i] - arr[j]) <= a and abs(arr[j] - arr[k]) <= b and abs(arr[i] - arr[k]) <= c :
                         cnt += 1
+        
+        return cnt
+```
+
+
+
+## E1582.二进制矩阵中的特殊位置
+
+matrix, https://leetcode.cn/problems/special-positions-in-a-binary-matrix/
+
+给定一个 `m x n` 的二进制矩阵 `mat`，返回矩阵 `mat` 中特殊位置的数量。
+
+如果位置 `(i, j)` 满足 `mat[i][j] == 1` 并且行 `i` 与列 `j` 中的所有其他元素都是 `0`（行和列的下标从 **0** 开始计数），那么它被称为 **特殊** 位置。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/special1.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：mat = [[1,0,0],[0,0,1],[1,0,0]]
+输出：1
+解释：位置 (1, 2) 是一个特殊位置，因为 mat[1][2] == 1 且第 1 行和第 2 列的其他所有元素都是 0。
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/special-grid.jpg" alt="img" style="zoom:67%;" />
+
+```
+输入：mat = [[1,0,0],[0,1,0],[0,0,1]]
+输出：3
+解释：位置 (0, 0)，(1, 1) 和 (2, 2) 都是特殊位置。
+```
+
+ 
+
+**提示：**
+
+- `m == mat.length`
+- `n == mat[i].length`
+- `1 <= m, n <= 100`
+- `mat[i][j]` 是 `0` 或 `1`。
+
+
+
+```python
+class Solution:
+    def numSpecial(self, mat: List[List[int]]) -> int:
+        m, n = len(mat), len(mat[0])
+        
+        # 预计算每行、每列的和
+        row_sum = [sum(row) for row in mat]
+        col_sum = [sum(mat[i][j] for i in range(m)) for j in range(n)]
+        
+        cnt = 0
+        for i in range(m):
+            for j in range(n):
+                if mat[i][j] == 1 and row_sum[i] == 1 and col_sum[j] == 1:
+                    cnt += 1
         
         return cnt
 ```
@@ -13285,7 +13346,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -27457,6 +27518,8 @@ class Solution:
             cnt += q.pop()
         return cnt
 ```
+
+
 
 
 
