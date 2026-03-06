@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-03-05 23:52 GMT+8*
+*Updated 2026-03-06 11:29 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -6043,6 +6043,87 @@ class Solution:
         max_balls_count = max(box_counts.values())
         
         return max_balls_count
+```
+
+
+
+## E1784.检查二进制字符串字段
+
+string, https://leetcode.cn/problems/check-if-binary-string-has-at-most-one-segment-of-ones/
+
+给你一个二进制字符串 `s` ，该字符串 **不含前导零** 。
+
+如果 `s` 包含 **零个或一个由连续的 `'1'` 组成的字段** ，返回 `true` 。否则，返回 `false` 。
+
+ 
+
+**示例 1：**
+
+```
+输入：s = "1001"
+输出：false
+解释：由连续若干个 '1' 组成的字段数量为 2，返回 false
+```
+
+**示例 2：**
+
+```
+输入：s = "110"
+输出：true
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 100`
+- `s[i]` 为 `'0'` 或 `'1'`
+- `s[0]` 为 `'1'`
+
+
+
+**题意解析**
+
+给定一个**不含前导零**的二进制字符串 `s`（即 `s[0] == '1'`），判断其中 **连续的 `'1'` 组成的段（segment）是否最多只有一个**。
+
+**关键观察**
+
+因为字符串**以 `'1'` 开头**，所以第一个字符就是 `'1'`。
+如果后面在某个 `'0'` **之后**又出现了 `'1'`，那就说明出现了**第二个 `'1'` 段**，应该返回 `False`。
+
+**解法思路**
+
+遍历字符串，设置一个标志表示是否已经“进入0区”：
+
+- 初始时还没遇到 `'0'`；
+- 遇到 `'0'` 后，标记为“已进入0区”；
+- 如果在“已进入0区”后又遇到 `'1'`，直接返回 `False`；
+- 遍历完都没问题，返回 `True`。
+
+或者更简单一点：**检查是否在字符串中存在 `"01"` 子串**。
+
+**代码实现**
+
+**方法一：使用子串判断（最简洁）**
+
+```python
+class Solution:
+    def checkOnesSegment(self, s: str) -> bool:
+        return "01" not in s
+```
+
+**方法二：手动遍历（更直观）**
+
+```python
+class Solution:
+    def checkOnesSegment(self, s: str) -> bool:
+        seen_zero = False
+        for c in s:
+            if c == '0':
+                seen_zero = True
+            elif seen_zero and c == '1':
+                return False
+        return True
 ```
 
 
@@ -13346,7 +13427,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
