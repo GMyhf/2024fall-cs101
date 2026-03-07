@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-03-07 00:43 GMT+8*
+*Updated 2026-03-07 22:36 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -3564,25 +3564,188 @@ numArray.sumRange(0, 5); // return -3 ((-2) + 0 + 3 + (-5) + 2 + (-1))
 
 
 
+如果只是 **查询一次** 或 **很少查询**，可以直接：
+
 ```python
+sum(nums[left:right+1])
+```
+
+但如果：查询次数 ≥ n，就必须 **前缀和**。这也是这题为什么叫 **Range Query**。
+
+
+
+这题是经典 **前缀和（Prefix Sum）** 模板题。思路很直接：
+
+**一、核心思想**
+
+预处理一个 **前缀和数组** `pre`：
+pre[i] = nums[0] + nums[1] + ... + nums[i-1]
+
+也就是：
+
+```
+pre[0] = 0
+pre[1] = nums[0]
+pre[2] = nums[0] + nums[1]
+...
+```
+
+这样区间 `[left, right]` 的和就是：
+sum(left,right) = pre[right+1] - pre[left]
+
+原因：
+
+```
+pre[right+1] = nums[0] + ... + nums[right]
+pre[left]    = nums[0] + ... + nums[left-1]
+```
+
+相减就得到：
+
+```
+nums[left] + ... + nums[right]
+```
+
+时间复杂度：
+
+- 初始化：`O(n)`
+- 每次查询：`O(1)`
+
+非常适合 **多次查询区间和**。
+
+------
+
+**二、Python实现**
+
+```python
+from typing import List
+
+
 class NumArray:
 
     def __init__(self, nums: List[int]):
         n = len(nums)
-        s = [0]*(n+1)
-        for i, num in enumerate(nums):
-            s[i+1] = s[i] + num
-        
-        self.s = s
+        self.pre = [0] * (n + 1)
+
+        for i in range(n):
+            self.pre[i + 1] = self.pre[i] + nums[i]
 
     def sumRange(self, left: int, right: int) -> int:
-        return self.s[right+1] - self.s[left]
-        
-
+        return self.pre[right + 1] - self.pre[left]
 
 # Your NumArray object will be instantiated and called as such:
 # obj = NumArray(nums)
 # param_1 = obj.sumRange(left,right)
+```
+
+------
+
+**四、为什么 `pre` 长度是 `n+1`**
+
+关键是 **避免特判 left=0**。
+
+如果不用 `n+1`，写法会变成：
+
+```python
+if left == 0:
+    return pre[right]
+else:
+    return pre[right] - pre[left-1]
+```
+
+而使用 `n+1`：pre[0] = 0
+
+就可以统一写成：pre[right+1] - pre[left]
+
+代码更干净。
+
+------
+
+**五、这题的本质**
+
+这是 **最基础的前缀和模型**：
+
+| 问题类型       | 技巧                   |
+| -------------- | ---------------------- |
+| 多次区间求和   | 前缀和                 |
+| 区间修改       | 差分                   |
+| 动态更新区间和 | Fenwick / Segment Tree |
+
+这题本质就是：预处理 O(n)，查询 O(1)
+
+
+
+常用的前缀和写法**，比标准写法更 **短、清晰、Pythonic。
+
+------
+
+**三行构造前缀和（推荐写法）**
+
+核心技巧：
+利用 **`itertools.accumulate`**
+
+```python
+from typing import List
+import itertools
+
+class NumArray:
+
+    def __init__(self, nums: List[int]):
+        self.pre = [0] + list(itertools.accumulate(nums))
+
+    def sumRange(self, left: int, right: int) -> int:
+        return self.pre[right+1] - self.pre[left]
+```
+
+初始化只需要 **一行核心代码**：
+
+
+
+**四、最常见的前缀和模板**
+
+以后你在做算法题基本都会看到这个模板：
+
+```python
+from itertools import accumulate
+
+nums = [1,2,3,4,5]
+
+pre = [0] + list(accumulate(nums))
+
+# 区间和
+def query(l,r):
+    return pre[r+1] - pre[l]
+```
+
+------
+
+**五、很多人不知道的一个技巧**
+
+`accumulate` 还能做 **前缀最大值 / 最小值 / 乘积**：
+
+**前缀最大值**
+
+```python
+from itertools import accumulate
+import operator
+
+nums = [3,1,5,2,4]
+
+pre_max = list(accumulate(nums, max))
+```
+
+得到：
+
+```
+[3,3,5,5,5]
+```
+
+------
+
+**前缀乘积**
+
+```python
+list(accumulate(nums, operator.mul))
 ```
 
 
@@ -13427,7 +13590,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
