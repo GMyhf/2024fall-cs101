@@ -21143,6 +21143,151 @@ if __name__ == "__main__":
 
 
 
+## M304.二维区域和检索 - 矩阵不可变
+
+prefix sum, https://leetcode.cn/problems/range-sum-query-2d-immutable/
+
+给定一个二维矩阵 `matrix`，以下类型的多个请求：
+
+- 计算其子矩形范围内元素的总和，该子矩阵的 **左上角** 为 `(row1, col1)` ，**右下角** 为 `(row2, col2)` 。
+
+实现 `NumMatrix` 类：
+
+- `NumMatrix(int[][] matrix)` 给定整数矩阵 `matrix` 进行初始化
+- `int sumRegion(int row1, int col1, int row2, int col2)` 返回 **左上角** `(row1, col1)` 、**右下角** `(row2, col2)` 所描述的子矩阵的元素 **总和** 。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202603072305356.png" alt="img" style="zoom:50%;" />
+
+```
+输入: 
+["NumMatrix","sumRegion","sumRegion","sumRegion"]
+[[[[3,0,1,4,2],[5,6,3,2,1],[1,2,0,1,5],[4,1,0,1,7],[1,0,3,0,5]]],[2,1,4,3],[1,1,2,2],[1,2,2,4]]
+输出: 
+[null, 8, 11, 12]
+
+解释:
+NumMatrix numMatrix = new NumMatrix([[3,0,1,4,2],[5,6,3,2,1],[1,2,0,1,5],[4,1,0,1,7],[1,0,3,0,5]]);
+numMatrix.sumRegion(2, 1, 4, 3); // return 8 (红色矩形框的元素总和)
+numMatrix.sumRegion(1, 1, 2, 2); // return 11 (绿色矩形框的元素总和)
+numMatrix.sumRegion(1, 2, 2, 4); // return 12 (蓝色矩形框的元素总和)
+```
+
+ 
+
+**提示：**
+
+- `m == matrix.length`
+- `n == matrix[i].length`
+
+
+
+**构造公式**
+
+二维前缀和：
+
+```
+pre[i][j] =
+  pre[i-1][j]
+  + pre[i][j-1]
+  - pre[i-1][j-1]
+  + matrix[i-1][j-1]
+```
+
+图形理解：
+
+```
+       j
+   ┌───────┐
+ i │   A   │
+   │       │
+   │       │
+   └───────┘
+```
+
+计算 `pre[i][j]` 时：上方 + 左方 - 重复区域 + 当前元素
+
+因为：`pre[i-1][j]` 和 `pre[i][j-1]` 重复算了 `pre[i-1][j-1]`，所以要减一次。
+
+------
+
+**O(1) 查询公式**
+
+查询：(r1,c1) 到 (r2,c2)
+
+公式：
+
+```
+sum =
+  pre[r2+1][c2+1]
+  - pre[r1][c2+1]
+  - pre[r2+1][c1]
+  + pre[r1][c1]
+```
+
+图示：
+
+```
+        c1      c2
+        │       │
+     ┌──┼───────┼──┐
+     │  │       │  │
+ r1 ─┼──A───────B──┤
+     │  │       │  │
+     │  │ query │  │
+     │  │       │  │
+ r2 ─┼──C───────D──┤
+     │  │       │  │
+     └──┴───────┴──┘
+```
+
+计算：D - B - C + A
+
+
+
+```python
+from typing import List
+
+class NumMatrix:
+
+    def __init__(self, matrix: List[List[int]]):
+
+        n = len(matrix)
+        m = len(matrix[0])
+
+        self.pre = [[0]*(m+1) for _ in range(n+1)]
+
+        for i in range(1,n+1):
+            for j in range(1,m+1):
+                self.pre[i][j] = (
+                    self.pre[i-1][j]
+                    + self.pre[i][j-1]
+                    - self.pre[i-1][j-1]
+                    + matrix[i-1][j-1]
+                )
+
+    def sumRegion(self, r1: int, c1: int, r2: int, c2: int) -> int:
+
+        return (
+            self.pre[r2+1][c2+1]
+            - self.pre[r1][c2+1]
+            - self.pre[r2+1][c1]
+            + self.pre[r1][c1]
+        )
+        
+
+# Your NumMatrix object will be instantiated and called as such:
+# obj = NumMatrix(matrix)
+# param_1 = obj.sumRegion(row1,col1,row2,col2)
+```
+
+
+
+
+
 ## M307.区域和检索 - 数组可修改
 
 binary indexed tree, segment tree, https://leetcode.cn/problems/range-sum-query-mutable/
