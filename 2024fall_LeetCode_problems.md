@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-03-07 22:36 GMT+8*
+*Updated 2026-03-08 22:36 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -13590,7 +13590,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -29869,6 +29869,102 @@ class Solution:
 
 *   **时间复杂度**：$O(n^2)$，其中 $n$ 是方阵的边长。我们需要遍历矩阵中的每一个元素一次。
 *   **空间复杂度**：$O(1)$，只使用了常数级别的额外空间。
+
+
+
+## M1980.找出不同的二进制字符串
+
+Constructive Algorithm, Cantor Diagonalization, Bit Manipulation, https://leetcode.cn/problems/find-unique-binary-string/
+
+给你一个字符串数组 `nums` ，该数组由 `n` 个 **互不相同** 的二进制字符串组成，且每个字符串长度都是 `n` 。请你找出并返回一个长度为 `n` 且 **没有出现** 在 `nums` 中的二进制字符串*。*如果存在多种答案，只需返回 **任意一个** 即可。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = ["01","10"]
+输出："11"
+解释："11" 没有出现在 nums 中。"00" 也是正确答案。
+```
+
+**示例 2：**
+
+```
+输入：nums = ["00","01"]
+输出："11"
+解释："11" 没有出现在 nums 中。"10" 也是正确答案。
+```
+
+**示例 3：**
+
+```
+输入：nums = ["111","011","001"]
+输出："101"
+解释："101" 没有出现在 nums 中。"000"、"010"、"100"、"110" 也是正确答案。
+```
+
+ 
+
+**提示：**
+
+- `n == nums.length`
+- `1 <= n <= 16`
+- `nums[i].length == n`
+- `nums[i] `为 `'0'` 或 `'1'`
+- `nums` 中的所有字符串 **互不相同**
+
+
+
+```python
+from typing import List
+
+class Solution:
+    def findDifferentBinaryString(self, nums: List[str]) -> str:
+        n = len(nums)
+        s = set(nums)
+
+        for i in range(1 << n):
+            result = format(i, f'0{n}b')
+            if result not in s:
+                return result
+
+
+if __name__ == "__main__":
+    nums = ["0"]
+    print(Solution().findDifferentBinaryString(nums))
+```
+
+
+
+利用 **Cantor 对角线法**：第 `i` 位与 `nums[i][i]` **取反**。保证结果不等于任何一个字符串。时间复杂度 O(n)
+
+远优于枚举 `O(2^n)`。
+
+最优代码
+
+```python
+from typing import List
+
+class Solution:
+    def findDifferentBinaryString(self, nums: List[str]) -> str:
+        return ''.join('1' if nums[i][i] == '0' else '0'
+                       for i in range(len(nums)))
+
+
+if __name__ == "__main__":
+    nums = ["0"]
+    print(Solution().findDifferentBinaryString(nums))
+```
+
+
+
+两种方案复杂度对比
+
+| 方法       | 时间复杂度 | 空间 | 推荐  |
+| ---------- | ---------- | ---- | ----- |
+| 枚举 + set | O(2ⁿ)      | O(n) | 可    |
+| 对角线法   | O(n)       | O(1) | ⭐⭐⭐⭐⭐ |
 
 
 
