@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-03-08 23:23 GMT+8*
+*Updated 2026-03-09 13:11 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -9606,6 +9606,95 @@ class Solution:
 
         return res
 ```
+
+
+
+## T3130.找出所有稳定的二进制数组 II
+
+dp, https://leetcode.cn/problems/find-all-possible-stable-binary-arrays-ii/
+
+给你 3 个正整数 `zero` ，`one` 和 `limit` 。
+
+一个 二进制数组 `arr` 如果满足以下条件，那么我们称它是 **稳定的** ：
+
+- 0 在 `arr` 中出现次数 **恰好** 为 `zero` 。
+- 1 在 `arr` 中出现次数 **恰好** 为 `one` 。
+- `arr` 中每个长度超过 `limit` 的 子数组 都 **同时** 包含 0 和 1 。
+
+请你返回 **稳定** 二进制数组的 *总* 数目。
+
+由于答案可能很大，将它对 `10^9 + 7` **取余** 后返回。
+
+ 
+
+**示例 1：**
+
+**输入：**zero = 1, one = 1, limit = 2
+
+**输出：**2
+
+**解释：**
+
+两个稳定的二进制数组为 `[1,0]` 和 `[0,1]` ，两个数组都有一个 0 和一个 1 ，且没有子数组长度大于 2 。
+
+**示例 2：**
+
+**输入：**zero = 1, one = 2, limit = 1
+
+**输出：**1
+
+**解释：**
+
+唯一稳定的二进制数组是 `[1,0,1]` 。
+
+二进制数组 `[1,1,0]` 和 `[0,1,1]` 都有长度为 2 且元素全都相同的子数组，所以它们不稳定。
+
+**示例 3：**
+
+**输入：**zero = 3, one = 3, limit = 2
+
+**输出：**14
+
+**解释：**
+
+所有稳定的二进制数组包括 `[0,0,1,0,1,1]` ，`[0,0,1,1,0,1]` ，`[0,1,0,0,1,1]` ，`[0,1,0,1,0,1]` ，`[0,1,0,1,1,0]` ，`[0,1,1,0,0,1]` ，`[0,1,1,0,1,0]` ，`[1,0,0,1,0,1]` ，`[1,0,0,1,1,0]` ，`[1,0,1,0,0,1]` ，`[1,0,1,0,1,0]` ，`[1,0,1,1,0,0]` ，`[1,1,0,0,1,0]` 和 `[1,1,0,1,0,0]` 。
+
+ 
+
+**提示：**
+
+- `1 <= zero, one, limit <= 1000`
+
+
+
+【灵茶山艾府】，https://leetcode.cn/problems/find-all-possible-stable-binary-arrays-ii/solutions/2758868/dong-tai-gui-hua-cong-ji-yi-hua-sou-suo-37jdi/
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/a963f1d12cfabc33e796baa407a199e7.png" alt="a963f1d12cfabc33e796baa407a199e7" style="zoom: 33%;" />
+
+
+
+```python
+class Solution:
+    def numberOfStableArrays(self, zero: int, one: int, limit: int) -> int:
+        MOD = 1_000_000_007
+        @cache  # 缓存装饰器，避免重复计算 dfs 的结果（记忆化）
+        def dfs(i: int, j: int, k: int) -> int:
+            if i == 0:
+                return 1 if k == 1 and j <= limit else 0
+            if j == 0:
+                return 1 if k == 0 and i <= limit else 0
+            if k == 0:
+                return (dfs(i - 1, j, 0) + dfs(i - 1, j, 1) - (dfs(i - limit - 1, j, 1) if i > limit else 0)) % MOD
+            else:  # else 可以去掉，这里仅仅是为了代码对齐
+                return (dfs(i, j - 1, 0) + dfs(i, j - 1, 1) - (dfs(i, j - limit - 1, 0) if j > limit else 0)) % MOD
+        ans = (dfs(zero, one, 0) + dfs(zero, one, 1)) % MOD
+        dfs.cache_clear()  # 防止爆内存
+        return ans
+
+
+```
+
+
 
 
 
