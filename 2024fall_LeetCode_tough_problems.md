@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-03-09 13:11 GMT+8*
+*Updated 2026-03-12 13:44 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -12768,6 +12768,325 @@ if __name__ == '__main__':
     print(sol.minTravelTime(5, 5, 1, [0,1,2,3,5], [8,3,9,3,3]))  # 34
 
 ```
+
+
+
+## T3600.升级后最大生成树稳定性
+
+binary search, minimum spanning tree, https://leetcode.cn/problems/maximize-spanning-tree-stability-with-upgrades/
+
+给你一个整数 `n`，表示编号从 0 到 `n - 1` 的 `n` 个节点，以及一个 `edges` 列表，其中 `edges[i] = [ui, vi, si, musti]`：
+
+- `ui` 和 `vi` 表示节点 `ui` 和 `vi` 之间的一条无向边。
+- `si` 是该边的强度。
+- `musti` 是一个整数（0 或 1）。如果 `musti == 1`，则该边 **必须** 包含在生成树中，且 **不能****升级** 。
+
+你还有一个整数 `k`，表示你可以执行的最多 **升级** 次数。每次升级会使边的强度 **翻倍** ，且每条可升级边（即 `musti == 0`）最多只能升级一次。
+
+一个生成树的 **稳定性** 定义为其中所有边的 **最小** 强度。
+
+返回任何有效生成树可能达到的 **最大** 稳定性。如果无法连接所有节点，返回 `-1`。
+
+**注意：** 图的一个 **生成树**（**spanning tree**）是该图中边的一个子集，它满足以下条件：
+
+- 将所有节点连接在一起（即图是 **连通的** ）。
+- **不** 形成任何环。
+- 包含 **恰好** `n - 1` 条边，其中 `n` 是图中节点的数量。
+
+ 
+
+**示例 1：**
+
+**输入：** n = 3, edges = [[0,1,2,1],[1,2,3,0]], k = 1
+
+**输出：** 2
+
+**解释：**
+
+- 边 `[0,1]` 强度为 2，必须包含在生成树中。
+- 边 `[1,2]` 是可选的，可以使用一次升级将其强度从 3 提升到 6。
+- 最终的生成树包含这两条边，强度分别为 2 和 6。
+- 生成树中的最小强度是 2，即最大可能稳定性。
+
+**示例 2：**
+
+**输入：** n = 3, edges = [[0,1,4,0],[1,2,3,0],[0,2,1,0]], k = 2
+
+**输出：** 6
+
+**解释：**
+
+- 所有边都是可选的，且最多可以进行 `k = 2` 次升级。
+- 将边 `[0,1]` 从 4 升级到 8，将边 `[1,2]` 从 3 升级到 6。
+- 生成树包含这两条边，强度分别为 8 和 6。
+- 生成树中的最小强度是 6，即最大可能稳定性。
+
+**示例 3：**
+
+**输入：** n = 3, edges = [[0,1,1,1],[1,2,1,1],[2,0,1,1]], k = 0
+
+**输出：** -1
+
+**解释：**
+
+- 所有边都是必选的，构成了一个环，这违反了生成树无环的性质。因此返回 -1。
+
+ 
+
+**提示：**
+
+- `2 <= n <= 105`
+- `1 <= edges.length <= 105`
+- `edges[i] = [ui, vi, si, musti]`
+- `0 <= ui, vi < n`
+- `ui != vi`
+- `1 <= si <= 105`
+- `musti` 是 `0` 或 `1`。
+- `0 <= k <= n`
+- 没有重复的边。
+
+
+
+这题本质是 **最大化生成树中的最小边权**，并且允许 **最多 k 条非 must 边升级（权值×2）**。
+典型套路是：
+
+**二分答案 + 并查集判断可行性**。
+
+核心思想类似 **“最大瓶颈生成树”**。
+
+------
+
+**一、问题转化**
+
+设目标稳定性为 `T`。
+
+要判断：
+**是否存在一个生成树，使所有边权 ≥ T**。
+
+但边有三种情况：
+
+| 边类型 | 原始强度 | 升级后   |
+| ------ | -------- | -------- |
+| must=1 | s        | 不能升级 |
+| must=0 | s        | 2s       |
+
+因此一条边满足 `≥T` 的方式：
+
+1. **不升级就能用**
+   `s ≥ T`
+2. **升级后能用**（且 must=0）
+   `2s ≥ T`
+
+如果 `s < T ≤ 2s`，这条边 **必须升级**。
+
+------
+
+**二、可行性检查**
+
+给定 `T`：
+
+1️⃣ 先处理 must 边
+
+- 如果 `must=1` 且 `s < T`
+  → 无法升级
+  → **直接失败**
+
+否则加入并查集。
+
+若形成环 → **失败**。
+
+------
+
+2️⃣ 分类其他边
+
+对 `must=0` 边：
+
+| 条件         | 类型     |
+| ------------ | -------- |
+| `s ≥ T`      | 不用升级 |
+| `s < T ≤ 2s` | 必须升级 |
+| `2s < T`     | 不可用   |
+
+------
+
+3️⃣ Kruskal 构造
+
+优先使用 **不升级边**（省升级次数）
+
+然后使用 **需要升级的边**
+
+同时统计：
+
+- 使用升级边数 `used_upgrades`
+
+若 `used_upgrades ≤ k` 且连通 → 可行
+
+------
+
+**三、二分答案范围**
+
+最大可能稳定性：
+
+```
+max_s * 2
+```
+
+因为升级最多翻倍。
+
+二分 `T`：
+
+```
+1 ~ 2 * max(s)
+```
+
+------
+
+**四、时间复杂度**
+
+- 每次 check：`O(m α(n))`
+- 二分：`log(2e5) ≈ 18`
+
+总复杂度：
+
+```
+O(m log W)
+```
+
+对于 `m=1e5` 完全可过。
+
+------
+
+**五、完整 Python 实现**
+
+```python
+from typing import List
+
+class Solution:
+    def maxStability(self, n: int, edges: List[List[int]], k: int) -> int:
+        
+        parent=list(range(n))
+        rank=[0]*n
+        
+        def find(x):
+            while parent[x]!=x:
+                parent[x]=parent[parent[x]]
+                x=parent[x]
+            return x
+        
+        def union(a,b):
+            ra,rb=find(a),find(b)
+            if ra==rb:
+                return False
+            if rank[ra]<rank[rb]:
+                parent[ra]=rb
+            elif rank[ra]>rank[rb]:
+                parent[rb]=ra
+            else:
+                parent[rb]=ra
+                rank[ra]+=1
+            return True
+        
+        maxs=max(s for _,_,s,_ in edges)
+        
+        def check(T):
+            nonlocal parent,rank
+            parent=list(range(n))
+            rank=[0]*n
+            
+            used_upgrade=0
+            edge_cnt=0
+            
+            normal=[]
+            upgrade=[]
+            
+            # 处理边
+            for u,v,s,must in edges:
+                if must:
+                    if s<T:
+                        return False
+                    if not union(u,v):
+                        return False
+                    edge_cnt+=1
+                else:
+                    if s>=T:
+                        normal.append((u,v))
+                    elif s*2>=T:
+                        upgrade.append((u,v))
+            
+            # 不升级
+            for u,v in normal:
+                if union(u,v):
+                    edge_cnt+=1
+            
+            # 升级
+            for u,v in upgrade:
+                if union(u,v):
+                    used_upgrade+=1
+                    edge_cnt+=1
+                    if used_upgrade>k:
+                        return False
+            
+            return edge_cnt==n-1
+        
+        lo,hi=1,maxs*2
+        ans=-1
+        
+        while lo<=hi:
+            mid=(lo+hi)//2
+            if check(mid):
+                ans=mid
+                lo=mid+1
+            else:
+                hi=mid-1
+        
+        return ans
+```
+
+------
+
+**六、关键理解（这题最核心）**
+
+这题其实是：
+
+**最大化生成树瓶颈值**
+
+但多了两个约束：
+
+1️⃣ **必须边必须选**
+2️⃣ **部分边可升级一次**
+
+所以变成：
+
+> **判断是否能用 ≤k 次升级构造一棵所有边 ≥T 的生成树**
+
+然后 **二分 T**。
+
+------
+
+**七、一个更深的算法视角（竞赛常见）**
+
+这题其实是：
+
+**Binary Search + Kruskal feasibility**
+
+常见于：
+
+- 最大瓶颈生成树
+- 网络可靠性
+- 最小容量限制
+- 带资源限制 MST
+
+结构模板：
+
+```
+max answer
+↓
+binary search
+↓
+union find feasibility
+```
+
+
 
 
 
