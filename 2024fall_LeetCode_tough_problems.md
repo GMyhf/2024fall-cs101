@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-03-12 13:44 GMT+8*
+*Updated 2026-03-13 22:26 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -8983,6 +8983,95 @@ class Solution:
 
 
 
+## T3130.找出所有稳定的二进制数组 II
+
+dp, https://leetcode.cn/problems/find-all-possible-stable-binary-arrays-ii/
+
+给你 3 个正整数 `zero` ，`one` 和 `limit` 。
+
+一个 二进制数组 `arr` 如果满足以下条件，那么我们称它是 **稳定的** ：
+
+- 0 在 `arr` 中出现次数 **恰好** 为 `zero` 。
+- 1 在 `arr` 中出现次数 **恰好** 为 `one` 。
+- `arr` 中每个长度超过 `limit` 的 子数组 都 **同时** 包含 0 和 1 。
+
+请你返回 **稳定** 二进制数组的 *总* 数目。
+
+由于答案可能很大，将它对 `10^9 + 7` **取余** 后返回。
+
+ 
+
+**示例 1：**
+
+**输入：**zero = 1, one = 1, limit = 2
+
+**输出：**2
+
+**解释：**
+
+两个稳定的二进制数组为 `[1,0]` 和 `[0,1]` ，两个数组都有一个 0 和一个 1 ，且没有子数组长度大于 2 。
+
+**示例 2：**
+
+**输入：**zero = 1, one = 2, limit = 1
+
+**输出：**1
+
+**解释：**
+
+唯一稳定的二进制数组是 `[1,0,1]` 。
+
+二进制数组 `[1,1,0]` 和 `[0,1,1]` 都有长度为 2 且元素全都相同的子数组，所以它们不稳定。
+
+**示例 3：**
+
+**输入：**zero = 3, one = 3, limit = 2
+
+**输出：**14
+
+**解释：**
+
+所有稳定的二进制数组包括 `[0,0,1,0,1,1]` ，`[0,0,1,1,0,1]` ，`[0,1,0,0,1,1]` ，`[0,1,0,1,0,1]` ，`[0,1,0,1,1,0]` ，`[0,1,1,0,0,1]` ，`[0,1,1,0,1,0]` ，`[1,0,0,1,0,1]` ，`[1,0,0,1,1,0]` ，`[1,0,1,0,0,1]` ，`[1,0,1,0,1,0]` ，`[1,0,1,1,0,0]` ，`[1,1,0,0,1,0]` 和 `[1,1,0,1,0,0]` 。
+
+ 
+
+**提示：**
+
+- `1 <= zero, one, limit <= 1000`
+
+
+
+【灵茶山艾府】，https://leetcode.cn/problems/find-all-possible-stable-binary-arrays-ii/solutions/2758868/dong-tai-gui-hua-cong-ji-yi-hua-sou-suo-37jdi/
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/a963f1d12cfabc33e796baa407a199e7.png" alt="a963f1d12cfabc33e796baa407a199e7" style="zoom: 33%;" />
+
+
+
+```python
+class Solution:
+    def numberOfStableArrays(self, zero: int, one: int, limit: int) -> int:
+        MOD = 1_000_000_007
+        @cache  # 缓存装饰器，避免重复计算 dfs 的结果（记忆化）
+        def dfs(i: int, j: int, k: int) -> int:
+            if i == 0:
+                return 1 if k == 1 and j <= limit else 0
+            if j == 0:
+                return 1 if k == 0 and i <= limit else 0
+            if k == 0:
+                return (dfs(i - 1, j, 0) + dfs(i - 1, j, 1) - (dfs(i - limit - 1, j, 1) if i > limit else 0)) % MOD
+            else:  # else 可以去掉，这里仅仅是为了代码对齐
+                return (dfs(i, j - 1, 0) + dfs(i, j - 1, 1) - (dfs(i, j - limit - 1, 0) if j > limit else 0)) % MOD
+        ans = (dfs(zero, one, 0) + dfs(zero, one, 1)) % MOD
+        dfs.cache_clear()  # 防止爆内存
+        return ans
+
+
+```
+
+
+
+
+
 ## 3272.统计好整数的数目
 
 hash table, math, combinators, enumeration, https://leetcode.cn/problems/find-the-count-of-good-integers/
@@ -9609,90 +9698,175 @@ class Solution:
 
 
 
-## T3130.找出所有稳定的二进制数组 II
 
-dp, https://leetcode.cn/problems/find-all-possible-stable-binary-arrays-ii/
 
-给你 3 个正整数 `zero` ，`one` 和 `limit` 。
+## T3327.判断 DFS 字符串是否是回文串
 
-一个 二进制数组 `arr` 如果满足以下条件，那么我们称它是 **稳定的** ：
+dfs, manacher, https://leetcode.cn/problems/check-if-dfs-strings-are-palindromes/
 
-- 0 在 `arr` 中出现次数 **恰好** 为 `zero` 。
-- 1 在 `arr` 中出现次数 **恰好** 为 `one` 。
-- `arr` 中每个长度超过 `limit` 的 子数组 都 **同时** 包含 0 和 1 。
+给你一棵 `n` 个节点的树，树的根节点为 0 ，`n` 个节点的编号为 `0` 到 `n - 1` 。这棵树用一个长度为 `n` 的数组 `parent` 表示，其中 `parent[i]` 是节点 `i` 的父节点。由于节点 0 是根节点，所以 `parent[0] == -1` 。
 
-请你返回 **稳定** 二进制数组的 *总* 数目。
+给你一个长度为 `n` 的字符串 `s` ，其中 `s[i]` 是节点 `i` 对应的字符。
 
-由于答案可能很大，将它对 `10^9 + 7` **取余** 后返回。
+一开始你有一个空字符串 `dfsStr` ，定义一个递归函数 `dfs(int x)` ，它的输入是节点 `x` ，并依次执行以下操作：
+
+- 按照 **节点编号升序** 遍历 `x` 的所有孩子节点 `y` ，并调用 `dfs(y)` 。
+- 将 字符 `s[x]` 添加到字符串 `dfsStr` 的末尾。
+
+**注意，**所有递归函数 `dfs` 都共享全局变量 `dfsStr` 。
+
+你需要求出一个长度为 `n` 的布尔数组 `answer` ，对于 `0` 到 `n - 1` 的每一个下标 `i` ，你需要执行以下操作：
+
+- 清空字符串 `dfsStr` 并调用 `dfs(i)` 。
+- 如果结果字符串 `dfsStr` 是一个 回文串 ，`answer[i]` 为 `true` ，否则 `answer[i]` 为 `false` 。
+
+请你返回字符串 `answer` 。
 
  
 
 **示例 1：**
 
-**输入：**zero = 1, one = 1, limit = 2
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/tree1drawio.png" alt="img" style="zoom:50%;" />
 
-**输出：**2
+**输入：**parent = [-1,0,0,1,1,2], s = "aababa"
+
+**输出：**[true,true,false,true,true,true]
 
 **解释：**
 
-两个稳定的二进制数组为 `[1,0]` 和 `[0,1]` ，两个数组都有一个 0 和一个 1 ，且没有子数组长度大于 2 。
+- 调用 `dfs(0)` ，得到字符串 `dfsStr = "abaaba"` ，是一个回文串。
+- 调用 `dfs(1)` ，得到字符串`dfsStr = "aba"` ，是一个回文串。
+- 调用 `dfs(2)` ，得到字符串`dfsStr = "ab"` ，**不** 是回文串。
+- 调用 `dfs(3)` ，得到字符串`dfsStr = "a"` ，是一个回文串。
+- 调用 `dfs(4)` ，得到字符串 `dfsStr = "b"` ，是一个回文串。
+- 调用 `dfs(5)` ，得到字符串 `dfsStr = "a"` ，是一个回文串。
 
 **示例 2：**
 
-**输入：**zero = 1, one = 2, limit = 1
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/tree2drawio-1.png" alt="img" style="zoom:50%;" />
 
-**输出：**1
+**输入：**parent = [-1,0,0,0,0], s = "aabcb"
 
-**解释：**
-
-唯一稳定的二进制数组是 `[1,0,1]` 。
-
-二进制数组 `[1,1,0]` 和 `[0,1,1]` 都有长度为 2 且元素全都相同的子数组，所以它们不稳定。
-
-**示例 3：**
-
-**输入：**zero = 3, one = 3, limit = 2
-
-**输出：**14
+**输出：**[true,true,true,true,true]
 
 **解释：**
 
-所有稳定的二进制数组包括 `[0,0,1,0,1,1]` ，`[0,0,1,1,0,1]` ，`[0,1,0,0,1,1]` ，`[0,1,0,1,0,1]` ，`[0,1,0,1,1,0]` ，`[0,1,1,0,0,1]` ，`[0,1,1,0,1,0]` ，`[1,0,0,1,0,1]` ，`[1,0,0,1,1,0]` ，`[1,0,1,0,0,1]` ，`[1,0,1,0,1,0]` ，`[1,0,1,1,0,0]` ，`[1,1,0,0,1,0]` 和 `[1,1,0,1,0,0]` 。
+每一次调用 `dfs(x)` 都得到一个回文串。
 
  
 
 **提示：**
 
-- `1 <= zero, one, limit <= 1000`
+- `n == parent.length == s.length`
+- `1 <= n <= 10^5`
+- 对于所有 `i >= 1` ，都有 `0 <= parent[i] <= n - 1` 。
+- `parent[0] == -1`
+- `parent` 表示一棵合法的树。
+- `s` 只包含小写英文字母。
 
 
 
-【灵茶山艾府】，https://leetcode.cn/problems/find-all-possible-stable-binary-arrays-ii/solutions/2758868/dong-tai-gui-hua-cong-ji-yi-hua-sou-suo-37jdi/
-
-<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/a963f1d12cfabc33e796baa407a199e7.png" alt="a963f1d12cfabc33e796baa407a199e7" style="zoom: 33%;" />
 
 
+为了高效解决这个问题，我们需要处理两个核心点：
+
+1.  **如何快速获取每个子树生成的 DFS 字符串**：题目定义的 DFS 顺序是“先递归访问升序排列的孩子，再添加当前节点字符”。这本质上是带有子节点排序约束的**后序遍历**。在这种遍历下，任意节点 $i$ 生成的字符串 `dfsStr(i)` 恰好是全局后序遍历字符串的一个**连续子串**。
+2.  **如何高效判断子串是否为回文串**：由于节点数 $n \le 10^5$，我们不能显式构建每个字符串，否则时间复杂度会退化到 $O(n^2)$。我们可以预先生成全局字符串，然后利用 **Manacher 算法** 或 **字符串哈希** 在 $O(1)$ 时间内判断任意子串是否为回文。
+
+**算法步骤：**
+
+1.  **构建并排序树结构**：根据 `parent` 数组建立邻接表，并对每个节点的孩子列表按编号升序排序。
+2.  **生成后序遍历序列**：使用迭代式 DFS（避免深度过大的树导致栈溢出）获取全局后序遍历得到的字符串 `order`。同时记录每个节点 $i$ 在 `order` 中对应的起始索引 `start[i]` 和结束索引 `end[i]`。
+3.  **Manacher 算法预处理**：对字符串 `order` 执行 Manacher 算法，计算以每个位置为中心的最大回文半径。
+4.  **查询并得出结果**：对于每个节点 $i$，其对应的字符串长度为 `len = end[i] - start[i] + 1`，中心位置映射到 Manacher 数组中的位置。通过比较该中心的最大回文半径是否大于等于 `len`，即可判断其是否为回文。
+
+**Python 代码实现：**
 
 ```python
+from typing import List
+
 class Solution:
-    def numberOfStableArrays(self, zero: int, one: int, limit: int) -> int:
-        MOD = 1_000_000_007
-        @cache  # 缓存装饰器，避免重复计算 dfs 的结果（记忆化）
-        def dfs(i: int, j: int, k: int) -> int:
-            if i == 0:
-                return 1 if k == 1 and j <= limit else 0
-            if j == 0:
-                return 1 if k == 0 and i <= limit else 0
-            if k == 0:
-                return (dfs(i - 1, j, 0) + dfs(i - 1, j, 1) - (dfs(i - limit - 1, j, 1) if i > limit else 0)) % MOD
-            else:  # else 可以去掉，这里仅仅是为了代码对齐
-                return (dfs(i, j - 1, 0) + dfs(i, j - 1, 1) - (dfs(i, j - limit - 1, 0) if j > limit else 0)) % MOD
-        ans = (dfs(zero, one, 0) + dfs(zero, one, 1)) % MOD
-        dfs.cache_clear()  # 防止爆内存
+    def findAnswer(self, parent: List[int], s: str) -> List[bool]:
+        n = len(parent)
+        if n == 0:
+            return []
+        
+        # 1. 构建邻接表并对孩子节点进行升序排序
+        adj = [[] for _ in range(n)]
+        for i in range(1, n):
+            adj[parent[i]].append(i)
+        
+        for i in range(n):
+            if len(adj[i]) > 1:
+                adj[i].sort()
+        
+        # 2. 迭代式后序遍历 (Post-order DFS)
+        # 记录全局遍历字符串 order 和每个子树对应的区间 [start, end]
+        order = [None] * n
+        start = [0] * n
+        end = [0] * n
+        curr_time = 0
+        
+        # stack 存储 (节点, 状态); 状态 0: 准备访问孩子, 1: 孩子访问完毕，处理当前节点
+        stack = [(0, 0)]
+        while stack:
+            u, state = stack.pop()
+            if state == 0:
+                start[u] = curr_time
+                stack.append((u, 1))
+                # 栈是后进先出，为了升序访问孩子，需降序压入栈
+                children = adj[u]
+                for i in range(len(children) - 1, -1, -1):
+                    stack.append((children[i], 0))
+            else:
+                # 记录字符并更新时间戳
+                order[curr_time] = s[u]
+                end[u] = curr_time
+                curr_time += 1
+        
+        # 3. Manacher's Algorithm 预处理
+        # 构造填充字符串以处理偶数长度回文，例如 "aba" -> "#a#b#a#"
+        m_str = ['#'] * (2 * n + 1)
+        for i in range(n):
+            m_str[2 * i + 1] = order[i]
+        
+        m = len(m_str)
+        p = [0] * m  # p[i] 存储以 i 为中心的最大回文半径（在原串中的长度）
+        center = 0 
+        right_boundary = 0 
+        
+        for i in range(m):
+            if i < right_boundary:
+                p[i] = min(right_boundary - i, p[2 * center - i])
+            
+            # 尝试中心扩展
+            l_ptr, r_ptr = i - (p[i] + 1), i + (p[i] + 1)
+            while l_ptr >= 0 and r_ptr < m and m_str[l_ptr] == m_str[r_ptr]:
+                p[i] += 1
+                l_ptr -= 1
+                r_ptr += 1
+            
+            # 更新右边界和中心
+            if i + p[i] > right_boundary:
+                center, right_boundary = i, i + p[i]
+        
+        # 4. 根据 Manacher 结果判断每个节点的区间是否为回文
+        ans = [False] * n
+        for i in range(n):
+            l_idx, r_idx = start[i], end[i]
+            length = r_idx - l_idx + 1
+            # 子串 order[l_idx...r_idx] 在 m_str 中的中心索引为 l_idx + r_idx + 1
+            mid_in_m = l_idx + r_idx + 1
+            if p[mid_in_m] >= length:
+                ans[i] = True
+                
         return ans
-
-
 ```
+
+**复杂度分析：**
+
+*   **时间复杂度**：$O(n \log (\text{avg\_children})) \approx O(n \log n)$。构建树和遍历是 $O(n)$，对所有孩子节点排序的总代价在最坏情况下（星型树）为 $O(n \log n)$。Manacher 算法是 $O(n)$。最终查询每个节点是 $O(n)$。
+*   **空间复杂度**：$O(n)$。用于存储邻接表、Manacher 半径数组 `p` 以及辅助字符串 `m_str`。
 
 
 
