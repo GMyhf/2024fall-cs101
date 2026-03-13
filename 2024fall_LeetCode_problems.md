@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-03-11 12:28 GMT+8*
+*Updated 2026-03-13 20:28 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -13650,7 +13650,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -34115,6 +34115,159 @@ class Solution:
 3. 扫描完成后，再遍历一遍原串，把所有 `removed[i] == False` 的字母连起来就是答案。
 
 该算法时间复杂度为 O(n×26)，空间复杂度 O(n)，可轻松应对 n≤10^5 的长度。
+
+
+
+## M3296.移山所需的最少秒数
+
+binary search, https://leetcode.cn/problems/minimum-number-of-seconds-to-make-mountain-height-zero/
+
+给你一个整数 `mountainHeight` 表示山的高度。
+
+同时给你一个整数数组 `workerTimes`，表示工人们的工作时间（单位：**秒**）。
+
+工人们需要 **同时** 进行工作以 **降低** 山的高度。对于工人 `i` :
+
+- 山的高度降低 `x`，需要花费 `workerTimes[i] + workerTimes[i] * 2 + ... + workerTimes[i] * x` 秒。例如：
+  - 山的高度降低 1，需要 `workerTimes[i]` 秒。
+  - 山的高度降低 2，需要 `workerTimes[i] + workerTimes[i] * 2` 秒，依此类推。
+
+返回一个整数，表示工人们使山的高度降低到 0 所需的 **最少** 秒数。
+
+ 
+
+**示例 1：**
+
+**输入：** mountainHeight = 4, workerTimes = [2,1,1]
+
+**输出：** 3
+
+**解释：**
+
+将山的高度降低到 0 的一种方式是：
+
+- 工人 0 将高度降低 1，花费 `workerTimes[0] = 2` 秒。
+- 工人 1 将高度降低 2，花费 `workerTimes[1] + workerTimes[1] * 2 = 3` 秒。
+- 工人 2 将高度降低 1，花费 `workerTimes[2] = 1` 秒。
+
+因为工人同时工作，所需的最少时间为 `max(2, 3, 1) = 3` 秒。
+
+**示例 2：**
+
+**输入：** mountainHeight = 10, workerTimes = [3,2,2,4]
+
+**输出：** 12
+
+**解释：**
+
+- 工人 0 将高度降低 2，花费 `workerTimes[0] + workerTimes[0] * 2 = 9` 秒。
+- 工人 1 将高度降低 3，花费 `workerTimes[1] + workerTimes[1] * 2 + workerTimes[1] * 3 = 12` 秒。
+- 工人 2 将高度降低 3，花费 `workerTimes[2] + workerTimes[2] * 2 + workerTimes[2] * 3 = 12` 秒。
+- 工人 3 将高度降低 2，花费 `workerTimes[3] + workerTimes[3] * 2 = 12` 秒。
+
+所需的最少时间为 `max(9, 12, 12, 12) = 12` 秒。
+
+**示例 3：**
+
+**输入：** mountainHeight = 5, workerTimes = [1]
+
+**输出：** 15
+
+**解释：**
+
+这个示例中只有一个工人，所以答案是 `workerTimes[0] + workerTimes[0] * 2 + workerTimes[0] * 3 + workerTimes[0] * 4 + workerTimes[0] * 5 = 15` 秒。
+
+ 
+
+**提示：**
+
+- `1 <= mountainHeight <= 10^5`
+- `1 <= workerTimes.length <= 10^4`
+- `1 <= workerTimes[i] <= 10^6`
+
+
+
+这个问题可以通过**二分答案（Binary Search on the Answer）**的方法来解决。
+
+**解题思路**
+
+1.  **问题分析**：
+    *   我们需要找到工人们降低山体高度到 0 所需的**最少时间** $T$。
+    *   由于时间 $T$ 越长，工人们能降低的高度总和就越多，这具有明显的**单调性**，因此可以使用二分搜索。
+    *   所有工人是**同时**工作的，所以总耗时取决于耗时最长的那个工人。
+
+2.  **数学推导**：
+    *   假设工人 $i$ 的基本工作时间为 $w_i = workerTimes[i]$。
+    *   在 $T$ 秒内，假设该工人降低了 $x$ 个单位的高度，则所需时间为：
+        $$w_i \cdot (1 + 2 + \dots + x) = w_i \cdot \frac{x(x+1)}{2} \le T$$
+    *   我们需要找到在该限制下的最大整数 $x$：
+        $$x^2 + x - \frac{2T}{w_i} \le 0$$
+    *   根据求根公式，最大的整数 $x$ 为：
+        $$x = \left\lfloor \frac{-1 + \sqrt{1 + \frac{8T}{w_i}}}{2} \right\rfloor$$
+
+3.  **算法步骤**：
+    *   **二分范围**：
+        *   最小值 `low = 0`。
+        *   最大值 `high`：假设由效率最高（`workerTimes` 最小）的一名工人完成所有任务。
+            `high = min(workerTimes) * mountainHeight * (mountainHeight + 1) // 2`。
+    *   **Check 函数**：给定时间 $T$，计算所有工人能降低的高度之和是否 $\ge mountainHeight$。
+    *   **计算 $x$**：使用 `math.isqrt` 处理大整数开方，确保精度。
+
+**代码实现**
+
+```python
+import math
+from typing import List
+
+class Solution:
+    def minNumberOfSeconds(self, mountainHeight: int, workerTimes: List[int]) -> int:
+        # 定义：在 T 秒内，工人们总共能降低的高度是否 >= mountainHeight
+        def check(T: int) -> bool:
+            total_h = 0
+            for w in workerTimes:
+                # 对于工人 i，w * x * (x + 1) / 2 <= T
+                # 变形得：x^2 + x - 2T/w <= 0
+                # 解得最大整数 x = (sqrt(1 + 8T/w) - 1) // 2
+                val = (8 * T) // w
+                x = (math.isqrt(1 + val) - 1) // 2
+                total_h += x
+                # 如果当前累计高度已经达标，提前返回 True
+                if total_h >= mountainHeight:
+                    return True
+            return False
+        
+        # 二分查找的范围
+        low = 0
+        # 上界：取效率最高的工人完成所有高度的时间
+        min_w = min(workerTimes)
+        high = min_w * mountainHeight * (mountainHeight + 1) // 2
+        
+        ans = high
+        while low <= high:
+            mid = (low + high) // 2
+            if check(mid):
+                ans = mid
+                high = mid - 1
+            else:
+                low = mid + 1
+                
+        return ans
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(N \cdot \log(\text{max\_time}))$。
+    *   其中 $N$ 是工人的数量（$10^4$）。
+    *   $\text{max\_time}$ 是上界，约为 $10^{16}$，其对数 $\log_2(10^{16}) \approx 53$。
+    *   总计算量约为 $10^4 \times 53 = 5.3 \times 10^5$，在 Python 的执行效率范围内。
+*   **空间复杂度**：$O(1)$，只使用了常数级别的额外空间。
+
+**关键点说明**
+
+*   **精度问题**：在计算 $x$ 时，如果使用浮点数开方 `** 0.5`，可能会在处理极大数字（如 $10^{16}$）时丢失精度。使用 `math.isqrt`（整数平方根）可以保证计算的准确性。
+*   **提前终止**：在 `check` 函数中，一旦 `total_h` 超过 `mountainHeight` 就可以立即返回，这能显著提高实际运行速度。
+
+
 
 
 
