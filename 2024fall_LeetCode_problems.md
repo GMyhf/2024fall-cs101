@@ -13755,7 +13755,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -28345,6 +28345,34 @@ greedy, matrix, https://leetcode.cn/problems/minimum-swaps-to-arrange-a-binary-g
 - `n == grid[i].length`
 - `1 <= n <= 200`
 - `grid[i][j]` 要么是 `0` 要么是 `1` 。
+
+
+
+【王天纵 25地空学院】思路：把每行二进制全部转化为十进制，然后只需要考察每行是不是能被对应2的幂整除，从上往下遍历遇到第一个满足的就是要移动的（贪心）
+
+```python
+class Solution:
+    def minSwaps(self, grid: List[List[int]]) -> int:
+        num = []
+        for i in range(len(grid)):
+            r = ''
+            for j in grid[i]:
+                r += str(j)
+            num.append(int(r, 2))
+        
+        res, n = 0, len(num)
+        for i in range(n):
+            for j in range(len(num)):
+                if num[j] % (2 ** (n - i - 1)) == 0:
+                    num.pop(j)
+                    res += j
+                    break
+            else:
+                return -1
+        return res
+```
+
+
 
 
 
