@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-03-14 23:10 GMT+8*
+*Updated 2026-03-15 21:06 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -13755,7 +13755,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -28441,6 +28441,54 @@ class Solution:
 
 - **时间复杂度：** $O(n^2)$。首先预处理寻找每行末尾 $0$ 的个数需耗费 $O(n^2)$ 的时间；接着对于外层长度为 $n$ 的循环中，寻找匹配的行和模拟列表交换 (`pop` 和 `insert` 操作) 也是 $O(n)$，故总计为 $O(n^2)$ 时间。在 $n \le 200$ 的数据范围内运算极快，性能绝佳。
 - **空间复杂度：** $O(n)$。我们使用了一个一维数组 `zeros` 来存储每行符合末尾连续 $0$ 的个数。
+
+
+
+【金于珑 工学院】思路：第一步先翻译，把每一行对应元素用“右侧连续0的数量”来代替。然后从上往下，以此寻找>=n-1,n-2,n-3,……的第一个数字所在的位置（贪心思路），将它移到grid的第1，2，3，……行，。但是出于效率，不直接移动而是使用<mark>懒删除</mark>，即把移动的数字改为-1，在后续计算步数时扣去-1的个数。如果能成功找到n-1次，则返回step，否则返回-1.
+
+```python
+class Solution:
+    def minSwaps(self, grid: List[List[int]]) -> int:
+        n = len(grid)
+        step = 0
+
+        def count0(l):
+            cnt = 0
+            while l:
+                a = l.pop()
+                if a == 0:
+                    cnt += 1
+                else:
+                    break
+            return cnt
+
+        for i in range(n):
+            grid[i] = count0(grid[i])
+        for i in range(1, n):
+            lazy = 0  # 记录当前行之前有多少行已经被“移走”（标记为 -1）
+            find = False  # 标记是否找到了满足条件的行
+
+            for j in range(n):
+                # 情况 A: 找到满足条件的行
+                if grid[j] >= n - i:
+                    grid[j] = -1  # 【懒删除】标记该行已被使用，后续跳过
+                    step += j - lazy  # 计算交换次数：当前索引 - 已移走的行数 = 实际需要的相邻交换步数
+                    find = True
+                    break
+
+                # 情况 B: 遇到已经被移走的行
+                elif grid[j] == -1:
+                    lazy += 1
+
+            # 如果遍历完所有行都没找到满足条件的，说明无解
+            if not find:
+                return -1
+
+        return step
+            
+```
+
+
 
 
 
