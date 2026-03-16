@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-03-15 21:06 GMT+8*
+*Updated 2026-03-16 13:41 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -13755,7 +13755,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -29662,6 +29662,161 @@ class Solution:
 
         return total
 ```
+
+
+
+## M1878.矩阵中最大的三个菱形和
+
+prefix sum, https://leetcode.cn/problems/get-biggest-three-rhombus-sums-in-a-grid/
+
+给你一个 `m x n` 的整数矩阵 `grid` 。
+
+**菱形和** 指的是 `grid` 中一个正菱形 **边界** 上的元素之和。本题中的菱形必须为正方形旋转45度，且四个角都在一个格子当中。下图是四个可行的菱形，每个菱形和应该包含的格子都用了相应颜色标注在图中。
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/pc73-q4-desc-2.png" alt="img" style="zoom:67%;" />
+
+ 
+
+注意，菱形可以是一个面积为 0 的区域，如上图中右下角的紫色菱形所示。
+
+请你按照 **降序** 返回 `grid` 中三个最大的 **互不相同的菱形和** 。如果不同的和少于三个，则将它们全部返回。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/pc73-q4-ex1.png" alt="img" style="zoom:67%;" />
+
+```
+输入：grid = [[3,4,5,1,3],[3,3,4,2,3],[20,30,200,40,10],[1,5,5,4,1],[4,3,2,2,5]]
+输出：[228,216,211]
+解释：最大的三个菱形和如上图所示。
+- 蓝色：20 + 3 + 200 + 5 = 228
+- 红色：200 + 2 + 10 + 4 = 216
+- 绿色：5 + 200 + 4 + 2 = 211
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/pc73-q4-ex2.png" alt="img" style="zoom:67%;" />
+
+```
+输入：grid = [[1,2,3],[4,5,6],[7,8,9]]
+输出：[20,9,8]
+解释：最大的三个菱形和如上图所示。
+- 蓝色：4 + 2 + 6 + 8 = 20
+- 红色：9 （右下角红色的面积为 0 的菱形）
+- 绿色：8 （下方中央面积为 0 的菱形）
+```
+
+**示例 3：**
+
+```
+输入：grid = [[7,7,7]]
+输出：[7]
+解释：所有三个可能的菱形和都相同，所以返回 [7] 。
+```
+
+ 
+
+**提示：**
+
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 100`
+- `1 <= grid[i][j] <= 10^5`
+
+
+
+这个问题要求我们在一个 $m \times n$ 的矩阵中找到三个最大的、互不相同的“菱形和”。
+
+**算法思路**
+
+1.  **定义菱形**：
+    *   一个菱形由它的上顶点 $(r, c)$ 和它的“半径”或“边长参数” $k$ 决定。
+    *   当 $k=0$ 时，菱形只是一个点 $(r, c)$。
+    *   当 $k>0$ 时，四个顶点分别为：
+        *   上顶点：$(r, c)$
+        *   下顶点：$(r+2k, c)$
+        *   左顶点：$(r+k, c-k)$
+        *   右顶点：$(r+k, c+k)$
+    *   边界条件：$r+2k < m$ 且 $c-k \ge 0$ 且 $c+k < n$。
+
+2.  **计算菱形边界和**：
+    *   如果我们直接遍历每一条边求和，时间复杂度约为 $O(m \cdot n \cdot \min(m, n)^2)$，在本题 $100 \times 100$ 的规模下是可以接受的，但为了效率，我们可以使用**对角线前缀和**。
+    *   **d1（左上到右下）**：`d1[i][j]` 表示从某个起点开始到 `grid[i][j]` 的主对角线累加和。
+    *   **d2（右上到左下）**：`d2[i][j]` 表示从某个起点开始到 `grid[i][j]` 的副对角线累加和。
+    *   利用前缀和，任何一条斜线段的和都可以在 $O(1)$ 时间内求出。
+
+3.  **统计与排序**：
+    *   遍历所有可能的顶点 $(r, c)$ 和所有可能的 $k \ge 0$。
+    *   计算每个菱形的边界和，存入一个集合（`Set`）中以去重。
+    *   将集合转换为列表，降序排序，取前三个。
+
+**代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def getBiggestThree(self, grid: List[List[int]]) -> List[int]:
+        m, n = len(grid), len(grid[0])
+        
+        # d1: 左上到右下的前缀和 (primary diagonal)
+        # d1[i+1][j+1] 对应 grid[i][j]
+        d1 = [[0] * (n + 2) for _ in range(m + 1)]
+        # d2: 右上到左下的前缀和 (anti-diagonal)
+        # d2[i+1][j] 对应 grid[i][j]
+        d2 = [[0] * (n + 2) for _ in range(m + 1)]
+        
+        for r in range(m):
+            for c in range(n):
+                d1[r + 1][c + 1] = grid[r][c] + d1[r][c]
+                d2[r + 1][c] = grid[r][c] + d2[r][c + 1]
+        
+        sums = set()
+        
+        for r in range(m):
+            for c in range(n):
+                # 面积为 0 的菱形（单个格子）
+                sums.add(grid[r][c])
+                
+                # 尝试所有可能的半径 k > 0
+                for k in range(1, m):
+                    # 检查四个顶点是否都在矩阵范围内
+                    # 上 (r, c), 下 (r+2k, c), 左 (r+k, c-k), 右 (r+k, c+k)
+                    if r + 2 * k >= m or c - k < 0 or c + k >= n:
+                        break
+                    
+                    # 使用对角线前缀和计算四条边的和
+                    # 1. 上顶点到右顶点 (d1型)
+                    s1 = d1[r + k + 1][c + k + 1] - d1[r][c]
+                    # 2. 左顶点到下顶点 (d1型)
+                    s2 = d1[r + 2 * k + 1][c + 1] - d1[r + k][c - k]
+                    # 3. 上顶点到左顶点 (d2型)
+                    s3 = d2[r + k + 1][c - k] - d2[r][c + 1]
+                    # 4. 右顶点到下顶点 (d2型)
+                    s4 = d2[r + 2 * k + 1][c] - d2[r + k][c + k + 1]
+                    
+                    # 四条边相加后，四个顶点每个都被重复计算了一次，需要减去一次
+                    total = s1 + s2 + s3 + s4 - (grid[r][c] + grid[r + 2 * k][c] + grid[r + k][c - k] + grid[r + k][c + k])
+                    sums.add(total)
+        
+        # 返回前三个最大的互不相同的和
+        return sorted(list(sums), reverse=True)[:3]
+
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(m \cdot n \cdot \min(m, n))$。
+    *   预处理前缀和：$O(m \cdot n)$。
+    *   三层循环遍历每一个可能的菱形（位置+大小）：$O(m \cdot n \cdot \min(m, n))$。
+    *   排序：最多有 $m \cdot n$ 个不同的和，排序时间为 $O(mn \log(mn))$，在 $m, n \le 100$ 时非常快。
+*   **空间复杂度**：$O(m \cdot n)$。
+    *   用于存储前缀和数组 `d1` 和 `d2`，以及存储不同和的集合 `sums`。
+
+
 
 
 
