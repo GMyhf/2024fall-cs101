@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-03-16 13:41 GMT+8*
+*Updated 2026-03-17 00:37 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -13755,7 +13755,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -29385,6 +29385,146 @@ class Solution:
         return result
         
 ```
+
+
+
+
+
+## M1727.重新排列后的最大子矩阵
+
+greedy, https://leetcode.cn/problems/largest-submatrix-with-rearrangements/
+
+给你一个二进制矩阵 `matrix` ，它的大小为 `m x n` ，你可以将 `matrix` 中的 **列** 按任意顺序重新排列。
+
+请你返回最优方案下将 `matrix` 重新排列后，全是 `1` 的子矩阵面积。
+
+ 
+
+**示例 1：**
+
+**<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/screenshot-2020-12-30-at-40536-pm.png" alt="img" style="zoom: 50%;" />**
+
+```
+输入：matrix = [[0,0,1],[1,1,1],[1,0,1]]
+输出：4
+解释：你可以按照上图方式重新排列矩阵的每一列。
+最大的全 1 子矩阵是上图中加粗的部分，面积为 4 。
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/screenshot-2020-12-30-at-40852-pm.png" alt="img" style="zoom: 50%;" />
+
+```
+输入：matrix = [[1,0,1,0,1]]
+输出：3
+解释：你可以按照上图方式重新排列矩阵的每一列。
+最大的全 1 子矩阵是上图中加粗的部分，面积为 3 。
+```
+
+**示例 3：**
+
+```
+输入：matrix = [[1,1,0],[1,0,1]]
+输出：2
+解释：由于你只能整列整列重新排布，所以没有比面积为 2 更大的全 1 子矩形。
+```
+
+**示例 4：**
+
+```
+输入：matrix = [[0,0],[0,0]]
+输出：0
+解释：由于矩阵中没有 1 ，没有任何全 1 的子矩阵，所以面积为 0 。
+```
+
+ 
+
+**提示：**
+
+- `m == matrix.length`
+- `n == matrix[i].length`
+- `1 <= m * n <= 10^5`
+- `matrix[i][j]` 要么是 `0` ，要么是 `1` 。
+
+
+
+这道题的核心思路是：**预处理每个位置向上连续 1 的高度，然后对每一行的高度进行排序来计算最大矩形面积。**
+
+**解题思路**
+
+1.  **计算高度矩阵**：
+    我们可以将原始矩阵 `matrix` 转换为一个高度矩阵。对于每个单元格 `(i, j)`，如果 `matrix[i][j]` 是 1，我们就计算从该位置向上连续的 1 的个数。
+    *   如果 `matrix[i][j] == 1`：`height[i][j] = height[i-1][j] + 1`（如果是第一行则为 1）。
+    *   如果 `matrix[i][j] == 0`：`height[i][j] = 0`。
+
+2.  **贪心与排序**：
+    由于题目允许**任意重新排列列**，对于矩阵的每一行 $i$，我们已经知道了每一列在该行结束时的“连续 1 的高度”。为了让面积最大，我们应该把高度较大的列排在一起。
+    *   遍历每一行。
+    *   将该行中所有列的高度取出，按**从大到小**排序。
+    *   假设排序后的高度序列为 $h_1, h_2, \dots, h_n$。
+    *   如果选择前 $k$ 列作为矩形的宽度，那么这个矩形的高度由这 $k$ 列中的最小高度决定，即 $h_k$。此时面积为 $h_k \times k$。
+    *   遍历所有可能的 $k$，记录最大面积。
+
+**代码实现**
+
+```python
+class Solution:
+    def largestSubmatrix(self, matrix: List[List[int]]) -> int:
+        m = len(matrix)
+        n = len(matrix[0])
+        
+        # 1. 预处理高度
+        # 我们可以直接在原矩阵上修改，matrix[i][j] 表示第 i 行第 j 列向上连续 1 的数量
+        for i in range(1, m):
+            for j in range(n):
+                if matrix[i][j] == 1:
+                    matrix[i][j] += matrix[i-1][j]
+        
+        ans = 0
+        
+        # 2. 遍历每一行，计算该行作为底边的最大子矩阵
+        for i in range(m):
+            # 取出当前行的所有高度
+            row = matrix[i]
+            # 从大到小排序
+            row.sort(reverse=True)
+            
+            # 计算可能的矩形面积
+            for j in range(n):
+                if row[j] == 0:
+                    break  # 高度为0，后面排序的也都是0，直接跳过
+                
+                # 当前高度为 row[j]，宽度为 j + 1
+                area = row[j] * (j + 1)
+                if area > ans:
+                    ans = area
+                    
+        return ans
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(m \times n \log n)$。
+    *   预处理高度需要 $O(m \times n)$。
+    *   遍历每一行并进行排序：共有 $m$ 行，每行排序耗时 $O(n \log n)$，总计 $O(m \times n \log n)$。
+*   **空间复杂度**：$O(1)$（如果原地修改输入矩阵）或 $O(m \times n)$。在 Python 中，排序可能会消耗 $O(n)$ 的辅助空间。
+
+**示例解析（以示例1为例）**
+
+输入：`[[0,0,1],[1,1,1],[1,0,1]]`
+
+1.  **高度转换**：
+    *   第0行：`[0, 0, 1]`
+    *   第1行：`[1, 1, 2]` (由 `[0+1, 0+1, 1+1]` 得到)
+    *   第2行：`[2, 0, 3]` (由 `[1+1, 0, 2+1]` 得到)
+
+2.  **逐行计算最大面积**：
+    *   第0行排序：`[1, 0, 0]` -> 面积：$1 \times 1 = 1$
+    *   第1行排序：`[2, 1, 1]` -> 面积：$2 \times 1 = 2$, $1 \times 2 = 2$, $1 \times 3 = 3$ -> 当前最大 3
+    *   第2行排序：`[3, 2, 0]` -> 面积：$3 \times 1 = 3$, $2 \times 2 = 4$ -> 当前最大 4
+
+最终结果：**4**。
 
 
 
