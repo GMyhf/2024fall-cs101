@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-03-17 00:37 GMT+8*
+*Updated 2026-03-18 10:30 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -13755,7 +13755,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -34629,6 +34629,113 @@ class Solution:
             cnt += 1
         return cnt
 ```
+
+
+
+## M3070.元素和小于等于 k 的子矩阵的数目
+
+prefix sum, https://leetcode.cn/problems/count-submatrices-with-top-left-element-and-sum-less-than-k/
+
+给你一个下标从 **0** 开始的整数矩阵 `grid` 和一个整数 `k`。
+
+返回包含 `grid` 左上角元素、元素和小于或等于 `k` 的 **子矩阵**的数目。
+
+ 
+
+**示例 1：**
+
+![img](https://raw.githubusercontent.com/GMyhf/img/main/img/example1.png)
+
+```
+输入：grid = [[7,6,3],[6,6,1]], k = 18
+输出：4
+解释：如上图所示，只有 4 个子矩阵满足：包含 grid 的左上角元素，并且元素和小于或等于 18 。
+```
+
+**示例 2：**
+
+![img](https://raw.githubusercontent.com/GMyhf/img/main/img/example21.png)
+
+```
+输入：grid = [[7,2,9],[1,5,0],[2,6,6]], k = 20
+输出：6
+解释：如上图所示，只有 6 个子矩阵满足：包含 grid 的左上角元素，并且元素和小于或等于 20 。
+```
+
+ 
+
+**提示：**
+
+- `m == grid.length `
+- `n == grid[i].length`
+- `1 <= n, m <= 1000 `
+- `0 <= grid[i][j] <= 1000`
+- `1 <= k <= 10^9`
+
+
+
+这个问题要求我们计算包含矩阵左上角元素 $(0,0)$ 且元素和小于或等于 $k$ 的子矩阵数目。
+
+**解题思路**
+
+1.  **子矩阵定义**：由于必须包含左上角元素 $(0,0)$，每一个符合条件的子矩阵都由其右下角坐标 $(i, j)$ 唯一确定。其中 $0 \le i < m$ 且 $0 \le j < n$。
+2.  **前缀和原理**：我们需要高效地计算从 $(0,0)$ 到 $(i, j)$ 的矩形区域元素之和。
+    *   设 $S[i][j]$ 为子矩阵 $(0,0)$ 到 $(i, j)$ 的和。
+    *   可以通过递推计算：$S[i][j] = S[i-1][j] + \text{current\_row\_prefix\_sum}(j)$。
+    *   其中 $\text{current\_row\_prefix\_sum}(j)$ 是当前第 $i$ 行前 $j+1$ 个元素的和。
+3.  **优化空间与时间**：
+    *   **空间优化**：我们可以使用一个长度为 $n$ 的数组 `pre` 来记录当前行各列的前缀和。在处理第 $i$ 行时，`pre[j]` 更新为前 $i$ 行在第 $j$ 列方向上的累加和。
+    *   **时间优化**：题目指出 $grid[i][j] \ge 0$。这意味着对于同一行，随着列下标 $j$ 的增加，子矩阵和是单调递增的；同理，随着行下标 $i$ 的增加，和也是单调递增的。因此，一旦某个 $S[i][j] > k$，该行后续的列以及后续行在该列之后的部分都不可能满足条件。
+
+**代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def countSubmatrices(self, grid: List[List[int]], k: int) -> int:
+        m = len(grid)
+        n = len(grid[0])
+        ans = 0
+        
+        # pre[j] 存储从 (0, 0) 到 (当前行, j) 的子矩阵元素和
+        pre = [0] * n
+        
+        # limit 用于优化，记录当前行中满足条件的列边界
+        # 因为 grid[i][j] >= 0，如果 (0,0)-(i,j) 超过 k，则 (0,0)-(i, j+1) 必超过 k
+        limit = n
+        
+        for row in grid:
+            row_sum = 0 # 当前行从 0 到 j 的前缀和
+            for j in range(limit):
+                row_sum += row[j]
+                pre[j] += row_sum
+                
+                if pre[j] <= k:
+                    ans += 1
+                else:
+                    # 发现当前位置和已超过 k，更新边界并跳出当前行循环
+                    limit = j
+                    break
+            
+            # 如果第一列的元素和都已经超过 k，后续所有子矩阵的和都会超过 k
+            if limit == 0:
+                break
+                
+        return ans
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(m \times n)$。在最坏情况下（所有子矩阵和都 $\le k$），我们需要遍历整个矩阵一次。
+*   **空间复杂度**：$O(n)$。我们使用了一个长度为 $n$ 的数组 `pre` 来存储每一列的前缀累加和。
+
+**关键点解释**
+
+*   **为什么可以 `break`？** 因为 `grid` 中的元素都是非负整数。对于固定的左上角 $(0,0)$，如果你向右（增加列）或向下（增加行）扩展矩阵，元素和只会增加或保持不变。
+*   **递推公式简化**：
+    在代码中，`pre[j]` 在更新前代表 $S[i-1][j]$，`row_sum` 代表 $\sum_{y=0}^{j} grid[i][y]$。
+    更新 `pre[j] += row_sum` 后，`pre[j]` 恰好变成了 $S[i][j]$。这完美符合二维前缀和的逻辑。
 
 
 
