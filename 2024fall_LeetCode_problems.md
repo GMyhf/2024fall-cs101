@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-03-19 08:46 GMT+8*
+*Updated 2026-03-20 22:29 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -13755,7 +13755,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -41541,7 +41541,7 @@ class Solution:
         return False
 ```
 
-✅ 复杂度分析：
+**复杂度分析：**
 
 - 时间复杂度：`O(2^n * n)`，其中 `n` 是 `nums.length`，因为我们要枚举所有子集，并计算乘积。
 - 空间复杂度：`O(2^n)`，用于存储所有合法子集的掩码。
@@ -41554,7 +41554,7 @@ class Solution:
 
 ## M3567.子矩阵的最小绝对差
 
-brute force, https://leetcode.cn/problems/minimum-absolute-difference-in-sliding-submatrix/
+matrix, sorting, https://leetcode.cn/problems/minimum-absolute-difference-in-sliding-submatrix/
 
 给你一个 `m x n` 的整数矩阵 `grid` 和一个整数 `k`。
 
@@ -41614,7 +41614,7 @@ brute force, https://leetcode.cn/problems/minimum-absolute-difference-in-sliding
 
 - `1 <= m == grid.length <= 30`
 - `1 <= n == grid[i].length <= 30`
-- `-105 <= grid[i][j] <= 10^5`
+- `-10^5 <= grid[i][j] <= 10^5`
 - `1 <= k <= min(m, n)`
 
 
