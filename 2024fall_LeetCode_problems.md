@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-03-20 22:29 GMT+8*
+*Updated 2026-03-21 15:35 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10788,6 +10788,132 @@ class Solution:
 
 
 
+## E3643.垂直翻转子矩阵
+
+two pointers, matrix, https://leetcode.cn/problems/flip-square-submatrix-vertically/
+
+给你一个 `m x n` 的整数矩阵 `grid`，以及三个整数 `x`、`y` 和 `k`。
+
+整数 `x` 和 `y` 表示一个 **正方形子矩阵** 的左上角下标，整数 `k` 表示该正方形子矩阵的边长。
+
+你的任务是垂直翻转子矩阵的行顺序。
+
+返回更新后的矩阵。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/gridexmdrawio.png" alt="img" style="zoom:50%;" />
+
+**输入：** grid = [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]], x = 1, y = 0, k = 3
+
+**输出：** [[1,2,3,4],[13,14,15,8],[9,10,11,12],[5,6,7,16]]
+
+**解释：**
+
+上图展示了矩阵在变换前后的样子。
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/gridexm2drawio.png" alt="img" style="zoom:50%;" />
+
+**输入：** grid = [[3,4,2,3],[2,3,4,2]], x = 0, y = 2, k = 2
+
+**输出：** [[3,4,4,2],[2,3,2,3]]
+
+**解释：**
+
+上图展示了矩阵在变换前后的样子。
+
+ 
+
+**提示：**
+
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 50`
+- `1 <= grid[i][j] <= 100`
+- `0 <= x < m`
+- `0 <= y < n`
+- `1 <= k <= min(m - x, n - y)`
+
+
+
+这个问题要求我们将矩阵中一个指定的 $k \times k$ 正方形子矩阵进行**垂直翻转**。
+
+**算法思路**
+
+1.  **确定范围**：
+    *   子矩阵的左上角坐标为 $(x, y)$，边长为 $k$。
+    *   行范围是从 $x$ 到 $x + k - 1$。
+    *   列范围是从 $y$ 到 $y + k - 1$。
+2.  **垂直翻转的含义**：
+    *   垂直翻转意味着将子矩阵的第一行与最后一行交换，第二行与倒数第二行交换，依此类推。
+    *   注意：**只有**子矩阵内部（即列下标在 $[y, y+k-1]$ 之间）的元素需要交换，该行中位于子矩阵之外的元素保持不变。
+3.  **实现步骤**：
+    *   使用双指针法，令 `top = x`，`bottom = x + k - 1`。
+    *   当 `top < bottom` 时：
+        *   遍历列下标 $j$ 从 $y$ 到 $y + k - 1$。
+        *   交换 `grid[top][j]` 和 `grid[bottom][j]`。
+        *   `top` 向下移动一位（`top += 1`），`bottom` 向上移动一位（`bottom -= 1`）。
+
+**Python 代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def reverseSubmatrix(self, grid: List[List[int]], x: int, y: int, k: int) -> List[List[int]]:
+        # 初始化双指针，分别指向子矩阵的最顶行和最底行
+        top = x
+        bottom = x + k - 1
+        
+        # 进行垂直翻转，直到指针相遇或交错
+        while top < bottom:
+            # 仅交换子矩阵覆盖的列范围 [y, y + k - 1]
+            for j in range(y, y + k):
+                grid[top][j], grid[bottom][j] = grid[bottom][j], grid[top][j]
+            
+            # 移动指针
+            top += 1
+            bottom -= 1
+            
+        return grid
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(k^2)$。我们需要遍历并交换子矩阵中大约一半的元素。由于 $k \le \min(m, n)$ 且 $m, n \le 50$，最大计算次数约为 $50 \times 25 = 1250$ 次，效率非常高。
+*   **空间复杂度**：$O(1)$。我们是在原矩阵上进行原地修改，除了循环变量外没有使用额外的空间。
+
+**示例解析（示例 1）**
+
+输入：`grid` 为 4x4 矩阵，`x=1, y=0, k=3`
+
+*   子矩阵行范围：1 到 3（包含 1, 2, 3 行）。
+*   子矩阵列范围：0 到 2（包含 0, 1, 2 列）。
+*   第 1 行的 `[5, 6, 7]` 与第 3 行的 `[13, 14, 15]` 交换。
+*   第 2 行是中间行，保持不变。
+*   结果：第一行不变，二四行部分交换，三行不变。符合预期输出。
+
+
+
+```
+class Solution:
+    def reverseSubmatrix(self, grid: List[List[int]], x: int, y: int, k: int) -> List[List[int]]:
+        m, n = len(grid), len(grid[0])
+        for i in range(k//2):
+            for j in range(y, y + k):
+                grid[x + i][j], grid[x+k-1 - i][j] = grid[x+k-1 - i][j], grid[x + i][j]
+        
+        return grid
+```
+
+
+
+
+
 ## E3827.统计单比特整数
 
 bit manipulation, https://leetcode.cn/problems/count-monobit-integers/
@@ -13755,7 +13881,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
