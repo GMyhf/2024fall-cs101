@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-03-21 15:35 GMT+8*
+*Updated 2026-03-22 12:47 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -6622,6 +6622,135 @@ class Solution:
         
         return ans
 ```
+
+
+
+## E1886.判断矩阵经轮转后是否一致
+
+matrix, https://leetcode.cn/problems/determine-whether-matrix-can-be-obtained-by-rotation/
+
+给你两个大小为 `n x n` 的二进制矩阵 `mat` 和 `target` 。现 **以 90 度顺时针轮转** 矩阵 `mat` 中的元素 **若干次** ，如果能够使 `mat` 与 `target` 一致，返回 `true` ；否则，返回 `false` *。*
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/grid3.png" alt="img" style="zoom:67%;" />
+
+```
+输入：mat = [[0,1],[1,0]], target = [[1,0],[0,1]]
+输出：true
+解释：顺时针轮转 90 度一次可以使 mat 和 target 一致。
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/grid4.png" alt="img" style="zoom:67%;" />
+
+```
+输入：mat = [[0,1],[1,1]], target = [[1,0],[0,1]]
+输出：false
+解释：无法通过轮转矩阵中的元素使 equal 与 target 一致。
+```
+
+**示例 3：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/grid4-20260322122827329.png" alt="img" style="zoom:67%;" />
+
+```
+输入：mat = [[0,0,0],[0,1,0],[1,1,1]], target = [[1,1,1],[0,1,0],[0,0,0]]
+输出：true
+解释：顺时针轮转 90 度两次可以使 mat 和 target 一致。
+```
+
+ 
+
+**提示：**
+
+- `n == mat.length == target.length`
+- `n == mat[i].length == target[i].length`
+- `1 <= n <= 10`
+- `mat[i][j]` 和 `target[i][j]` 不是 `0` 就是 `1`
+
+
+
+转置 + 行逆序 = 顺时针旋转 90 度。Python 的列表比较运算符 `==` 是**递归深度比较**。
+
+```python
+class Solution:
+    def findRotation(self, mat: List[List[int]], target: List[List[int]]) -> bool:
+        # 最多尝试 4 次 (0°, 90°, 180°, 270°)
+        for _ in range(4):
+            # 1. 判断当前是否相等 (直接利用 Python 列表特性)
+            if mat == target:
+                return True
+            
+            # 2. 顺时针旋转 90 度准备下一次循环
+            # 技巧：转置 (zip) + 每行逆序 ([::-1])
+            mat = [list(row)[::-1] for row in zip(*mat)]
+        
+        # 4 次都不匹配
+        return False
+```
+
+> 1. 定义区别
+>
+> **转置 (Transpose)**
+>
+> - **定义**：将矩阵的**行变成列，列变成行**。即元素 $A_{ij}$ 变为 $A_{ji}$。
+> - **几何意义**：相当于沿着**主对角线**（左上角到右下角）进行**镜像翻转**。
+> - **公式**：$B_{ij} = A_{ji}$
+> - **Python 实现**：`zip(*mat)`
+>
+> **顺时针旋转 90 度 (Clockwise Rotation 90°)**
+>
+> - **定义**：整个矩阵向右倒一下。
+> - **几何意义**：原来的第一行变成了最后一列，原来的最后一行变成了第一列。
+> - **公式**：$B_{ij} = A_{n-1-j, i}$ （其中 $n$ 是矩阵边长）
+> - **实现步骤**：**先转置，再左右翻转每一行**。
+>
+> ---
+>
+> 2. 直观对比示例
+>
+> 假设有一个 $2 \times 2$ 矩阵：
+> $$
+> A = \begin{bmatrix} 
+> 1 & 2 \\ 
+> 3 & 4 
+> \end{bmatrix}
+> $$
+>
+> **操作 A：转置 (`zip(*mat)`)**
+>
+> 沿着主对角线（1和4连线）翻转：
+>
+> - 2 和 3 互换位置。
+>
+> $$
+> A^T = \begin{bmatrix} 
+> 1 & 3 \\ 
+> 2 & 4 
+> \end{bmatrix}
+> $$
+>
+> *(注意：1还在左上，4还在右下)*
+>
+> **操作 B：顺时针旋转 90 度**
+>
+> 想象把纸向右旋转 90 度：
+>
+> - 第一行 `[1, 2]` 变成了最后一列（竖着放）。
+> - 第二行 `[3, 4]` 变成了第一列（竖着放）。
+>
+> $$
+> A_{rot} = \begin{bmatrix} 
+> 3 & 1 \\ 
+> 4 & 2 
+> \end{bmatrix}
+> $$
+>
+> 所以，**转置 + 行逆序 = 顺时针旋转 90 度**。
 
 
 
@@ -13881,7 +14010,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
