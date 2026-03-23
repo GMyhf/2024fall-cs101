@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-03-22 12:47 GMT+8*
+*Updated 2026-03-23 22:09 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -2813,6 +2813,94 @@ class Solution:
 >
 > - **递归入栈**：一路走到链表的最后。
 > - **递归出栈**：在出栈时逐一“掉头”，像一行人走到尽头，逐个转身，最终整个队伍方向掉转。
+
+
+
+反转链表是链表操作中的经典题目。我们可以通过**迭代**和**递归**两种方式来实现。
+
+**方法一：迭代（双指针）**
+
+这是最直观且空间效率最高的方法。我们使用两个指针 `prev`（前驱节点）和 `curr`（当前节点）。在遍历过程中，不断改变 `curr.next` 的指向。
+
+**逻辑步骤：**
+
+1. 初始化 `prev` 为 `None`，`curr` 为 `head`。
+2. 循环遍历：
+   - 先存下 `curr` 的下一个节点 `next_node = curr.next`（防止链表断开）。
+   - 将 `curr.next` 指向 `prev`（实现反转）。
+   - 移动 `prev` 和 `curr`：`prev` 变成当前的 `curr`，`curr` 变成刚才存下的 `next_node`。
+3. 当 `curr` 变成 `None` 时，`prev` 就是新的头节点。
+
+**代码实现：**
+
+```python
+class Solution:
+    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        prev = None
+        curr = head
+        
+        while curr:
+            next_node = curr.next  # 1. 临时保存后续节点
+            curr.next = prev       # 2. 反转指针
+            prev = curr            # 3. prev 前进
+            curr = next_node       # 4. curr 前进
+            
+        return prev
+```
+
+- **时间复杂度**：$O(n)$，其中 $n$ 是链表的长度。
+- **空间复杂度**：$O(1)$。
+
+---
+
+**方法二：递归**
+
+递归法的思路是：先反转后面的链表，然后再把当前节点接在后面。
+
+**逻辑步骤：**
+
+1. **终止条件**：如果链表为空或者只有一个节点，直接返回它（它就是反转后的头）。
+2. **递归去后面**：假设后面的链表已经反转好了，递归函数会返回反转后的新头节点 `new_head`。
+3. **处理当前节点**：
+   - 此时 `head.next` 是原链表中的第二个节点，也就是反转后链表的尾巴。
+   - 我们让 `head.next.next = head`，即将当前节点接在反转后的链表尾部。
+   - 为了防止环路，让 `head.next = None`。
+4. 返回 `new_head`。
+
+**代码实现：**
+
+```python
+class Solution:
+    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        # 1. 基准情况：空链表或只有一个节点
+        if not head or not head.next:
+            return head
+        
+        # 2. 递归反转后续部分
+        new_head = self.reverseList(head.next)
+        
+        # 3. 将当前节点接到已反转部分的后面
+        # head.next 此时指向的是反转后的尾节点
+        head.next.next = head
+        head.next = None  # 切断原来的正向连接
+        
+        return new_head
+```
+
+- **时间复杂度**：$O(n)$。
+- **空间复杂度**：$O(n)$，主要是递归调用栈的开销。
+
+---
+
+**总结与对比**
+
+| 特性           | 迭代法           | 递归法             |
+| :------------- | :--------------- | :----------------- |
+| **空间复杂度** | $O(1)$ (最优)    | $O(n)$ (系统栈)    |
+| **理解难度**   | 容易理解指针移动 | 需要理解递归回溯   |
+| **实际应用**   | 工业级代码首选   | 理论学习，面试加分 |
+
+
 
 
 
@@ -14010,7 +14098,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
