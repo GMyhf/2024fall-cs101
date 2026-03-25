@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-03-24 10:18 GMT+8*
+*Updated 2026-03-25 10:18 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -14098,7 +14098,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -41071,7 +41071,7 @@ block = (2 ** (n - 1)) ** 2
 
 ## M3546.等和矩阵分割 I
 
-matrix, https://leetcode.cn/problems/equal-sum-grid-partition-i/
+brute force, prefix sum, https://leetcode.cn/problems/equal-sum-grid-partition-i/
 
 给你一个由正整数组成的 `m x n` 矩阵 `grid`。你的任务是判断是否可以通过 **一条水平或一条垂直分割线** 将矩阵分割成两部分，使得：
 
@@ -41090,7 +41090,7 @@ matrix, https://leetcode.cn/problems/equal-sum-grid-partition-i/
 
 **解释：**
 
-<img src="https://pic.leetcode.cn/1746839596-kWigaF-lc.jpeg" alt="img" style="zoom: 25%;" />
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/1746839596-kWigaF-lc.jpeg" alt="img" style="zoom: 10%;" />
 
 在第 0 行和第 1 行之间进行水平分割，得到两个非空部分，每部分的元素之和为 5。因此，答案是 `true`。
 
@@ -41115,42 +41115,74 @@ matrix, https://leetcode.cn/problems/equal-sum-grid-partition-i/
 
 
 
+这是一个经典的矩阵前缀和问题。题目要求判断是否能通过**一条水平线**或**一条垂直线**将矩阵分为两个和相等的部分。
 
+**解题思路**
+
+1.  **计算总和**：首先遍历整个矩阵，计算所有元素的总和 $S$。如果 $S$ 是奇数，显然无法平分成两个整数部分，直接返回 `false`。
+2.  **目标值**：我们的目标是找到一个分割点，使得其中一部分的和等于 $target = S / 2$。
+3.  **水平分割**：
+    *   逐行累加每一行的元素总和。
+    *   由于分割出的两个部分必须非空，我们检查从第 $0$ 行到第 $m-2$ 行（$m$ 为总行数）。
+    *   如果在某一时刻累加和等于 $target$，说明存在水平分割线，返回 `true`。
+4.  **垂直分割**：
+    *   逐列累加每一列的元素总和。
+    *   由于分割出的两个部分必须非空，我们检查从第 $0$ 列到第 $n-2$ 列（$n$ 为总列数）。
+    *   如果在某一时刻累加和等于 $target$，说明存在垂直分割线，返回 `true`。
+5.  **复杂度分析**：
+    *   **时间复杂度**：$O(m \times n)$。我们需要遍历矩阵来计算总和及列和，其中 $m \times n$ 最大为 $10^5$。
+    *   **空间复杂度**：$O(m + n)$。用于存储每一行或每一列的和。
+
+**代码实现**
 
 ```python
 from typing import List
 
 class Solution:
     def canPartitionGrid(self, grid: List[List[int]]) -> bool:
-        m, n = len(grid), len(grid[0])
-        total_sum = sum(sum(row) for row in grid)
-
-        # 如果总和是奇数，不可能均分
+        m = len(grid)
+        n = len(grid[0])
+        
+        # 1. 计算每一行的和以及总和
+        row_sums = [sum(row) for row in grid]
+        total_sum = sum(row_sums)
+        
+        # 如果总和是奇数，不可能平分
         if total_sum % 2 != 0:
             return False
-
+        
         target = total_sum // 2
-
-        # 尝试水平分割：按行求和并检查是否存在中间行使得前 k 行的和为 target
-        row_sum = 0
-        for i in range(m - 1):  # 至少保留一行给下面部分
-            row_sum += sum(grid[i])
-            if row_sum == target:
+        
+        # 2. 尝试水平分割
+        # 分割线可以在第 0 行到第 m-2 行之后（保证两部分非空）
+        current_row_sum = 0
+        for i in range(m - 1):
+            current_row_sum += row_sums[i]
+            if current_row_sum == target:
                 return True
-
-        # 尝试垂直分割：按列求和并检查是否存在中间列使得前 k 列的和为 target
-        col_sum = [0] * n
-        for j in range(n):
-            for i in range(m):
-                col_sum[j] += grid[i][j]
-        vertical_prefix = 0
-        for j in range(n - 1):  # 至少保留一列给右边部分
-            vertical_prefix += col_sum[j]
-            if vertical_prefix == target:
+        
+        # 3. 尝试垂直分割
+        # 计算每一列的和
+        col_sums = [0] * n
+        for r in range(m):
+            for c in range(n):
+                col_sums[c] += grid[r][c]
+        
+        # 分割线可以在第 0 列到第 n-2 列之后
+        current_col_sum = 0
+        for j in range(n - 1):
+            current_col_sum += col_sums[j]
+            if current_col_sum == target:
                 return True
-
+        
         return False
 ```
+
+**关键点总结**
+
+- **非空约束**：代码中 `range(m - 1)` 和 `range(n - 1)` 确保了分割后至少留下一行或一列，满足“非空”条件。
+- **效率**：虽然矩阵可能很大（$10^5$ 级），但总元素个数 $m \times n$ 限制在 $10^5$ 以内，因此 $O(m \times n)$ 的算法完全可以胜任。
+- **内存安全**：在 Python 中，`sum(row)` 和列遍历都是标准的线性操作。
 
 
 
