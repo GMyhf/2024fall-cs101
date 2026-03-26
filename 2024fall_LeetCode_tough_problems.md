@@ -13345,7 +13345,7 @@ if __name__ == '__main__':
 
 ## T3548.等和矩阵分割 II
 
-https://leetcode.cn/problems/equal-sum-grid-partition-ii/)
+prefix sum, https://leetcode.cn/problems/equal-sum-grid-partition-ii/
 
 给你一个由正整数组成的 `m x n` 矩阵 `grid`。你的任务是判断是否可以通过 **一条水平或一条垂直分割线** 将矩阵分割成两部分，使得：
 
