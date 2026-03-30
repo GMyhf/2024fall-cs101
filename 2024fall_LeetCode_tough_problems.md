@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-03-28 18:56 GMT+8*
+*Updated 2026-03-30 17:01 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -800,6 +800,33 @@ class Solution:
 
 - 时间复杂度：*O*(*N*)，其中 *N* 是数组的长度。
 - 空间复杂度：*O*(1)。
+
+
+
+【尹显齐 物院】做了 **30179** 的同学们都知道，这个题依旧要用到置换的思想，每次置换一个数使得他到自己对应的位置上（具体而言，将数字 $i$ 放到下标为 $i-1$ 的位置上），除非当前的数超出 $1-n$ 的范围，与之前的数重复或已经在它该在的位置上。最后从头开始遍历一遍直到位置与数字不对应的情况发生为止。由于每次都能将一个数放到对应位置上，所以操作次数最多为 $n$ 次，时间复杂度为 $O(n)$ 。
+
+```python
+class Solution(object):
+    def firstMissingPositive(self,nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        l = len(nums)
+        ans = l+1
+        for i in range(l):
+            while nums[i] != i+1 and 0<nums[i]<=l:
+                if nums[nums[i]-1] == nums[i]:# 重复的数换掉
+                    nums[i] = l+2
+                    break
+                a,b = nums[nums[i]-1],nums[i]
+                nums[nums[i]-1],nums[i] = b,a# 注意顺序
+        for i in range(l):
+            if nums[i] != i+1:
+                ans = i+1
+                break
+        return ans
+```
 
 
 
