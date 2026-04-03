@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-04-01 09:52 GMT+8*
+*Updated 2026-04-03 09:52 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -14944,6 +14944,188 @@ class Solution:
 *   **时间复杂度**：$O(k \cdot (m \cdot n + V))$，其中 $m, n$ 是网格维度（最大 80），$k$ 是最大传送次数（最大 10），$V$ 是网格中的最大数值（最大 $10^4$）。
     计算量约为 $11 \times (6400 + 10000) \approx 1.8 \times 10^5$，在 Python 中运行非常快。
 *   **空间复杂度**：$O(m \cdot n + V)$。我们只需要存储当前的 `dp` 数组、下一层的 `next_dp` 数组以及后缀最小数组。
+
+
+
+## T3661.可以被机器人摧毁的最大墙壁数目
+
+dp, binary search, https://leetcode.cn/problems/maximum-walls-destroyed-by-robots/
+
+一条无限长的直线上分布着一些机器人和墙壁。给你整数数组 `robots` ，`distance` 和 `walls`：
+
+- `robots[i]` 是第 `i` 个机器人的位置。
+- `distance[i]` 是第 `i` 个机器人的子弹可以行进的 **最大** 距离。
+- `walls[j]` 是第 `j` 堵墙的位置。
+
+每个机器人有 **一颗** 子弹，可以向左或向右发射，最远距离为 `distance[i]` 米。
+
+子弹会摧毁其射程内路径上的每一堵墙。机器人是固定的障碍物：如果子弹在到达墙壁前击中另一个机器人，它会 **立即** 在该机器人处停止，无法继续前进。
+
+返回机器人可以摧毁墙壁的 **最大** 数量。
+
+注意：
+
+- 墙壁和机器人可能在同一位置；该位置的墙壁可以被该位置的机器人摧毁。
+- 机器人不会被子弹摧毁。
+
+ 
+
+**示例 1:**
+
+**输入:** robots = [4], distance = [3], walls = [1,10]
+
+**输出:** 1
+
+**解释:**
+
+- `robots[0] = 4` 向 **左** 发射，`distance[0] = 3`，覆盖范围 `[1, 4]`，摧毁了 `walls[0] = 1`。
+- 因此，答案是 1。
+
+**示例 2:**
+
+**输入:** robots = [10,2], distance = [5,1], walls = [5,2,7]
+
+**输出:** 3
+
+**解释:**
+
+- `robots[0] = 10` 向 **左** 发射，`distance[0] = 5`，覆盖范围 `[5, 10]`，摧毁了 `walls[0] = 5` 和 `walls[2] = 7`。
+- `robots[1] = 2` 向 **左** 发射，`distance[1] = 1`，覆盖范围 `[1, 2]`，摧毁了 `walls[1] = 2`。
+- 因此，答案是 3。
+
+**示例 3:**
+
+**输入:** robots = [1,2], distance = [100,1], walls = [10]
+
+**输出:** 0
+
+**解释:**
+
+在这个例子中，只有 `robots[0]` 能够到达墙壁，但它向 **右** 的射击被 `robots[1]` 挡住了，因此答案是 0。
+
+ 
+
+**提示:**
+
+- `1 <= robots.length == distance.length <= 10^5`
+- `1 <= walls.length <= 10^5`
+- `1 <= robots[i], walls[j] <= 10^9`
+- `1 <= distance[i] <= 10^5`
+- `robots` 中的所有值都是 **互不相同** 的
+- `walls` 中的所有值都是 **互不相同** 的
+
+
+
+这个问题可以利用 **动态规划 (DP)** 和 **二分查找** 来解决。
+
+**核心思路**
+
+1.  **预处理**：
+    *   将机器人按照坐标 `robots` 从小到大排序，并对应调整其射程 `distance`。
+    *   将墙壁坐标 `walls` 排序，方便后续使用二分查找统计一段区间内的墙壁数量。
+    *   **注意**：根据题意，如果墙壁和机器人在同一位置，该墙壁总能被该机器人摧毁（无论向左还是向右射击，机器人的位置都在射程范围内）。我们可以先统计这些与机器人重合的墙壁数量，并从 `walls` 列表中移除它们，简化后续计算。
+
+2.  **分段讨论**：
+    由于机器人是不可穿透的障碍物，我们可以把整条线分成若干段：
+    *   第 0 个机器人左侧的区域。
+    *   相邻机器人 $i$ 和 $i+1$ 之间的区域。
+    *   最后一个机器人右侧的区域。
+
+3.  **状态定义**：
+    定义 $dp[i][0]$ 表示第 $i$ 个机器人及其左侧所有机器人所能摧毁的最大墙壁数，且第 $i$ 个机器人选择**向左**发射。
+    定义 $dp[i][1]$ 表示第 $i$ 个机器人及其左侧所有机器人所能摧毁的最大墙壁数，且第 $i$ 个机器人选择**向右**发射。
+
+4.  **状态转移**：
+    考虑机器人 $i$ 到机器人 $i+1$ 之间的区域：
+    *   **机器人 $i+1$ 向左射击**：
+        *   如果机器人 $i$ 也向左射击，那么 $i+1$ 摧毁的墙壁范围是 $[max(r_{i+1}-d_{i+1}, r_i+1), r_{i+1}-1]$。
+        *   如果机器人 $i$ 向右射击，那么中间区域被 $i$ 向右和 $i+1$ 向左的射程覆盖。如果两者的射程有重叠，则覆盖整个中间段；否则覆盖各自射程内的墙壁。
+    *   **机器人 $i+1$ 向右射击**：
+        *   如果机器人 $i$ 向左射击，中间区域没有新墙壁被摧毁。
+        *   如果机器人 $i$ 向右射击，$i$ 摧毁的墙壁范围是 $[r_i+1, min(r_i+d_i, r_{i+1}-1)]$。
+
+**代码实现**
+
+```python
+import bisect
+from typing import List
+
+class Solution:
+    def maxWalls(self, robots: List[int], distance: List[int], walls: List[int]) -> int:
+        n = len(robots)
+        # 1. 排序机器人及其射程
+        combined = sorted(zip(robots, distance))
+        r = [x[0] for x in combined]
+        d = [x[1] for x in combined]
+        
+        # 2. 预处理墙壁：分离在机器人位置上的墙壁，排序剩余墙壁
+        robot_set = set(r)
+        w_prime = []
+        walls_at_robots = 0
+        for w in walls:
+            if w in robot_set:
+                walls_at_robots += 1
+            else:
+                w_prime.append(w)
+        w_prime.sort()
+        
+        # 辅助函数：统计区间 [a, b] 内的墙壁数量
+        def count_walls(a, b):
+            if a > b:
+                return 0
+            idx1 = bisect.bisect_left(w_prime, a)
+            idx2 = bisect.bisect_right(w_prime, b)
+            return idx2 - idx1
+
+        # 3. 动态规划
+        # dp[i][0]: 机器人 i 向左发射
+        # dp[i][1]: 机器人 i 向右发射
+        
+        # 初始化第一个机器人
+        # 第一个机器人左侧能覆盖的墙壁
+        dp0 = count_walls(r[0] - d[0], r[0] - 1)
+        dp1 = 0
+        
+        for i in range(n - 1):
+            # 机器人 i 向右覆盖的墙壁 (在 i 和 i+1 之间)
+            r_cov = count_walls(r[i] + 1, min(r[i] + d[i], r[i+1] - 1))
+            # 机器人 i+1 向左覆盖的墙壁 (在 i 和 i+1 之间)
+            l_cov = count_walls(max(r[i+1] - d[i+1], r[i] + 1), r[i+1] - 1)
+            
+            # 如果机器人 i 向右和 i+1 向左的射程有交集，覆盖整个间隙
+            if r[i] + d[i] >= r[i+1] - d[i+1]:
+                union_cov = count_walls(r[i] + 1, r[i+1] - 1)
+            else:
+                union_cov = r_cov + l_cov
+            
+            # 计算下一个状态
+            new_dp0 = max(dp0 + l_cov, dp1 + union_cov)
+            new_dp1 = max(dp0, dp1 + r_cov)
+            
+            dp0, dp1 = new_dp0, new_dp1
+            
+        # 4. 最后处理最后一个机器人向右发射的情况
+        # 最后一个机器人右侧覆盖的墙壁
+        final_right_cov = count_walls(r[n-1] + 1, r[n-1] + d[n-1])
+        
+        return max(dp0, dp1 + final_right_cov) + walls_at_robots
+
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(N \log N + M \log M)$。
+    *   排序机器人需要 $O(N \log N)$。
+    *   排序墙壁需要 $O(M \log M)$。
+    *   动态规划循环 $N$ 次，每次循环中调用 `bisect` (二分查找) 耗时 $O(\log M)$。
+    *   整体复杂度在 $10^5$ 级别下可以通过。
+*   **空间复杂度**：$O(N + M)$，用于存储排序后的机器人和墙壁列表。
+
+**关键点总结**
+
+*   **重合处理**：机器人位置的墙壁总是能被摧毁，这简化了 DP 逻辑。
+*   **阻挡逻辑**：通过 `min/max` 函数限制射程，确保子弹不会越过相邻的机器人。
+*   **并集计算**：当两个机器人相向射击时，利用坐标判断它们的射程是否重叠，从而准确计算该区域内被摧毁的墙壁数。
 
 
 
