@@ -4436,6 +4436,67 @@ class Solution:
 
 
 
+
+
+## E657.机器人能否返回原点
+
+implementation, https://leetcode.cn/problems/robot-return-to-origin/
+
+在二维平面上，有一个机器人从原点 `(0, 0)` 开始。给出它的移动顺序，判断这个机器人在完成移动后是否在 **`(0, 0)` 处结束**。
+
+移动顺序由字符串 `moves` 表示。字符 `move[i]` 表示其第 `i` 次移动。机器人的有效动作有 `R`（右），`L`（左），`U`（上）和 `D`（下）。
+
+如果机器人在完成所有动作后返回原点，则返回 `true`。否则，返回 `false`。
+
+**注意：**机器人“面朝”的方向无关紧要。 `“R”` 将始终使机器人向右移动一次，`“L”` 将始终向左移动等。此外，假设每次移动机器人的移动幅度相同。
+
+ 
+
+**示例 1:**
+
+```
+输入: moves = "UD"
+输出: true
+解释：机器人向上移动一次，然后向下移动一次。所有动作都具有相同的幅度，因此它最终回到它开始的原点。因此，我们返回 true。
+```
+
+**示例 2:**
+
+```
+输入: moves = "LL"
+输出: false
+解释：机器人向左移动两次。它最终位于原点的左侧，距原点有两次 “移动” 的距离。我们返回 false，因为它在移动结束时没有返回原点。
+```
+
+ 
+
+**提示:**
+
+- `1 <= moves.length <= 2 * 10^4`
+- `moves` 只包含字符 `'U'`, `'D'`, `'L'` 和 `'R'`
+
+
+
+```python
+class Solution:
+    def judgeCircle(self, moves: str) -> bool:
+        # 统计左右移动的次数
+        # 如果向右的次数等于向左的次数，横向位移抵消
+        horizontal = moves.count('R') == moves.count('L')
+        
+        # 统计上下移动的次数
+        # 如果向上的次数等于向下的次数，纵向位移抵消
+        vertical = moves.count('U') == moves.count('D')
+        
+        # 只有当横向和纵向都抵消时，机器人才能回到原点
+        return horizontal and vertical
+        
+```
+
+
+
+
+
 ## 680.验证回文串II
 
 双指针，https://leetcode.cn/problems/valid-palindrome-ii/
@@ -14335,7 +14396,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
