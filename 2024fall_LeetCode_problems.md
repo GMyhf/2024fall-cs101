@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-04-02 15:28 GMT+8*
+*Updated 2026-04-04 15:28 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -14335,7 +14335,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -33566,6 +33566,118 @@ class Solution:
 
         return count
 ```
+
+
+
+## M2087.网格图中机器人回家的最小代价
+
+greedy, https://leetcode.cn/problems/minimum-cost-homecoming-of-a-robot-in-a-grid/
+
+给你一个 `m x n` 的网格图，其中 `(0, 0)` 是最左上角的格子，`(m - 1, n - 1)` 是最右下角的格子。给你一个整数数组 `startPos` ，`startPos = [startrow, startcol]` 表示 **初始** 有一个 **机器人** 在格子 `(startrow, startcol)` 处。同时给你一个整数数组 `homePos` ，`homePos = [homerow, homecol]` 表示机器人的 **家** 在格子 `(homerow, homecol)` 处。
+
+机器人需要回家。每一步它可以往四个方向移动：**上**，**下**，**左**，**右**，同时机器人不能移出边界。每一步移动都有一定代价。再给你两个下标从 **0** 开始的额整数数组：长度为 `m` 的数组 `rowCosts` 和长度为 `n` 的数组 `colCosts` 。
+
+- 如果机器人往 **上** 或者往 **下** 移动到第 `r` **行** 的格子，那么代价为 `rowCosts[r]` 。
+- 如果机器人往 **左** 或者往 **右** 移动到第 `c` **列** 的格子，那么代价为 `colCosts[c]` 。
+
+请你返回机器人回家需要的 **最小总代价** 。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2021/10/11/eg-1.png)
+
+```
+输入：startPos = [1, 0], homePos = [2, 3], rowCosts = [5, 4, 3], colCosts = [8, 2, 6, 7]
+输出：18
+解释：一个最优路径为：
+从 (1, 0) 开始
+-> 往下走到 (2, 0) 。代价为 rowCosts[2] = 3 。
+-> 往右走到 (2, 1) 。代价为 colCosts[1] = 2 。
+-> 往右走到 (2, 2) 。代价为 colCosts[2] = 6 。
+-> 往右走到 (2, 3) 。代价为 colCosts[3] = 7 。
+总代价为 3 + 2 + 6 + 7 = 18
+```
+
+**示例 2：**
+
+```
+输入：startPos = [0, 0], homePos = [0, 0], rowCosts = [5], colCosts = [26]
+输出：0
+解释：机器人已经在家了，所以不需要移动。总代价为 0 。
+```
+
+ 
+
+**提示：**
+
+- `m == rowCosts.length`
+- `n == colCosts.length`
+- `1 <= m, n <= 10^5`
+- `0 <= rowCosts[r], colCosts[c] <= 10^4`
+- `startPos.length == 2`
+- `homePos.length == 2`
+- `0 <= startrow, homerow < m`
+- `0 <= startcol, homecol < n`
+
+
+
+这道题的核心在于理解：**为了使代价最小，机器人应该沿着最短路径（曼哈顿距离对应的路径）直奔目的地。**
+
+解题思路
+
+1.  **贪心策略**：
+    由于每次移动到某一行或某一列的代价是固定的（与来源无关），且所有代价均为非负数，因此任何远离目标方向的“绕路”或“往返”都会额外增加总代价。最优策略是：
+    *   在行方向上，直接从 `startrow` 移动到 `homerow`。
+    *   在列方向上，直接从 `startcol` 移动到 `homecol`。
+
+2.  **代价计算规律**：
+    *   当你从起点出发时，**起点的行和列代价是不计入总和的**。
+    *   如果你向目标移动，你需要支付**经过的每一行**（除了起点行）和**每一列**（除了起点列）的代价。
+    *   无论你先走完行再走列，还是先走列再走行，或者蛇形走位，只要不走回头路，经过的行集合和列集合都是确定的。
+
+3.  **计算方法**：
+    *   **行代价**：如果 `homerow > startrow`，累加 `rowCosts[startrow + 1]` 到 `rowCosts[homerow]`；如果 `homerow < startrow`，累加 `rowCosts[homerow]` 到 `rowCosts[startrow - 1]`。
+    *   **列代价**：同理，累加 `startcol` 到 `homecol` 路径上（不含起点）的所有列代价。
+
+**Python 代码实现**
+
+```python
+class Solution:
+    def minCost(self, startPos: List[int], homePos: List[int], rowCosts: List[int], colCosts: List[int]) -> int:
+        start_r, start_c = startPos
+        home_r, home_c = homePos
+        
+        total_cost = 0
+        
+        # 计算行代价
+        if start_r < home_r:
+            # 向上/下移动：经过 start_r+1 到 home_r
+            total_cost += sum(rowCosts[start_r + 1 : home_r + 1])
+        elif start_r > home_r:
+            # 向上移动：经过 home_r 到 start_r-1
+            total_cost += sum(rowCosts[home_r : start_r])
+            
+        # 计算列代价
+        if start_c < home_c:
+            # 向右移动：经过 start_c+1 到 home_c
+            total_cost += sum(colCosts[start_c + 1 : home_c + 1])
+        elif start_c > home_c:
+            # 向左移动：经过 home_c 到 start_c-1
+            total_cost += sum(colCosts[home_c : start_c])
+            
+        return total_cost
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(M + N)$。其中 $M$ 是 `rowCosts` 的长度，$N$ 是 `colCosts` 的长度。虽然我们只对部分区间求和，但在最坏情况下（从网格一头走到另一头），我们需要遍历数组的大部分元素。
+*   **空间复杂度**：$O(1)$。除了存储输入数据外，只使用了常数级别的额外空间。
+
+**总结**
+
+这道题看起来像是一个最短路径搜索（如 Dijkstra）问题，但由于代价只与“进入的行列索引”有关，它实际上转化为了一个简单的区间求和问题。只要理解了“不回头即最优”的逻辑，题目便迎刃而解。
 
 
 
