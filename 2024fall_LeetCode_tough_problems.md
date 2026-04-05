@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-04-03 09:52 GMT+8*
+*Updated 2026-04-04 15:27 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -15317,6 +15317,161 @@ class Solution:
 
         return dfs(0, n)
 ```
+
+
+
+## T101025.产生至少 K 个峰值的最少操作次数
+
+dp, https://leetcode.cn/problems/minimum-operations-to-achieve-at-least-k-peaks/
+
+给你一个长度为 `n` 的循环整数数组 `nums`。
+
+如果下标 `i` 对应的值 **严格大于** 其相邻元素，则该下标是一个 **峰值** ：
+
+- 如果 `i > 0`，下标 `i` 的 **前一个** 相邻元素是 `nums[i - 1]`，否则是 `nums[n - 1]`。
+- 如果 `i < n - 1`，下标 `i` 的 **后一个** 相邻元素是 `nums[i + 1]`，否则是 `nums[0]`。
+
+你可以执行以下操作 **任意** 次数：
+
+- 选择任意下标 `i` 并将 `nums[i]` **增加** 1。
+
+返回使数组包含 **至少** `k` 个峰值所需的 **最小** 操作数。如果不可能，返回 -1。
+
+ 
+
+**示例 1：**
+
+**输入：** nums = [2,1,2], k = 1
+
+**输出：** 1
+
+**解释：**
+
+- 为了实现至少 `k = 1` 个峰值，我们可以将 `nums[2] = 2` 增加到 3。
+- 执行此操作后，`nums[2] = 3` 严格大于其相邻元素 `nums[0] = 2` 和 `nums[1] = 1`。
+- 因此，所需的最小操作数是 1。
+
+**示例 2：**
+
+**输入：** nums = [4,5,3,6], k = 2
+
+**输出：** 0
+
+**解释：**
+
+- 数组在零次操作下已经包含至少 `k = 2` 个峰值。
+- 下标 1：`nums[1] = 5` 严格大于其相邻元素 `nums[0] = 4` 和 `nums[2] = 3`。
+- 下标 3：`nums[3] = 6` 严格大于其相邻元素 `nums[2] = 3` 和 `nums[0] = 4`。
+- 因此，所需的最小操作数是 0。
+
+**示例 3：**
+
+**输入：** nums = [3,7,3], k = 2
+
+**输出：** -1
+
+**解释：**
+
+在这个数组中不可能有至少 `k = 2` 个峰值。因此，答案是 -1。
+
+ 
+
+**提示：**
+
+- `2 <= n == nums.length <= 5000`
+- `-10^5 <= nums[i] <= 10^5`
+- `0 <= k <= n`
+
+
+
+这是一个典型的**动态规划**问题。
+
+**题目分析**
+
+1.  **循环数组**：下标 $i$ 的相邻元素是 $(i-1+n)\%n$ 和 $(i+1)\%n$。
+2.  **峰值定义**：$nums[i] > nums[i-1]$ 且 $nums[i] > nums[i+1]$。
+3.  **约束条件**：要形成一个峰值，该位置必须比左右两边都大。这意味着**相邻的两个位置不可能同时成为峰值**。
+4.  **最大峰值数**：在长度为 $n$ 的数组中，最多能选出 $\lfloor n/2 \rfloor$ 个不相邻的位置作为峰值。如果 $k > \lfloor n/2 \rfloor$，直接返回 -1。
+5.  **目标**：选择 $k$ 个不相邻的位置，使得将这些位置提升为峰值所需的代价最小。
+
+**算法设计**
+
+1.  **计算代价**：
+    对于每个位置 $i$，若要使其成为峰值，它必须大于 $nums[i-1]$ 和 $nums[i+1]$。
+    所需操作次数为：$cost[i] = \max(0, nums[i-1] + 1 - nums[i], nums[i+1] + 1 - nums[i])$。
+    即：$nums[i]$ 至少要变成 $\max(nums[i-1], nums[i+1]) + 1$。
+
+2.  **处理循环性**：
+    由于是循环数组，第一个元素和最后一个元素不能同时选。我们可以分两种情况讨论：
+    -   **不选第一个元素**：在 $nums[1 \dots n-1]$ 中选 $k$ 个不相邻的。
+    -   **选第一个元素**：在 $nums[2 \dots n-2]$ 中选 $k-1$ 个不相邻的。
+
+3.  **动态规划**：
+    定义 $dp[i][j]$ 为在前 $i$ 个元素中选出 $j$ 个不相邻峰值的最小代价。
+    状态转移方程：$dp[i][j] = \min(dp[i-1][j], dp[i-2][j-1] + cost[i])$。
+    可以使用空间优化将第一维去掉。
+
+**代码实现**
+
+```python
+class Solution:
+    def minOperations(self, nums: list[int], k: int) -> int:
+        n = len(nums)
+        if k == 0:
+            return 0
+        if k > n // 2:
+            return -1
+
+        # 计算每个位置变成峰值的代价
+        costs = [0] * n
+        for i in range(n):
+            prev = nums[(i - 1 + n) % n]
+            nxt = nums[(i + 1) % n]
+            costs[i] = max(0, max(prev, nxt) + 1 - nums[i])
+
+        def solve(arr, count):
+            if count <= 0: return 0
+            m = len(arr)
+            if count > (m + 1) // 2: return float('inf')
+            
+            # dp[j] 表示选出 j 个点的最小代价
+            dp = [float('inf')] * (count + 1)
+            dp[0] = 0
+            
+            # 为了处理“不相邻”，我们需要记录上一个状态
+            # prev_dp 是 dp[i-1]，prev2_dp 是 dp[i-2]
+            prev2_dp = [float('inf')] * (count + 1)
+            prev2_dp[0] = 0
+            
+            for i in range(m):
+                curr_dp = [float('inf')] * (count + 1)
+                curr_dp[0] = 0
+                for j in range(1, count + 1):
+                    # 不选当前点：来自 dp[i-1][j]
+                    # 选当前点：来自 dp[i-2][j-1] + cost
+                    curr_dp[j] = min(dp[j], prev2_dp[j-1] + arr[i])
+                
+                prev2_dp = dp
+                dp = curr_dp
+            return dp[count]
+
+        # 情况1：不选 nums[0] (考虑下标 1 到 n-1)
+        res1 = solve(costs[1:], k)
+        
+        # 情况2：选 nums[0] (那么不能选下标 1 和 n-1，考虑下标 2 到 n-2)
+        res2 = costs[0] + solve(costs[2:n-1], k - 1)
+
+        ans = min(res1, res2)
+        return int(ans) if ans != float('inf') else -1
+
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(n \cdot k)$。在这个问题中 $n=5000, k=2500$，总计算量约为 $1.25 \times 10^7$，在 Python 的执行时限内是可以接受的。
+- **空间复杂度**：$O(k)$，通过滚动数组（或保存前两行状态）优化了空间。
+
+
 
 
 
