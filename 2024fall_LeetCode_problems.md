@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-04-04 15:28 GMT+8*
+*Updated 2026-04-04 21:28 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -1077,6 +1077,318 @@ https://leetcode.cn/problems/binary-tree-inorder-traversal/
 
 - 树中节点数目在范围 `[0, 100]` 内
 - `-100 <= Node.val <= 100`
+
+
+
+二叉树的中序遍历顺序是：**左子树 -> 根节点 -> 右子树**。
+
+这里提供两种主流写法：**递归**（最直观）和 **迭代**（进阶要求，使用栈）。
+
+**方法一：递归 (Recursion)**
+
+递归是最简单的方法。我们定义一个辅助函数，先访问左子树，再记录当前节点值，最后访问右子树。
+
+```python
+class Solution:
+    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        res = []
+        
+        def dfs(node):
+            if not node:
+                return
+            # 1. 遍历左子树
+            dfs(node.left)
+            # 2. 访问根节点
+            res.append(node.val)
+            # 3. 遍历右子树
+            dfs(node.right)
+            
+        dfs(root)
+        return res
+```
+
+*   **时间复杂度**：$O(n)$，其中 $n$ 是节点数，每个节点访问一次。
+*   **空间复杂度**：$O(n)$，最坏情况下（树呈链状）递归调用的栈深度为 $n$。
+
+---
+
+**方法二：迭代 (Iteration - 使用栈)**
+
+进阶要求使用迭代。我们可以利用**显式栈**来模拟递归的过程：
+
+1. 一直向左走，将路径上的节点全部入栈，直到尽头。
+2. 从栈中弹出一个节点（这通常是当前最左的节点）。
+3. 记录该节点的值。
+4. 转向该节点的右子树，重复步骤 1。
+
+```python
+class Solution:
+    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        res = []
+        stack = []
+        curr = root
+        
+        while curr or stack:
+            # 1. 尽可能向左走，并将沿途节点入栈
+            while curr:
+                stack.append(curr)
+                curr = curr.left
+            
+            # 2. 当前节点为空，说明左边走到底了，弹出栈顶元素（最近的根节点）
+            curr = stack.pop()
+            res.append(curr.val)
+            
+            # 3. 转向右子树
+            curr = curr.right
+            
+        return res
+```
+
+*   **时间复杂度**：$O(n)$。
+*   **空间复杂度**：$O(n)$，栈的大小在最坏情况下等于树的高度。
+
+---
+
+**方法三：Morris 遍历 (进阶 - $O(1)$ 空间)**
+
+如果面试官要求 **$O(1)$ 空间复杂度**（不考虑结果数组），可以使用 Morris 遍历。它通过修改树的空闲指针，利用叶子节点的右指针指向其中序遍历的后继节点，从而避免了使用栈。
+
+```python
+class Solution:
+    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        res = []
+        curr = root
+        
+        while curr:
+            if not curr.left:
+                # 如果没有左孩子，直接访问当前节点，并进入右孩子
+                res.append(curr.val)
+                curr = curr.right
+            else:
+                # 找到左子树中序遍历的最后一个节点（最右侧节点）
+                pre = curr.left
+                while pre.right and pre.right != curr:
+                    pre = pre.right
+                
+                if not pre.right:
+                    # 建立临时链接，指向后继节点（当前节点）
+                    pre.right = curr
+                    curr = curr.left
+                else:
+                    # 链接已存在，说明左子树已访问完，断开链接，访问当前节点
+                    pre.right = None
+                    res.append(curr.val)
+                    curr = curr.right
+        return res
+```
+
+*   **时间复杂度**：$O(n)$，虽然有嵌套循环，但每条边最多被访问两次。
+*   **空间复杂度**：$O(1)$（不计入结果列表）。
+
+
+
+添加一个辅助函数来根据列表创建二叉树，然后调用这个函数来生成 `root` 节点。
+
+```python
+from typing import Optional, List
+
+
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+
+class Solution:
+    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        res = []
+        curr = root
+
+        while curr:
+            if not curr.left:
+                # 如果没有左孩子，直接访问当前节点，并进入右孩子
+                res.append(curr.val)
+                curr = curr.right
+            else:
+                # 找到左子树中序遍历的最后一个节点（最右侧节点）
+                pre = curr.left
+                while pre.right and pre.right != curr:
+                    pre = pre.right
+
+                if not pre.right:
+                    # 建立临时链接，指向后继节点（当前节点）
+                    pre.right = curr
+                    curr = curr.left
+                else:
+                    # 链接已存在，说明左子树已访问完，断开链接，访问当前节点
+                    pre.right = None
+                    res.append(curr.val)
+                    curr = curr.right
+        return res
+
+
+def build_tree_from_list(values):
+    """
+    根据列表构建二叉树。
+    列表按层序遍历顺序表示二叉树，None 表示空节点。
+    """
+    if not values:
+        return None
+
+    # 创建根节点
+    root = TreeNode(values[0])
+    # 使用队列进行层序构建
+    queue = [root]
+    i = 1
+
+    while i < len(values):
+        current_node = queue.pop(0)
+
+        # 处理左子节点
+        if i < len(values) and values[i] is not None:
+            current_node.left = TreeNode(values[i])
+            queue.append(current_node.left)
+        i += 1
+
+        # 处理右子节点
+        if i < len(values) and values[i] is not None:
+            current_node.right = TreeNode(values[i])
+            queue.append(current_node.right)
+        i += 1
+
+    return root
+
+
+if __name__ == "__main__":
+    sol = Solution()
+    # 1. 使用辅助函数将列表转换为 TreeNode 对象
+    #root = build_tree_from_list([1, None, 2, 3])
+    root = build_tree_from_list([1, 2, 3, 4, 5])
+    """
+          1
+         / \
+        2   3
+       / \
+      4   5
+    """
+    # 2. 将 TreeNode 对象传入方法
+    print(sol.inorderTraversal(root))
+
+# [4, 2, 5, 1, 3]
+```
+
+
+
+> Morris 遍历（Morris Traversal）的精髓在于：**利用二叉树中大量的空闲指针（叶子节点的右孩子指针），来保存临时信息，从而省去栈的空间。**
+>
+> 它的核心目标是：**在左子树遍历完后，能通过某种方式“走回来”找到根节点。**
+>
+> ---
+>
+> **1. 核心逻辑（直白版）**
+>
+> 假设当前节点为 `curr`：
+>
+> 1.  **如果 `curr` 没有左孩子**：
+>     *   说明左边没东西了，直接**打印 `curr`**。
+>     *   然后去右边：`curr = curr.right`。
+> 2.  **如果 `curr` 有左孩子**：
+>     *   我们要找 `curr` 的**前驱节点**（即：左子树中最后被访问的那个点，也就是左子树里“最右边”的节点）。
+>     *   **情况 A（还没建立连接）**：如果前驱节点的右孩子是空的，我们就把它连到 `curr` 上：`pre.right = curr`。然后继续去左子树：`curr = curr.left`。
+>     *   **情况 B（已经建立过连接）**：如果前驱节点的右孩子指向 `curr`，说明这是第二次回来，左子树已经走完了。此时我们要**断开连接**（恢复树结构），**打印 `curr`**，然后去右边：`curr = curr.right`。
+>
+> ---
+>
+> **2. 详细图解示例**
+>
+> 假设我们有这样一颗二叉树：
+>
+> ```
+>       1
+>      / \
+>     2   3
+>    / \
+>   4   5
+> ```
+>
+> **目标中序遍历结果：`[4, 2, 5, 1, 3]`**
+>
+> **第一阶段：从根节点 1 开始**
+>
+> *   `curr` 在 **1**。它有左孩子（2）。
+> *   找到 1 的前驱（左子树最右节点）：是 **5**。
+> *   5 的右孩子为空，建立连接：`5.right = 1`。
+> *   `curr` 移向左孩子 **2**。
+>     *   *此时树的样子（逻辑上）：4 -> 2 -> 5 -> 1 -> 3*
+>
+> **第二阶段：处理节点 2**
+>
+> *   `curr` 在 **2**。它有左孩子（4）。
+> *   找到 2 的前驱（左子树最右节点）：是 **4**。
+> *   4 的右孩子为空，建立连接：`4.right = 2`。
+> *   `curr` 移向左孩子 **4**。
+>
+> **第三阶段：处理节点 4**
+>
+> *   `curr` 在 **4**。它**没有**左孩子。
+> *   **打印 4**。
+> *   `curr` 移向 `curr.right`。由于刚才连了线，它回到了 **2**。
+>
+> **第四阶段：回到节点 2**
+>
+> *   `curr` 在 **2**。它有左孩子（4）。
+> *   找到 2 的前驱：还是 **4**。
+> *   发现 `4.right` 已经指向了 `curr`(2)。
+> *   **说明左边全走完了！**
+> *   **断开连接**：`4.right = None`。
+> *   **打印 2**。
+> *   `curr` 移向右孩子 **5**。
+>
+> **第五阶段：处理节点 5**
+>
+> *   `curr` 在 **5**。它**没有**左孩子。
+> *   **打印 5**。
+> *   `curr` 移向 `curr.right`。由于第一阶段连了线，它回到了 **1**。
+>
+> **第六阶段：回到节点 1**
+>
+> *   `curr` 在 **1**。它有左孩子（2）。
+> *   找到 1 的前驱：是 **5**（沿着 2 -> 5 找到）。
+> *   发现 `5.right` 已经指向了 `curr`(1)。
+> *   **说明左边全走完了！**
+> *   **断开连接**：`5.right = None`。
+> *   **打印 1**。
+> *   `curr` 移向右孩子 **3**。
+>
+> **第七阶段：处理节点 3**
+>
+> *   `curr` 在 **3**。没有左孩子。
+> *   **打印 3**。
+> *   `curr` 移向 `curr.right`（None）。
+> *   **结束。**
+>
+> ---
+>
+> **3. 总结**
+>
+> | 步骤     | 打印结果 | 说明                              |
+> | :------- | :------- | :-------------------------------- |
+> | 1. 遇到1 |          | 建立 5 -> 1 的线，去2             |
+> | 2. 遇到2 |          | 建立 4 -> 2 的线，去4             |
+> | 3. 遇到4 | **4**    | 无左孩子，打印并沿线回2           |
+> | 4. 回到2 | **2**    | 发现 4 -> 2 已存，拆线，打印，去5 |
+> | 5. 遇到5 | **5**    | 无左孩子，打印并沿线回1           |
+> | 6. 回到1 | **1**    | 发现 5 -> 1 已存，拆线，打印，去3 |
+> | 7. 遇到3 | **3**    | 无左孩子，打印，结束              |
+>
+> **核心精髓：**
+>
+> 1.  **线索化**：把原本是 `None` 的右指针利用起来，指向中序遍历的后继。
+> 2.  **原地修改，原地恢复**：访问完后把线拆掉，不破坏原树结构。
+> 3.  **空间 $O(1)$**：除了保存结果的数组，只用了两个辅助指针（`curr` 和 `pre`），没有用栈，也没有递归。
+
+
 
 
 
@@ -14396,7 +14708,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
