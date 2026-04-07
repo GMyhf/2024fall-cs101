@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-04-06 12:45 GMT+8*
+*Updated 2026-04-07 09:38 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -14708,7 +14708,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -31882,6 +31882,196 @@ class Solution:
         
         return total_beauty
 ```
+
+
+
+## M2069.模拟行走机器人 II
+
+implementation, https://leetcode.cn/problems/walking-robot-simulation-ii/
+
+给你一个在 XY 平面上的 `width x height` 的网格图，**左下角** 的格子为 `(0, 0)` ，**右上角** 的格子为 `(width - 1, height - 1)` 。网格图中相邻格子为四个基本方向之一（`"North"`，`"East"`，`"South"` 和 `"West"`）。一个机器人 **初始** 在格子 `(0, 0)` ，方向为 `"East"` 。
+
+机器人可以根据指令移动指定的 **步数** 。每一步，它可以执行以下操作。
+
+1. 沿着当前方向尝试 **往前一步** 。
+2. 如果机器人下一步将到达的格子 **超出了边界** ，机器人会 **逆时针** 转 90 度，然后再尝试往前一步。
+
+如果机器人完成了指令要求的移动步数，它将停止移动并等待下一个指令。
+
+请你实现 `Robot` 类：
+
+- `Robot(int width, int height)` 初始化一个 `width x height` 的网格图，机器人初始在 `(0, 0)` ，方向朝 `"East"` 。
+- `void step(int num)` 给机器人下达前进 `num` 步的指令。
+- `int[] getPos()` 返回机器人当前所处的格子位置，用一个长度为 2 的数组 `[x, y]` 表示。
+- `String getDir()` 返回当前机器人的朝向，为 `"North"` ，`"East"` ，`"South"` 或者 `"West"` 。
+
+ 
+
+**示例 1：**
+
+![example-1](https://raw.githubusercontent.com/GMyhf/img/main/img/example-1.png)
+
+```
+输入：
+["Robot", "step", "step", "getPos", "getDir", "step", "step", "step", "getPos", "getDir"]
+[[6, 3], [2], [2], [], [], [2], [1], [4], [], []]
+输出：
+[null, null, null, [4, 0], "East", null, null, null, [1, 2], "West"]
+
+解释：
+Robot robot = new Robot(6, 3); // 初始化网格图，机器人在 (0, 0) ，朝东。
+robot.step(2);  // 机器人朝东移动 2 步，到达 (2, 0) ，并朝东。
+robot.step(2);  // 机器人朝东移动 2 步，到达 (4, 0) ，并朝东。
+robot.getPos(); // 返回 [4, 0]
+robot.getDir(); // 返回 "East"
+robot.step(2);  // 朝东移动 1 步到达 (5, 0) ，并朝东。
+                // 下一步继续往东移动将出界，所以逆时针转变方向朝北。
+                // 然后，往北移动 1 步到达 (5, 1) ，并朝北。
+robot.step(1);  // 朝北移动 1 步到达 (5, 2) ，并朝 北 （不是朝西）。
+robot.step(4);  // 下一步继续往北移动将出界，所以逆时针转变方向朝西。
+                // 然后，移动 4 步到 (1, 2) ，并朝西。
+robot.getPos(); // 返回 [1, 2]
+robot.getDir(); // 返回 "West"
+```
+
+ 
+
+**提示：**
+
+- `2 <= width, height <= 100`
+- `1 <= num <= 10^5`
+- `step` ，`getPos` 和 `getDir` **总共** 调用次数不超过 `10^4` 次。
+
+
+
+这道题的核心在于观察机器人的移动轨迹。机器人实际上是在网格的**边界**（外圈）上循环移动。
+
+**解题思路**
+
+1.  **周长与循环**：机器人只会在网格的四条边上移动。总的周长 $C = 2 \times (width - 1) + 2 \times (height - 1)$。由于机器人一直在边界循环，我们可以对步数 $num$ 取模。
+2.  **特殊情况（(0,0)点）**：
+    *   初始状态：位置 $(0,0)$，方向 `"East"`。
+    *   移动一圈回到 $(0,0)$ 后：位置 $(0,0)$，由于是由于从南边边界顶到头转弯回来的，方向会变为 `"South"`。
+    *   为了处理这个逻辑，如果移动步数取模后为 0，且已经发生过移动，我们需要判断它是在哪个位置。如果回到了起点，方向应设为 `"South"`。
+3.  **轨迹建模**：我们可以预先计算出边界上所有点的坐标和对应的方向，或者根据步数 $num$ 所落在的区间来计算：
+    *   `0 < num <= width - 1`: 在底边，向东。
+    *   `width - 1 < num <= (width-1) + (height-1)`: 在右边，向北。
+    *   `(width-1) + (height-1) < num <= 2*(width-1) + (height-1)`: 在顶边，向西。
+    *   其他: 在左边，向南。
+
+**代码实现**
+
+```python
+class Robot:
+
+    def __init__(self, width: int, height: int):
+        self.w = width
+        self.h = height
+        self.pos = 0  # 用相对于(0,0)沿边界走的步数来记录位置
+        self.perimeter = 2 * (width - 1) + 2 * (height - 1)
+        self.moved = False
+
+    def step(self, num: int) -> None:
+        self.moved = True
+        # 取模减少无效循环
+        self.pos = (self.pos + num) % self.perimeter
+
+    def getPos(self) -> List[int]:
+        p = self.pos
+        w, h = self.w, self.h
+        # 底部边: [0, w-1]
+        if p < w:
+            return [p, 0]
+        # 右侧边: [w, w + h - 2] (减去重复的角点)
+        if p < w + h - 1:
+            return [w - 1, p - (w - 1)]
+        # 顶部边
+        if p < 2 * w + h - 2:
+            return [w - 1 - (p - (w + h - 2)), h - 1]
+        # 左侧边
+        return [0, h - 1 - (p - (2 * w + h - 3))]
+
+    def getDir(self) -> str:
+        # 特殊处理：回到起点的情况
+        if self.moved and self.pos == 0:
+            return "South"
+        
+        p = self.pos
+        w, h = self.w, self.h
+        # 初始状态且未移动
+        if not self.moved:
+            return "East"
+        
+        # 根据当前步数所处的范围判断方向
+        # 注意：边界点在转向后，方向会立即变为新边的方向
+        if 0 < p <= w - 1:
+            return "East"
+        elif w - 1 < p <= w + h - 2:
+            return "North"
+        elif w + h - 2 < p <= 2 * w + h - 3:
+            return "West"
+        else:
+            return "South"
+
+```
+
+**关键点解释**
+
+*   **`self.moved` 标志位**：这是为了区分“从未移动过的 $(0,0)$”和“走了一圈回到 $(0,0)$”。
+*   **方向判定范围**：
+    *   当机器人走到拐角点（例如 $(width-1, 0)$）时，如果它是动作的**终点**，它的方向取决于它是如何到达这里的。如果步数正好落在 `w-1`，它依然是 `"East"`；如果超过了 `w-1`，它就会转向。
+    *   取模运算 `num % perimeter` 会导致原本回到原点应为 `"South"` 的情况变成 `0`。代码中通过 `if self.pos == 0 and self.moved` 专门捕获了这一逻辑。
+
+
+
+Q: 周长为什么不是 2 * (width + height) ?
+
+> 这是一个非常经典且容易混淆的**“植树问题”**（或称为点与间距的问题）。
+>
+> 在网格坐标系中，周长指的是机器人**可以移动的总步数**。让我们通过一个具体的例子来直观理解。
+>
+> 假设网格是 `width = 4, height = 3`：
+> 坐标范围是 $x \in [0, 3], y \in [0, 2]$。
+>
+> **1. 手动数一下边界上的格子**
+>
+> 机器人沿着边界走一圈经过的路径如下：
+>
+> 1.  **底边**：从 (0,0) 到 (3,0)，移动了 **3** 步。
+> 2.  **右边**：从 (3,0) 到 (3,2)，移动了 **2** 步。
+> 3.  **顶边**：从 (3,2) 到 (0,2)，移动了 **3** 步。
+> 4.  **左边**：从 (0,2) 到 (0,0)，移动了 **2** 步。
+>
+> **总步数 = 3 + 2 + 3 + 2 = 10 步。**
+>
+> **2. 公式计算**
+>
+> 如果我们使用 $2 \times (width + height)$：
+> $2 \times (4 + 3) = 14$ —— **错误**。
+>
+> 如果我们使用 $2 \times (width - 1) + 2 \times (height - 1)$：
+> $2 \times (4 - 1) + 2 \times (3 - 1) = 2 \times 3 + 2 \times 2 = 10$ —— **正确**。
+>
+> **3. 为什么是 $width - 1$？**
+>
+> 因为周长计算的是**相邻格子之间的间隙（步数）**，而不是格子的总数。
+>
+> *   横向有 `width` 个格子，但只有 `width - 1` 段距离。
+> *   纵向有 `height` 个格子，但只有 `height - 1` 段距离。
+>
+> **4. 形象理解：四个顶点**
+>
+> 如果你直接用 $2 \times width + 2 \times height$，你会发现**四个角上的点被重复计算了两次**。
+> 为了修正，你需要减去重复算的 4 个角：
+> $2 \times width + 2 \times height - 4$
+>
+> 这等同于：
+> $2 \times (width - 1) + 2 \times (height - 1)$
+>
+> **总结**
+>
+> 在 XY 坐标系网格中，宽度为 $W$ 高度为 $H$ 的矩形轨迹，其**外围周长（总步数）**恒等于：
+> $$\text{Perimeter} = 2 \times (W - 1) + 2 \times (H - 1)$$
 
 
 
