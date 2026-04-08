@@ -14708,7 +14708,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -43768,6 +43768,110 @@ class Solution:
         return n - max_keep
 
 ```
+
+
+
+## M3653.区间乘法查询后的异或 I
+
+implementation, https://leetcode.cn/problems/xor-after-range-multiplication-queries-i/
+
+给你一个长度为 `n` 的整数数组 `nums` 和一个大小为 `q` 的二维整数数组 `queries`，其中 `queries[i] = [li, ri, ki, vi]`。
+
+对于每个查询，按以下步骤执行操作：
+
+- 设定 `idx = li`。
+- 当 `idx <= ri` 时：
+  - 更新：`nums[idx] = (nums[idx] * vi) % (109 + 7)`
+  - 将 `idx += ki`。
+
+在处理完所有查询后，返回数组 `nums` 中所有元素的 **按位异或** 结果。
+
+ 
+
+**示例 1：**
+
+**输入：** nums = [1,1,1], queries = [[0,2,1,4]]
+
+**输出：** 4
+
+**解释：**
+
+- 唯一的查询 `[0, 2, 1, 4]` 将下标 0 到下标 2 的每个元素乘以 4。
+- 数组从 `[1, 1, 1]` 变为 `[4, 4, 4]`。
+- 所有元素的异或为 `4 ^ 4 ^ 4 = 4`。
+
+**示例 2：**
+
+**输入：** nums = [2,3,1,5,4], queries = [[1,4,2,3],[0,2,1,2]]
+
+**输出：** 31
+
+**解释：**
+
+- 第一个查询 `[1, 4, 2, 3]` 将下标 1 和 3 的元素乘以 3，数组变为 `[2, 9, 1, 15, 4]`。
+- 第二个查询 `[0, 2, 1, 2]` 将下标 0、1 和 2 的元素乘以 2，数组变为 `[4, 18, 2, 15, 4]`。
+- 所有元素的异或为 `4 ^ 18 ^ 2 ^ 15 ^ 4 = 31`。
+
+ 
+
+**提示：**
+
+- `1 <= n == nums.length <= 10^3`
+- `1 <= nums[i] <= 10^9`
+- `1 <= q == queries.length <= 10^3`
+- `queries[i] = [li, ri, ki, vi]`
+- `0 <= li <= ri < n`
+- `1 <= ki <= n`
+- `1 <= vi <= 10^5`
+
+
+
+这是一个模拟（Implementation）类的题目。根据题目描述，我们需要对数组执行一系列区间乘法操作。由于题目给出的数据范围较小（$n \le 1000$ 且 $q \le 1000$），直接按照题目步骤模拟每一项查询的时间复杂度为 $O(n \times q)$，这在 $10^6$ 的数量级下是可以轻松通过的。
+
+**解题思路**
+
+1. **定义常量**：取模常数 $MOD = 10^9 + 7$。
+2. **处理查询**：遍历 `queries` 中的每一个查询 `[li, ri, ki, vi]`。
+3. **按步更新**：
+   - 初始化 `idx = li`。
+   - 当 `idx <= ri` 时，更新 `nums[idx]` 为 `(nums[idx] * vi) % MOD`。
+   - 更新下标 `idx += ki`。
+4. **计算异或和**：在所有查询处理完毕后，对更新后的 `nums` 数组中所有元素执行按位异或（XOR）运算。
+5. **返回结果**。
+
+**Python 代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def xorAfterQueries(self, nums: List[int], queries: List[List[int]]) -> int:
+        MOD = 10**9 + 7
+        
+        # 1. 遍历每一个查询进行模拟
+        for li, ri, ki, vi in queries:
+            idx = li
+            while idx <= ri:
+                # 按照题目要求更新数组中的值并取模
+                nums[idx] = (nums[idx] * vi) % MOD
+                idx += ki
+        
+        # 2. 计算处理完所有查询后数组元素的异或结果
+        ans = 0
+        for x in nums:
+            ans ^= x
+            
+        return ans
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(q \times \frac{n}{k} + n)$。
+  - 对于每个查询，最坏情况（$k=1$）下需要遍历 $n$ 次。
+  - 总共 $q$ 个查询，故模拟部分最坏为 $O(q \times n)$。
+  - 最后遍历一次数组计算异或和，复杂度为 $O(n)$。
+  - 代入数据范围：$1000 \times 1000 = 10^6$，在 Python 的执行效率范围内。
+- **空间复杂度**：$O(1)$。我们直接在原数组上进行修改，除了存储结果的变量外，没有使用额外的线性空间。
 
 
 
