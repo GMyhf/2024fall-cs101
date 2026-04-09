@@ -14708,7 +14708,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -27369,59 +27369,9 @@ dfs, https://leetcode.cn/problems/lowest-common-ancestor-of-deepest-leaves/
 
 
 
-【卞知彰 物院】思路：1、先找出所有的叶子节点，然后对比长度，在最长的节点的路径中，找到第一个大家出现分歧的位置，然后输出相应节点就可以了。2、注意对于二叉树，只需要存储在这个节点是选择了想做还是向右就可以了，同时因为在回溯之外操作了`path`，所以需要把操作pop掉。3、注意各种指标要不要加一或者减一。
-
-```python
-class Solution:
-    def lcaDeepestLeaves(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
-        paths=[]
-        leaves=[]
-        def backtracking(cur,level,path):
-            if cur.left:
-                path.append('left')
-                backtracking(cur.left,level+1,path)
-                path.pop()
-            if cur.right:
-                path.append('right')
-                backtracking(cur.right,level+1,path)
-                path.pop()
-            if (not cur.left) and (not cur.right):
-                paths.append(path[:])
-                leaves.append(level)
-        backtracking(root,0,[])
-        max_level=max(leaves)
-        ans=[]
-        for i,p in enumerate(paths):
-            if leaves[i]==max_level:
-                ans.append(p)
-        
-        common=0
-        for i in range(max_level):
-            same=True
-            for j in range(len(ans)):
-                if ans[j][i]!=ans[0][i]:
-                    same=False
-                    break
-            if not same:
-                break
-            common+=1
-        go=ans[0]
-        cur=root
-        for i in range(common):
-            if go[i]=='left':
-                cur=cur.left
-            else:
-                cur=cur.right
-        return cur
-```
 
 
-
-优化版本（O(n) 时间 + O(h) 空间）
-
-更高效的做法是 **一次 DFS 同时返回 (深度, 节点)**，不用存路径。
-
-优化思路
+O(n) 时间 + O(h) 空间。 **一次 DFS 同时返回 (深度, 节点)**，不用存路径。
 
 对于每个节点：
 
@@ -27538,6 +27488,65 @@ if __name__ == "__main__":
 
 - **时间复杂度**：O(N)，其中 N 是树中的节点数。每个节点只被访问一次。
 - **空间复杂度**：O(H)，其中 H 是树的高度。递归调用栈的深度取决于树的高度。
+
+
+
+先计算深度，再寻找 LCA。虽然是两次遍历。
+
+这种方法逻辑非常直观：**如果一个节点的左右子树高度相等，那么这个节点就是它下方所有最深叶节点的最近公共祖先。**
+
+**Python 代码实现**
+
+```python
+class Solution:
+    def lcaDeepestLeaves(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        # 辅助函数：计算当前节点的高度（从下往上数）
+        # 使用 @cache (Python 3.9+) 或字典进行记忆化，防止重复计算
+        @cache
+        def get_height(node):
+            if not node:
+                return 0
+            return max(get_height(node.left), get_height(node.right)) + 1
+
+        curr = root
+        while curr:
+            left_h = get_height(curr.left)
+            right_h = get_height(curr.right)
+            
+            # 如果左右子树高度相等，说明最深叶子均匀分布在两侧（或者是叶子本身）
+            # 当前节点就是最近公共祖先
+            if left_h == right_h:
+                return curr
+            
+            # 如果左子树更高，说明最深叶子全在左边，往左走
+            elif left_h > right_h:
+                curr = curr.left
+            
+            # 如果右子树更高，往右走
+            else:
+                curr = curr.right
+        return curr
+```
+
+**深度解读**
+
+#### 1. 核心逻辑
+*   **高度（Height）定义**：节点到叶子节点的最长路径。
+*   **判断依据**：
+    *   如果 `height(left) == height(right)`，意味着该节点从左路走到底和从右路走到底的深度是一样的。由于只有“最深”的叶子才是我们的目标，两侧都有最深叶子时，当前节点必然是它们的交汇点。
+    *   如果 `height(left) > height(right)`，说明全局最深的叶子只可能出现在左子树中，因此 LCA 一定在左子树。
+
+#### 2. 复杂度分析
+*   **如果不使用记忆化（@cache）**：
+    *   在退化成链表的树中，时间复杂度会达到 $O(N^2)$，因为每一层都要重新计算下方所有节点的高度。
+*   **如果使用记忆化**：
+    *   **时间复杂度**：$O(N)$。每个节点的高度只会被计算并存储一次。之后的调用都是 $O(1)$。
+    *   **空间复杂度**：$O(N)$。缓存需要存储 $N$ 个节点的高度。
+
+#### 3. 为什么这个写法更“稳”？
+这种写法将“求深度”和“找祖先”两个逻辑完全解耦。在面试中，如果你无法立刻写出复杂的单次 DFS 返回多个值的逻辑，先写出这个 `get_height` 版本是非常稳妥的策略。
+
+
 
 
 
@@ -27765,6 +27774,54 @@ class Solution:
             return max(lefts,rights)
         dfs(root,0)
         return ans
+```
+
+
+
+【卞知彰 物院】思路：1、先找出所有的叶子节点，然后对比长度，在最长的节点的路径中，找到第一个大家出现分歧的位置，然后输出相应节点就可以了。2、注意对于二叉树，只需要存储在这个节点是选择了想做还是向右就可以了，同时因为在回溯之外操作了`path`，所以需要把操作pop掉。3、注意各种指标要不要加一或者减一。
+
+```python
+class Solution:
+    def lcaDeepestLeaves(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        paths=[]
+        leaves=[]
+        def backtracking(cur,level,path):
+            if cur.left:
+                path.append('left')
+                backtracking(cur.left,level+1,path)
+                path.pop()
+            if cur.right:
+                path.append('right')
+                backtracking(cur.right,level+1,path)
+                path.pop()
+            if (not cur.left) and (not cur.right):
+                paths.append(path[:])
+                leaves.append(level)
+        backtracking(root,0,[])
+        max_level=max(leaves)
+        ans=[]
+        for i,p in enumerate(paths):
+            if leaves[i]==max_level:
+                ans.append(p)
+        
+        common=0
+        for i in range(max_level):
+            same=True
+            for j in range(len(ans)):
+                if ans[j][i]!=ans[0][i]:
+                    same=False
+                    break
+            if not same:
+                break
+            common+=1
+        go=ans[0]
+        cur=root
+        for i in range(common):
+            if go[i]=='left':
+                cur=cur.left
+            else:
+                cur=cur.right
+        return cur
 ```
 
 
