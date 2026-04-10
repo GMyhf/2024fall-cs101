@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-04-09 09:38 GMT+8*
+*Updated 2026-04-10 09:38 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -11706,6 +11706,129 @@ class Solution:
 
 
 
+## E3740.三个相等元素之间的最小距离 I
+
+hash table, https://leetcode.cn/problems/minimum-distance-between-three-equal-elements-i/
+
+给你一个整数数组 `nums`。
+
+如果满足 `nums[i] == nums[j] == nums[k]`，且 `(i, j, k)` 是 3 个 **不同** 下标，那么三元组 `(i, j, k)` 被称为 **有效三元组** 。
+
+**有效三元组** 的 **距离** 被定义为 `abs(i - j) + abs(j - k) + abs(k - i)`，其中 `abs(x)` 表示 `x` 的 **绝对值** 。
+
+返回一个整数，表示 **有效三元组** 的 **最小** 可能距离。如果不存在 **有效三元组** ，返回 `-1`。
+
+ 
+
+**示例 1：**
+
+**输入：** nums = [1,2,1,1,3]
+
+**输出：** 6
+
+**解释：**
+
+最小距离对应的有效三元组是 `(0, 2, 3)` 。
+
+`(0, 2, 3)` 是一个有效三元组，因为 `nums[0] == nums[2] == nums[3] == 1`。它的距离为 `abs(0 - 2) + abs(2 - 3) + abs(3 - 0) = 2 + 1 + 3 = 6`。
+
+**示例 2：**
+
+**输入：** nums = [1,1,2,3,2,1,2]
+
+**输出：** 8
+
+**解释：**
+
+最小距离对应的有效三元组是 `(2, 4, 6)` 。
+
+`(2, 4, 6)` 是一个有效三元组，因为 `nums[2] == nums[4] == nums[6] == 2`。它的距离为 `abs(2 - 4) + abs(4 - 6) + abs(6 - 2) = 2 + 2 + 4 = 8`。
+
+**示例 3：**
+
+**输入：** nums = [1]
+
+**输出：** -1
+
+**解释：**
+
+不存在有效三元组，因此答案为 -1。
+
+ 
+
+**提示：**
+
+- `1 <= n == nums.length <= 100`
+- `1 <= nums[i] <= n`
+
+
+
+这个问题要求我们在数组中找到三个相等的元素，使得它们的下标三元组 $(i, j, k)$ 产生的“距离”最小。
+
+**1. 距离公式分析**
+
+已知有效三元组的距离定义为：
+$$D = |i - j| + |j - k| + |k - i|$$
+
+假设我们将三个下标按从小到大排序为 $i < j < k$，则：
+
+- $|i - j| = j - i$
+- $|j - k| = k - j$
+- $|k - i| = k - i$
+
+将它们代入公式：
+$$D = (j - i) + (k - j) + (k - i) = 2 \times (k - i)$$
+
+因此，**最小化距离等价于最小化三元组中最大下标与最小下标的差值**。
+
+**2. 解题思路**
+
+1.  **分组下标**：首先遍历数组，将每个数值对应的所有下标记录下来。例如，如果 `nums = [1, 2, 1, 1, 3]`，则数值 `1` 的下标列表为 `[0, 2, 3]`。
+2.  **寻找最小间距**：对于每一个数值，遍历它出现的下标列表。
+    *   如果某个数值出现的次数少于 3 次，则无法组成有效三元组。
+    *   如果出现次数 $\ge 3$，为了使 $k - i$ 最小，我们只需要检查下标列表中**相邻的三个下标**。假设某个数值的下标列表为 $p_0, p_1, p_2, \dots, p_m$，我们计算所有 $2 \times (p_{t+2} - p_t)$ 的值并取最小值。
+3.  **结果处理**：如果遍历完所有可能的数值后都没有找到有效三元组，返回 `-1`；否则返回找到的最小距离。
+
+**3. 代码实现**
+
+```python
+from typing import List
+from collections import defaultdict
+
+class Solution:
+    def minimumDistance(self, nums: List[int]) -> int:
+        # 使用哈希表记录每个数字出现的下标
+        pos_map = defaultdict(list)
+        for idx, val in enumerate(nums):
+            pos_map[val].append(idx)
+        
+        min_dist = float('inf')
+        found = False
+        
+        # 遍历每个数字对应的下标列表
+        for val in pos_map:
+            indices = pos_map[val]
+            # 只有出现次数大于等于3次的数字才能构成三元组
+            if len(indices) >= 3:
+                found = True
+                # 检查所有连续的三个下标，计算 2 * (max_idx - min_idx)
+                for i in range(len(indices) - 2):
+                    # 距离公式简化为 2 * (indices[i+2] - indices[i])
+                    current_dist = 2 * (indices[i+2] - indices[i])
+                    if current_dist < min_dist:
+                        min_dist = current_dist
+        
+        return int(min_dist) if found else -1
+
+```
+
+**4. 复杂度分析**
+
+*   **时间复杂度**：$O(n)$，其中 $n$ 是数组的长度。我们只需要遍历一次数组来建立下标映射，再遍历一次所有收集到的下标。
+*   **空间复杂度**：$O(n)$，用于存储每个数值及其对应的下标列表。
+
+
+
 
 
 ## E3827.统计单比特整数
@@ -14708,7 +14831,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
