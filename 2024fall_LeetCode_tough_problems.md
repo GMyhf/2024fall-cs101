@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-04-09 14:26 GMT+8*
+*Updated 2026-04-12 23:44 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -312,7 +312,7 @@ linked list, recursion, https://leetcode.cn/problems/reverse-nodes-in-k-group/de
 
 **示例 1：**
 
-<img src="https://assets.leetcode.com/uploads/2020/10/03/reverse_ex1.jpg" alt="img" style="zoom: 50%;" />
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202604122346557.jpg" alt="img" style="zoom: 50%;" />
 
 ```
 输入：head = [1,2,3,4,5], k = 2
@@ -321,7 +321,7 @@ linked list, recursion, https://leetcode.cn/problems/reverse-nodes-in-k-group/de
 
 **示例 2：**
 
-<img src="https://assets.leetcode.com/uploads/2020/10/03/reverse_ex2.jpg" alt="img" style="zoom: 50%;" />
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202604122347092.jpg" alt="img" style="zoom: 50%;" />
 
 ```
 输入：head = [1,2,3,4,5], k = 3
@@ -1919,9 +1919,9 @@ if __name__ == "__main__":
 
 
 
-## 124.二叉树中的最大路径和
+## T124.二叉树中的最大路径和
 
-dfs, https://leetcode.cn/problems/binary-tree-maximum-path-sum/
+dfs, dp, binary tree, https://leetcode.cn/problems/binary-tree-maximum-path-sum/
 
 二叉树中的 **路径** 被定义为一条节点序列，序列中每对相邻节点之间都存在一条边。同一个节点在一条路径序列中 **至多出现一次** 。该路径 **至少包含一个** 节点，且不一定经过根节点。
 
@@ -1933,7 +1933,7 @@ dfs, https://leetcode.cn/problems/binary-tree-maximum-path-sum/
 
 **示例 1：**
 
-<img src="https://assets.leetcode.com/uploads/2020/10/13/exx1.jpg" alt="img" style="zoom:67%;" />
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202604122353874.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：root = [1,2,3]
@@ -1943,7 +1943,7 @@ dfs, https://leetcode.cn/problems/binary-tree-maximum-path-sum/
 
 **示例 2：**
 
-<img src="https://assets.leetcode.com/uploads/2020/10/13/exx2.jpg" alt="img" style="zoom:67%;" />
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202604122353907.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：root = [-10,9,20,null,null,15,7]
@@ -1960,6 +1960,29 @@ dfs, https://leetcode.cn/problems/binary-tree-maximum-path-sum/
 
 
 
+这道题是二叉树题目中的经典困难题。我们需要寻找二叉树中任意两个节点之间路径的最大和。
+
+**解题思路**
+
+1.  **路径的定义**：
+    *   在二叉树中，对于任意一个节点 $u$，经过它的最大路径有几种可能：
+        1.  节点 $u$ 本身。
+        2.  $u$ 加上左子树向下延伸的一条路径。
+        3.  $u$ 加上右子树向下延伸的一条路径。
+        4.  $u$ 加上左子树向下延伸的一条路径，再加上右子树向下延伸的一条路径（此时 $u$ 是路径的最高点/转折点）。
+
+2.  **递归函数设计**：
+    *   我们需要一个递归函数 `maxGain(node)`，它的作用是：计算从当前节点开始，**向其子树延伸**所能获得的最大路径和。
+    *   注意：为了能与父节点连接，这个函数只能选择左子树或右子树中的**一条**路径，或者是只选当前节点。
+    *   在递归的过程中，我们顺便计算以当前节点为**转折点**的路径总和，并更新全局最大值。
+
+3.  **状态转移**：
+    *   对于节点 `node`，它能提供的最大增益为：`node.val + max(maxGain(node.left), maxGain(node.right), 0)`。
+    *   如果子树的增益是负数，我们宁愿不选（即与 0 取 `max`）。
+    *   在每个节点处，更新全局最大值 `self.max_sum = max(self.max_sum, node.val + left_gain + right_gain)`。
+
+**代码实现**
+
 ```python
 # Definition for a binary tree node.
 # class TreeNode:
@@ -1967,31 +1990,45 @@ dfs, https://leetcode.cn/problems/binary-tree-maximum-path-sum/
 #         self.val = val
 #         self.left = left
 #         self.right = right
+
 class Solution:
     def maxPathSum(self, root: Optional[TreeNode]) -> int:
+        # 初始化全局最大值为负无穷
         self.max_sum = float('-inf')
 
-        def max_gain(node):
+        def get_max_gain(node):
             if not node:
                 return 0
-
-            # Recursively get the maximum gain from the left and right subtrees
-            left_gain = max(max_gain(node.left), 0)
-            right_gain = max(max_gain(node.right), 0)
-
-            # Calculate the price of the current path
+            
+            # 递归计算左右子节点的最大增益
+            # 如果增益小于 0，则忽略该子树（取 0）
+            left_gain = max(get_max_gain(node.left), 0)
+            right_gain = max(get_max_gain(node.right), 0)
+            
+            # 当前节点作为路径最高点（转折点）时的路径和
             current_path_sum = node.val + left_gain + right_gain
-
-            # Update the global maximum path sum
+            
+            # 更新全局最大路径和
             self.max_sum = max(self.max_sum, current_path_sum)
-
-            # Return the maximum gain the current node can contribute to its parent
+            
+            # 返回该节点能提供给父节点的最大增益
+            # 只能选择左或者右中的一条，或者是只选节点本身
             return node.val + max(left_gain, right_gain)
 
-        max_gain(root)
+        get_max_gain(root)
         return self.max_sum
-        
 ```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(N)$，其中 $N$ 是二叉树中的节点个数。我们需要遍历每个节点恰好一次。
+*   **空间复杂度**：$O(H)$，其中 $H$ 是二叉树的高度。这是递归调用的栈空间开销。最坏情况下（树呈链状），空间复杂度为 $O(N)$。
+
+**关键点总结**
+
+*   **全局变量**：需要一个变量在递归过程中不断记录遇到的“最大路径和”。
+*   **向上返回 vs. 局部更新**：递归函数返回的是“单边”的最大和（为了供上层节点使用），而更新全局变量时使用的是“双边”的最大和（将当前节点视为路径的顶点）。
+*   **负值处理**：通过 `max(gain, 0)` 过滤掉会让路径和变小的负数分支。  
 
 
 
@@ -4325,7 +4362,7 @@ if __name__ == "__main__":
 
 ## T1298.你能从盒子里获得的最大糖果数
 
-set, bfs, https://leetcode.cn/problems/maximum-candies-you-can-get-from-boxes/)
+set, bfs, https://leetcode.cn/problems/maximum-candies-you-can-get-from-boxes/
 
 给你 `n` 个盒子，每个盒子的格式为 `[status, candies, keys, containedBoxes]` ，其中：
 
@@ -4495,13 +4532,13 @@ class Solution:
 
 ------
 
-✅ **思路：使用队列模拟 BFS 拓展盒子**
+**思路：使用队列模拟 BFS 拓展盒子**
 
 我们用一个队列来模拟“当前可以访问的盒子”，每次从队列中取出盒子，判断能不能打开（有钥匙或是开的），能打开就处理里面的糖果、钥匙和新盒子，并把新盒子加入队列继续处理。
 
 ------
 
-✅ **代码实现**
+**代码实现**
 
 ```python
 from collections import deque
@@ -4560,7 +4597,7 @@ class Solution:
 
 ------
 
-✅ **说明**
+**说明**
 
 - `queue`: 当前持有但未处理的盒子。
 - `hasKey`: 当前拥有的钥匙集合。
@@ -4570,7 +4607,7 @@ class Solution:
 
 ------
 
-✅ **与集合法对比**
+**与集合法对比**
 
 | 点       | 集合法          | BFS法              |
 | -------- | --------------- | ------------------ |
@@ -4641,6 +4678,88 @@ dp, https://leetcode.cn/problems/minimum-distance-to-type-a-word-using-two-finge
 
 
 
+
+
+**状态定义**
+
+我们定义 $dp[k][i][j]$ 为：
+*   **$k$**：当前已经输入到了 `word` 的第 $k$ 个字符（从 0 开始）。
+*   **$i$**：第一根手指当前所在的字母下标（0-25 代表 A-Z，26 代表尚未放在键盘上）。
+*   **$j$**：第二根手指当前所在的字母下标（0-25 代表 A-Z，26 代表尚未放在键盘上）。
+
+$dp[k][i][j]$ 的值表示完成上述状态所需的**最小移动总距离**。
+
+**转移逻辑**
+
+假设我们已经输入了前 $k$ 个字符，现在要输入第 $k+1$ 个字符（即 `word[k]`）：
+1.  **移动第一根手指**：从位置 $i$ 移动到 `word[k]`，第二根手指留在 $j$ 不动。
+    *   新状态：$dp[k+1][word[k]][j]$
+    *   代价：$dp[k][i][j] + \text{dist}(i, word[k])$
+2.  **移动第二根手指**：从位置 $j$ 移动到 `word[k]`，第一根手指留在 $i$ 不动。
+    *   新状态：$dp[k+1][i][word[k]]$
+    *   代价：$dp[k][i][j] + \text{dist}(j, word[k])$
+
+    **注意**：根据规则，如果手指从初始状态（26）开始移动，代价为 0。
+
+**Python 代码实现**
+
+为了节省空间，我们注意到 $dp[k+1]$ 只依赖于 $dp[k]$，所以可以用**滚动数组**的思想，只保留当前状态的二维矩阵。
+
+```python
+class Solution:
+    def minimumDistance(self, word: str) -> int:
+        n = len(word)
+        
+        # 计算曼哈顿距离的辅助函数
+        def get_dist(p1, p2):
+            if p1 == 26 or p2 == 26: # 26 代表手指还没放在键盘上，代价为 0
+                return 0
+            r1, c1 = divmod(p1, 6)
+            r2, c2 = divmod(p2, 6)
+            return abs(r1 - r2) + abs(c1 - c2)
+
+        # 单词转为数字 0-25
+        chars = [ord(c) - ord('A') for c in word]
+        
+        # 初始化 DP 表，dp[i][j] 表示一根手指在 i，另一根在 j 的最小代价
+        # 初始时，两根手指都在 26 位置，距离为 0
+        dp = {(26, 26): 0}
+
+        for char_idx in chars:
+            new_dp = {}
+            for (f1, f2), dist in dp.items():
+                # 选择 1: 移动第一根手指到 char_idx
+                d1 = dist + get_dist(f1, char_idx)
+                if (char_idx, f2) not in new_dp or d1 < new_dp[(char_idx, f2)]:
+                    new_dp[(char_idx, f2)] = d1
+                
+                # 选择 2: 移动第二根手指到 char_idx
+                d2 = dist + get_dist(f2, char_idx)
+                if (f1, char_idx) not in new_dp or d2 < new_dp[(f1, char_idx)]:
+                    new_dp[(f1, char_idx)] = d2
+            dp = new_dp
+
+        return min(dp.values())
+```
+
+**为什么这种定义更容易理解？**
+
+1.  **具象化**：它完整记录了两个“实体”（手指）的位置。你可以想象两个点在棋盘上跳动。
+2.  **无跳跃逻辑**：每一步迭代都对应输入 `word` 的一个字符，逻辑链条非常完整：
+    *   `word[0]` 敲完了，手指在哪里？
+    *   `word[1]` 敲完了，手指在哪里？
+    *   ...以此类推。
+3.  **自然处理起始代价**：通过引入第 27 个位置（索引 26），把“手指还没放上去”这个特殊情况变成了普通的坐标计算，不需要在循环里写复杂的 `if-else` 判断。
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(N \times \Sigma^2)$，其中 $N$ 是单词长度，$\Sigma$ 是字母表大小（26）。虽然理论上是 $26 \times 26$，但实际上在每一层 $k$，其中一根手指必然在 `word[k-1]` 上，所以有效的状态数其实只有 $O(26)$ 个。
+*   **空间复杂度**：$O(\Sigma^2)$。使用字典或二维数组存储当前状态。即使不优化掉 $k$ 维度，空间复杂度 $300 \times 27 \times 27$ 也在可接受范围内。
+
+
+
+
+
 这是一个典型的动态规划（DP）问题。
 
 **核心思路：**
@@ -4664,7 +4783,7 @@ dp, https://leetcode.cn/problems/minimum-distance-to-type-a-word-using-two-finge
     字母对应的数字为 `n = ord(char) - ord('A')`。
     行坐标：`r = n // 6`，列坐标：`c = n % 6`。
 
-**Python 代码实现：**
+    **Python 代码实现：**
 
 ```python
 class Solution:
