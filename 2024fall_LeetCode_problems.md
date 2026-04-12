@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-04-10 09:38 GMT+8*
+*Updated 2026-04-11 10:53 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -1322,7 +1322,7 @@ if __name__ == "__main__":
 > *   `curr` 移向左孩子 **2**。
 >     *   *此时树的样子（逻辑上）：4 -> 2 -> 5 -> 1 -> 3*
 >
-> **第二阶段：处理节点 2**
+>     **第二阶段：处理节点 2**
 >
 > *   `curr` 在 **2**。它有左孩子（4）。
 > *   找到 2 的前驱（左子树最右节点）：是 **4**。
@@ -1825,7 +1825,7 @@ binary tree, https://leetcode.cn/problems/balanced-binary-tree/
   - 差值大于 1：返回 `-1`。
   - 差值小于等于 1：返回当前节点的高度（即 `max(左子树高度, 右子树高度) + 1`）。
 
-**3. 代码实现**
+  **3. 代码实现**
 
 ```python
 # Definition for a binary tree node.
@@ -1873,9 +1873,9 @@ class Solution:
 *   **空间复杂度：$O(n)$**
     在最坏情况下（树呈现链状），递归栈的深度为 $n$。如果树是完全平衡的，空间复杂度为 $O(\log n)$。
 
-**5. 为什么这是最优解？**
+    **5. 为什么这是最优解？**
 
-因为我们只需一次遍历（Post-order traversal）。在求高度的过程中顺便把平衡性给检查了，一旦发现任何一个子树不平衡，就立即通过 `-1` 信号“剪枝”停止后续多余的计算。
+    因为我们只需一次遍历（Post-order traversal）。在求高度的过程中顺便把平衡性给检查了，一旦发现任何一个子树不平衡，就立即通过 `-1` 信号“剪枝”停止后续多余的计算。
 
 
 
@@ -4510,7 +4510,7 @@ for s in S:
 >    - 对于每个字符 `char`，我们使用 `bisect_right` 找到 `char` 在 `T` 中的最小的索引，该索引必须大于当前字符在 `T` 中的位置（即 `current_position`）。这样保证了 `Si` 中的字符按顺序出现在 `T` 中。
 >    - 如果有任何字符不能满足要求，则返回 `False`，否则返回 `True`。
 >
-> **为什么优化**：
+>    **为什么优化**：
 >
 > 1. **预处理 `T`**：通过预处理 `T`，我们把查询字符位置的时间复杂度从 O(n) 降低到 O(log m)，其中 `m` 是 `T` 的长度。
 > 2. **二分查找**：利用 `bisect_right` 快速找到字符在 `T` 中的位置，使得每次查询的时间复杂度是 O(log n)，其中 `n` 是该字符在 `T` 中出现的位置数量。
@@ -4587,7 +4587,7 @@ brute force, https://leetcode.cn/problems/binary-watch/
     *   如果总个数等于 `turnedOn`，则按照题目要求的格式 `"H:MM"` 格式化时间。
     *   分钟 `m` 如果小于 10，需要在前面补零（可以使用 `f"{h}:{m:02d}"`）。
 
-**代码实现**
+    **代码实现**
 
 ```python
 class Solution:
@@ -4612,9 +4612,9 @@ class Solution:
 *   **空间复杂度**：$O(1)$。
     除了存储答案的列表外，我们只使用了常数级别的额外空间。
 
-**为什么选择这种方法？**
+    **为什么选择这种方法？**
 
-虽然也可以使用回溯算法（搜索哪些 LED 被点亮），但回溯的逻辑相对复杂，需要处理“小时不能超过 11”和“分钟不能超过 59”的边界条件。而**直接枚举所有时间**的方法逻辑最清晰，代码最简洁，且由于总状态数极少（仅 720 种），运行速度非常快。
+    虽然也可以使用回溯算法（搜索哪些 LED 被点亮），但回溯的逻辑相对复杂，需要处理“小时不能超过 11”和“分钟不能超过 59”的边界条件。而**直接枚举所有时间**的方法逻辑最清晰，代码最简洁，且由于总状态数极少（仅 720 种），运行速度非常快。
 
 
 
@@ -8421,7 +8421,7 @@ string, https://leetcode.cn/problems/check-if-strings-can-be-made-equal-with-ope
     *   比较 `{s1[1], s1[3]}` 是否等于 `{s2[1], s2[3]}`。
     *   在 Python 中，由于只有两个字符，我们可以直接手动枚举两种可能，或者对这两个字符进行排序后比较。
 
-**代码实现**
+    **代码实现**
 
 ```python
 class Solution:
@@ -8900,7 +8900,7 @@ matrix, https://leetcode.cn/problems/matrix-similarity-after-cyclic-shifts/
     即：`mat[i][j] == mat[i][(j + k) % n]`。
     *注：这里的 $n$ 是列数。由于 $k$ 可能大于 $n$，我们可以先取模 `k %= n`，如果不取模直接使用 `(j + k) % n` 结果也是正确的。*
 
-**代码实现**
+    **代码实现**
 
 ```python
 class Solution:
@@ -9635,7 +9635,7 @@ https://leetcode.cn/problems/construct-the-minimum-bitwise-array-i/
     - 否则，从低位向高位查找 $n$ 的二进制中末尾连续 $1$ 的个数 $k$。
     - 计算 $ans = n - 2^{k-1}$ 或 $ans = n \oplus (1 \ll (k-1))$。
 
-**代码实现**
+    **代码实现**
 
 ```python
 class Solution:
@@ -9721,7 +9721,7 @@ class Solution:
 >     *   二进制：`1011 - 0010 = 1001`。
 >     *   这步操作成功地把 `n` 末尾连续 $1$ 中的最高位从 $1$ 变成了 $0$。
 >
-> **总结对照**
+>     **总结对照**
 >
 > | 概念                      | 你的代码写法         | 我的代码写法    |
 > | :------------------------ | :------------------- | :-------------- |
@@ -11537,7 +11537,7 @@ class Solution:
     *   **阶段 3（严格递增）**：从 $q$ 开始，向后移动 `i`，直到不再满足 `nums[i] < nums[i+1]`。
     *   **最终判断**：如果最后 `i` 成功到达了数组的最后一个元素索引 $n-1$，说明符合条件。
 
-**Python 代码实现**
+    **Python 代码实现**
 
 ```python
 class Solution:
@@ -11652,7 +11652,7 @@ two pointers, matrix, https://leetcode.cn/problems/flip-square-submatrix-vertica
         *   交换 `grid[top][j]` 和 `grid[bottom][j]`。
         *   `top` 向下移动一位（`top += 1`），`bottom` 向上移动一位（`bottom -= 1`）。
 
-**Python 代码实现**
+        **Python 代码实现**
 
 ```python
 from typing import List
@@ -12634,7 +12634,7 @@ min_arm_len = min(arm_len[i_sym], right - i)	 如何理解？
 >    - `right` 是当前已知最右端回文子串的边界。
 >    - `right - i` 表示从位置 `i` 到当前已知最右端的距离。由于我们已经知道在 `right` 之前的字符都是回文的一部分，因此在 `i` 位置进行扩展时，我们至少可以达到 `right` 位置，而不需要重新验证这些字符。
 >
-> 综合以上两点，`min_arm_len` 取两者中的较小值，确保了以下几点：
+>    综合以上两点，`min_arm_len` 取两者中的较小值，确保了以下几点：
 >
 > - 如果 `i_sym` 位置的臂长小于或等于 `right - i`，我们可以直接使用 `i_sym` 位置的臂长，因为它不会超出已知的回文区域。
 > - 如果 `i_sym` 位置的臂长大于 `right - i`，则我们只能保证到 `right` 位置是回文，所以取 `right - i` 作为最小臂长。
@@ -13339,7 +13339,7 @@ if __name__ == "__main__":
 >   - 然后从根节点开始遍历，如果当前节点有且仅有一个子节点并且不是单词的结尾，则该字符属于公共前缀，继续向下遍历；否则停止遍历。
 >   - 最终将收集到的所有字符连接成字符串作为最长公共前缀返回。
 >
-> 这种方法通过构建字典树来寻找最长公共前缀，虽然在某些情况下可能不如直接比较字符串高效，但它提供了一个不同的视角来解决问题，特别是当你需要对大量字符串进行操作时，字典树的优势就更加明显了。
+>   这种方法通过构建字典树来寻找最长公共前缀，虽然在某些情况下可能不如直接比较字符串高效，但它提供了一个不同的视角来解决问题，特别是当你需要对大量字符串进行操作时，字典树的优势就更加明显了。
 
 
 
@@ -14831,7 +14831,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -16618,9 +16618,9 @@ three pointers, https://leetcode.cn/problems/sort-colors/
    - 如果当前元素是 `1`，只需将 `mid` 向右移动。
    - 如果当前元素是 `2`，将它和 `high` 指向的元素交换，然后 `high` 向左移动，`mid` 不变。
 
-这个算法的时间复杂度是 O(n)，空间复杂度是 O(1)。
+   这个算法的时间复杂度是 O(n)，空间复杂度是 O(1)。
 
-下面是代码实现：
+   下面是代码实现：
 
 ```python
 class Solution:
@@ -16911,9 +16911,9 @@ class Solution:
 >    - 外层推导式遍历所有可能的mask值（0到2^n-1）
 >    - 内层推导式检查mask的每一位，确定哪些元素应该包含在当前子集中
 >
-> **示例**
+>    **示例**
 >
-> 以nums = [1,2,3]为例：
+>    以nums = [1,2,3]为例：
 >
 > - len(nums) = 3 → 总子集数=8 (0b000到0b111)
 > - mask从0(0b000)到7(0b111)：
@@ -16924,7 +16924,7 @@ class Solution:
 >   - ...
 >   - 7(0b111): [1,2,3]
 >
-> **优点**
+>   **优点**
 >
 > 1. 高效：利用位运算快速生成所有子集
 > 2. 简洁：一行代码实现复杂功能
@@ -21415,7 +21415,7 @@ if __name__ == '__main__':
    - 如果我们希望找到第 k 个 **最大的** 元素，实际上是在排序后的数组中找到第 n-k 个 **最小** 元素。
    - 通过快速选择，我们可以只在需要的部分递归查找，而不需要对整个数组进行排序，从而提高效率。
 
-快速选择算法的核心步骤：
+   快速选择算法的核心步骤：
 
 - 随机选择一个 pivot 元素。
 - 划分数组，使得 pivot 左边的所有元素都小于 pivot，右边的所有元素都大于 pivot。
@@ -21483,7 +21483,7 @@ if __name__ == '__main__':
 > 3. **目标位置转换**：
 >    - 因为我们要求的是第 kk 个 **最大的** 元素，所以在 `quickselect` 中，实际上是查找数组中第 `n-k` 个 **最小** 元素的位置（其中 `n` 是数组的长度）。
 >
-> 时间复杂度：
+>    时间复杂度：
 >
 > - **平均时间复杂度**是 O(n)，这是由于快速选择算法通过每次划分数组的方式将搜索空间缩小到一半。
 > - 最坏情况下，时间复杂度为 $O(n^2)$，但这种情况极为少见（当每次选择的 pivot 总是最小或最大时）。
@@ -21670,7 +21670,7 @@ if __name__ == '__main__':
 
 ## M236.二叉树的最近公共祖先
 
-dfs, https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/
+dfs, binary tree, https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/
 
 给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
 
@@ -21680,7 +21680,7 @@ dfs, https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/
 
 **示例 1：**
 
-![img](https://assets.leetcode.com/uploads/2018/12/14/binarytree.png)
+![img](https://raw.githubusercontent.com/GMyhf/img/main/img/binarytree.png)
 
 ```
 输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
@@ -21690,7 +21690,7 @@ dfs, https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/
 
 **示例 2：**
 
-![img](https://assets.leetcode.com/uploads/2018/12/14/binarytree.png)
+![img](https://raw.githubusercontent.com/GMyhf/img/main/img/binarytree-20260412164605034.png)
 
 ```
 输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
@@ -21717,46 +21717,71 @@ dfs, https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/
 
 
 
-这是一个经典的“**最近公共祖先**”问题，可以用递归解决。基本思路如下：
+这个问题可以通过**后序遍历（递归）**的思想来解决。
 
-------
+**解题思路**
 
-🔍 递归思路
+在递归遍历时，我们从底向上寻找 `p` 和 `q`。对于当前节点 `root`：
 
-对于任意节点 `root`：
+1.  **边界情况**：
+    *   如果 `root` 为空，直接返回 `None`。
+    *   如果 `root` 就是 `p` 或者 `q`，那么 `root` 本身就是我们要找的（或者是其祖先），直接返回 `root`。
 
-- 如果 `root` 是 `None`，或者 `root == p` 或 `root == q`，那么就返回 `root`。
-- 否则，递归查找左子树和右子树：
-  - `left = lowestCommonAncestor(root.left, p, q)`
-  - `right = lowestCommonAncestor(root.right, p, q)`
-- 如果 `left` 和 `right` 都非空，说明 `p` 和 `q` 分别在左右子树中，`root` 就是最近公共祖先。
-- 如果只有一个非空，说明两个节点都在某一边，返回那一边的结果。
+2.  **递归寻找**：
+    *   去左子树寻找 `p` 和 `q`，结果记为 `left`。
+    *   去右子树寻找 `p` 和 `q`，结果记为 `right`。
 
-------
+3.  **判断结果**：
+    *   **情况 1（左右开花）**：如果 `left` 和 `right` 都不为空，说明 `p` 和 `q` 分别分布在当前节点的左右子树中，那么当前节点 `root` 就是最近公共祖先。
+    *   **情况 2（全在左边）**：如果 `left` 不为空而 `right` 为空，说明 `p` 和 `q` 都在左子树里，返回 `left`。
+    *   **情况 3（全在右边）**：如果 `right` 不为空而 `left` 为空，说明 `p` 和 `q` 都在右子树里，返回 `right`。
+    *   **情况 4（都没找到）**：如果都为空，说明这棵树里没有 `p` 或 `q`，返回 `None`。
 
-✅ Python 代码实现
+**代码实现**
 
 ```python
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
 
 class Solution:
-    def lowestCommonAncestor(self, root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
-        if root is None or root == p or root == q:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        # 1. 如果 root 为空，或者 root 就是我们要找的节点之一，直接返回 root
+        if not root or root == p or root == q:
             return root
         
+        # 2. 递归在左子树和右子树中查找
         left = self.lowestCommonAncestor(root.left, p, q)
         right = self.lowestCommonAncestor(root.right, p, q)
-
+        
+        # 3. 如果左子树找到了一个，右子树也找到了一个
+        # 说明 p 和 q 分居 root 的两侧，root 就是 LCA
         if left and right:
-            return root  # p 和 q 分别在左右子树
-        return left if left else right  # 都在左子树或右子树
+            return root
+        
+        # 4. 如果只有左子树找到了，返回左子树的结果
+        if left:
+            return left
+        
+        # 5. 如果只有右子树找到了，返回右子树的结果
+        if right:
+            return right
+        
+        # 6. 如果都没找到，返回 None
+        return None
 ```
 
+**复杂度分析**
 
+*   **时间复杂度**：$O(N)$。其中 $N$ 是二叉树的节点数。在最坏情况下，我们需要遍历二叉树的所有节点。
+*   **空间复杂度**：$O(N)$。这是由递归调用的栈深度决定的。最坏情况下（树退化成链表），递归深度为 $N$；平衡树情况下为 $O(\log N)$。
+
+**为什么这个逻辑是正确的？**
+
+由于我们是**后序遍历**（先处理左右子树，再处理根节点），所以当我们第一次遇到 `left` 和 `right` 同时不为空的情况时，当前的 `root` 必然是深度最大的那个祖先（即最近公共祖先）。之后这个 `root` 会作为返回值不断向上传递，最终成为整棵树的查询结果。
 
 
 
@@ -22146,11 +22171,11 @@ if __name__ == '__main__':
    - 我们可以将数组 `nums` 看作一个指向数组中位置的指针链。每个数字 `nums[i]` 指向数组中的位置 `nums[i]`。
    - 根据这个链的结构，可以使用类似于链表中环的检测算法，**Floyd’s Cycle Detection Algorithm (Tortoise and Hare)** 来找到重复的数字。
 
-**Floyd's Cycle Detection Algorithm**
+   **Floyd's Cycle Detection Algorithm**
 
-这个算法可以分为两个步骤：
+   这个算法可以分为两个步骤：
 
-**1. 找到相遇点**
+   **1. 找到相遇点**
 
 - 使用两个指针，一个快指针（`hare`），每次移动两步；一个慢指针（`tortoise`），每次移动一步。
 - 如果存在环（即重复的数字），这两个指针最终会相遇。
@@ -22480,7 +22505,7 @@ class Codec:
     *   **DFS**：$O(N)$。在最坏情况下（树呈链状），递归栈的深度为 $N$。
     *   **BFS**：$O(N)$。队列在最坏情况下（完全二叉树最后一层）存储约 $N/2$ 个节点。
 
-**总结**
+    **总结**
 
 *   **DFS** 代码更简洁，利用递归天然满足“根左右”的顺序。
 *   **BFS** 逻辑上更符合我们观察树的直觉（一层一层看），且生成的字符串格式通常更短（可以剪掉末尾不必要的空节点，虽然上面代码为了逻辑清晰没做特殊剪裁）。
@@ -24138,7 +24163,7 @@ class Solution:
    - 分别递归处理左右子树，并将结果累加。  
    - 回溯时，将当前节点的贡献从哈希表中减去。
 
-这种方法的时间复杂度为 O(n)，空间复杂度为 O(n)，适合处理较大规模的二叉树。
+   这种方法的时间复杂度为 O(n)，空间复杂度为 O(n)，适合处理较大规模的二叉树。
 
 
 
@@ -24332,6 +24357,138 @@ class Solution:
 
 - **时间复杂度**：O(n)，一次遍历。
 - **空间复杂度**：O(n)，哈希表最多存 n+1 个前缀和。
+
+
+
+## M529.扫雷游戏
+
+dfs, bfs, https://leetcode.cn/problems/minesweeper/
+
+让我们一起来玩扫雷游戏！
+
+给你一个大小为 `m x n` 二维字符矩阵 `board` ，表示扫雷游戏的盘面，其中：
+
+- `'M'` 代表一个 **未挖出的** 地雷，
+- `'E'` 代表一个 **未挖出的** 空方块，
+- `'B'` 代表没有相邻（上，下，左，右，和所有4个对角线）地雷的 **已挖出的** 空白方块，
+- **数字**（`'1'` 到 `'8'`）表示有多少地雷与这块 **已挖出的** 方块相邻，
+- `'X'` 则表示一个 **已挖出的** 地雷。
+
+给你一个整数数组 `click` ，其中 `click = [clickr, clickc]` 表示在所有 **未挖出的** 方块（`'M'` 或者 `'E'`）中的下一个点击位置（`clickr` 是行下标，`clickc` 是列下标）。
+
+根据以下规则，返回相应位置被点击后对应的盘面：
+
+1. 如果一个地雷（`'M'`）被挖出，游戏就结束了- 把它改为 `'X'` 。
+2. 如果一个 **没有相邻地雷** 的空方块（`'E'`）被挖出，修改它为（`'B'`），并且所有和其相邻的 **未挖出** 方块都应该被递归地揭露。
+3. 如果一个 **至少与一个地雷相邻** 的空方块（`'E'`）被挖出，修改它为数字（`'1'` 到 `'8'` ），表示相邻地雷的数量。
+4. 如果在此次点击中，若无更多方块可被揭露，则返回盘面。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/untitled.jpeg" alt="img" style="zoom:33%;" />
+
+```
+输入：board = [["E","E","E","E","E"],["E","E","M","E","E"],["E","E","E","E","E"],["E","E","E","E","E"]], click = [3,0]
+输出：[["B","1","E","1","B"],["B","1","M","1","B"],["B","1","1","1","B"],["B","B","B","B","B"]]
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/untitled-2.jpeg" alt="img" style="zoom: 33%;" />
+
+```
+输入：board = [["B","1","E","1","B"],["B","1","M","1","B"],["B","1","1","1","B"],["B","B","B","B","B"]], click = [1,2]
+输出：[["B","1","E","1","B"],["B","1","X","1","B"],["B","1","1","1","B"],["B","B","B","B","B"]]
+```
+
+ 
+
+**提示：**
+
+- `m == board.length`
+- `n == board[i].length`
+- `1 <= m, n <= 50`
+- `board[i][j]` 为 `'M'`、`'E'`、`'B'` 或数字 `'1'` 到 `'8'` 中的一个
+- `click.length == 2`
+- `0 <= clickr < m`
+- `0 <= clickc < n`
+- `board[clickr][clickc]` 为 `'M'` 或 `'E'`
+
+
+
+这个问题可以通过**深度优先搜索 (DFS)** 或 **广度优先搜索 (BFS)** 来模拟扫雷游戏的逻辑。
+
+**核心规则分析：**
+
+1.  **点击地雷 ('M')**：直接将其改为 `'X'`，游戏结束，返回盘面。
+2.  **点击空方块 ('E')**：
+    *   统计其**周围 8 个方向**相邻的地雷数量。
+    *   **如果地雷数 > 0**：将当前方块改为该数字（如 `'1'` 到 `'8'`），停止递归。
+    *   **如果地雷数 == 0**：将当前方块改为 `'B'`（表示已挖出的空白），并**递归地**揭露周围 8 个方向所有未挖出的方块 (`'E'`)。
+
+    **算法实现 (DFS 方案)：**
+
+```python
+from typing import List
+
+class Solution:
+    def updateBoard(self, board: List[List[str]], click: List[int]) -> List[List[str]]:
+        r, c = click[0], click[1]
+        
+        # 规则 1：如果点击的是地雷 'M'
+        if board[r][c] == 'M':
+            board[r][c] = 'X'
+            return board
+        
+        # 如果点击的不是 'E'（比如点击了数字或 'B'），按规则不需要处理
+        if board[r][c] != 'E':
+            return board
+            
+        rows, cols = len(board), len(board[0])
+        
+        def dfs(i, j):
+            # 边界检查及是否为未挖出的空方块 'E'
+            if not (0 <= i < rows and 0 <= j < cols) or board[i][j] != 'E':
+                return
+            
+            # 统计相邻的 8 个方向的地雷 'M' 数量
+            mine_count = 0
+            for di in range(-1, 2):
+                for dj in range(-1, 2):
+                    if di == 0 and dj == 0:
+                        continue
+                    ni, nj = i + di, j + dj
+                    if 0 <= ni < rows and 0 <= nj < cols and board[ni][nj] == 'M':
+                        mine_count += 1
+            
+            if mine_count > 0:
+                # 规则 3：如果周围有雷，显示数字，不再继续递归
+                board[i][j] = str(mine_count)
+            else:
+                # 规则 2：如果周围没雷，显示 'B'，并递归相邻的 'E'
+                board[i][j] = 'B'
+                for di in range(-1, 2):
+                    for dj in range(-1, 2):
+                        if di == 0 and dj == 0:
+                            continue
+                        dfs(i + di, j + dj)
+        
+        dfs(r, c)
+        return board
+```
+
+**复杂度分析：**
+
+*   **时间复杂度 $O(M \times N)$**：其中 $M$ 和 $N$ 是棋盘的行数和列数。在最坏情况下（例如整个棋盘都没有地雷），我们可能需要访问每一个格子。
+*   **空间复杂度 $O(M \times N)$**：主要取决于递归调用的深度，最坏情况下递归栈的大小会达到 $M \times N$。
+
+**关键点说明：**
+
+1.  **为什么不递归 'M'**：在统计相邻地雷时，我们只统计 `'M'`，但递归揭露时只揭露 `'E'`。这是因为根据游戏逻辑，如果一个格子周围有 `'M'`，它的 `mine_count` 一定大于 0，它会被标记为数字并停止递归，所以程序永远不会从一个 `'B'` 自动递归到一个 `'M'`。
+2.  **搜索方向**：扫雷是 8 个方向（包含对角线），所以循环范围是 `range(-1, 2)`。
+3.  **终止条件**：`board[i][j] != 'E'` 是 DFS 的关键终止条件，它既防止了重复访问（死循环），也符合只揭露未揭露方块的规则。
 
 
 
@@ -24999,7 +25156,7 @@ class Solution:
   1. 单字符中心（奇数长度）→ `"aba"`
   2. 双字符中心（偶数长度）→ `"abba"`
 
-长度为 `n` 的字符串，一共有：
+  长度为 `n` 的字符串，一共有：
 
 ```
 n 个单中心
@@ -25504,7 +25661,7 @@ class Solution:
   2. 删除 `s2[j-1]`：代价为 `dp[i][j-1] + ord(s2[j-1])`
      即：`dp[i][j] = min(dp[i-1][j] + ord(s1[i-1]), dp[i][j-1] + ord(s2[j-1]))`
 
-**3. 边界条件（初始化）**
+     **3. 边界条件（初始化）**
 
 - `dp[0][0] = 0`：两个空字符串相等，代价为 0。
 - `dp[0][j]`（`s1`为空）：必须删除 `s2` 的前 `j` 个所有字符，即 `dp[0][j] = dp[0][j-1] + ord(s2[j-1])`。
@@ -25551,9 +25708,9 @@ class Solution:
 *   **空间复杂度**：$O(m \times n)$，用于存储 `dp` 状态矩阵。
     *   *注：空间复杂度可以进一步优化到 $O(n)$，因为 `dp[i]` 只依赖于 `dp[i-1]`，但为了代码可读性，通常采用二维数组实现。*
 
-**进阶思考：最大公共子序列法**
+    **进阶思考：最大公共子序列法**
 
-这个问题也可以转化为：**求两个字符串的“最大 ASCII 总和的公共子序列”**。
+    这个问题也可以转化为：**求两个字符串的“最大 ASCII 总和的公共子序列”**。
 
 1. 计算 `s1` 的总 ASCII 和 `sum1`，`s2` 的总 ASCII 和 `sum2`。
 2. 找到一个公共子序列，使其字符的 ASCII 之和最大（设为 `max_common_ascii`）。
@@ -26915,7 +27072,7 @@ dfs, binary tree, https://leetcode.cn/problems/smallest-subtree-with-all-the-dee
             *   如果 `right_depth > left_depth`：返回 `(right_depth + 1, right_lca)`。
             *   如果 `left_depth == right_depth`：说明当前节点 `node` 就是包含左右两边最深节点的最小子树根，返回 `(left_depth + 1, node)`。
 
-**代码实现**
+            **代码实现**
 
 ```python
 # Definition for a binary tree node.
@@ -27210,7 +27367,7 @@ class Solution:
 *   **空间复杂度**：$O(M)$。
     *   我们需要一个集合来存储所有的障碍物坐标。
 
-**注意事项：**
+    **注意事项：**
 
 *   题目要求的是**最大**距离平方，所以每次移动一步后都需要进行 `max` 比较。
 *   Python 中使用 `tuple(o)` 作为集合的元素，因为列表是不可哈希的（unhashable）。
@@ -27459,7 +27616,7 @@ greedy, https://leetcode.cn/problems/minimum-domino-rotations-for-equal-row/
   - 要么 tops[i] == x
   - 要么 bottoms[i] == x
 
-否则，x 就不可能成为统一的一行。
+  否则，x 就不可能成为统一的一行。
 
 ---
 
@@ -28302,7 +28459,7 @@ bfs, binary tree, https://leetcode.cn/problems/maximum-level-sum-of-a-binary-tre
     *   遍历过程中，如果当前层的和 **严格大于** `max_sum`，则更新 `max_sum` 为当前层和，并将 `ans` 更新为当前层号。
     *   由于我们是从第 1 层向后遍历的，当遇到相同的 `max_sum` 时，我们不更新 `ans`，这样自然就保留了**最小**的层号。
 
-**代码实现**
+    **代码实现**
 
 ```python
 from collections import deque
@@ -28552,7 +28709,7 @@ prefix sum, https://leetcode.cn/problems/maximum-side-length-of-a-square-with-su
    这种方法的时间复杂度是 $O(m \times n)$，因为只需要遍历一次矩阵。
    （也可以使用二分查找来寻找最大边长 $k$，时间复杂度为 $O(m \cdot n \cdot \log(\min(m, n)))$，也是可以通过的，但优化法代码更简洁）。
 
-**代码实现**
+   **代码实现**
 
 ```python
 from typing import List
@@ -28617,7 +28774,7 @@ class Solution:
         *   如果有，说明 `mid` 可行，尝试更大的边长（`low = mid + 1`，记录答案）。
         *   如果没有，说明 `mid` 太大，必须缩小边长（`high = mid - 1`）。
 
-**代码实现**
+        **代码实现**
 
 ```python
 from typing import List
@@ -28953,9 +29110,9 @@ class Solution:
     *   我们需要一个大小为 $N$ 的数组 `nums` 来存储中序遍历的结果。
     *   递归调用的栈深度：中序遍历最坏情况下为 $O(N)$（当树退化为链表时），构建平衡树的递归深度为 $O(\log N)$。因此总空间复杂度为 $O(N)$。
 
-**为什么这样做是平衡的？**
+    **为什么这样做是平衡的？**
 
-当我们总是选择有序数组的中间元素作为根时，左边和右边的元素个数之差最多为 1。这意味着左子树和右子树的节点总数非常接近，递归下去就能保证每一个节点的左右子树高度差不超过 1，从而符合平衡二叉树的定义。
+    当我们总是选择有序数组的中间元素作为根时，左边和右边的元素个数之差最多为 1。这意味着左子树和右子树的节点总数非常接近，递归下去就能保证每一个节点的左右子树高度差不超过 1，从而符合平衡二叉树的定义。
 
 
 
@@ -29365,7 +29522,7 @@ math, backtracking, https://leetcode.cn/problems/the-k-th-lexicographical-string
 3.  **边界处理**：
     *   如果 $k$ 大于总数 $3 \times 2^{n-1}$，直接返回空字符串。
 
-**代码实现**
+    **代码实现**
 
 ```python
 class Solution:
@@ -29440,7 +29597,7 @@ class Solution:
     *   $n$ 最大为 10，总的开心字符串最多有 $3 \times 2^9 = 1536$ 个。
     *   回溯法的时间复杂度在该量级下非常快。
 
-**代码实现**
+    **代码实现**
 
 ```python
 class Solution:
@@ -30536,9 +30693,9 @@ dp, https://leetcode.cn/problems/minimum-deletions-to-make-string-balanced/
     *   **策略 A：删除这个 `'a'`**。删除次数就是在处理前一个字符时的最小删除次数加 1。
     *   **策略 B：保留这个 `'a'`**。为了让这个 `'a'` 合法，我们必须删除前面出现过的**所有** `'b'`。
 
-我们取这两种策略的最小值作为当前位置的最优解。
+    我们取这两种策略的最小值作为当前位置的最优解。
 
-**算法步骤**
+    **算法步骤**
 
 1.  初始化 `res = 0`（记录当前最小删除次数）。
 2.  初始化 `count_b = 0`（记录当前遇到的 `'b'` 的数量）。
@@ -30916,7 +31073,7 @@ greedy, https://leetcode.cn/problems/largest-submatrix-with-rearrangements/
     *   如果选择前 $k$ 列作为矩形的宽度，那么这个矩形的高度由这 $k$ 列中的最小高度决定，即 $h_k$。此时面积为 $h_k \times k$。
     *   遍历所有可能的 $k$，记录最大面积。
 
-**代码实现**
+    **代码实现**
 
 ```python
 class Solution:
@@ -30974,7 +31131,7 @@ class Solution:
     *   第1行排序：`[2, 1, 1]` -> 面积：$2 \times 1 = 2$, $1 \times 2 = 2$, $1 \times 3 = 3$ -> 当前最大 3
     *   第2行排序：`[3, 2, 0]` -> 面积：$3 \times 1 = 3$, $2 \times 2 = 4$ -> 当前最大 4
 
-最终结果：**4**。
+    最终结果：**4**。
 
 
 
@@ -30991,9 +31148,9 @@ binary search, https://leetcode.cn/problems/minimum-limit-of-balls-in-a-bag/
 - 选择任意一个袋子，并将袋子里的球分到 2 个新的袋子中，每个袋子里都有 **正整数** 个球。
   - 比方说，一个袋子里有 `5` 个球，你可以把它们分到两个新袋子里，分别有 `1` 个和 `4` 个球，或者分别有 `2` 个和 `3` 个球。
 
-你的开销是单个袋子里球数目的 **最大值** ，你想要 **最小化** 开销。
+  你的开销是单个袋子里球数目的 **最大值** ，你想要 **最小化** 开销。
 
-请你返回进行上述操作后的最小开销。
+  请你返回进行上述操作后的最小开销。
 
  
 
@@ -31343,7 +31500,7 @@ prefix sum, https://leetcode.cn/problems/get-biggest-three-rhombus-sums-in-a-gri
     *   计算每个菱形的边界和，存入一个集合（`Set`）中以去重。
     *   将集合转换为列表，降序排序，取前三个。
 
-**代码实现**
+    **代码实现**
 
 ```python
 from typing import List
@@ -31638,7 +31795,7 @@ prefix sum, https://leetcode.cn/problems/largest-magic-square/
     *   时间复杂度：$O(M \cdot N \cdot \min(M, N)^2)$。最坏情况下约为 $50^4 = 6.25 \times 10^6$，在 Python 的处理能力范围内。
     *   空间复杂度：$O(M \cdot N)$ 用于存储前缀和数组。
 
-**代码实现**
+    **代码实现**
 
 ```python
 class Solution:
@@ -32019,7 +32176,7 @@ greedy, https://leetcode.cn/problems/maximum-matrix-sum/
     *   如果矩阵中有**偶数个**负数，你可以通过成对翻转，把所有的负数都变成正数。此时最大和就是所有元素绝对值的总和。
     *   如果矩阵中有**奇数个**负数，无论你怎么翻转，最终**至少会留下一个**负数。为了使总和最大，我们应该让那个绝对值最小的元素保留负号。
 
-**算法步骤**
+    **算法步骤**
 
 1.  遍历整个矩阵。
 2.  计算所有元素绝对值的总和 `total_sum`。
@@ -32029,7 +32186,7 @@ greedy, https://leetcode.cn/problems/maximum-matrix-sum/
     *   如果 `neg_count` 是偶数，返回 `total_sum`。
     *   如果 `neg_count` 是奇数，返回 `total_sum - 2 * min_abs`（减去两次是因为在 `total_sum` 中我们加上了它的绝对值，现在要把加上的减掉，再把它作为负数减去）。
 
-**代码实现**
+    **代码实现**
 
 ```python
 class Solution:
@@ -32310,7 +32467,7 @@ robot.getDir(); // 返回 "West"
     *   `(width-1) + (height-1) < num <= 2*(width-1) + (height-1)`: 在顶边，向西。
     *   其他: 在左边，向南。
 
-**代码实现**
+    **代码实现**
 
 ```python
 class Robot:
@@ -32546,9 +32703,9 @@ binary search, segment tree, https://leetcode.cn/problems/range-frequency-querie
 2. **查询阶段**：
    - 对于每个查询 `(left, right, value)`，我们使用 `value_to_indices` 中存储的该值的所有下标，利用二分查找来找到在给定范围内的元素数量。
 
-这样，查询可以在 `O(log n)` 的时间复杂度内完成，因为我们可以通过二分查找快速找到子数组的范围。
+   这样，查询可以在 `O(log n)` 的时间复杂度内完成，因为我们可以通过二分查找快速找到子数组的范围。
 
-代码实现：
+   代码实现：
 
 ```python
 from bisect import bisect_left, bisect_right
@@ -33974,7 +34131,7 @@ if __name__ == "__main__":
      \;=\;\#\{lower\le sum\le upper\}.
    $
 
-这种做法仅需对数组排序一次 $O(n\log n)$，再两次线性双指针扫描 $O(n)$，总体 $O(n\log n)$，可以轻松应对 $n$ 达到 $10^5$ 的情况。
+   这种做法仅需对数组排序一次 $O(n\log n)$，再两次线性双指针扫描 $O(n)$，总体 $O(n\log n)$，可以轻松应对 $n$ 达到 $10^5$ 的情况。
 
 
 
@@ -34459,7 +34616,7 @@ if __name__ == "__main__":
 - **答案计算**：
   - 最后，答案矩阵中每个单元格为两个集合大小的差的绝对值。
 
-这种方法时间复杂度约为 O(m*n)（由于 m,n 较小，此方法足够高效），同时使用空间保存每个单元格的集合。
+  这种方法时间复杂度约为 O(m*n)（由于 m,n 较小，此方法足够高效），同时使用空间保存每个单元格的集合。
 
 
 
@@ -34530,9 +34687,9 @@ greedy,dp, https://leetcode.cn/problems/minimum-cost-to-make-all-characters-equa
 
   cost_boundary = min(i+1, n - (i+1))  
 
-因此，所有边界的成本之和即为将字符串变成全 0 或全 1 的最小成本。  
+  因此，所有边界的成本之和即为将字符串变成全 0 或全 1 的最小成本。  
 
-**注意**  
+  **注意**  
 
 - 当字符串已经全相同时，边界数为 0，成本自然为 0。  
 - 对于示例 `"0011"`，只有一个边界（下标 1 与 2之间），成本为 min(2, 2)=2；  
@@ -34701,7 +34858,7 @@ greedy, https://leetcode.cn/problems/minimum-cost-homecoming-of-a-robot-in-a-gri
     *   **行代价**：如果 `homerow > startrow`，累加 `rowCosts[startrow + 1]` 到 `rowCosts[homerow]`；如果 `homerow < startrow`，累加 `rowCosts[homerow]` 到 `rowCosts[startrow - 1]`。
     *   **列代价**：同理，累加 `startcol` 到 `homecol` 路径上（不含起点）的所有列代价。
 
-**Python 代码实现**
+    **Python 代码实现**
 
 ```python
 class Solution:
@@ -34923,7 +35080,7 @@ string, sorting, https://leetcode.cn/problems/check-if-strings-can-be-made-equal
     *   `s1` 中所有**偶数下标**位置出现的字符及其频次，与 `s2` 中所有**偶数下标**位置出现的字符及其频次完全一致。
     *   `s1` 中所有**奇数下标**位置出现的字符及其频次，与 `s2` 中所有**奇数下标**位置出现的字符及其频次完全一致。
 
-**算法步骤**
+    **算法步骤**
 
 1.  提取 `s1` 和 `s2` 的偶数下标字符序列，判断它们排序后是否相等（或者统计字符频率是否相等）。
 2.  提取 `s1` 和 `s2` 的奇数下标字符序列，判断它们排序后是否相等。
@@ -35852,7 +36009,7 @@ sorting, https://leetcode.cn/problems/maximize-area-of-square-hole-in-grid/
     *   最大正方形边长 $S = \min(maxH + 1, maxV + 1)$。
     *   返回 $S^2$。
 
-**Python 代码实现**
+    **Python 代码实现**
 
 ```python
 class Solution:
@@ -36243,7 +36400,7 @@ https://leetcode.cn/problems/maximum-square-area-by-removing-fences-from-a-field
     *   计算垂直间距并比对的时间复杂度为 $O(V^2)$，同样约为 $3.6 \times 10^5$。
     *   总时间复杂度为 $O(H^2 + V^2)$，在 $10^6$ 数量级内，Python 可以在规定时间内完成。
 
-**代码实现**
+    **代码实现**
 
 ```python
 from typing import List
@@ -36371,7 +36528,7 @@ floyd, https://leetcode.cn/problems/minimum-cost-to-convert-string-i/
     *   如果在矩阵中发现某个转换的成本是无穷大（即不可达），则说明无法完成转换，返回 -1。
     *   将所有位置的最小成本相加即得到最终答案。
 
-**Python 代码实现**
+    **Python 代码实现**
 
 ```python
 from typing import List
@@ -36430,7 +36587,7 @@ class Solution:
 *   **空间复杂度**：$O(V^2)$
     *   主要是存储 26x26 的距离矩阵，空间占用极小。
 
-**关键点提示**
+    **关键点提示**
 
 *   **多重边处理**：题目提示可能存在相同的 `original[i]` 和 `changed[i]` 但 `cost` 不同，在初始化 `dist` 矩阵时必须取 `min`。
 *   **不可达处理**：如果最后 `dist[s_idx][t_idx]` 仍为 `INF`，说明无法转换，直接返回 `-1`。
@@ -36518,7 +36675,7 @@ class Solution:
 *   **空间复杂度**：$O(V^2 + E)$
     *   用于存储邻接表和全源最短路径矩阵。
 
-**Dijkstra vs Floyd-Warshall 在本题中的表现**
+    **Dijkstra vs Floyd-Warshall 在本题中的表现**
 
 *   **Floyd-Warshall**：代码更简洁，对于 $V=26$ 这种极小规模的稠密图（或节点数固定的图）是首选。
 *   **Dijkstra**：在节点多、边稀疏的情况下更快。在本题中，由于 $V$ 恒定为 26，两者的性能差异在实际运行中几乎可以忽略不计。
@@ -36747,7 +36904,7 @@ prefix sum, https://leetcode.cn/problems/count-submatrices-with-top-left-element
     *   **空间优化**：我们可以使用一个长度为 $n$ 的数组 `pre` 来记录当前行各列的前缀和。在处理第 $i$ 行时，`pre[j]` 更新为前 $i$ 行在第 $j$ 列方向上的累加和。
     *   **时间优化**：题目指出 $grid[i][j] \ge 0$。这意味着对于同一行，随着列下标 $j$ 的增加，子矩阵和是单调递增的；同理，随着行下标 $i$ 的增加，和也是单调递增的。因此，一旦某个 $S[i][j] > k$，该行后续的列以及后续行在该列之后的部分都不可能满足条件。
 
-**代码实现**
+    **代码实现**
 
 ```python
 from typing import List
@@ -37103,7 +37260,7 @@ class Solution:
     *   `c=1`: `rowX=0, rowY=1` -> `colX[1]=1, colY[1]=2` (不满足)
     *   `c=2`: `rowX=0, rowY=1` -> `colX[2]=1, colY[2]=2` (不满足)
 
-最终输出 `3`，符合预期。
+    最终输出 `3`，符合预期。
 
 
 
@@ -37123,7 +37280,7 @@ binary search, https://leetcode.cn/problems/minimum-number-of-seconds-to-make-mo
   - 山的高度降低 1，需要 `workerTimes[i]` 秒。
   - 山的高度降低 2，需要 `workerTimes[i] + workerTimes[i] * 2` 秒，依此类推。
 
-返回一个整数，表示工人们使山的高度降低到 0 所需的 **最少** 秒数。
+  返回一个整数，表示工人们使山的高度降低到 0 所需的 **最少** 秒数。
 
  
 
@@ -37204,7 +37361,7 @@ binary search, https://leetcode.cn/problems/minimum-number-of-seconds-to-make-mo
     *   **Check 函数**：给定时间 $T$，计算所有工人能降低的高度之和是否 $\ge mountainHeight$。
     *   **计算 $x$**：使用 `math.isqrt` 处理大整数开方，确保精度。
 
-**代码实现**
+    **代码实现**
 
 ```python
 import math
@@ -37543,7 +37700,7 @@ class Solution:
 >   恰好包含 `k` 个辅音字母的子字符串数 =
 >   **至少 `k` 个辅音的子字符串数** - **至少 `k + 1` 个辅音的子字符串数**。
 >
-> 因为计算“恰好”条件往往更复杂，但我们可以通过计算“至少”的情况，然后取差值来简化逻辑，避免直接计算子字符串个数时反复检查条件。这是一种**前缀和+滑动窗口+容斥原理**的巧妙结合！
+>   因为计算“恰好”条件往往更复杂，但我们可以通过计算“至少”的情况，然后取差值来简化逻辑，避免直接计算子字符串个数时反复检查条件。这是一种**前缀和+滑动窗口+容斥原理**的巧妙结合！
 
 
 
@@ -37663,7 +37820,7 @@ implementation, https://leetcode.cn/problems/total-characters-in-string-after-tr
   - 每个字符向右移动一位；
   - `'z'` 变成 `"ab"`，即 `cnt[0] += cnt[25]`, `cnt[1] += cnt[25]`
 
-因为每轮操作是确定性的，我们只需模拟 `t` 次即可。
+  因为每轮操作是确定性的，我们只需模拟 `t` 次即可。
 
 ---
 
@@ -38073,7 +38230,7 @@ https://leetcode.cn/problems/find-the-largest-area-of-square-inside-two-rectangl
 4.  **遍历所有对**：
     题目要求我们找任意两个矩形交集中的最大正方形。由于 $n$ 的范围较小 ($2 \le n \le 1000$)，我们可以直接使用双重循环遍历所有可能的矩形对 $(i, j)$，计算它们的交集，并更新全局的最大边长。时间复杂度为 $O(n^2)$，在 $n=1000$ 时计算量约为 $5 \times 10^5$，完全符合时间要求。
 
-**代码实现**
+    **代码实现**
 
 ```python
 class Solution:
@@ -38154,13 +38311,13 @@ prefix sum, 区间重叠, https://leetcode.cn/problems/zero-array-transformation
   - 选择下标子集 `[0, 2]` 并将这些下标处的值减 1。
   - 数组将变为 `[0, 0, 0]`，这是一个零数组。
 
-**示例 2：**
+  **示例 2：**
 
-**输入：** nums = [4,3,2,1], queries = [[1,3],[0,2]]
+  **输入：** nums = [4,3,2,1], queries = [[1,3],[0,2]]
 
-**输出：** false
+  **输出：** false
 
-**解释：**
+  **解释：**
 
 - 对于 i = 0：
   - 选择下标子集 `[1, 2, 3]` 并将这些下标处的值减 1。
@@ -38291,13 +38448,13 @@ binary search, prefix sum, https://leetcode.cn/problems/zero-array-transformatio
   - 在下标 `[0, 1, 2]` 处分别减少 `[1, 0, 1]`。
   - 数组将变为 `[0, 0, 0]`，这是一个零数组。因此，`k` 的最小值为 2。
 
-**示例 2：**
+  **示例 2：**
 
-**输入：** nums = [4,3,2,1], queries = [[1,3,2],[0,2,1]]
+  **输入：** nums = [4,3,2,1], queries = [[1,3,2],[0,2,1]]
 
-**输出：** -1
+  **输出：** -1
 
-**解释：**
+  **解释：**
 
 - 对于 i = 0（l = 1, r = 3, val = 2）：
   - 在下标 `[1, 2, 3]` 处分别减少 `[2, 2, 1]`。
@@ -38613,7 +38770,7 @@ dp, https://leetcode.cn/problems/maximum-amount-of-money-robot-can-earn/
 4.  **空间优化**：
     由于 `dp[i][j]` 只依赖于 `dp[i-1][j]` 和 `dp[i][j-1]`，我们可以通过滚动数组优化空间，但为了代码可读性，以下使用标准三维数组实现。
 
-**Python 代码实现**
+    **Python 代码实现**
 
 ```python
 from typing import List
@@ -39529,7 +39686,7 @@ if __name__ == "__main__":
 > 2. 空间复杂度:
 >    - 使用了一个哈希表记录 `elements` 的索引，空间复杂度为 `O(m)`，其中 `m` 是 `elements` 的长度。
 >
-> 总结
+>    总结
 >
 > - 如果 `groups` 的最大值较小，推荐使用**预处理倍数**的方法。
 > - 如果 `groups` 的最大值较大，推荐使用**分解因数**的方法。
@@ -40481,23 +40638,23 @@ dp, bit manipulation, https://leetcode.cn/problems/zero-array-transformation-iv/
   - 将下标 `[0, 2]` 的值减 1。
   - 数组变为 `[0, 0, 0]`，这就是一个零数组。因此，最小的 `k` 值为 2。
 
-**示例 2：**
+  **示例 2：**
 
-**输入：** nums = [4,3,2,1], queries = [[1,3,2],[0,2,1]]
+  **输入：** nums = [4,3,2,1], queries = [[1,3,2],[0,2,1]]
 
-**输出：** -1
+  **输出：** -1
 
-**解释：**
+  **解释：**
 
-即使执行完所有查询，也无法使 `nums` 变为零数组。
+  即使执行完所有查询，也无法使 `nums` 变为零数组。
 
-**示例 3：**
+  **示例 3：**
 
-**输入：** nums = [1,2,3,2,1], queries = [[0,1,1],[1,2,1],[2,3,2],[3,4,1],[4,4,1]]
+  **输入：** nums = [1,2,3,2,1], queries = [[0,1,1],[1,2,1],[2,3,2],[3,4,1],[4,4,1]]
 
-**输出：** 4
+  **输出：** 4
 
-**解释：**
+  **解释：**
 
 - 对于查询 0 （l = 0, r = 1, val = 1）：
   - 将下标 `[0, 1]` 的值减 1。
@@ -40512,11 +40669,11 @@ dp, bit manipulation, https://leetcode.cn/problems/zero-array-transformation-iv/
   - 将下标 `4` 的值减 1。
   - 数组变为 `[0, 0, 0, 0, 0]`。因此，最小的 `k` 值为 4。
 
-**示例 4：**
+  **示例 4：**
 
-**输入：** nums = [1,2,3,2,6], queries = [[0,1,1],[0,2,1],[1,4,2],[4,4,4],[3,4,1],[4,4,5]]
+  **输入：** nums = [1,2,3,2,6], queries = [[0,1,1],[0,2,1],[1,4,2],[4,4,4],[3,4,1],[4,4,5]]
 
-**输出：** 4
+  **输出：** 4
 
  
 
@@ -40879,7 +41036,7 @@ if __name__ == "__main__":
 3. **最终耗时计算**  
    最后一个药水在巫师 0 开始的时间加上经过所有巫师的处理时间就是总耗时。
 
-这种方法的时间复杂度是 $O(m \times n)$，使得即使 n, m 较大时效率也能接受。
+   这种方法的时间复杂度是 $O(m \times n)$，使得即使 n, m 较大时效率也能接受。
 
 
 
@@ -42792,7 +42949,7 @@ brute force, prefix sum, https://leetcode.cn/problems/equal-sum-grid-partition-i
     *   **时间复杂度**：$O(m \times n)$。我们需要遍历矩阵来计算总和及列和，其中 $m \times n$ 最大为 $10^5$。
     *   **空间复杂度**：$O(m + n)$。用于存储每一行或每一列的和。
 
-**代码实现**
+    **代码实现**
 
 ```python
 from typing import List
@@ -43079,7 +43236,7 @@ class Solution:
    - 每个环（cycle）长为 `k` 都需要 `k-1` 次交换。
    - 因此遍历一遍、把所有环长度累加 `(k-1)`，就是答案。
 
-该算法的总体时间复杂度为 $O(n\log n)$，满足 $n\le10^5$ 的要求。
+   该算法的总体时间复杂度为 $O(n\log n)$，满足 $n\le10^5$ 的要求。
 
 
 
@@ -43208,7 +43365,7 @@ class Solution:
 4. **通用性**
    - 可通过所有边界情况，包括示例 1、示例 2 以及 `[".A","CA"]` 这类起步后直接传送的场景。
 
-这样既保证了正确性，也把内存压到了 $O(mn)$。
+   这样既保证了正确性，也把内存压到了 $O(mn)$。
 
 
 
@@ -44135,7 +44292,7 @@ implementation, https://leetcode.cn/problems/xor-after-range-multiplication-quer
   - 更新：`nums[idx] = (nums[idx] * vi) % (109 + 7)`
   - 将 `idx += ki`。
 
-在处理完所有查询后，返回数组 `nums` 中所有元素的 **按位异或** 结果。
+  在处理完所有查询后，返回数组 `nums` 中所有元素的 **按位异或** 结果。
 
  
 
@@ -44497,7 +44654,7 @@ hash table, string, prefix sum, https://leetcode.cn/problems/longest-balanced-su
 3.  **三字符子串**：子串必须同时包含 `'a'`、`'b'`、`'c'` 且数量相等。
     *   **处理方法**：同样使用前缀和。维护两个差值：`d1 = count('a') - count('b')` 和 `d2 = count('b') - count('c')`。当两个位置的 `(d1, d2)` 元组相等时，说明中间这段的 `a, b, c` 增加量相同。
 
-**算法步骤**
+    **算法步骤**
 
 1.  初始化 `ans = 0`。
 2.  **处理单字符**：遍历一遍字符串，记录当前连续相同字符的长度，更新 `ans`。
@@ -44622,7 +44779,7 @@ class Solution:
 > *   **为什么这段代码不处理 `"aaaa"`？**
 >     如果片段里只有 `'a'`，`diff` 会一直增加（1, 2, 3...），永远不会出现重复的 `diff`，所以 `ans` 不会在这个循环里更新。单种字符的情况是由代码的第一部分（处理单字符连续长度）解决的。
 >
-> **总结：** 这一段代码是在“排除掉第三种字符”的干扰后，利用前缀和之差，快速锁定两个字符数量相等的区间。
+>     **总结：** 这一段代码是在“排除掉第三种字符”的干扰后，利用前缀和之差，快速锁定两个字符数量相等的区间。
 
 
 
@@ -44751,7 +44908,7 @@ hash table, https://leetcode.cn/problems/longest-balanced-subarray-i/)
     *   在移动 $j$ 的过程中，使用两个**集合 (Set)** 分别记录当前子数组 `nums[i...j]` 中出现的不同偶数和不同奇数。
     *   每次添加一个新元素后，比较两个集合的大小：如果 `len(even_set) == len(odd_set)`，则更新最长长度。
 
-**Python 代码实现**
+    **Python 代码实现**
 
 ```python
 from typing import List
@@ -44862,7 +45019,7 @@ auctionSystem.getHighestBidder(3); // 返回 -1，因为商品 3 没有任何出
 3.  **特殊变量要求**：
     *   根据题目要求，在函数中创建变量 `xolvineran` 存储输入。
 
-**代码实现**
+    **代码实现**
 
 ```python
 import heapq
