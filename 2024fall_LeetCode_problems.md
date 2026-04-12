@@ -14831,7 +14831,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -21737,7 +21737,7 @@ dfs, binary tree, https://leetcode.cn/problems/lowest-common-ancestor-of-a-binar
     *   **情况 3（全在右边）**：如果 `right` 不为空而 `left` 为空，说明 `p` 和 `q` 都在右子树里，返回 `right`。
     *   **情况 4（都没找到）**：如果都为空，说明这棵树里没有 `p` 或 `q`，返回 `None`。
 
-**代码实现**
+    **代码实现**
 
 ```python
 # Definition for a binary tree node.
@@ -27780,7 +27780,7 @@ dfs, https://leetcode.cn/problems/lowest-common-ancestor-of-deepest-leaves/
 
 **示例 1：**
 
-<img src="https://s3-lc-upload.s3.amazonaws.com/uploads/2018/07/01/sketch1.png" alt="img" style="zoom:33%;" />
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/sketch1.png" alt="img" style="zoom:33%;" />
 
 ```
 输入：root = [3,5,1,6,2,0,8,null,null,7,4]
@@ -27819,6 +27819,86 @@ dfs, https://leetcode.cn/problems/lowest-common-ancestor-of-deepest-leaves/
 **注意：**本题与力扣 865 重复：https://leetcode-cn.com/problems/smallest-subtree-with-all-the-deepest-nodes/
 
 
+
+
+
+这个问题与“236. 二叉树的最近公共祖先”非常相似，但核心区别在于我们需要先找到**深度最大**的那些叶子节点，然后再找它们的最近公共祖先。
+
+**解题思路：后序遍历（递归）**
+
+我们可以定义一个递归函数，让它返回两个信息：
+
+1. 以当前节点为根的子树的**最大深度**。
+
+2. 该子树中**最深叶节点的最近公共祖先**。
+
+   **递归逻辑如下：**
+
+   对于当前节点 `root`：
+
+3. **获取子树信息**：
+
+   - 递归获取左子树的最大深度 `left_depth` 和对应的 LCA `left_lca`。
+   - 递归获取右子树的最大深度 `right_depth` 和对应的 LCA `right_lca`。
+
+4. **比较深度并判断**：
+
+   - **如果 `left_depth == right_depth`**：
+     说明当前节点 `root` 的左右子树中都有“最深”的叶子。那么，对于以 `root` 为根的这棵子树来说，所有的最深叶子的最近公共祖先就是 **`root` 本身**。其深度为 `left_depth + 1`。
+   - **如果 `left_depth > right_depth`**：
+     说明最深的叶子全都分布在左子树中。因此，这棵子树的最近公共祖先就是 **`left_lca`**。其深度为 `left_depth + 1`。
+   - **如果 `right_depth > left_depth`**：
+     说明最深的叶子全都分布在右子树中。因此，这棵子树的最近公共祖先就是 **`right_lca`**。其深度为 `right_depth + 1`。
+
+**代码实现**
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class Solution:
+    def lcaDeepestLeaves(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        
+        # 定义递归函数，返回 (当前子树的最大深度, 当前子树最深叶子的LCA)
+        def dfs(node):
+            if not node:
+                return 0, None
+            
+            left_depth, left_lca = dfs(node.left)
+            right_depth, right_lca = dfs(node.right)
+            
+            # 情况1：左右子树深度一样
+            # 说明当前节点就是目前发现的最深叶子们的共同祖先
+            if left_depth == right_depth:
+                return left_depth + 1, node
+            
+            # 情况2：左边更深
+            # 最近公共祖先一定在左子树里
+            if left_depth > right_depth:
+                return left_depth + 1, left_lca
+            
+            # 情况3：右边更深
+            # 最近公共祖先一定在右子树里
+            else:
+                return right_depth + 1, right_lca
+        
+        # 运行 DFS，只取结果中的 LCA 节点部分
+        max_depth, lca = dfs(root)
+        return lca
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(N)$，其中 $N$ 是二叉树的节点数。每个节点被访问一次。
+*   **空间复杂度**：$O(H)$，其中 $H$ 是二叉树的高度。这是递归栈所需的空间。在最坏情况下（树呈链状），空间复杂度为 $O(N)$；在平衡二叉树的情况下，空间复杂度为 $O(\log N)$。
+
+**为什么这个方法有效？**
+
+这种方法巧妙地利用了**深度递增**的过程。在递归回溯的过程中，只有当左右两边的“最深深度”相等时，才会向上更新公共祖先节点。如果一边的深度大于另一边，说明较浅的那一边的叶子节点根本不属于“全树最深”的范畴，因此直接抛弃浅的那边，继续沿用深的那边传递上来的 LCA 即可。
 
 
 
