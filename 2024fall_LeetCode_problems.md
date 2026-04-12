@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-04-11 10:53 GMT+8*
+*Updated 2026-04-13 00:24 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -6914,6 +6914,107 @@ class Solution:
                 return False
         return True
 ```
+
+
+
+## E1848.到目标元素的最小距离
+
+implementation, https://leetcode.cn/problems/minimum-distance-to-the-target-element/
+
+给你一个整数数组 `nums` （下标 **从 0 开始** 计数）以及两个整数 `target` 和 `start` ，请你找出一个下标 `i` ，满足 `nums[i] == target` 且 `abs(i - start)` **最小化** 。注意：`abs(x)` 表示 `x` 的绝对值。
+
+返回 `abs(i - start)` 。
+
+题目数据保证 `target` 存在于 `nums` 中。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,2,3,4,5], target = 5, start = 3
+输出：1
+解释：nums[4] = 5 是唯一一个等于 target 的值，所以答案是 abs(4 - 3) = 1 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1], target = 1, start = 0
+输出：0
+解释：nums[0] = 1 是唯一一个等于 target 的值，所以答案是 abs(0 - 0) = 0 。
+```
+
+**示例 3：**
+
+```
+输入：nums = [1,1,1,1,1,1,1,1,1,1], target = 1, start = 0
+输出：0
+解释：nums 中的每个值都是 1 ，但 nums[0] 使 abs(i - start) 的结果得以最小化，所以答案是 abs(0 - 0) = 0 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 1000`
+- `1 <= nums[i] <= 10^4`
+- `0 <= start < nums.length`
+- `target` 存在于 `nums` 中
+
+
+
+这是一个经典的数组遍历问题。题目要求在数组中找到所有等于 `target` 的元素，并计算它们的下标 `i` 与给定 `start` 之间的绝对距离，最后返回这些距离中的最小值。
+
+**解题思路**
+
+1. **遍历数组**：我们可以遍历整个数组 `nums`。
+
+2. **匹配目标**：检查当前元素 `nums[i]` 是否等于 `target`。
+
+3. **计算距离**：如果相等，计算当前下标与 `start` 的距离，即 `abs(i - start)`。
+
+4. **更新最小值**：维护一个变量来记录遍历过程中遇到的最小距离。
+
+   由于数组长度最大只有 1000，直接进行 $O(n)$ 的线性扫描效率非常高。
+
+**代码实现**
+
+```python
+class Solution:
+    def getMinDistance(self, nums: List[int], target: int, start: int) -> int:
+        # 初始化最小距离为一个很大的值
+        min_dist = float('inf')
+        
+        # 遍历数组及其下标
+        for i, num in enumerate(nums):
+            # 如果找到目标元素
+            if num == target:
+                # 计算当前下标到 start 的距离
+                dist = abs(i - start)
+                # 更新最小距离
+                if dist < min_dist:
+                    min_dist = dist
+                    
+        return min_dist
+```
+
+**优化写法（Pythonic）**
+
+利用 Python 的生成器表达式和 `min` 函数，可以将代码简化为一行：
+
+```python
+class Solution:
+    def getMinDistance(self, nums: List[int], target: int, start: int) -> int:
+        return min(abs(i - start) for i, num in enumerate(nums) if num == target)
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(n)$，其中 $n$ 是数组 `nums` 的长度。我们需要完整遍历一次数组。
+*   **空间复杂度**：$O(1)$，只使用了常数级别的额外空间来存储距离值。
+
+
 
 
 
@@ -14831,7 +14932,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -27850,7 +27951,7 @@ dfs, https://leetcode.cn/problems/lowest-common-ancestor-of-deepest-leaves/
    - **如果 `right_depth > left_depth`**：
      说明最深的叶子全都分布在右子树中。因此，这棵子树的最近公共祖先就是 **`right_lca`**。其深度为 `right_depth + 1`。
 
-**代码实现**
+  **代码实现**
 
 ```python
 # Definition for a binary tree node.
