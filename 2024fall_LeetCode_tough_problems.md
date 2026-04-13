@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-04-12 23:44 GMT+8*
+*Updated 2026-04-13 12:11 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -5430,6 +5430,127 @@ class Solution:
 *   **时间复杂度：** $O(N \times M)$，其中 $N$ 和 $M$ 分别是 `nums1` 和 `nums2` 的长度。我们需要填充整个二维数组。
 *   **空间复杂度：** $O(N \times M)$，用于存储 DP 状态数组。
     *   *注：由于 `dp[i][j]` 只依赖于当前行和上一行的状态，空间复杂度可以优化到 $O(M)$，但在本题数据规模（N, M <= 500）下，二维数组是完全可以接受的且更易于理解。*
+
+
+
+## T1483.树节点的第 K 个祖先
+
+LCA, binary lifting, https://leetcode.cn/problems/kth-ancestor-of-a-tree-node/
+
+给你一棵树，树上有 `n` 个节点，按从 `0` 到 `n-1` 编号。树以父节点数组的形式给出，其中 `parent[i]` 是节点 `i` 的父节点。树的根节点是编号为 `0` 的节点。
+
+树节点的第 *`k`* 个祖先节点是从该节点到根节点路径上的第 `k` 个节点。
+
+实现 `TreeAncestor` 类：
+
+- `TreeAncestor(int n， int[] parent)` 对树和父数组中的节点数初始化对象。
+- `getKthAncestor(int node, int k)` 返回节点 `node` 的第 `k` 个祖先节点。如果不存在这样的祖先节点，返回 `-1` 。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/1528_ex1.png" alt="img" style="zoom:50%;" />
+
+```
+输入：
+["TreeAncestor","getKthAncestor","getKthAncestor","getKthAncestor"]
+[[7,[-1,0,0,1,1,2,2]],[3,1],[5,2],[6,3]]
+
+输出：
+[null,1,0,-1]
+
+解释：
+TreeAncestor treeAncestor = new TreeAncestor(7, [-1, 0, 0, 1, 1, 2, 2]);
+
+treeAncestor.getKthAncestor(3, 1);  // 返回 1 ，它是 3 的父节点
+treeAncestor.getKthAncestor(5, 2);  // 返回 0 ，它是 5 的祖父节点
+treeAncestor.getKthAncestor(6, 3);  // 返回 -1 因为不存在满足要求的祖先节点
+```
+
+ 
+
+**提示：**
+
+- `1 <= k <= n <= 5 * 10^4`
+- `parent[0] == -1` 表示编号为 `0` 的节点是根节点。
+- 对于所有的 `0 < i < n` ，`0 <= parent[i] < n` 总成立
+- `0 <= node < n`
+- 至多查询 `5 * 10^4` 次
+
+
+
+这道题目是**倍增法（Binary Lifting）**的经典模板题。
+
+为了在 $O(\log k)$ 的时间内找到第 $k$ 个祖先，我们需要在初始化时预处理出一个“跳跃表”。
+
+**解题思路**
+
+1.  **预处理 (Initialization)**:
+    *   我们创建一个二维数组 `up[i][node]`，表示节点 `node` 的第 $2^i$ 个祖先。
+    *   `up[0]` 就是题目给出的 `parent` 数组（即第 $2^0 = 1$ 个祖先）。
+    *   递推公式：`up[i][node] = up[i-1][up[i-1][node]]`。
+        *   意思是：跳 $2^i$ 步等于先跳 $2^{i-1}$ 步，再跳 $2^{i-1}$ 步。
+    *   如果某个祖先是 `-1`，则更高级别的祖先也都是 `-1`。
+
+2.  **查询 (Query)**:
+    *   将 $k$ 拆解为二进制。例如 $k=13$，其二进制为 `1101`，即 $13 = 8 + 4 + 1$。
+    *   我们要找第 13 个祖先，就让节点先跳 8 步，再跳 4 步，最后跳 1 步。
+    *   利用位运算 `(k >> i) & 1` 来判断 $k$ 的二进制第 $i$ 位是否为 1。
+
+**Python 代码实现**
+
+```python
+from typing import List
+
+class TreeAncestor:
+
+    def __init__(self, n: int, parent: List[int]):
+        # n 最大 5*10^4，2^16 = 65536，所以 16 层左右就够了
+        # 我们取 16 或 17 
+        self.LOG = 16
+        
+        # self.up[i][node] 表示节点 node 的第 2^i 个祖先
+        # self.up[0] 是直接父节点
+        self.up = [parent]
+        
+        for i in range(1, self.LOG):
+            prev_up = self.up[i-1]
+            # 计算当前这一层：跳 2^i 步
+            # 逻辑：从 j 跳 2^(i-1) 步到 prev_up[j]，再从那里跳 2^(i-1) 步
+            curr_up = [
+                prev_up[prev_up[j]] if prev_up[j] != -1 else -1 
+                for j in range(n)
+            ]
+            self.up.append(curr_up)
+
+    def getKthAncestor(self, node: int, k: int) -> int:
+        for i in range(self.LOG):
+            # 检查 k 的二进制表示中，第 i 位是否为 1
+            if (k >> i) & 1:
+                node = self.up[i][node]
+                # 如果已经跳出根节点了，提前结束
+                if node == -1:
+                    break
+        return node
+
+# 示例运行逻辑：
+# obj = TreeAncestor(7, [-1, 0, 0, 1, 1, 2, 2])
+# param_1 = obj.getKthAncestor(3, 1) # 返回 1
+```
+
+**复杂度分析**
+
+*   **时间复杂度**:
+    *   **初始化**: $O(n \log n)$。我们需要填充一个 $16 \times n$ 的表格。
+    *   **查询**: $O(\log k)$。对于每次查询，我们只需要遍历二进制位（最多 16 次）。
+*   **空间复杂度**: $O(n \log n)$。用于存储 `up` 数组。
+
+**为什么这个解法高效？**
+
+如果使用暴力法（一个一个向上找），最坏情况下（树是一条长链）查询时间是 $O(n)$，总时间复杂度会达到 $O(n \cdot \text{queries}) \approx 2.5 \times 10^9$，这在 Python 中是绝对无法通过的。倍增法将单次查询降到了 $O(\log n)$，使得总计算量降到了 $10^6$ 级别，非常轻松。
+
+
 
 
 
@@ -23505,33 +23626,28 @@ tree dp, https://www.luogu.com.cn/problem/P1352
 
 
 
-https://www.cnblogs.com/ifmyt/p/9588872.html
+> 树形dp学习笔记，https://www.cnblogs.com/ifmyt/p/9588872.html
 
-树形dp是一种很优美的动态规划。树形dp的主要实现形式是dfs，在dfs中dp，主要的实现形式是`dp[i][j][0/1]`，i是以i为根的子树，j是表示在以i为根的子树中选择j个子节点，0表示这个节点不选，1表示选择这个节点。有的时候j或0/1这一维可以压掉。
+这是一道经典的**树形动态规划（Tree DP）**问题。题目要求在满足“上司和下属不能同时参加”的条件下，选择职员使得快乐指数之和最大。
 
-**基本的dp方程**
+**算法思路**
 
-选择节点类
-$$
-\begin{cases}
-dp[i][0]=dp[j][1] \\
-dp[i][1]=max/min(dp[j][0],dp[j][1])
-\end{cases}
-$$
+我们可以用 $dp[u][0]$ 表示以 $u$ 为根的子树中，**$u$ 不参加**舞会时的最大快乐指数；用 $dp[u][1]$ 表示以 $u$ 为根的子树中，**$u$ 参加**舞会时的最大快乐指数。
 
+对于节点 $u$ 的每一个直接下属 $v$：
 
+- **如果 $u$ 参加舞会**：那么 $v$ 绝对不能参加。
+  $$dp[u][1] = r_u + \sum dp[v][0]$$
+- **如果 $u$ 不参加舞会**：那么 $v$ 可以参加也可以不参加，我们取两者的最大值。
+  $$dp[u][0] = \sum \max(dp[v][0], dp[v][1])$$
 
-树形背包类
-$$
-\begin{cases}
-dp[v][k]=dp[u][k]+val \\
-dp[u][k]=max(dp[u][k],dp[v][k−1])
-\end{cases}
-$$
+  **实现细节**
 
+- **建图**：使用邻接表存储树结构。
+- **根节点**：没有上司的职员即为整棵树的根节点，从根节点开始 DFS。
+- **递归深度**：Python 默认递归深度较浅，需手动增加 `sys.setrecursionlimit`。
 
-
-因为树形dp没有基本的形式，然后其也没有固定的做法，一般一种题目有一种做法。这道题是一树形dp入门级别的题目，具体方程就用到了上述的选择方程。
+**Python 代码实现**
 
 ```python
 import sys
@@ -24104,11 +24220,11 @@ if __name__ == "__main__":
     *   如果跳完后两个节点**不相等**，说明还没跳过头，执行跳跃。
     *   最终它们会停在 LCA 的下方，直接返回 `up[0][u]` 即可。
 
-**性能说明**
+    **性能说明**
 
-对于 $5 \times 10^5$ 的量级，即使使用了倍增法，在 Python3 (CPython) 下运行依然非常吃力（可能会在 1~2s 的时限边缘）。如果是在洛谷等平台提交，建议选择 **PyPy 3** 编译器，它的 JIT 优化能显著提升循环效率。
+    对于 $5 \times 10^5$ 的量级，即使使用了倍增法，在 Python3 (CPython) 下运行依然非常吃力（可能会在 1~2s 的时限边缘）。如果是在洛谷等平台提交，建议选择 **PyPy 3** 编译器，它的 JIT 优化能显著提升循环效率。
 
-如果仍然 TLE，通常需要考虑 **Tarjan 离线算法**，其时间复杂度为 $O(N + M \alpha(N))$，在查询量极大时性能优于倍增法。
+    如果仍然 TLE，通常需要考虑 **Tarjan 离线算法**，其时间复杂度为 $O(N + M \alpha(N))$，在查询量极大时性能优于倍增法。
 
 
 
