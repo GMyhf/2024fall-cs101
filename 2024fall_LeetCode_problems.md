@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-04-13 00:24 GMT+8*
+*Updated 2026-04-15 13:51 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -14932,7 +14932,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -18478,10 +18478,158 @@ class Solution:
         dfs(root)
 ```
 
-✅ 简洁
-✅ 原地
-✅ 符合先序顺序（因为是反向构造）
-✅ 通过所有测试用例
+简洁，原地，符合先序顺序（因为是反向构造）
+
+
+
+## M116.填充每个节点的下一个右侧节点指针
+
+dfs, linked list, binary tree, https://leetcode.cn/problems/populating-next-right-pointers-in-each-node/
+
+给定一个 **完美二叉树** ，其所有叶子节点都在同一层，每个父节点都有两个子节点。二叉树定义如下：
+
+```
+struct Node {
+  int val;
+  Node *left;
+  Node *right;
+  Node *next;
+}
+```
+
+填充它的每个 next 指针，让这个指针指向其下一个右侧节点。如果找不到下一个右侧节点，则将 next 指针设置为 `NULL`。
+
+初始状态下，所有 next 指针都被设置为 `NULL`。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/116_sample.png" alt="img" style="zoom:50%;" />
+
+```
+输入：root = [1,2,3,4,5,6,7]
+输出：[1,#,2,3,#,4,5,6,7,#]
+解释：给定二叉树如图 A 所示，你的函数应该填充它的每个 next 指针，以指向其下一个右侧节点，如图 B 所示。序列化的输出按层序遍历排列，同一层节点由 next 指针连接，'#' 标志着每一层的结束。
+```
+
+
+
+**示例 2:**
+
+```
+输入：root = []
+输出：[]
+```
+
+ 
+
+**提示：**
+
+- 树中节点的数量在 `[0, 212 - 1]` 范围内
+- `-1000 <= node.val <= 1000`
+
+ 
+
+**进阶：**
+
+- 你只能使用常量级额外空间。
+- 使用递归解题也符合要求，本题中递归程序占用的栈空间不算做额外的空间复杂度。
+
+
+
+这个问题可以通过多种方法解决。由于题目要求**常量级额外空间**（进阶要求），最理想的解法是利用已经建立好的 `next` 指针来层序遍历下一层。
+
+**解题思路：层级遍历（利用 next 指针）**
+
+在普通的层序遍历中，我们通常使用队列（Queue），但这会消耗 $O(N)$ 的空间。
+由于这是一个**完美二叉树**，我们可以利用上一层已经建立好的 `next` 指针来遍历下一层，从而实现 $O(1)$ 的空间复杂度。
+
+对于每一层，我们要处理两种连接：
+
+1.  **同一个父节点下的两个子节点**：`node.left.next = node.right`。
+2.  **不同父节点下的相邻子节点**：如果 `node.next` 存在，那么 `node.right.next = node.next.left`。
+
+**代码实现（Python）**
+
+```python
+"""
+# Definition for a Node.
+class Node:
+    def __init__(self, val: int = 0, left: 'Node' = None, right: 'Node' = None, next: 'Node' = None):
+        self.val = val
+        self.left = left
+        self.right = right
+        self.next = next
+"""
+
+class Solution:
+    def connect(self, root: 'Optional[Node]') -> 'Optional[Node]':
+        if not root:
+            return root
+        
+        # 从根节点开始，leftmost 始终指向每一层的最左侧节点
+        leftmost = root
+        
+        # 只要还有下一层（因为是完美二叉树，有左孩子就有右孩子）
+        while leftmost.left:
+            
+            # head 负责遍历当前这一层已经排好 next 指针的“链表”
+            head = leftmost
+            while head:
+                # 场景 1：连接同一个父节点的两个子节点
+                head.left.next = head.right
+                
+                # 场景 2：连接跨越父节点的两个子节点
+                # 如果当前节点有 next，说明右边还有相邻的父节点
+                if head.next:
+                    head.right.next = head.next.left
+                
+                # 指针向后移动，处理同一层下一个父节点
+                head = head.next
+            
+            # 当前层处理完毕，移动到下一层的起始位置
+            leftmost = leftmost.left
+            
+        return root
+```
+
+**另一种解法：递归**
+
+题目也提到递归符合常数空间要求（不计入递归栈空间）。递归的思想是将“连接”操作拆解。
+
+```python
+class Solution:
+    def connect(self, root: 'Optional[Node]') -> 'Optional[Node]':
+        if not root or not root.left:
+            return root
+        
+        # 1. 连接左右子节点
+        root.left.next = root.right
+        
+        # 2. 如果 root.next 存在，连接 root 的右子节点和 root.next 的左子节点
+        if root.next:
+            root.right.next = root.next.left
+        
+        # 递归处理左子树和右子树
+        self.connect(root.left)
+        self.connect(root.right)
+        
+        return root
+```
+
+**复杂度分析**
+
+*   **时间复杂度：$O(N)$**。每个节点只被访问一次（$N$ 为节点总数）。
+*   **空间复杂度：$O(1)$**。
+    *   迭代法只使用了几个常数级别的指针变量。
+    *   递归法由于是完美二叉树，树的高度为 $\log N$，递归栈空间为 $O(\log N)$，但题目明确说明递归占用的栈空间不计入额外空间复杂度。
+
+**总结**
+
+对于这道题，**利用已有的 next 指针进行迭代**是最符合“进阶”要求的标准做法，因为它完全规避了辅助栈或队列的使用。        
+
+
 
 
 
