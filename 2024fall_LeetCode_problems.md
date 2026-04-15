@@ -14932,7 +14932,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -28162,23 +28162,86 @@ class Solution:
 
 **深度解读**
 
-#### 1. 核心逻辑
+1. 核心逻辑
+
 *   **高度（Height）定义**：节点到叶子节点的最长路径。
 *   **判断依据**：
     *   如果 `height(left) == height(right)`，意味着该节点从左路走到底和从右路走到底的深度是一样的。由于只有“最深”的叶子才是我们的目标，两侧都有最深叶子时，当前节点必然是它们的交汇点。
     *   如果 `height(left) > height(right)`，说明全局最深的叶子只可能出现在左子树中，因此 LCA 一定在左子树。
 
-#### 2. 复杂度分析
+2. 复杂度分析
+
 *   **如果不使用记忆化（@cache）**：
     *   在退化成链表的树中，时间复杂度会达到 $O(N^2)$，因为每一层都要重新计算下方所有节点的高度。
 *   **如果使用记忆化**：
     *   **时间复杂度**：$O(N)$。每个节点的高度只会被计算并存储一次。之后的调用都是 $O(1)$。
     *   **空间复杂度**：$O(N)$。缓存需要存储 $N$ 个节点的高度。
 
-#### 3. 为什么这个写法更“稳”？
+3. 为什么这个写法更“稳”？
+
 这种写法将“求深度”和“找祖先”两个逻辑完全解耦。在面试中，如果你无法立刻写出复杂的单次 DFS 返回多个值的逻辑，先写出这个 `get_height` 版本是非常稳妥的策略。
 
 
+
+
+
+思路：回溯 + 路径对比
+
+1.  实时筛选：在回溯过程中记录当前已知的最大深度。只有当遇到更深或同深度的节点时，才记录路径，避免存储无效路径。
+2.  在 DFS 过程中记录，通过深度判断来更新 `max_paths` 列表。
+3.  比较逻辑：所有最深叶子节点的 LCA，本质上是**第一个最深叶子路径**和**最后一个最深叶子路径**的公共前缀。
+
+代码：
+
+```python
+class Solution:
+    def lcaDeepestLeaves(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        max_depth = -1
+        max_paths = []
+        path = []
+
+        def backtrack(node, depth):
+            nonlocal max_depth
+            if not node:
+                return
+            
+            path.append(node)
+            # 到达叶子节点
+            if not node.left and not node.right:
+                if depth > max_depth:
+                    max_depth = depth
+                    max_paths.clear()  # 发现更深的，清空之前的
+                    max_paths.append(list(path))
+                elif depth == max_depth:
+                    max_paths.append(list(path))
+            
+            if node.left:
+                backtrack(node.left, depth + 1)
+            if node.right:
+                backtrack(node.right, depth + 1)
+            
+            path.pop() # 回溯
+
+        backtrack(root, 0)
+
+        # 如果只有一条路径，直接返回该叶子节点
+        if len(max_paths) == 1:
+            return max_paths[0][-1]
+        
+        # 优化：只需对比第一条和最后一条路径的公共前缀
+        # 因为在 DFS 中，路径是按从左到右的顺序加入的
+        p1, p2 = max_paths[0], max_paths[-1]
+        lca = root
+        # 比较最短的那条路径长度即可（此题中所有路径长度一致）
+        for i in range(len(p1)):
+            if p1[i] == p2[i]:
+                lca = p1[i]
+            else:
+                break
+        return lca
+```
+
+**注**：此题最高效的解法通常是递归返回 `(max_depth, lca)。
 
 
 
