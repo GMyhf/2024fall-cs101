@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-04-15 15:51 GMT+8*
+*Updated 2026-04-16 08:46 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -15047,7 +15047,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -41106,6 +41106,81 @@ if __name__ == "__main__":
     print(sol.solveQueries([14,14,4,2,19,19,14,19,14], [2,4,8,6,3])) # [0,0,0,0]
 
 ```
+
+
+
+要解决这个问题，我们需要在**环形数组**中找到与查询下标处的元素相同的其他下标，并计算最小距离。
+
+**核心思路**
+
+1.  **距离定义**：在一个长度为 $n$ 的环形数组中，下标 $i$ 和 $j$ 之间的距离定义为 $\min(|i-j|, n - |i-j|)$。这本质上是顺时针方向和逆时针方向距离的最小值。
+2.  **寻找最近相同元素**：
+    *   对于某个值 $v$，假设它出现在下标列表 $p_0, p_1, \dots, p_{k-1}$（已按升序排列）中。
+    *   如果该值只出现一次（$k=1$），则不存在其他相同元素，结果为 $-1$。
+    *   如果出现多次（$k \ge 2$），对于任意一个下标 $p_i$，其“最近”的相同元素必定是它在有序列表中的**前驱**（逆时针方向最邻近）或**后继**（顺时针方向最邻近）。
+3.  **预处理 gaps（间距）**：
+    *   相邻下标间的顺时针距离为 $g_i = p_{i+1} - p_i$（其中 $0 \le i < k-1$）。
+    *   最后一个下标回到第一个下标的环形顺时针距离为 $g_{k-1} = n - (p_{k-1} - p_0)$。
+    *   对于下标 $p_i$，其顺时针到下一个元素的距离是 $g_i$，逆时针到上一个元素的距离是 $g_{i-1}$（循环处理，即 $g_{-1} = g_{k-1}$）。
+    *   下标 $p_i$ 的最小距离即为 $\min(g_i, g_{i-1})$。
+
+**算法步骤**
+
+1.  遍历数组 `nums`，用哈希表（或数组，因为值域到 $10^6$）记录每个数值出现的所有下标。由于是按顺序遍历，记录的下标列表天然有序。
+2.  遍历哈希表：
+    *   跳过只出现一次的数值。
+    *   计算该数值所有下标之间的 $k$ 个间距。
+    *   计算每个下标对应的最小距离并存入预处理结果数组 `res_at_idx`。
+3.  遍历 `queries`，从 `res_at_idx` 中直接获取答案并返回。
+
+**Python 代码实现**
+
+```python
+from collections import defaultdict
+from typing import List
+
+class Solution:
+    def solveQueries(self, nums: List[int], queries: List[int]) -> List[int]:
+        n = len(nums)
+        # 1. 记录每个数值出现的所有下标
+        pos = defaultdict(list)
+        for i, val in enumerate(nums):
+            pos[val].append(i)
+        
+        # 2. 预处理每个下标对应的最小距离，初始化为 -1
+        res_at_idx = [-1] * n
+        
+        for val, indices in pos.items():
+            k = len(indices)
+            if k < 2:
+                continue
+            
+            # 3. 计算相邻下标之间的顺时针间距
+            # indices 已经是升序的
+            gaps = []
+            for i in range(k - 1):
+                gaps.append(indices[i+1] - indices[i])
+            # 环形闭合处的间距：从最后一个下标顺时针绕回第一个下标
+            gaps.append(n - (indices[-1] - indices[0]))
+            
+            # 4. 对于每一个下标，其最近距离是相邻两个间距的最小值
+            for i in range(k):
+                # indices[i] 的顺时针距离是 gaps[i]
+                # indices[i] 的逆时针距离是 gaps[i-1] (Python 支持负索引，gaps[-1] 即最后一个间距)
+                res_at_idx[indices[i]] = min(gaps[i], gaps[i-1])
+        
+        # 5. 根据查询下标返回结果
+        return [res_at_idx[q] for q in queries]
+
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(N + M)$，其中 $N$ 是数组 `nums` 的长度，$M$ 是 `queries` 的长度。
+    *   建立哈希表需要 $O(N)$。
+    *   计算所有间距的总次数等于所有数值出现的总次数，即 $O(N)$。
+    *   构造查询结果需要 $O(M)$。
+*   **空间复杂度**：$O(N)$。我们需要存储每个下标的索引位置和预处理后的结果数组。
 
 
 
