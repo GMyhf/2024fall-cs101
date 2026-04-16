@@ -14642,7 +14642,7 @@ I’ve replaced the brute-force cell scans with value-to-row/col maps plus binar
 
 ## T3600.升级后最大生成树稳定性
 
-binary search, minimum spanning tree, https://leetcode.cn/problems/maximize-spanning-tree-stability-with-upgrades/
+binary search, minimum spanning tree, dsu, https://leetcode.cn/problems/maximize-spanning-tree-stability-with-upgrades/
 
 给你一个整数 `n`，表示编号从 0 到 `n - 1` 的 `n` 个节点，以及一个 `edges` 列表，其中 `edges[i] = [ui, vi, si, musti]`：
 
@@ -14704,12 +14704,12 @@ binary search, minimum spanning tree, https://leetcode.cn/problems/maximize-span
 
 **提示：**
 
-- `2 <= n <= 105`
-- `1 <= edges.length <= 105`
+- `2 <= n <= 10^5`
+- `1 <= edges.length <= 10^5`
 - `edges[i] = [ui, vi, si, musti]`
 - `0 <= ui, vi < n`
 - `ui != vi`
-- `1 <= si <= 105`
+- `1 <= si <= 10^5`
 - `musti` 是 `0` 或 `1`。
 - `0 <= k <= n`
 - 没有重复的边。
