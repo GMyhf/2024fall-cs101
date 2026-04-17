@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-04-16 08:46 GMT+8*
+*Updated 2026-04-17 08:46 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -15047,7 +15047,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -45526,6 +45526,126 @@ class Solution:
 
 *   **时间复杂度**：$O(n^2)$。外层循环执行 $n$ 次，内层循环平均执行 $n/2$ 次。在内层循环中，集合的添加和长度获取操作的时间复杂度均为 $O(1)$。对于 $n=1500$，计算量约为 $10^6$ 级，符合要求。
 *   **空间复杂度**：$O(n)$。在内层循环中，集合最多存储 $n$ 个不同的元素。
+
+
+
+## M3761.镜像对之间最小绝对距离
+
+hash table, https://leetcode.cn/problems/minimum-absolute-distance-between-mirror-pairs/
+
+给你一个整数数组 `nums`。
+
+**镜像对** 是指一对满足下述条件的下标 `(i, j)`：
+
+- `0 <= i < j < nums.length`，并且
+- `reverse(nums[i]) == nums[j]`，其中 `reverse(x)` 表示将整数 `x` 的数字反转后形成的整数。反转后会忽略前导零，例如 `reverse(120) = 21`。
+
+返回任意镜像对的下标之间的 **最小绝对距离**。下标 `i` 和 `j` 之间的绝对距离为 `abs(i - j)`。
+
+如果不存在镜像对，返回 `-1`。
+
+ 
+
+**示例 1：**
+
+**输入：** nums = [12,21,45,33,54]
+
+**输出：** 1
+
+**解释：**
+
+镜像对为：
+
+- (0, 1)，因为 `reverse(nums[0]) = reverse(12) = 21 = nums[1]`，绝对距离为 `abs(0 - 1) = 1`。
+- (2, 4)，因为 `reverse(nums[2]) = reverse(45) = 54 = nums[4]`，绝对距离为 `abs(2 - 4) = 2`。
+
+所有镜像对中的最小绝对距离是 1。
+
+**示例 2：**
+
+**输入：** nums = [120,21]
+
+**输出：** 1
+
+**解释：**
+
+只有一个镜像对 (0, 1)，因为 `reverse(nums[0]) = reverse(120) = 21 = nums[1]`。
+
+最小绝对距离是 1。
+
+**示例 3：**
+
+**输入：** nums = [21,120]
+
+**输出：** -1
+
+**解释：**
+
+数组中不存在镜像对。
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 10^5`
+- `1 <= nums[i] <= 10^9`
+
+
+
+要在整数数组 `nums` 中找到满足条件 `reverse(nums[i]) == nums[j]` 且 `i < j` 的下标对 $(i, j)$，并计算它们之间的最小绝对距离 $|i - j|$，我们可以利用哈希表（在 Python 中为字典）来高效地存储和查询。
+
+**算法思路**
+
+1.  **定义镜像对条件**：对于下标 $i$ 和 $j$ ($i < j$)，如果 $reverse(nums[i]) = nums[j]$，则称其为镜像对。这意味着在遍历到下标 $j$ 时，我们需要寻找一个之前出现过的下标 $i$，使得 $nums[i]$ 的反转值等于当前的 $nums[j]$。
+2.  **维护哈希表**：
+    *   哈希表的键（Key）为 $reverse(nums[i])$，即我们期望后续匹配到的目标值。
+    *   哈希表的值（Value）为满足该反转值的最新（即最大）下标 $i$。
+    *   **为什么存储最新下标？** 因为我们的目标是最小化距离 $j - i$。对于一个固定的 $j$，使 $j - i$ 最小的 $i$ 必然是满足条件且离 $j$ 最近的那个（即最大的 $i$）。
+3.  **单次遍历过程**：
+    *   初始化 `min_dist` 为无穷大。
+    *   遍历数组 `nums`，对于当前位置 $j$ 和数值 `val`：
+        *   **检查匹配**：查看 `val` 是否存在于哈希表中。如果存在，说明之前有一个下标 $i$ 使得 $reverse(nums[i]) == val$。此时计算距离 $j - i$，并更新 `min_dist`。
+        *   **计算反转并存储**：计算当前数值 `val` 的反转值 `rev_v`。
+        *   **更新表**：将 `rev_v` 作为键，当前下标 $j$ 作为值存入哈希表。这为以后可能存在的下标 $k$ ($k > j$) 且 $nums[k] == reverse(nums[j])$ 提供了匹配可能。
+4.  **返回结果**：如果 `min_dist` 被更新过，返回该值；否则返回 -1。
+
+**代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def minMirrorPairDistance(self, nums: List[int]) -> int:
+        # last_rev_idx 存储 reverse(nums[i]) 到其最新下标 i 的映射
+        last_rev_idx = {}
+        min_dist = float('inf')
+        
+        for j, val in enumerate(nums):
+            # 1. 检查当前 nums[j] 是否匹配之前某个 reverse(nums[i])
+            if val in last_rev_idx:
+                dist = j - last_rev_idx[val]
+                if dist < min_dist:
+                    min_dist = dist
+            
+            # 2. 计算当前数值 nums[j] 的反转值
+            # 例如：120 -> 21, 7 -> 7, 100 -> 1
+            rev_v = 0
+            temp = val
+            while temp > 0:
+                rev_v = rev_v * 10 + (temp % 10)
+                temp //= 10
+            
+            # 3. 存储反转值对应的最新下标
+            # 我们始终更新为最新的下标 j，因为后续匹配它的数值会离这里最近
+            last_rev_idx[rev_v] = j
+            
+        return int(min_dist) if min_dist != float('inf') else -1
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(n \cdot d)$，其中 $n$ 是数组的长度，$d$ 是数字的最大位数。在题目中 $nums[i] \le 10^9$，故 $d \le 10$。对于每个元素，哈希表操作是 $O(1)$，反转数字的操作是 $O(d)$。因此总时间复杂度为 $O(n)$。
+*   **空间复杂度**：$O(n)$。最坏情况下，哈希表需要存储数组中每个元素的反转值及其对应的下标。
 
 
 
