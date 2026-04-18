@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-04-14 10:18 GMT+8*
+*Updated 2026-04-18 10:18 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -2784,6 +2784,164 @@ class MedianFinder:
 最大堆 + 最小堆维护数据流的中位数  
 `O(log n)` 插入，`O(1)` 查询，适用于 大数据流  
 Python `heapq` 默认最小堆，用负数模拟最大堆
+
+
+
+## T327.区间和的个数
+
+binary indexed tree, segment tree, binary search, https://leetcode.cn/problems/count-of-range-sum/
+
+给你一个整数数组 `nums` 以及两个整数 `lower` 和 `upper` 。求数组中，值位于范围 `[lower, upper]`（包含 `lower` 和 `upper`）之内的 **区间和的个数** 。
+
+**区间和** `S(i, j)` 表示在 `nums` 中，位置从 `i` 到 `j` 的元素之和，包含 `i` 和 `j` (`i` ≤ `j`)。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [-2,5,-1], lower = -2, upper = 2
+输出：3
+解释：存在三个区间：[0,0]、[2,2] 和 [0,2] ，对应的区间和分别是：-2 、-1 、2 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [0], lower = 0, upper = 0
+输出：1
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 10^5`
+- `-2^31 <= nums[i] <= 2^31 - 1`
+- `-10^5 <= lower <= upper <= 10^5`
+- 题目数据保证答案是一个 **32 位** 的整数
+
+
+
+这是一道非常经典的问题。直接使用普通的线段树会遇到两个挑战：
+
+1.  **值域过大**：区间和的范围可能非常大（$-2^{31}$ 到 $2^{31}-1$），不能直接以数值作为索引。
+2.  **动态性质**：我们需要统计的是“之前出现的、落在某个范围内的前缀和个数”。
+
+为了解决这两个问题，我们需要结合 **前缀和** 和 **坐标离散化**，再套用 `SegmentTree` 类模版。
+
+**解题思路**
+
+1.  **前缀和转换**：
+    令 $P[i]$ 为前 $i$ 个元素的和。区间和 $S(i, j) = P[j+1] - P[i]$。
+    题目要求：$lower \leq P[j+1] - P[i] \leq upper$。
+    等价于：$P[j+1] - upper \leq P[i] \leq P[j+1] - lower$。
+    当我们遍历到 $P[j+1]$ 时，我们需要统计之前有多少个 $P[i]$ 落在 $[P[j+1] - upper, P[j+1] - lower]$ 范围内。
+
+2.  **坐标离散化**：
+    由于 $P[i]$ 的值可能非常大，但我们关心的不同值最多只有 $N+1$ 个（即所有的前缀和）。我们将所有前缀和排序并去重，用它们的**排名（索引）**来构建线段树。
+
+3.  **线段树用途**：
+    这里的线段树不是用来存 `nums` 的值，而是用来存**频率**。`tree[idx]` 表示“前缀和排名为 `idx` 的数出现了多少次”。
+
+
+
+**Python 实现代码**
+
+```python
+import bisect
+
+class SegmentTree:
+    def __init__(self, n):
+        self.n = n
+        self.tree = [0] * (2 * n)
+
+    def update(self, p, value):
+        """单点更新：将索引 p 处的值设为 value (在这里是更新频率)"""
+        p += self.n
+        self.tree[p] = value
+        i = p
+        while i > 1:
+            # 父节点等于两个子节点之和
+            self.tree[i >> 1] = self.tree[i] + self.tree[i ^ 1]
+            i >>= 1
+
+    def query(self, l, r):
+        """区间查询：查询排名在 [l, r) 范围内的前缀和个数"""
+        res = 0
+        l += self.n
+        r += self.n
+        while l < r:
+            if l & 1:
+                res += self.tree[l]
+                l += 1
+            if r & 1:
+                r -= 1
+                res += self.tree[r]
+            l >>= 1
+            r >>= 1
+        return res
+
+class Solution:
+    def countRangeSum(self, nums: list[int], lower: int, upper: int) -> int:
+        # 1. 计算前缀和 P
+        # P[0] = 0, P[1] = nums[0], ...
+        P = [0]
+        curr = 0
+        for x in nums:
+            curr += x
+            P.append(curr)
+        
+        # 2. 离散化所有可能出现的前缀和数值
+        # 排序并去重，建立数值到索引的映射
+        all_values = sorted(list(set(P)))
+        val_map = {val: i for i, val in enumerate(all_values)}
+        n_unique = len(all_values)
+        
+        # 3. 初始化线段树（记录每个前缀和出现的次数）
+        st = SegmentTree(n_unique)
+        count_freq = [0] * n_unique # 记录每个索引当前出现的频次
+        
+        ans = 0
+        # 4. 遍历前缀和
+        for val in P:
+            # 我们需要寻找之前的 P[i] 满足：
+            # val - upper <= P[i] <= val - lower
+            
+            # 使用 bisect 找到对应的排名范围
+            # left_idx: 第一个 >= (val - upper) 的排名
+            # right_idx: 第一个 > (val - lower) 的排名
+            left_idx = bisect.bisect_left(all_values, val - upper)
+            right_idx = bisect.bisect_right(all_values, val - lower)
+            
+            # 在线段树中查询这个排名区间内的个数
+            if left_idx < right_idx:
+                ans += st.query(left_idx, right_idx)
+            
+            # 更新当前前缀和的频率
+            idx = val_map[val]
+            count_freq[idx] += 1
+            st.update(idx, count_freq[idx])
+            
+        return ans
+
+```
+
+**关键点解释：**
+
+1.  **为什么 `ans += query` 在 `update` 之前？**
+    *   因为区间和 $S(i, j)$ 要求 $i \leq j$。在计算 $P[j+1]$ 时，我们只能统计它**之前**出现的 $P[i]$。先查询再插入，保证了查询到的都是索引小于当前位置的前缀和。
+
+2.  **`bisect_left` 和 `bisect_right` 的妙用**：
+    *   `all_values` 存储了所有可能的前缀和。
+    *   我们要找范围 $[L, R]$ 内的数。
+    *   `bisect_left(all_values, L)` 返回第一个大于等于 $L$ 的索引。
+    *   `bisect_right(all_values, R)` 返回第一个大于 $R$ 的索引。
+    *   在线段树中查询 `[left_idx, right_idx)` 正好覆盖了所有数值在 $[L, R]$ 之间的前缀和的频次。
+
+3.  **复杂度分析**：
+    *   **时间复杂度**：计算前缀和 $O(N)$，排序去重 $O(N \log N)$，遍历并操作线段树 $O(N \log N)$。总复杂度 $O(N \log N)$，完全可以通过 $10^5$ 的数据量。
+    *   **空间复杂度**：线段树和映射表需要 $O(N)$ 空间。
 
 
 
