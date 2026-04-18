@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-04-17 08:46 GMT+8*
+*Updated 2026-04-18 08:46 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -12045,6 +12045,77 @@ class Solution:
 
 
 
+## E3783.整数的镜像距离
+
+implementation, https://leetcode.cn/problems/mirror-distance-of-an-integer/
+
+给你一个整数 `n`。
+
+定义它的 **镜像距离** 为：`abs(n - reverse(n))`，其中 `reverse(n)` 表示将 `n` 的数字反转后形成的整数。
+
+返回表示 `n` 的镜像距离的整数。
+
+其中，`abs(x)` 表示 `x` 的绝对值。
+
+ 
+
+**示例 1：**
+
+**输入：** n = 25
+
+**输出：** 27
+
+**解释：**
+
+- `reverse(25) = 52`。
+- 因此，答案为 `abs(25 - 52) = 27`。
+
+**示例 2：**
+
+**输入：** n = 10
+
+**输出：** 9
+
+**解释：**
+
+- `reverse(10) = 01`，即 1。
+- 因此，答案为 `abs(10 - 1) = 9`。
+
+**示例 3：**
+
+**输入：** n = 7
+
+**输出：** 0
+
+**解释：**
+
+- `reverse(7) = 7`。
+- 因此，答案为 `abs(7 - 7) = 0`。
+
+ 
+
+**提示：**
+
+- `1 <= n <= 10^9`
+
+
+
+这是a + b 的水题。
+
+```python
+class Solution:
+    def mirrorDistance(self, n: int) -> int:
+        rev_n = 0
+        tmp = n
+        while tmp > 0:
+            rev_n = rev_n * 10 + tmp % 10
+            tmp = tmp // 10
+        
+        return abs(n - rev_n)
+```
+
+
+
 
 
 ## E3827.统计单比特整数
@@ -15047,7 +15118,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
