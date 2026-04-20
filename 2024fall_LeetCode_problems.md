@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-04-19 00:27 GMT+8*
+*Updated 2026-04-20 10:11 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -7505,9 +7505,163 @@ class Solution:
 
 
 
+## E2078.两栋颜色不同且距离最远的房子
+
+greedy, https://leetcode.cn/problems/two-furthest-houses-with-different-colors/
+
+街上有 `n` 栋房子整齐地排成一列，每栋房子都粉刷上了漂亮的颜色。给你一个下标从 **0** 开始且长度为 `n` 的整数数组 `colors` ，其中 `colors[i]` 表示第 `i` 栋房子的颜色。
+
+返回 **两栋** 颜色 **不同** 房子之间的 **最大** 距离。
+
+第 `i` 栋房子和第 `j` 栋房子之间的距离是 `abs(i - j)` ，其中 `abs(x)` 是 `x` 的绝对值。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/eg1.png" alt="img" style="zoom:67%;" />
+
+```
+输入：colors = [1,1,1,6,1,1,1]
+输出：3
+解释：上图中，颜色 1 标识成蓝色，颜色 6 标识成红色。
+两栋颜色不同且距离最远的房子是房子 0 和房子 3 。
+房子 0 的颜色是颜色 1 ，房子 3 的颜色是颜色 6 。两栋房子之间的距离是 abs(0 - 3) = 3 。
+注意，房子 3 和房子 6 也可以产生最佳答案。
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/eg2.png" alt="img" style="zoom:67%;" />
+
+```
+输入：colors = [1,8,3,8,3]
+输出：4
+解释：上图中，颜色 1 标识成蓝色，颜色 8 标识成黄色，颜色 3 标识成绿色。
+两栋颜色不同且距离最远的房子是房子 0 和房子 4 。
+房子 0 的颜色是颜色 1 ，房子 4 的颜色是颜色 3 。两栋房子之间的距离是 abs(0 - 4) = 4 。
+```
+
+**示例 3：**
+
+```
+输入：colors = [0,1]
+输出：1
+解释：两栋颜色不同且距离最远的房子是房子 0 和房子 1 。
+房子 0 的颜色是颜色 0 ，房子 1 的颜色是颜色 1 。两栋房子之间的距离是 abs(0 - 1) = 1 。
+```
+
+ 
+
+**提示：**
+
+- `n == colors.length`
+- `2 <= n <= 100`
+- `0 <= colors[i] <= 100`
+- 生成的测试数据满足 **至少** 存在 2 栋颜色不同的房子
 
 
-## E 2094.找出3位偶数
+
+```python
+class Solution:
+    def maxDistance(self, colors: List[int]) -> int:
+        n = len(colors)
+        ans = -float('inf')
+        for i in range(n-1):
+            for j in range(i+1,n):
+                if colors[i] != colors[j]:
+                    ans = max(ans, abs(i -j))
+        
+        return ans
+```
+
+
+
+
+
+这个问题可以通过**贪心算法**在 $O(n)$ 的时间复杂度内解决。
+
+**解题思路**
+
+要找到两栋颜色不同且距离最远的房子，直观上我们应该尽可能选择靠近两端的房子。最大距离只可能出现在以下两种情况之一：
+
+1.  **左侧端点固定在第 0 栋房子**：我们从最右侧（第 $n-1$ 栋）开始向左扫描，找到第一栋颜色与第 0 栋不同的房子，此时的距离为 `j - 0`。
+2.  **右侧端点固定在最后一栋房子**：我们从最左侧（第 0 栋）开始向右扫描，找到第一栋颜色与最后一栋（第 $n-1$ 栋）不同的房子，此时的距离为 `(n - 1) - i`。
+
+**为什么这样是对的？**
+假设最远距离的两个房子下标是 $i$ 和 $j$（$i < j$）。如果 $i > 0$ 且 $j < n-1$：
+
+*   如果 `colors[0] != colors[j]`，那么 $(0, j)$ 的距离一定比 $(i, j)$ 更远。
+*   如果 `colors[0] == colors[j]`，因为我们已知 `colors[i] != colors[j]`，那么必然有 `colors[i] != colors[0]`，此时 $(0, i)$ 也是一组解（虽然不一定比 $(i, j)$ 长，但观察逻辑可知，最长距离的边界一定可以推导至数组的其中一个端点）。
+
+**Python 代码实现**
+
+```python
+class Solution:
+    def maxDistance(self, colors: List[int]) -> int:
+        n = len(colors)
+        max_dist = 0
+        
+        # 情况 1：固定左端点（下标 0），从右向左找第一个颜色不同的
+        for j in range(n - 1, 0, -1):
+            if colors[j] != colors[0]:
+                max_dist = max(max_dist, j)
+                break
+        
+        # 情况 2：固定右端点（下标 n-1），从左向右找第一个颜色不同的
+        for i in range(n - 1):
+            if colors[i] != colors[n - 1]:
+                max_dist = max(max_dist, n - 1 - i)
+                break
+                
+        return max_dist
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(n)$。我们最多只需要遍历两次数组。
+*   **空间复杂度**：$O(1)$。只使用了常数级别的额外空间。
+
+
+
+> 这是一个非常好的直觉。我们可以通过**反证法**（Proof by Contradiction）来证明：**最大距离的两个房子中，至少有一个必然是数组的起点（0）或终点（n-1）。**
+>
+> 让我们分情况讨论：
+>
+> 假设存在一组最优解 $(i, j)$，其中 $0 < i < j < n-1$，且 $colors[i] \neq colors[j]$。
+>
+> **1. 如果 $colors[0] \neq colors[j]$**
+>
+> 那么下标对 $(0, j)$ 也是合法的（颜色不同）。
+> 由于 $i > 0$，所以距离 $j - 0$ 必然大于 $j - i$。
+> 这说明 $(i, j)$ 此时**不是**最大距离，$(0, j)$ 更优。
+>
+> **2. 如果 $colors[n-1] \neq colors[i]$**
+>
+> 那么下标对 $(i, n-1)$ 也是合法的（颜色不同）。
+> 由于 $j < n-1$，所以距离 $(n-1) - i$ 必然大于 $j - i$。
+> 这说明 $(i, j)$ 此时**不是**最大距离，$(i, n-1)$ 更优。
+>
+> **3. 如果以上两种情况都不满足呢？**
+>
+> 即：
+>
+> *   $colors[0] = colors[j]$
+> *   $colors[n-1] = colors[i]$
+>
+> 由于我们已知 $colors[i] \neq colors[j]$，根据上面的等式代换，可以得出：
+> $$colors[n-1] \neq colors[0]$$
+> 既然 $0$ 号和 $n-1$ 号颜色不同，那么下标对 $(0, n-1)$ 就是合法的。
+> 显然，距离 $(n-1) - 0$ 是整个数组中**物理上的最大可能距离**。
+> 它必然大于或等于任何中间的距离 $j - i$。
+>
+> 
+
+
+
+
+
+## E2094.找出3位偶数
 
 hash table, sorting, https://leetcode.cn/problems/finding-3-digit-even-numbers/
 
@@ -15118,7 +15272,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
