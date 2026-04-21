@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-04-20 10:11 GMT+8*
+*Updated 2026-04-21 10:11 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -15272,7 +15272,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -31926,6 +31926,151 @@ class Solution:
         return result
         
 ```
+
+
+
+## M1722.执行交换操作后的最小汉明距离
+
+dsu, https://leetcode.cn/problems/minimize-hamming-distance-after-swap-operations/
+
+给你两个整数数组 `source` 和 `target` ，长度都是 `n` 。还有一个数组 `allowedSwaps` ，其中每个 `allowedSwaps[i] = [ai, bi]` 表示你可以交换数组 `source` 中下标为 `ai` 和 `bi`（**下标从 0 开始**）的两个元素。注意，你可以按 **任意**顺序 **多次** 交换一对特定下标指向的元素。
+
+相同长度的两个数组 `source` 和 `target` 间的 **汉明距离** 是元素不同的下标数量。形式上，其值等于满足 `source[i] != target[i]` （**下标从 0 开始**）的下标 `i`（`0 <= i <= n-1`）的数量。
+
+在对数组 `source` 执行 **任意** 数量的交换操作后，返回 `source` 和 `target` 间的 **最小汉明距离** 。
+
+ 
+
+**示例 1：**
+
+```
+输入：source = [1,2,3,4], target = [2,1,4,5], allowedSwaps = [[0,1],[2,3]]
+输出：1
+解释：source 可以按下述方式转换：
+- 交换下标 0 和 1 指向的元素：source = [2,1,3,4]
+- 交换下标 2 和 3 指向的元素：source = [2,1,4,3]
+source 和 target 间的汉明距离是 1 ，二者有 1 处元素不同，在下标 3 。
+```
+
+**示例 2：**
+
+```
+输入：source = [1,2,3,4], target = [1,3,2,4], allowedSwaps = []
+输出：2
+解释：不能对 source 执行交换操作。
+source 和 target 间的汉明距离是 2 ，二者有 2 处元素不同，在下标 1 和下标 2 。
+```
+
+**示例 3：**
+
+```
+输入：source = [5,1,2,4,3], target = [1,5,4,2,3], allowedSwaps = [[0,4],[4,2],[1,3],[1,4]]
+输出：0
+```
+
+ 
+
+**提示：**
+
+- `n == source.length == target.length`
+- `1 <= n <= 10^5`
+- `1 <= source[i], target[i] <= 10^5`
+- `0 <= allowedSwaps.length <= 10^5`
+- `allowedSwaps[i].length == 2`
+- `0 <= ai, bi <= n - 1`
+- `ai != bi`
+
+
+
+这道题的核心思路是利用**并查集（Union-Find）**来处理连通性问题。
+
+**解题思路**
+
+1.  **连通性分析**：
+    如果下标 `a` 和 `b` 可以交换，`b` 和 `c` 也可以交换，那么下标 `a`、`b`、`c` 对应的元素可以**任意排列**。这意味着 `allowedSwaps` 实际上定义了一个图，图中每个连通分量（Connected Component）内的下标所对应的 `source` 元素，可以移动到该连通分量内的任何下标位置。
+
+2.  **问题转化**：
+    为了使汉明距离最小，我们希望在每个连通分量内部，尽可能多地让 `source[i]` 等于 `target[i]`。
+    即：对于每一个连通分量，计算 `source` 在这些下标处的数值集合与 `target` 在这些下标处的数值集合的**交集大小**。
+
+3.  **算法步骤**：
+    *   使用**并查集**将所有可以通过交换到达的下标分到不同的集合中。
+    *   遍历所有下标，按根节点（代表所属集合）将 `source` 的值分类存储。
+    *   对于每个集合，统计 `source` 中元素出现的频次，并尝试匹配该集合对应下标位置在 `target` 中的元素。
+    *   如果 `target[i]` 在该集合的 `source` 元素池中，则匹配成功，汉明距离减 1。
+
+**Python 代码实现**
+
+```python
+from typing import List
+from collections import Counter, defaultdict
+
+class UnionFind:
+    def __init__(self, n):
+        self.parent = list(range(n))
+    
+    def find(self, i):
+        if self.parent[i] == i:
+            return i
+        # 路径压缩
+        self.parent[i] = self.find(self.parent[i])
+        return self.parent[i]
+    
+    def union(self, i, j):
+        root_i = self.find(i)
+        root_j = self.find(j)
+        if root_i != root_j:
+            self.parent[root_i] = root_j
+
+class Solution:
+    def minimumHammingDistance(self, source: List[int], target: List[int], allowedSwaps: List[List[int]]) -> int:
+        n = len(source)
+        uf = UnionFind(n)
+        
+        # 1. 将所有可交换的下标合并进同一个集合
+        for u, v in allowedSwaps:
+            uf.union(u, v)
+        
+        # 2. 将同一集合（连通分量）的下标归类
+        # key 是并查集的根节点，value 是该集合包含的所有下标
+        groups = defaultdict(list)
+        for i in range(n):
+            root = uf.find(i)
+            groups[root].append(i)
+            
+        res = 0
+        # 3. 对每个连通分量，计算无法匹配的元素个数
+        for indices in groups.values():
+            # 统计当前集合中 source 的元素频率
+            source_count = Counter()
+            for idx in indices:
+                source_count[source[idx]] += 1
+            
+            # 遍历当前集合对应的 target 元素，寻找匹配
+            matches = 0
+            for idx in indices:
+                val = target[idx]
+                if source_count[val] > 0:
+                    source_count[val] -= 1
+                    matches += 1
+            
+            # 该集合贡献的汉明距离 = 集合大小 - 匹配成功的数量
+            res += (len(indices) - matches)
+            
+        return res
+
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(N \cdot \alpha(N) + M \cdot \alpha(N))$，其中 $N$ 是数组长度，$M$ 是 `allowedSwaps` 的长度，$\alpha$ 是阿克曼函数的反函数（近似常数）。
+    *   并查集操作：$O((N+M)\alpha(N))$。
+    *   分类和计数：遍历一次数组 $O(N)$，Counter 的操作平均也是 $O(N)$。
+*   **空间复杂度**：$O(N)$。主要用于存储并查集的父节点数组、分组字典以及计数器。
+
+**总结**
+
+这道题的关键在于意识到：**可无限次交换意味着连通分量内的元素可以按需重新排列**。只要理解了这一点，就能将题目转化为连通分量的元素匹配问题。
 
 
 
