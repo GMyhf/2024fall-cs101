@@ -24537,6 +24537,141 @@ if __name__ == "__main__":
 
 
 
+将 LCA 问题转化为 RMQ 问题是解决树上查询的一种非常高效的**在线**算法。
+
+**核心原理**
+
+1.  **欧拉序列 (Euler Tour)**：通过 DFS 遍历树，并在**进入**节点和**从子节点返回**时都记录该节点。对于一个有 $N$ 个节点的树，欧拉序列的长度约为 $2N-1$。
+2.  **深度序列**：记录欧拉序列中每个位置对应的节点深度。
+3.  **转化逻辑**：节点 $u$ 和 $v$ 的 LCA，就是欧拉序列中“$u$ 第一次出现的位置”和“$v$ 第一次出现的位置”之间，**深度最小**的那个节点。
+4.  **RMQ 求解**：使用 **ST 表 (Sparse Table)** 预处理深度序列，实现 $O(1)$ 的区间最小值查询。
+
+**复杂度分析**
+
+*   **时间复杂度**：预处理 $O(N \log N)$，查询 $O(1)$。
+*   **空间复杂度**：$O(N \log N)$，主要用于存储 ST 表。
+
+**Python 代码实现 (优化版)**
+
+为了处理 $5 \times 10^5$ 的数据，我们使用了 `array` 模块来节省内存，并使用迭代 DFS。
+
+```python
+import sys
+from array import array
+
+def solve():
+    # 1. 快速读入
+    input_data = sys.stdin.read().split()
+    if not input_data: return
+    it = iter(input_data)
+    
+    n = int(next(it))
+    m = int(next(it))
+    root = int(next(it))
+    
+    adj = [[] for _ in range(n + 1)]
+    for _ in range(n - 1):
+        u, v = int(next(it)), int(next(it))
+        adj[u].append(v)
+        adj[v].append(u)
+        
+    # 2. 迭代 DFS 生成欧拉序列
+    # tour_nodes: 记录路径上的节点编号
+    # tour_depths: 记录对应的深度
+    # first_pos: 记录每个节点在 tour 中第一次出现的位置
+    tour_nodes = array('I')   # 'I' 是无符号 int
+    tour_depths = array('I')
+    first_pos = [-1] * (n + 1)
+    
+    stack = [(root, -1, 1)] # node, parent, depth
+    it_map = [0] * (n + 1)
+    
+    while stack:
+        u, p, d = stack[-1]
+        if first_pos[u] == -1:
+            first_pos[u] = len(tour_nodes)
+        
+        tour_nodes.append(u)
+        tour_depths.append(d)
+        
+        found = False
+        while it_map[u] < len(adj[u]):
+            v = adj[u][it_map[u]]
+            it_map[u] += 1
+            if v != p:
+                stack.append((v, u, d + 1))
+                found = True
+                break
+        
+        if not found:
+            stack.pop()
+            if stack: # 从子节点回溯，再次记录父节点
+                pu, pp, pd = stack[-1]
+                tour_nodes.append(pu)
+                tour_depths.append(pd)
+
+    # 3. 预处理 ST 表 (RMQ)
+    # st[i][j] 存储 tour_depths 中从 j 开始长度为 2^i 的区间内，最小深度对应的索引
+    num_tour = len(tour_depths)
+    log_n = num_tour.bit_length()
+    
+    # 使用 array 节省内存，st[i] 存储第 i 层幂次的结果
+    st = [array('I', range(num_tour))] 
+    
+    for i in range(1, log_n):
+        prev = st[i-1]
+        step = 1 << (i-1)
+        # 当前层的大小
+        curr_len = num_tour - (1 << i) + 1
+        curr = array('I', [0] * curr_len)
+        for j in range(curr_len):
+            idx1 = prev[j]
+            idx2 = prev[j + step]
+            if tour_depths[idx1] < tour_depths[idx2]:
+                curr[j] = idx1
+            else:
+                curr[j] = idx2
+        st.append(curr)
+
+    # 4. 在线查询
+    output = []
+    for _ in range(m):
+        u, v = int(next(it)), int(next(it))
+        l, r = first_pos[u], first_pos[v]
+        if l > r: l, r = r, l
+        
+        # 计算区间长度对应的最高幂次
+        length = r - l + 1
+        k = length.bit_length() - 1
+        
+        # 比较两个重叠区间的最小值
+        idx1 = st[k][l]
+        idx2 = st[k][r - (1 << k) + 1]
+        
+        if tour_depths[idx1] < tour_depths[idx2]:
+            output.append(str(tour_nodes[idx1]))
+        else:
+            output.append(str(tour_nodes[idx2]))
+            
+    sys.stdout.write('\n'.join(output) + '\n')
+
+if __name__ == "__main__":
+    solve()
+```
+
+**代码关键点：**
+
+1.  **欧拉序列长度**：对于 $N=5 \times 10^5$ 的树，序列长度约为 $10^6$。
+2.  **内存管理**：Python 的 `list` 存储百万级整数非常耗内存（每个 int 对象约 28 字节）。使用 `array.array('I', ...)` 可以将存储开销降低到每个元素 4 字节，防止在大数据下触发内存限制（Memory Limit Exceeded）。
+3.  **迭代 DFS**：手动管理 `stack` 以防止 Python 递归溢出。
+4.  **ST 表查询**：通过 `(r - l + 1).bit_length() - 1` 快速计算 $\log_2(\text{len})$。
+
+**为什么这个算法被称为“在线”？**
+
+因为一旦 `solve` 中的预处理（ST 表构建）完成，你可以以 $O(1)$ 的速度回答任何**即时提出**的查询，而不需要像 Tarjan 算法那样必须等待所有查询都到齐了才能开始计算。这对于需要根据查询结果决定后续逻辑的题目非常关键。
+
+
+
 ## P4390 [BalkanOI2007] Mokia 摩基亚
 
 https://www.luogu.com.cn/problem/P4390
