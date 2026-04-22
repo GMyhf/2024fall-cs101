@@ -15272,7 +15272,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -35789,6 +35789,128 @@ class Solution:
         
         return res
 ```
+
+
+
+## M2615.等值距离和
+
+prefix sum, https://leetcode.cn/problems/sum-of-distances/
+
+给你一个下标从 **0** 开始的整数数组 `nums` 。现有一个长度等于 `nums.length` 的数组 `arr` 。对于满足 `nums[j] == nums[i]`且 `j != i` 的所有 `j` ，`arr[i]` 等于所有 `|i - j|` 之和。如果不存在这样的 `j` ，则令 `arr[i]` 等于 `0` 。
+
+返回数组 `arr` *。*
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,3,1,1,2]
+输出：[5,0,3,4,0]
+解释：
+i = 0 ，nums[0] == nums[2] 且 nums[0] == nums[3] 。因此，arr[0] = |0 - 2| + |0 - 3| = 5 。 
+i = 1 ，arr[1] = 0 因为不存在值等于 3 的其他下标。
+i = 2 ，nums[2] == nums[0] 且 nums[2] == nums[3] 。因此，arr[2] = |2 - 0| + |2 - 3| = 3 。
+i = 3 ，nums[3] == nums[0] 且 nums[3] == nums[2] 。因此，arr[3] = |3 - 0| + |3 - 2| = 4 。 
+i = 4 ，arr[4] = 0 因为不存在值等于 2 的其他下标。
+```
+
+**示例 2：**
+
+```
+输入：nums = [0,5,3]
+输出：[0,0,0]
+解释：因为 nums 中的元素互不相同，对于所有 i ，都有 arr[i] = 0 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 10^5`
+- `0 <= nums[i] <= 10^9`
+
+
+
+这个问题要求我们计算数组中每个元素与其相同值的其他元素之间的下标距离之和。由于数组长度达到 $10^5$，直接使用 $O(n^2)$ 的双重循环会超时。
+
+**解题思路**
+
+1.  **分组归类**：
+    首先，我们需要将所有相同值的下标收集在一起。可以使用哈希表（字典）来实现，键是数组中的值，值是一个记录该值所有出现位置的列表（列表中的下标天然是有序的）。
+
+2.  **数学转换（前缀和优化）**：
+    对于某个值，假设其出现的下标序列为 $P = [p_0, p_1, p_2, \dots, p_{k-1}]$。
+    对于序列中的某一个下标 $p_i$，它到其他所有下标的距离之和 $arr[p_i]$ 为：
+    $$arr[p_i] = \sum_{j=0}^{k-1} |p_i - p_j|$$
+    因为 $P$ 是有序的，我们可以把绝对值拆开：
+    $$arr[p_i] = \sum_{j=0}^{i-1} (p_i - p_j) + \sum_{j=i+1}^{k-1} (p_j - p_i)$$
+    进一步展开：
+    $$arr[p_i] = (i \cdot p_i - \sum_{j=0}^{i-1} p_j) + (\sum_{j=i+1}^{k-1} p_j - (k - 1 - i) \cdot p_i)$$
+
+3.  **计算技巧**：
+    *   $\sum_{j=0}^{i-1} p_j$ 就是下标序列的前缀和。
+    *   $\sum_{j=i+1}^{k-1} p_j$ 可以通过“总和 - 当前前缀和 - 当前下标”得到。
+    *   这样，我们只需要遍历一次下标序列，就能在 $O(1)$ 的时间内计算出每个 $arr[p_i]$。
+
+**代码实现**
+
+```python
+from typing import List
+from collections import defaultdict
+
+class Solution:
+    def distance(self, nums: List[int]) -> List[int]:
+        n = len(nums)
+        # 1. 将相同数值的下标进行归类
+        # pos_map 存储 {数值: [下标1, 下标2, ...]}
+        pos_map = defaultdict(list)
+        for i, val in enumerate(nums):
+            pos_map[val].append(i)
+        
+        ans = [0] * n
+        
+        # 2. 遍历每个数值及其对应的所有下标
+        for val in pos_map:
+            indices = pos_map[val]
+            k = len(indices)
+            if k <= 1:
+                continue
+            
+            # 计算该数值所有下标的总和
+            total_sum = sum(indices)
+            # pre_sum 用于记录当前遍历位置之前的所有下标之和
+            pre_sum = 0
+            
+            for i, p_i in enumerate(indices):
+                # 左侧距离之和：当前下标 * 左侧个数 - 左侧下标总和
+                # 左侧个数为 i (索引从0开始)
+                left_dist = i * p_i - pre_sum
+                
+                # 右侧距离之和：右侧下标总和 - 当前下标 * 右侧个数
+                # 右侧总和 = total_sum - pre_sum - p_i
+                # 右侧个数 = k - 1 - i
+                right_sum = total_sum - pre_sum - p_i
+                right_dist = right_sum - (k - 1 - i) * p_i
+                
+                ans[p_i] = left_dist + right_dist
+                
+                # 更新前缀和
+                pre_sum += p_i
+                
+        return ans
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(n)$。
+    *   建立哈希表需要遍历一遍数组，耗时 $O(n)$。
+    *   计算距离时，虽然有嵌套循环，但每个下标只会被处理一次，总耗时也是 $O(n)$。
+*   **空间复杂度**：$O(n)$。
+    *   哈希表存储了所有的下标，总空间为 $O(n)$。
+    *   返回值数组耗时 $O(n)$。
+
+
 
 
 
