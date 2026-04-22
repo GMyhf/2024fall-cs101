@@ -15272,7 +15272,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -39088,6 +39088,161 @@ class Solution:
 >   **至少 `k` 个辅音的子字符串数** - **至少 `k + 1` 个辅音的子字符串数**。
 >
 >   因为计算“恰好”条件往往更复杂，但我们可以通过计算“至少”的情况，然后取差值来简化逻辑，避免直接计算子字符串个数时反复检查条件。这是一种**前缀和+滑动窗口+容斥原理**的巧妙结合！
+
+
+
+## M3331.修改后子树的大小
+
+dfs, https://leetcode.cn/problems/find-subtree-sizes-after-changes/
+
+给你一棵 `n` 个节点且根节点为编号 0 的树，节点编号为 `0` 到 `n - 1` 。这棵树用一个长度为 `n` 的数组 `parent` 表示，其中 `parent[i]` 是第 `i` 个节点的父亲节点的编号。由于节点 0 是根，`parent[0] == -1` 。
+
+给你一个长度为 `n` 的字符串 `s` ，其中 `s[i]` 是节点 `i` 对应的字符。
+
+对于节点编号从 `1` 到 `n - 1` 的每个节点 `x` ，我们 **同时** 执行以下操作 **一次** ：
+
+- 找到距离节点 `x` **最近** 的祖先节点 `y` ，且 `s[x] == s[y]` 。
+- 如果节点 `y` 不存在，那么不做任何修改。
+- 否则，将节点 `x` 与它父亲节点之间的边 **删除** ，在 `x` 与 `y` 之间连接一条边，使 `y` 变为 `x` 新的父节点。
+
+请你返回一个长度为 `n` 的数组 `answer` ，其中 `answer[i]` 是 **最终** 树中，节点 `i` 为根的 子树 的 **大小** 。
+
+ 
+
+**示例 1：**
+
+**输入：**parent = [-1,0,0,1,1,1], s = "abaabc"
+
+**输出：**[6,3,1,1,1,1]
+
+**解释：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/graphex1drawio.png" alt="img" style="zoom:67%;" />
+
+节点 3 的父节点从节点 1 变为节点 0 。
+
+**示例 2：**
+
+**输入：**parent = [-1,0,4,0,1], s = "abbba"
+
+**输出：**[5,2,1,1,1]
+
+**解释：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/exgraph2drawio.png" alt="img" style="zoom:67%;" />
+
+以下变化会同时发生：
+
+- 节点 4 的父节点从节点 1 变为节点 0 。
+- 节点 2 的父节点从节点 4 变为节点 1 。
+
+ 
+
+**提示：**
+
+- `n == parent.length == s.length`
+- `1 <= n <= 10^5`
+- 对于所有的 `i >= 1` ，都有 `0 <= parent[i] <= n - 1` 。
+- `parent[0] == -1`
+- `parent` 表示一棵合法的树。
+- `s` 只包含小写英文字母。
+
+
+
+要解决这个问题，我们需要根据给定的规则重新构建树的结构，并计算每个节点在**新树**中的子树大小。
+
+**解题思路**
+
+1.  **解析修改规则**：
+    *   对于每个节点 $x$（除根节点外），寻找其在原树中距离它最近的祖先 $y$，且满足 $s[x] == s[y]$。
+    *   如果存在这样的 $y$，则 $x$ 的新父节点变为 $y$；否则，$x$ 的父节点保持不变。
+    *   这个操作是“同时”进行的，意味着所有寻找祖先的操作都基于**原始树**。
+
+2.  **寻找新父节点**：
+    *   利用 DFS 遍历原始树。在遍历过程中，维护一个大小为 26 的数组 `last_seen`，存储当前路径上每种字符（'a' 到 'z'）最近出现的节点编号。
+    *   当访问到节点 $u$ 时：
+        *   查看 `last_seen[s[u]]`，如果值不是 -1，则该值就是满足条件的最近祖先 $y$。
+        *   更新 `new_parent[u]`。
+        *   将当前节点 $u$ 更新到 `last_seen` 中，继续递归子节点。
+        *   **回溯**：递归返回时，将 `last_seen` 恢复到进入该节点之前的状态。
+
+3.  **计算子树大小**：
+    *   在得到 `new_parent` 数组后，我们就确定了新树的结构。
+    *   由于新父节点一定是原树中的祖先，这种修改不会产生环，且 0 依然是根节点。
+    *   可以使用**逆拓扑序**（或者简单的 DFS 后序遍历）来累计子树大小。一个简单的技巧是：利用 DFS 时的进入顺序（Pre-order），从后往前遍历节点，将每个节点的子树大小累加到其父节点上。
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(n)$。我们对树进行了两次线性扫描：一次寻找新父节点，一次累加子树大小。
+*   **空间复杂度**：$O(n)$。用于存储邻接表、新父节点数组、访问顺序列表以及递归调用栈。
+
+**代码实现**
+
+```python
+import sys
+from typing import List
+
+# 增加递归深度限制，以处理深层树
+sys.setrecursionlimit(200000)
+
+class Solution:
+    def findSubtreeSizes(self, parent: List[int], s: str) -> List[int]:
+        n = len(parent)
+        # 1. 构建原始树的邻接表
+        adj = [[] for _ in range(n)]
+        for i, p in enumerate(parent):
+            if p != -1:
+                adj[p].append(i)
+        
+        new_parent = [-1] * n
+        last_seen = [-1] * 26  # 记录当前路径上字符对应的最近祖先节点
+        order = []  # 存储 DFS 遍历顺序（前序）
+        
+        # 2. DFS 遍历原始树，确定每个节点在新树中的父节点
+        def dfs(u):
+            order.append(u)
+            char_idx = ord(s[u]) - 97  # ord('a') = 97
+            
+            # 记录进入当前节点前的状态，用于回溯
+            old_ancestor = last_seen[char_idx]
+            
+            if u == 0:
+                new_parent[u] = -1
+            elif old_ancestor != -1:
+                # 规则：找到距离最近的相同字符祖先
+                new_parent[u] = old_ancestor
+            else:
+                # 如果没有，保持原父节点
+                new_parent[u] = parent[u]
+            
+            # 更新当前路径上该字符的最近节点为 u
+            last_seen[char_idx] = u
+            
+            for v in adj[u]:
+                dfs(v)
+            
+            # 回溯
+            last_seen[char_idx] = old_ancestor
+
+        dfs(0)
+        
+        # 3. 计算新树中每个节点的子树大小
+        # ans[i] 初始为 1（代表节点 i 自身）
+        ans = [1] * n
+        
+        # 按照 DFS 顺序的逆序遍历，可以保证处理每个节点时，其所有子节点已被处理
+        # 这种方式避免了再次构建新树的邻接表或再次进行 DFS
+        for i in range(n - 1, 0, -1):
+            u = order[i]
+            p = new_parent[u]
+            # 将当前子树的大小累加到父节点
+            ans[p] += ans[u]
+            
+        return ans
+
+```
+
+
 
 
 
