@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-04-18 10:18 GMT+8*
+*Updated 2026-04-22 17:26 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -24424,6 +24424,8 @@ https://www.bilibili.com/video/BV1vg41197Xh?t=856.4
 
 
 
+### 倍增法
+
 对于 $N, M \le 5 \times 10^5$ 的大规模数据，Python 在处理时需要极其注意效率。常用的 **倍增法（Binary Lifting）** 时间复杂度为 $O((N+M) \log N)$。
 
 在洛谷等 OJ 上，由于 Python 解释器较慢，建议使用以下优化手段：
@@ -24535,7 +24537,137 @@ if __name__ == "__main__":
 
     如果仍然 TLE，通常需要考虑 **Tarjan 离线算法**，其时间复杂度为 $O(N + M \alpha(N))$，在查询量极大时性能优于倍增法。
 
+> 倍增法，理解了ST 表 (Sparse Table) ，程序就容易看懂了。
+>
+> 在普通数组中，ST 表的递推式是：`st[k][i] = min(st[k-1][i], st[k-1][i + 2^(k-1)])`。
+> 在树中，`up[k][u]` 的递推式是：`up[k][u] = up[k-1][ up[k-1][u] ]`。
+>
+> 逻辑相同：都是通过两个 2^{k-1} 的操作合成一个 2^k 的操作。
+>
+> 
+>
+> 另外就是AI给的代码，通常是优化的。比如：# 使用列表推导式利用 Python 的 C 语言底层循环，比 for 循环快得多
 
+
+
+### DFS序 + RMQ (Range Minimum Query)
+
+【孙婧斯、生命科学学院】根据定理，用dfs遍历的树，遍历序在两个节点之间的最浅父节点就是他们的最近共同祖先，最浅父节点的dn值最小。
+
+因此，我们需要记录每个节点的遍历序dn ，st[k] [j]代表遍历序起点为j，长度为2**k的区间中最浅父节点。先把dfs遍历所有节点，赋予dn值，记录直接父节点。然后动态规划推导出st表。查找时，计算区间长度，把区间分为两部分找最小值。
+
+为了避免在最近共同祖先是某个节点本身是错误的输出了他的父节点，区间左端点需要+1
+
+> dfn 是 DFS Number。简单来说，dfn 代表了一个节点在进行深度优先搜索（DFS）时被访问到的先后顺序。 dfn = DFS 访问顺序。它是连接“树形结构”与“线性数组”的桥梁。
+
+```python
+import sys
+
+def main():
+    # 1. 快速读取所有输入数据
+    # data 列表中依次存储了 N, M, S 以及后续的边信息和查询信息
+    data = list(map(int, sys.stdin.read().split()))
+    if not data:
+        return
+        
+    idx = 0
+    N = data[idx]; idx += 1  # 节点数
+    M = data[idx]; idx += 1  # 查询数
+    S = data[idx]; idx += 1  # 根节点编号
+
+    # 2. 建立邻接表（无向图）
+    # num 设置为 5*10^5 + 1 是为了覆盖题目给定的最大节点范围
+    MAX_NODE = 5 * 10**5 + 1
+    graph = [[] for _ in range(MAX_NODE)]
+    for _ in range(N - 1):
+        x = data[idx]
+        y = data[idx + 1]
+        graph[x].append(y)
+        graph[y].append(x)
+        idx += 2
+
+    # 3. 预处理相关变量
+    LOG = 19            # 2^19 > 500,000，用于 ST 表的深度
+    dfn = [0] * MAX_NODE  # 记录每个节点在 DFS 遍历中的访问顺序（时间戳）
+    # st[k][j] 代表在 DFS 序列中，从位置 j 开始，长度为 2^k 的区间内，dfn 最小的节点的“父节点”
+    st = [[0] * (N + 1) for _ in range(LOG)]
+    
+    # 4. 迭代式 DFS（避免 Python 递归深度超限）
+    # 获取每个节点的 DFN 和 直接父节点
+    dn = 0              # DFN 计数器
+    stack = [(S, 0)]    # 栈中存储 (当前节点, 父节点)
+    vis = [False] * MAX_NODE
+    
+    while stack:
+        node, father = stack.pop()
+        if vis[node]:
+            continue
+        vis[node] = True
+        
+        dn += 1
+        dfn[node] = dn
+        # 核心逻辑：ST 表的第 0 层存储 DFS 序为 dn 的节点的父节点
+        st[0][dn] = father
+        
+        # 遍历子节点（reversed 保持与常规递归顺序一致，非必须）
+        for child in reversed(graph[node]):
+            if child != father and not vis[child]:
+                stack.append((child, node))
+
+    # 5. 辅助函数：比较两个节点，返回 dfn 较小的那个节点
+    def get_min_dfn_node(node_m, node_n):
+        if node_m == 0: return node_n # 处理边界
+        if node_n == 0: return node_m
+        return node_m if dfn[node_m] < dfn[node_n] else node_n
+
+    # 6. 动态规划构建 ST 表
+    # 时间复杂度 O(N log N)
+    for k in range(1, LOG):
+        for j in range(1, N - (1 << k) + 2):
+            # 区间 DP：当前区间最小值由两个子区间最小值合并而来
+            st[k][j] = get_min_dfn_node(st[k-1][j], 
+                                        st[k-1][j + (1 << (k-1))])
+
+    # 7. LCA 查询函数
+    # 时间复杂度 O(1)
+    def query_lca(a, b):
+        if a == b:
+            return a
+        # 转换为 DFS 序进行区间查询
+        dfn_a, dfn_b = dfn[a], dfn[b]
+        if dfn_a > dfn_b:
+            dfn_a, dfn_b = dfn_b, dfn_a
+        
+        # 【定理关键点】
+        # LCA(a, b) 是区间 (dfn[a], dfn[b]] 中 dfn 最小的节点的父节点。
+        # 因此左端点 dfn_a 需要 +1，以排除节点 a 本身。
+        dfn_a += 1
+        
+        # 计算区间长度对应的 log 值
+        length = dfn_b - dfn_a + 1
+        d = length.bit_length() - 1
+        
+        # RMQ 查询：取两个重叠区间的最小值
+        return get_min_dfn_node(st[d][dfn_a], 
+                                st[d][dfn_b - (1 << d) + 1])
+
+    # 8. 处理查询请求
+    output = []
+    for _ in range(M):
+        u, v = data[idx], data[idx+1]
+        output.append(str(query_lca(u, v)))
+        idx += 2
+
+    # 9. 批量打印结果，提高效率
+    sys.stdout.write('\n'.join(output) + '\n')
+
+if __name__ == "__main__":
+    main()
+```
+
+
+
+### 用欧拉序列转化为 RMQ
 
 将 LCA 问题转化为 RMQ 问题是解决树上查询的一种非常高效的**在线**算法。
 
