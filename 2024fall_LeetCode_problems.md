@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-04-21 10:11 GMT+8*
+*Updated 2026-04-22 10:11 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -15272,7 +15272,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -35016,6 +35016,207 @@ class Solution:
 8.  结束，返回 4。
 
 
+
+## M2452.距离字典两次编辑以内的单词
+
+trie, brute force, https://leetcode.cn/problems/words-within-two-edits-of-dictionary/
+
+给你两个字符串数组 `queries` 和 `dictionary` 。数组中所有单词都只包含小写英文字母，且长度都相同。
+
+一次 **编辑** 中，你可以从 `queries` 中选择一个单词，将任意一个字母修改成任何其他字母。从 `queries` 中找到所有满足以下条件的字符串：**不超过** 两次编辑内，字符串与 `dictionary` 中某个字符串相同。
+
+请你返回 `queries` 中的单词列表，这些单词距离 `dictionary` 中的单词 **编辑次数** 不超过 **两次** 。单词返回的顺序需要与 `queries` 中原本顺序相同。
+
+ 
+
+**示例 1：**
+
+```
+输入：queries = ["word","note","ants","wood"], dictionary = ["wood","joke","moat"]
+输出：["word","note","wood"]
+解释：
+- 将 "word" 中的 'r' 换成 'o' ，得到 dictionary 中的单词 "wood" 。
+- 将 "note" 中的 'n' 换成 'j' 且将 't' 换成 'k' ，得到 "joke" 。
+- "ants" 需要超过 2 次编辑才能得到 dictionary 中的单词。
+- "wood" 不需要修改（0 次编辑），就得到 dictionary 中相同的单词。
+所以我们返回 ["word","note","wood"] 。
+```
+
+**示例 2：**
+
+```
+输入：queries = ["yes"], dictionary = ["not"]
+输出：[]
+解释：
+"yes" 需要超过 2 次编辑才能得到 "not" 。
+所以我们返回空数组。
+```
+
+ 
+
+**提示：**
+
+- `1 <= queries.length, dictionary.length <= 100`
+- `n == queries[i].length == dictionary[j].length`
+- `1 <= n <= 100`
+- 所有 `queries[i]` 和 `dictionary[j]` 都只包含小写英文字母。
+
+
+
+### 暴力枚举
+
+**解题思路分析**
+
+1.  **题目特点**：
+    *   `queries` 和 `dictionary` 中的所有单词长度都相同（记为 $n$）。
+    *   一次“编辑”定义为修改一个字符。因此，两个单词之间的编辑距离实际上就是它们的**汉明距离**（Hamming Distance），即对应位置字符不同的个数。
+    *   我们需要找出 `queries` 中那些与 `dictionary` 中至少一个单词的距离 $\le 2$ 的单词。
+
+2.  **复杂度分析**：
+    *   `queries` 长度最大为 100。
+    *   `dictionary` 长度最大为 100。
+    *   每个单词长度 $n$ 最大为 100。
+    *   总比较次数约为 $100 \times 100 \times 100 = 10^6$。在计算机处理能力范围内（通常 1 秒可以处理 $10^7 \sim 10^8$ 次操作），因此暴力枚举是可行的。
+
+3.  **算法步骤**：
+    *   遍历 `queries` 中的每一个单词 `q`。
+    *   对于每个 `q`，遍历 `dictionary` 中的每一个单词 `d`。
+    *   计算 `q` 和 `d` 之间不同字符的数量：
+        *   如果不同字符的数量 $\le 2$，说明 `q` 符合条件。
+        *   一旦符合条件，立即将 `q` 加入结果列表并跳出对 `dictionary` 的内层循环（前往检查下一个 `q`）。
+    *   返回结果列表。
+
+**代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def twoEditWords(self, queries: List[str], dictionary: List[str]) -> List[str]:
+        res = []
+        
+        # 遍历每一个查询单词
+        for q in queries:
+            # 遍历字典中的每一个单词
+            for d in dictionary:
+                diff_count = 0
+                # 比较两个单词对应位置的字符
+                # 因为长度相同，可以使用 zip 同时迭代
+                for char_q, char_d in zip(q, d):
+                    if char_q != char_d:
+                        diff_count += 1
+                    
+                    # 剪枝优化：如果当前差异已经超过 2，直接放弃比较字典中的这个单词
+                    if diff_count > 2:
+                        break
+                
+                # 如果找到一个字典单词，使得差异不超过 2
+                if diff_count <= 2:
+                    res.append(q)
+                    # 只要找到一个匹配，就不需要再看字典里其他的单词了
+                    break
+                    
+        return res
+```
+
+**复杂度**
+
+*   **时间复杂度**：$O(Q \cdot D \cdot N)$，其中 $Q$ 是 `queries` 的长度，$D$ 是 `dictionary` 的长度，$N$ 是单词的长度。
+*   **空间复杂度**：$O(1)$，除了存储结果所需的空间外，不需要额外的辅助空间。
+
+**优化点**
+
+代码中使用了 `if diff_count > 2: break` 进行**早期停止（Early Exit）**。这意味着在比较两个单词时，如果已经发现了 3 个不同的字母，我们就没必要再看后面的字母了。这在实际运行中能显著提升效率。
+
+
+
+### Trie 实现
+
+使用字典树（Trie）来解决这个问题的核心思想是将 `dictionary` 中的所有单词构建成一棵树。对于 `queries` 中的每个单词，我们在树上进行**带容错的深度优先搜索（DFS）**。
+
+**Trie 实现思路**
+
+1.  **构建 Trie**：将 `dictionary` 中的所有单词插入 Trie 中。
+2.  **DFS 搜索**：对于 `queries` 中的每个单词，从 Trie 根节点开始搜索：
+    *   如果当前字符匹配，则继续搜索下一个字符，不消耗编辑次数。
+    *   如果当前字符不匹配，且剩余编辑次数 $> 0$，我们可以尝试“修改”当前字符。这意味着我们要遍历当前节点的所有子节点（除了字符匹配的那个），并消耗一次编辑次数。
+    *   由于单词长度固定，当搜索深度达到单词长度且编辑次数消耗 $\le 2$ 时，该单词符合条件。
+
+**代码实现**
+
+```python
+from typing import List
+
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end = False
+
+class Solution:
+    def twoEditWords(self, queries: List[str], dictionary: List[str]) -> List[str]:
+        # 1. 构建字典树
+        root = TrieNode()
+        for word in dictionary:
+            node = root
+            for char in word:
+                if char not in node.children:
+                    node.children[char] = TrieNode()
+                node = node.children[char]
+            node.is_end = True
+        
+        # 2. 定义带容错的搜索函数
+        def can_match(word, node, index, edits_left):
+            # 如果编辑次数用完了（已经超过2次），返回失败
+            if edits_left < 0:
+                return False
+            
+            # 如果已经匹配到单词末尾
+            if index == len(word):
+                return True
+            
+            char = word[index]
+            
+            # 情况1：字符匹配，不消耗编辑次数
+            if char in node.children:
+                if can_match(word, node.children[char], index + 1, edits_left):
+                    return True
+            
+            # 情况2：字符不匹配（或者我们选择不匹配它），尝试消耗一次编辑次数
+            if edits_left > 0:
+                for next_char, next_node in node.children.items():
+                    # 如果刚才已经走过 char 匹配的分支了，这里跳过
+                    if next_char == char:
+                        continue
+                    if can_match(word, next_node, index + 1, edits_left - 1):
+                        return True
+            
+            return False
+
+        # 3. 对每个 query 进行验证
+        res = []
+        for q in queries:
+            if can_match(q, root, 0, 2):
+                res.append(q)
+        
+        return res
+```
+
+**复杂度分析**
+
+*   **空间复杂度**：$O(D \cdot N \cdot \Sigma)$，其中 $D$ 是字典单词数，$N$ 是单词长度，$\Sigma$ 是字符集大小（26）。Trie 存储了字典中所有的字符。
+*   **时间复杂度**：
+    *   **建树**：$O(D \cdot N)$。
+    *   **搜索**：对于每个 query，由于我们最多允许 2 次不匹配，搜索的空间被限制在 $O(N^2 \cdot \Sigma^2)$ 左右（即在 $N$ 个位置中选 2 个位置变异，每个位置有 $\Sigma$ 种可能）。
+    *   总时间复杂度约为 $O(D \cdot N + Q \cdot N^2 \cdot \Sigma^2)$。
+
+**为什么使用 Trie？**
+
+在 LeetCode 的这道题中，由于 $D$ 和 $Q$ 都很小（只有 100），**暴力枚举**（$O(Q \cdot D \cdot N)$）其实运行得非常快。
+
+但在以下场景中，**Trie + DFS** 的优势会体现出来：
+
+1.  **字典 `dictionary` 非常大**：如果有 10 万个单词，暴力枚举每个单词会超时，而 Trie 可以合并前缀，减少大量的重复比较。
+2.  **前缀共享**：如果字典中有很多单词具有相同的前缀，Trie 的搜索路径会大大压缩，避免了暴力法中对相同前缀的反复扫描。
 
 
 
