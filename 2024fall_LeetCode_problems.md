@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-04-22 10:11 GMT+8*
+*Updated 2026-04-24 10:11 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -8730,6 +8730,87 @@ if __name__ == "__main__":
 
 
 
+## M2833.距离原点最远的点
+
+implementation, https://leetcode.cn/problems/furthest-point-from-origin/
+
+给你一个长度为 `n` 的字符串 `moves` ，该字符串仅由字符 `'L'`、`'R'` 和 `'_'` 组成。字符串表示你在一条原点为 `0` 的数轴上的若干次移动。
+
+你的初始位置就在原点（`0`），第 `i` 次移动过程中，你可以根据对应字符选择移动方向：
+
+- 如果 `moves[i] = 'L'` 或 `moves[i] = '_'` ，可以选择向左移动一个单位距离
+- 如果 `moves[i] = 'R'` 或 `moves[i] = '_'` ，可以选择向右移动一个单位距离
+
+移动 `n` 次之后，请你找出可以到达的距离原点 **最远** 的点，并返回 **从原点到这一点的距离** 。
+
+ 
+
+**示例 1：**
+
+```
+输入：moves = "L_RL__R"
+输出：3
+解释：可以到达的距离原点 0 最远的点是 -3 ，移动的序列为 "LLRLLLR" 。
+```
+
+**示例 2：**
+
+```
+输入：moves = "_R__LL_"
+输出：5
+解释：可以到达的距离原点 0 最远的点是 -5 ，移动的序列为 "LRLLLLL" 。
+```
+
+**示例 3：**
+
+```
+输入：moves = "_______"
+输出：7
+解释：可以到达的距离原点 0 最远的点是 7 ，移动的序列为 "RRRRRRR" 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= moves.length == n <= 50`
+- `moves` 仅由字符 `'L'`、`'R'` 和 `'_'` 组成
+
+
+
+**解题思路**
+
+1.  **统计次数**：
+    *   统计字符串中 `'L'` 的数量。
+    *   统计字符串中 `'R'` 的数量。
+    *   统计字符串中 `'_'` 的数量。
+2.  **核心逻辑**：
+    *   所有的 `'L'` 都会让你向左走（-1），所有的 `'R'` 都会让你向右走（+1）。
+    *   那么 `'L'` 和 `'R'` 抵消后的净位移是 `count('R') - count('L')`。
+    *   关键在于 `'_'`：它既可以当成 `'L'` 也可以当成 `'R'`。为了让距离原点最远，我们应该让所有的 `'_'` 都朝着**当前偏移方向**（或者离原点更远的方向）移动。
+    *   因此，最大距离就是：**`'L'` 和 `'R'` 的净位移的绝对值** 加上 **所有的 `'_'` 的数量**。
+
+**代码实现**
+
+```python
+class Solution:
+    def furthestDistanceFromOrigin(self, moves: str) -> int:
+        # 统计 L, R 和 _ 的数量
+        count_L = moves.count('L')
+        count_R = moves.count('R')
+        count_underscore = moves.count('_')
+        
+        # 最大距离等于 L 和 R 抵消后的绝对值，加上所有的下划线（下划线全部填向同一个方向）
+        return abs(count_R - count_L) + count_underscore
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(n)$。其中 $n$ 是字符串 `moves` 的长度。我们需要遍历字符串来统计字符个数（在 Python 中 `count` 方法会各遍历一次，总共三次，依然是线性的）。
+*   **空间复杂度**：$O(1)$。除了存储计数器的变量外，没有使用额外的空间。
+
+
+
 ## E2839.判断通过操作能否让字符串相等 I
 
 string, https://leetcode.cn/problems/check-if-strings-can-be-made-equal-with-operations-i/
@@ -15272,7 +15353,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
