@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-04-22 17:26 GMT+8*
+*Updated 2026-04-25 17:26 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -13280,11 +13280,342 @@ if __name__ == '__main__':
 
 4. **求解分割线 \(c\)**  
    设总面积为 \(A\)，目标面积 $target=A/2$。在某段 $[y_{\rm start}, y_{\rm end}]$ 上，若 $f(y)$ 从 $area_{start}$ 增加到 $area_{start}+L\,(y_{\rm end}-y_{\rm start})$ 且目标在此区间内，则直接解线性方程得：
-   $
-   c=y_{\rm start}+\frac{target-area_{start}}{L}\,.
-   $
-
+   $c=y_{\rm start}+\frac{target-area_{start}}{L}\,.$
+   
    这样就能得到“重叠部分只统计一次”的分割线，且若有多个满足要求的 \(c\) ，返回最小的一个。
+
+
+
+## T3464.正方形上的点之间的最大距离
+
+geometry, binary search, https://leetcode.cn/problems/maximize-the-distance-between-points-on-a-square/
+
+给你一个整数 `side`，表示一个正方形的边长，正方形的四个角分别位于笛卡尔平面的 `(0, 0)` ，`(0, side)` ，`(side, 0)` 和 `(side, side)` 处。
+
+同时给你一个 **正整数** `k` 和一个二维整数数组 `points`，其中 `points[i] = [xi, yi]` 表示一个点在正方形**边界**上的坐标。
+
+你需要从 `points` 中选择 `k` 个元素，使得任意两个点之间的 **最小** 曼哈顿距离 **最大化** 。
+
+返回选定的 `k` 个点之间的 **最小** 曼哈顿距离的 **最大** 可能值。
+
+两个点 `(xi, yi)` 和 `(xj, yj)` 之间的曼哈顿距离为 `|xi - xj| + |yi - yj|`。
+
+ 
+
+**示例 1：**
+
+**输入：** side = 2, points = [[0,2],[2,0],[2,2],[0,0]], k = 4
+
+**输出：** 2
+
+**解释：**
+
+![img](https://raw.githubusercontent.com/GMyhf/img/main/img/1740269079-gtqSpE-4080_example0_revised.png)
+
+选择所有四个点。
+
+**示例 2：**
+
+**输入：** side = 2, points = [[0,0],[1,2],[2,0],[2,2],[2,1]], k = 4
+
+**输出：** 1
+
+**解释：**
+
+![img](https://raw.githubusercontent.com/GMyhf/img/main/img/1740269089-KXdOVN-4080_example1_revised.png)
+
+选择点 `(0, 0)` ，`(2, 0)` ，`(2, 2)` 和 `(2, 1)`。
+
+**示例 3：**
+
+**输入：** side = 2, points = [[0,0],[0,1],[0,2],[1,2],[2,0],[2,2],[2,1]], k = 5
+
+**输出：** 1
+
+**解释：**
+
+![img](https://raw.githubusercontent.com/GMyhf/img/main/img/1740269096-PNkeev-4080_example2_revised.png)
+
+选择点 `(0, 0)` ，`(0, 1)` ，`(0, 2)` ，`(1, 2)` 和 `(2, 2)`。
+
+ 
+
+**提示：**
+
+- `1 <= side <= 10^9`
+- `4 <= points.length <= min(4 * side, 15 * 103)`
+- `points[i] == [xi, yi]`
+- 输入产生方式如下：
+  - `points[i]` 位于正方形的边界上。
+  - 所有 `points[i]` 都 **互不相同** 。
+- `4 <= k <= min(25, points.length)`
+
+
+
+核心思想是将正方形的边界**展平为一维直线**，利用**贪心双指针（Sliding Window）**在 $O(N)$ 时间内完成判定，再配合二分查找。
+
+**代码逻辑**
+
+1.  **坐标映射**：将二维坐标 $(x, y)$ 映射到区间 $[0, 4 \times side]$。映射顺序是：左边 $\to$ 上边 $\to$ 右边 $\to$ 下边。
+2.  **贪心判定 (`check`)**：
+    *   要在环形边界上选 $k$ 个点，使得间距至少为 `low`。
+    *   它从第一个点开始，贪心地寻找下一个满足距离的点。
+    *   `if a[idx[-1]] - a[idx[0]] <= side * 4 - low`：这是一个精妙的判断。在环形中，最后一个点和第一个点也要满足间距。
+    *   **为什么不需要倍增？** 因为 $k$ 较小（最大 25），且指针 `idx[j]` 在 `idx[0]` 右移时不需要回退，所以整个 `check` 函数是 $O(N \cdot K)$ 的，这在 $N=15000$ 时比倍增法（带常数）更快。
+3.  **二分搜索**：搜索范围是 $[1, \frac{4 \cdot side}{k}]$。
+
+**代码**
+
+```python
+from typing import List
+
+class Solution:
+    def maxDistance(self, side: int, points: List[List[int]], k: int) -> int:       
+        # 1. 映射 2D 边界点到 1D 坐标系 (0 到 4*side)
+        # 映射顺序：(0,0)->(0,side)->(side,side)->(side,0)->(0,0)
+        coords = []
+        for x, y in points:
+            if x == 0:
+                dist = y
+            elif y == side:
+                dist = side + x
+            elif x == side:
+                dist = 3 * side - y
+            else: # y == 0
+                dist = 4 * side - x
+            coords.append(dist)
+        
+        coords.sort()
+        n = len(coords)
+
+        # 2. 判定函数：是否存在一种选法使得最小曼哈顿距离 >= mid
+        def check(mid: int) -> bool:
+            # idx[j] 存储第 j 个选定点在 coords 中的索引
+            idx = list(range(k))
+            
+            # 尝试移动第一个点的索引 idx[0]
+            for i in range(n):
+                idx[0] = i
+                # 基于前一个点，贪心寻找下一个合法的点
+                for j in range(1, k):
+                    # 下一个点的索引至少是上一个点索引 + 1
+                    if idx[j] < idx[j-1] + 1:
+                        idx[j] = idx[j-1] + 1
+                    
+                    # 寻找满足间距条件的最小索引
+                    while idx[j] < n and coords[idx[j]] < coords[idx[j-1]] + mid:
+                        idx[j] += 1
+                    
+                    # 如果某个点找不到，说明以当前的 idx[0] 为起点无法放满 k 个点
+                    if idx[j] == n:
+                        return False
+                
+                # 检查最后一个点绕回到第一个点的距离是否也满足 mid
+                # 环形总长为 4*side，首尾距离 = 总长 - (末点 - 首点)
+                if 4 * side - (coords[idx[-1]] - coords[idx[0]]) >= mid:
+                    return True
+            return False
+
+        # 3. 二分查找
+        # 理论最大间距不会超过周长除以 k
+        left, right = 1, (4 * side) // k
+        ans = 1
+        
+        while left <= right:
+            mid = (left + right) // 2
+            if check(mid):
+                ans = mid
+                left = mid + 1
+            else:
+                right = mid - 1
+                
+        return ans
+```
+
+**优化说明：**
+
+*   **指针复用**：在 `check` 函数的 `for i in range(n)` 循环中，`idx[j]` 指针**不回退**。这意味着对于每一个 `j`，其指针最多从 `0` 扫到 `n` 一次。整个 `check` 的复杂度是稳定的 $O(N \times K)$。
+*   **边界处理**：将 `idx[j] = idx[j-1] + 1` 明确写出，防止索引重叠。
+*   **空间效率**：只存储了一维映射后的列表，空间复杂度 $O(N)$。
+
+这份代码在处理 $N=15000, K=25$ 的数据时，由于减少了倍增表的空间分配和多层循环，运行速度会非常快。
+
+
+
+【灵茶山艾府】二分答案 + k 个同向指针。链接：https://leetcode.cn/problems/maximize-the-distance-between-points-on-a-square/solutions/3086167/zhuan-cheng-qie-bi-xue-fu-ju-chi-er-fen-nthy1/
+
+
+
+一开始，初始化一个长为 k 的 idx 数组，初始值 idx[j]=0。
+
+然后写个 k 指针（双指针的推广）：
+
+遍历 j=1,2,3,…,k−1，如果发现 a[idx[j]]<a[idx[j−1]]+low，就不断把 idx[j] 加一直到不满足条件。如果 idx[j]=n 则返回。
+这些指针移动后，如果首尾两个指针指向的数相差不超过 side⋅4−low，则返回。
+否则把 idx[0] 加一，继续循环。
+
+```python
+class Solution:
+    def maxDistance(self, side: int, points: List[List[int]], k: int) -> int:
+        a = []
+        for x, y in points:
+            if x == 0:
+                a.append(y)
+            elif y == side:
+                a.append(side + x)
+            elif x == side:
+                a.append(side * 3 - y)
+            else:
+                a.append(side * 4 - x)
+        a.sort()
+
+        def check(low: int) -> bool:
+            idx = [0] * k
+            while True:
+                for j in range(1, k):
+                    while a[idx[j]] < a[idx[j - 1]] + low:
+                        idx[j] += 1
+                        if idx[j] == len(a):
+                            return False
+                if a[idx[-1]] - a[idx[0]] <= side * 4 - low:
+                    return True
+                idx[0] += 1
+
+        left, right = 1, side * 4 // k + 1
+        while left + 1 < right:
+            mid = (left + right) // 2
+            if check(mid):
+                left = mid
+            else:
+                right = mid
+        return left
+
+```
+
+
+
+
+
+这个问题可以通过 **二分答案 + 贪心 + 倍增（Binary Lifting）** 的思路来解决。
+
+**解题思路分析**
+
+1.  **坐标映射（将 2D 边界转为 1D 路径）：**
+    正方形的边界可以看作是一条封闭的环状直线。我们可以计算每个点到起点 $(0,0)$ 沿边界的距离（周长距离）。
+    *   下边 $(x, 0)$：距离 $d = x$
+    *   右边 $(side, y)$：距离 $d = side + y$
+    *   上边 $(x, side)$：距离 $d = 2 \cdot side + (side - x)$
+    *   左边 $(0, y)$：距离 $d = 3 \cdot side + (side - y)$
+        将所有点按这个距离排序。
+
+2.  **二分搜索：**
+    我们需要寻找“最小曼哈顿距离的最大值”，这是典型的二分答案场景。曼哈顿距离的最大可能值是 $2 \cdot side$（正方形对角点之间）。
+
+3.  **判定函数 `check(d)`：**
+    判定是否能选出 $k$ 个点，使得它们两两之间的曼哈顿距离至少为 $d$。
+    *   由于是环状结构，起点可以是 $N$ 个点中的任意一个。
+    *   对于每个点 $i$，我们预计算出顺时针方向第一个与其曼哈顿距离 $\ge d$ 的点 $j$。记为 `nxt[i]`。
+    *   利用**倍增法**：预计算出一个跳转表 `up[step][i]`，表示从点 $i$ 开始跳 $2^{step}$ 个符合条件的间隔后到达的点。
+    *   遍历每一个点作为起点，利用倍增表快速跳 $k-1$ 次到达第 $k$ 个点。
+    *   最后检查第 $k$ 个点与最初的起点之间的曼哈顿距离是否也 $\ge d$。
+
+**Python 代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def maxDistance(self, side: int, points: List[List[int]], k: int) -> int:
+        
+        # 1. 将二维坐标映射到一维周长位置
+        mapped_points = []
+        for x, y in points:
+            if y == 0:
+                dist = x
+            elif x == side:
+                dist = side + y
+            elif y == side:
+                dist = 2 * side + (side - x)
+            else: # x == 0
+                dist = 3 * side + (side - y)
+            mapped_points.append((dist, x, y))
+        
+        # 按周长位置排序
+        mapped_points.sort()
+        n = len(mapped_points)
+        
+        # 为了处理环状，将点集倍化
+        pts = mapped_points + [(p[0] + 4 * side, p[1], p[2]) for p in mapped_points]
+        m = len(pts)
+        xs = [p[1] for p in pts]
+        ys = [p[2] for p in pts]
+
+        def check(mid):
+            # nxt[i] 表示从 i 出发，顺时针方向第一个满足曼哈顿距离 >= mid 的点的索引
+            nxt = [0] * (m + 1)
+            r = 0
+            for l in range(m):
+                if r <= l:
+                    r = l + 1
+                while r < m and abs(xs[l] - xs[r]) + abs(ys[l] - ys[r]) < mid:
+                    r += 1
+                nxt[l] = r
+            nxt[m] = m
+            
+            # 倍增表：up[j][i] 表示从 i 开始跳 2^j 步到达的点
+            # 因为 k 最大 25，2^5=32 足够了
+            levels = 5
+            up = [nxt]
+            for j in range(levels - 1):
+                prev = up[-1]
+                curr = [m] * (m + 1)
+                for i in range(m):
+                    if prev[i] < m:
+                        curr[i] = prev[prev[i]]
+                up.append(curr)
+            
+            # 尝试每一个点作为起点
+            for i in range(n):
+                curr = i
+                steps = k - 1
+                for j in range(levels):
+                    if (steps >> j) & 1:
+                        curr = up[j][curr]
+                        if curr >= m: break
+                
+                # 检查第 k 个点是否在圆圈一圈之内，且与起点的曼哈顿距离满足要求
+                if curr < i + n:
+                    if abs(xs[curr] - xs[i]) + abs(ys[curr] - ys[i]) >= mid:
+                        return True
+            return False
+
+        # 2. 二分查找最大可能的最小曼哈顿距离
+        low = 1
+        high = 2 * side
+        ans = 0
+        
+        while low <= high:
+            mid = (low + high) // 2
+            if check(mid):
+                ans = mid
+                low = mid + 1
+            else:
+                high = mid - 1
+                
+        return ans
+
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(N \log N + \log(Side) \cdot N \log K)$。
+    *   映射与排序：$O(N \log N)$。
+    *   二分搜索：执行 $\log(2 \cdot 10^9) \approx 31$ 次 `check` 函数。
+    *   `check` 函数：预计算 `nxt` 需要 $O(N)$（双指针），倍增表需要 $O(N \log K)$。
+    *   在 $N=15000, K=25$ 的量级下，总计算量约为 $10^7$，在 Python 限制内。
+*   **空间复杂度**：$O(N \log K)$，主要是存储倍增表。
+
+
 
 
 
