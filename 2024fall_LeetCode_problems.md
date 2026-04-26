@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-04-24 10:11 GMT+8*
+*Updated 2026-04-26 10:11 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -15353,7 +15353,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -31336,6 +31336,140 @@ if __name__ == "__main__":
 
         
 ```
+
+
+
+## M1559.二维网格图中探测环
+
+dsu, https://leetcode.cn/problems/detect-cycles-in-2d-grid/)
+
+给你一个二维字符网格数组 `grid` ，大小为 `m x n` ，你需要检查 `grid` 中是否存在 **相同值** 形成的环。
+
+一个环是一条开始和结束于同一个格子的长度 **大于等于 4** 的路径。对于一个给定的格子，你可以移动到它上、下、左、右四个方向相邻的格子之一，可以移动的前提是这两个格子有 **相同的值** 。
+
+同时，你也不能回到上一次移动时所在的格子。比方说，环 `(1, 1) -> (1, 2) -> (1, 1)` 是不合法的，因为从 `(1, 2)` 移动到 `(1, 1)` 回到了上一次移动时的格子。
+
+如果 `grid` 中有相同值形成的环，请你返回 `true` ，否则返回 `false` 。
+
+ 
+
+**示例 1：**
+
+**![img](https://raw.githubusercontent.com/GMyhf/img/main/img/5482e1.png)**
+
+```
+输入：grid = [["a","a","a","a"],["a","b","b","a"],["a","b","b","a"],["a","a","a","a"]]
+输出：true
+解释：如下图所示，有 2 个用不同颜色标出来的环：
+```
+
+**示例 2：**
+
+**![img](https://raw.githubusercontent.com/GMyhf/img/main/img/5482e2.png)**
+
+```
+输入：grid = [["c","c","c","a"],["c","d","c","c"],["c","c","e","c"],["f","c","c","c"]]
+输出：true
+解释：如下图所示，只有高亮所示的一个合法环：
+```
+
+**示例 3：**
+
+**![img](https://raw.githubusercontent.com/GMyhf/img/main/img/5482e3.png)**
+
+```
+输入：grid = [["a","b","b"],["b","z","b"],["b","b","a"]]
+输出：false
+```
+
+ 
+
+**提示：**
+
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m <= 500`
+- `1 <= n <= 500`
+- `grid` 只包含小写英文字母。
+
+
+
+这个问题可以通过 **并查集 (Disjoint Set Union, DSU)** 或 **深度优先搜索 (DFS)** 来解决。
+
+在这个问题中，我们将网格看作一个图，每个格子是一个节点。如果两个相邻的格子字符相同，则它们之间存在一条边。我们需要检测这个图中是否存在环。
+
+**解题思路：并查集 (DSU)**
+
+1.  **网格转图**：网格中的每个位置 $(r, c)$ 可以映射为一个唯一的 ID：`index = r * n + c`。
+2.  **核心逻辑**：遍历每一个格子，并与其 **右方** 和 **下方** 的格子进行比较。
+    *   如果当前格子与相邻格子（右或下）的字符相同：
+        *   使用并查集检查这两个格子是否已经属于同一个集合。
+        *   如果**已经属于同一个集合**，说明加上这条边就会形成一个环，直接返回 `true`。
+        *   如果**不属于同一个集合**，则将它们合并。
+3.  **为什么这种方法有效？**
+    *   我们在遍历时只考虑向右和向下，这保证了每条潜在的边只会被处理一次。
+    *   在网格图中，由于不存在自环（自己到自己）和重边（两个点之间多条路径），且我们限制了不能立即返回上一个格子，因此并查集检测到的第一个“冲突”（两个点已连通）必然形成一个长度至少为 4 的环。
+
+**Python 代码实现**
+
+```python
+class Solution:
+    def containsCycle(self, grid: List[List[str]]) -> bool:
+        m = len(grid)
+        n = len(grid[0])
+        # 初始化并查集，每个格子的父节点指向自己
+        parent = list(range(m * n))
+        
+        # 查找函数（带路径压缩）
+        def find(i):
+            if parent[i] == i:
+                return i
+            # 路径压缩：直接指向根节点
+            root = i
+            while parent[root] != root:
+                root = parent[root]
+            while parent[i] != root:
+                next_node = parent[i]
+                parent[i] = root
+                i = next_node
+            return root
+
+        # 合并函数
+        def union(i, j):
+            root_i = find(i)
+            root_j = find(j)
+            if root_i != root_j:
+                parent[root_i] = root_j
+                return True # 合并成功，未形成环
+            return False # 两个点已连通，形成环
+
+        for r in range(m):
+            for c in range(n):
+                val = grid[r][c]
+                
+                # 检查右侧相邻格子
+                if c + 1 < n and grid[r][c+1] == val:
+                    if not union(r * n + c, r * n + (c + 1)):
+                        return True
+                
+                # 检查下方相邻格子
+                if r + 1 < m and grid[r+1][c] == val:
+                    if not union(r * n + c, (r + 1) * n + c):
+                        return True
+                        
+        return False
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(M \times N \cdot \alpha(M \times N))$，其中 $M$ 和 $N$ 分别是行数和列数，$\alpha$ 是反阿克曼函数（几乎可以看作常数）。我们遍历了每个格子及其相邻的两条边。
+*   **空间复杂度**：$O(M \times N)$，用于存储并查集的 `parent` 数组。
+
+**为什么不用 DFS？**
+
+DFS 也可以解决此问题（通过记录访问状态和父节点），但在 Python 中，深度的递归（最大可达 250,000 层）可能会导致 `RecursionError`，且手动维护栈的 DFS 实现相对繁琐。并查集在这种“检测无向图环”的场景下代码更加简洁且高效。
+
+
 
 
 
