@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-04-26 10:11 GMT+8*
+*Updated 2026-04-27 10:11 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -15353,7 +15353,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -30315,6 +30315,174 @@ class Solution:
 | 最小质因数筛             | 预处理 lpf，快速分解   | $O(N \log \log N + Q \log N)$ | ⭐⭐⭐    |
 
 > **强烈建议采用“枚举合法结构”法**，既高效又体现数学洞察力。
+
+
+
+## M1391.检查网格中是否存在有效路径
+
+bfs, https://leetcode.cn/problems/check-if-there-is-a-valid-path-in-a-grid/
+
+给你一个 *m* x *n* 的网格 `grid`。网格里的每个单元都代表一条街道。`grid[i][j]` 的街道可以是：
+
+- **1** 表示连接左单元格和右单元格的街道。
+- **2** 表示连接上单元格和下单元格的街道。
+- **3** 表示连接左单元格和下单元格的街道。
+- **4** 表示连接右单元格和下单元格的街道。
+- **5** 表示连接左单元格和上单元格的街道。
+- **6** 表示连接右单元格和上单元格的街道。
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/main.png" alt="img" style="zoom:67%;" />
+
+你最开始从左上角的单元格 `(0,0)` 开始出发，网格中的「有效路径」是指从左上方的单元格 `(0,0)` 开始、一直到右下方的 `(m-1,n-1)` 结束的路径。**该路径必须只沿着街道走**。
+
+**注意：**你 **不能** 变更街道。
+
+如果网格中存在有效的路径，则返回 `true`，否则返回 `false` 。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/e1.png" alt="img" style="zoom:67%;" />
+
+```
+输入：grid = [[2,4,3],[6,5,2]]
+输出：true
+解释：如图所示，你可以从 (0, 0) 开始，访问网格中的所有单元格并到达 (m - 1, n - 1) 。
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/e2.png" alt="img" style="zoom:67%;" />
+
+```
+输入：grid = [[1,2,1],[1,2,1]]
+输出：false
+解释：如图所示，单元格 (0, 0) 上的街道没有与任何其他单元格上的街道相连，你只会停在 (0, 0) 处。
+```
+
+**示例 3：**
+
+```
+输入：grid = [[1,1,2]]
+输出：false
+解释：你会停在 (0, 1)，而且无法到达 (0, 2) 。
+```
+
+**示例 4：**
+
+```
+输入：grid = [[1,1,1,1,1,1,3]]
+输出：true
+```
+
+**示例 5：**
+
+```
+输入：grid = [[2],[2],[2],[2],[2],[2],[6]]
+输出：true
+```
+
+ 
+
+**提示：**
+
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 300`
+- `1 <= grid[i][j] <= 6`
+
+
+
+这个问题可以通过图的遍历算法（如 **BFS 广度优先搜索** 或 **DFS 深度优先搜索**）来解决。
+
+**解题思路**
+
+1.  **理解街道连接性**：
+    每个数字代表一个形状，我们需要明确该形状连接的两个方向。
+    *   `1`: 左 (0, -1), 右 (0, 1)
+    *   `2`: 上 (-1, 0), 下 (1, 0)
+    *   `3`: 左 (0, -1), 下 (1, 0)
+    *   `4`: 右 (0, 1), 下 (1, 0)
+    *   `5`: 左 (0, -1), 上 (-1, 0)
+    *   `6`: 右 (0, 1), 上 (-1, 0)
+
+2.  **核心判断条件：双向连通**：
+    即便当前格子 `(r, c)` 有通向相邻格子 `(nr, nc)` 的出口，我们也必须确认相邻格子 `(nr, nc)` 也有一个出口指回 `(r, c)`。
+    *   例如：如果我从 `(r, c)` 往 **右** 走到了 `(nr, nc)`，那么 `grid[nr][nc]` 必须拥有一个向 **左** 的出口。
+
+3.  **算法流程**：
+    *   使用 BFS 搜索，从起点 `(0, 0)` 开始。
+    *   维护一个 `visited` 集合，防止死循环。
+    *   在每一步中，获取当前格子的所有可能移动方向。
+    *   对于每个方向，检查目标格子是否在网格范围内、是否已访问、以及**是否能反向连通**。
+    *   如果能到达 `(m-1, n-1)`，返回 `True`。
+
+**代码实现**
+
+```python
+from typing import List
+from collections import deque
+
+class Solution:
+    def hasValidPath(self, grid: List[List[int]]) -> bool:
+        m, n = len(grid), len(grid[0])
+        
+        # 定义每种街道类型对应的移动方向 (dr, dc)
+        # 0: 上, 1: 下, 2: 左, 3: 右
+        directions = {
+            1: [(0, -1), (0, 1)],  # 左，右
+            2: [(-1, 0), (1, 0)],  # 上，下
+            3: [(0, -1), (1, 0)],  # 左，下
+            4: [(0, 1), (1, 0)],   # 右，下
+            5: [(0, -1), (-1, 0)], # 左，上
+            6: [(0, 1), (-1, 0)]   # 右，上
+        }
+        
+        queue = deque([(0, 0)])
+        visited = set([(0, 0)])
+        
+        while queue:
+            r, c = queue.popleft()
+            
+            # 如果到达终点
+            if r == m - 1 and c == n - 1:
+                return True
+            
+            # 获取当前格子的形状
+            street_type = grid[r][c]
+            
+            for dr, dc in directions[street_type]:
+                nr, nc = r + dr, c + dc
+                
+                # 1. 检查边界
+                if 0 <= nr < m and 0 <= nc < n and (nr, nc) not in visited:
+                    # 2. 检查相邻格子是否能连通回来
+                    # 即相邻格子的出口中，必须包含 (-dr, -dc)
+                    neighbor_type = grid[nr][nc]
+                    can_connect_back = False
+                    for ndr, ndc in directions[neighbor_type]:
+                        if ndr == -dr and ndc == -dc:
+                            can_connect_back = True
+                            break
+                    
+                    if can_connect_back:
+                        visited.add((nr, nc))
+                        queue.append((nr, nc))
+                        
+        return False
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(M \times N)$。在最坏情况下，我们需要访问网格中的每一个单元格。
+*   **空间复杂度**：$O(M \times N)$。用于存储 `visited` 集合以及 BFS 队列。
+
+**关键点拨**
+
+在处理此类网格连接问题时，**“握手原则”**（即 A 连通 B 且 B 连通 A）是避免逻辑错误的关键。本解法通过 `ndr == -dr and ndc == -dc` 这一简洁的数学逻辑判断了反向连通性。
+
+
 
 
 
