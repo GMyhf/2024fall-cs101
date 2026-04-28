@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-04-27 10:11 GMT+8*
+*Updated 2026-04-28 09:40 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -15353,7 +15353,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -33959,6 +33959,129 @@ class Solution:
         
         return total_beauty
 ```
+
+
+
+## M2033.获取单值网格的最小操作数
+
+math, matrix, sorting, https://leetcode.cn/problems/minimum-operations-to-make-a-uni-value-grid/
+
+给你一个大小为 `m x n` 的二维整数网格 `grid` 和一个整数 `x` 。每一次操作，你可以对 `grid` 中的任一元素 **加** `x` 或 **减** `x`。
+
+**单值网格** 是全部元素都相等的网格。
+
+返回使网格化为单值网格所需的 **最小** 操作数。如果不能，返回 `-1` 。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/gridtxt.png" alt="img" style="zoom:50%;" />
+
+```
+输入：grid = [[2,4],[6,8]], x = 2
+输出：4
+解释：可以执行下述操作使所有元素都等于 4 ： 
+- 2 加 x 一次。
+- 6 减 x 一次。
+- 8 减 x 两次。
+共计 4 次操作。
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/gridtxt-1.png" alt="img" style="zoom:50%;" />
+
+```
+输入：grid = [[1,5],[2,3]], x = 1
+输出：5
+解释：可以使所有元素都等于 3 。
+```
+
+**示例 3：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/gridtxt-2.png" alt="img" style="zoom:50%;" />
+
+```
+输入：grid = [[1,2],[3,4]], x = 2
+输出：-1
+解释：无法使所有元素相等。
+```
+
+ 
+
+**提示：**
+
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 10^5`
+- `1 <= m * n <= 10^5`
+- `1 <= x, grid[i][j] <= 10^4`
+
+
+
+这道题目要求我们将一个二维网格中的所有元素通过加减 $x$ 的操作变得相等，并求出最小操作次数。
+
+**解题思路**
+
+1.  **可行性判断**：
+    要使两个数 $a$ 和 $b$ 通过加减 $x$ 变得相等，它们的差值 $|a - b|$ 必须是 $x$ 的倍数。这意味着网格中所有的元素对 $x$ 取模的结果必须相同（即 $a \equiv b \pmod x$）。如果存在任何元素取模结果不同，则无法完成任务，返回 `-1`。
+
+2.  **转化为中位数问题**：
+    假设最终所有元素都变为 $K$。对于网格中的某一个元素 $a_i$，将其变为 $K$ 所需的操作次数为 $\frac{|a_i - K|}{x}$。
+    总操作次数为：
+    $$\sum \frac{|a_i - K|}{x} = \frac{1}{x} \sum |a_i - K|$$
+    我们的目标是找到一个 $K$，使得 $\sum |a_i - K|$ 最小。
+    这是一个经典的数学问题：**给定一组数，求一个数到这组数距离之和的最小值。该值 $K$ 应该是这组数的中位数。**
+
+3.  **算法步骤**：
+    *   将二维网格 `grid` 展平为一维数组 `nums`。
+    *   遍历 `nums`，检查是否所有元素对 $x$ 取模的结果都一致。如果不一致，直接返回 `-1`。
+    *   对 `nums` 进行排序。
+    *   找到 `nums` 的中位数（对于长度为 $N$ 的数组，取索引为 $N // 2$ 的元素即可）。
+    *   计算所有元素与中位数的差的绝对值之和，除以 $x$，即为结果。
+
+**Python 代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def minOperations(self, grid: List[List[int]], x: int) -> int:
+        # 1. 将二维网格展平为一维列表
+        nums = []
+        for row in grid:
+            nums.extend(row)
+        
+        # 2. 检查是否所有元素关于 x 同余
+        # 如果任一元素与第一个元素的余数不同，说明无法通过加减 x 变得相等
+        mod = nums[0] % x
+        for num in nums:
+            if num % x != mod:
+                return -1
+        
+        # 3. 排序以寻找中位数
+        nums.sort()
+        
+        # 4. 找到中位数
+        # 对于求绝对值之和最小化的问题，目标值选在中位数处最优
+        n = len(nums)
+        median = nums[n // 2]
+        
+        # 5. 计算总操作次数
+        ans = 0
+        for num in nums:
+            ans += abs(num - median) // x
+            
+        return ans
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(N \log N)$，其中 $N = m \times n$ 是网格中元素的总数。主要时间消耗在对数组进行排序。
+*   **空间复杂度**：$O(N)$，用于存储展平后的一维数组。
+
+
 
 
 
