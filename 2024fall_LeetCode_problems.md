@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-05-02 14:40 GMT+8*
+*Updated 2026-05-03 11:37 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -5368,6 +5368,102 @@ mask 的第 k 位 = 1
 是否为 1。
 
 这是一种 **位运算常见 trick**。
+
+
+
+## E796.旋转字符串
+
+https://leetcode.cn/problems/rotate-string/
+
+给定两个字符串, `s` 和 `goal`。如果在若干次旋转操作之后，`s` 能变成 `goal` ，那么返回 `true` 。
+
+`s` 的 **旋转操作** 就是将 `s` 最左边的字符移动到最右边。 
+
+- 例如, 若 `s = 'abcde'`，在旋转一次之后结果就是`'bcdea'` 。
+
+ 
+
+**示例 1:**
+
+```
+输入: s = "abcde", goal = "cdeab"
+输出: true
+```
+
+**示例 2:**
+
+```
+输入: s = "abcde", goal = "abced"
+输出: false
+```
+
+ 
+
+**提示:**
+
+- `1 <= s.length, goal.length <= 100`
+- `s` 和 `goal` 由小写英文字母组成
+
+
+
+这个问题可以通过一个经典的技巧来解决：**字符串拼接**。
+
+**解题思路**
+
+1. **长度判断**：如果字符串 `s` 和 `goal` 的长度不相等，那么无论如何旋转 `s` 都不可能变成 `goal`。直接返回 `False`。
+
+2. **拼接规律**：观察 `s` 的所有旋转结果。以 `s = "abcde"` 为例，它的旋转结果有：
+
+   *   `abcde` (旋转0次)
+   *   `bcdea` (旋转1次)
+   *   `cdeab` (旋转2次)
+   *   `deabc` (旋转3次)
+   *   `eabcd` (旋转4次)
+
+   如果我们把两个 `s` 拼接在一起，即 `s + s = "abcdeabcde"`，你会发现**所有可能的旋转结果都是这个拼接字符串的子串**。
+
+3. **判断子串**：因此，只要满足 `len(s) == len(goal)` 且 `goal` 是 `s + s` 的子串，就可以判定 `s` 可以旋转成 `goal`。
+
+**代码实现**
+
+```python
+class Solution:
+    def rotateString(self, s: str, goal: str) -> bool:
+        # 如果长度不等，一定无法通过旋转得到
+        if len(s) != len(goal):
+            return False
+        
+        # 如果 goal 是 s + s 的子串，说明 goal 是 s 的一个旋转结果
+        return goal in (s + s)
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(n)$。其中 $n$ 是字符串的长度。在 Python 中，字符串的 `in` 操作（子串查找）在平均情况下是 $O(n)$ 的（底层通常使用类似 Boyer-Moore 或 Horspool 的优化算法）。
+*   **空间复杂度**：$O(n)$。我们需要创建一个长度为 $2n$ 的新字符串 `s + s`。
+
+**模拟法（另一种思路）**
+
+如果你不想使用拼接的技巧，也可以直接模拟旋转过程：
+
+```python
+class Solution:
+    def rotateString(self, s: str, goal: str) -> bool:
+        if len(s) != len(goal):
+            return False
+        
+        # 模拟旋转，最多旋转 n 次
+        for _ in range(len(s)):
+            if s == goal:
+                return True
+            s = s[1:] + s[0] # 将左边第一个字符移到末尾
+            
+        return False
+```
+
+这种模拟法的时间复杂度是 $O(n^2)$（循环 $n$ 次，每次字符串切片和比较需要 $O(n)$），对于本题 $n \le 100$ 的数据范围也是可以通过的，但**拼接法**更为简洁且高效。
+
+
 
 
 
@@ -15353,7 +15449,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
