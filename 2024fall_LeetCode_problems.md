@@ -15449,7 +15449,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -15909,7 +15909,7 @@ https://leetcode.cn/problems/rotate-image/
 
 **示例 1：**
 
-<img src="https://assets.leetcode.com/uploads/2020/08/28/mat1.jpg" alt="img" style="zoom:67%;" />
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/mat1.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：matrix = [[1,2,3],[4,5,6],[7,8,9]]
@@ -15918,7 +15918,7 @@ https://leetcode.cn/problems/rotate-image/
 
 **示例 2：**
 
-<img src="https://assets.leetcode.com/uploads/2020/08/28/mat2.jpg" alt="img" style="zoom:67%;" />
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/mat2.jpg" alt="img" style="zoom:67%;" />
 
 ```
 输入：matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]
