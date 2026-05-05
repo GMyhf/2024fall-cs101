@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-05-03 11:37 GMT+8*
+*Updated 2026-05-05 16:13 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -15449,7 +15449,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -16440,6 +16440,131 @@ if __name__ == "__main__":
     n = 3
     print(Solution().generateMatrix(n))
 ```
+
+
+
+## M61.旋转链表
+
+linked list, https://leetcode.cn/problems/rotate-list/
+
+给你一个链表的头节点 `head` ，旋转链表，将链表每个节点向右移动 `k` 个位置。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/rotate1.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：head = [1,2,3,4,5], k = 2
+输出：[4,5,1,2,3]
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/roate2.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：head = [0,1,2], k = 4
+输出：[2,0,1]
+```
+
+ 
+
+**提示：**
+
+- 链表中节点的数目在范围 `[0, 500]` 内
+- `-100 <= Node.val <= 100`
+- `0 <= k <= 2 * 10^9`
+
+
+
+这道题的核心思路是：**将链表连接成一个环，然后在合适的位置断开。**
+
+**思路详解**
+
+1.  **处理特殊情况**：如果链表为空、只有一个节点，或者旋转步数 $k=0$，直接返回 `head`。
+2.  **计算链表长度并成环**：
+    *   遍历链表计算长度 $n$。
+    *   在遍历到最后一个节点时，将其 `next` 指向 `head`，形成一个环。
+3.  **确定断开位置**：
+    *   向右移动 $k$ 个位置，相当于从原链表尾部向前数第 $k$ 个节点作为新头节点。
+    *   由于 $k$ 可能大于 $n$，先取模：$k = k \pmod n$。
+    *   如果 $k=0$，说明不需要旋转，直接断开环（虽然逻辑上不转，但为了代码统一，我们直接返回 `head`）。
+    *   新链表的尾节点（New Tail）是原链表的第 $n - k$ 个节点。
+4.  **断开环并返回新头节点**：
+    *   从原链表头（或者当前的尾节点）出发，移动 $n - k$ 步找到新尾节点。
+    *   新尾节点的下一个节点即为新头节点（New Head）。
+    *   切断新尾节点与新头节点之间的连接（`new_tail.next = None`）。
+
+**Python 代码实现**
+
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+
+class Solution:
+    def rotateRight(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+        # 1. 特殊情况处理
+        if not head or not head.next or k == 0:
+            return head
+        
+        # 2. 计算长度并使链表成环
+        n = 1
+        old_tail = head
+        while old_tail.next:
+            old_tail = old_tail.next
+            n += 1
+        
+        # 将尾部连接到头部形成环
+        old_tail.next = head
+        
+        # 3. 寻找新的断开点
+        # 旋转 k 次等同于旋转 k % n 次
+        k = k % n
+        if k == 0:
+            old_tail.next = None # 断开环，恢复原样
+            return head
+        
+        # 新的尾节点在距离原头节点 n - k - 1 的位置
+        # 或者从 old_tail 开始走 n - k 步
+        new_tail = old_tail
+        steps_to_new_tail = n - k
+        for _ in range(steps_to_new_tail):
+            new_tail = new_tail.next
+            
+        # 4. 设定新头节点并断开环
+        new_head = new_tail.next
+        new_tail.next = None
+        
+        return new_head
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(n)$。
+    *   第一次遍历计算长度 $n$ 需要 $O(n)$。
+    *   第二次寻找断开点最多需要 $O(n)$。
+*   **空间复杂度**：$O(1)$。
+    *   只使用了常数个指针变量。
+
+**示例图解 (以示例1为例)**
+
+`head = [1,2,3,4,5], k = 2`
+
+1.  计算长度 $n=5$，此时 `old_tail` 指向 `5`。
+2.  成环：`5.next = 1`。
+3.  计算 $k = 2 \% 5 = 2$。
+4.  寻找新尾部：从 `5` 开始走 $5-2=3$ 步：
+    *   第1步到 `1`
+    *   第2步到 `2`
+    *   第3步到 `3`（这就是 `new_tail`）。
+5.  新头部 `new_head = 3.next` (即 `4`)。
+6.  断开：`3.next = None`。
+7.  返回 `4`，链表变为 `[4,5,1,2,3]`。
 
 
 
