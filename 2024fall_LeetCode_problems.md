@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-05-05 16:13 GMT+8*
+*Updated 2026-05-06 10:45 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -15449,7 +15449,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -33491,6 +33491,204 @@ class Solution:
 **为什么不用二分查找？**
 
 虽然这题也可以对 `nums1` 中的每个元素在 `nums2` 中进行二分查找（因为 `nums2` 是有序的），时间复杂度为 $O(n \log m)$。但在两个数组均有序的情况下，双指针法能达到线性时间复杂度，效率更高。
+
+
+
+## M1861.旋转盒子
+
+two pointers, https://leetcode.cn/problems/rotating-the-box/
+
+给你一个 `m x n` 的字符矩阵 `boxGrid` ，它表示一个箱子的侧视图。箱子的每一个格子可能为：
+
+- `'#'` 表示石头
+- `'*'` 表示固定的障碍物
+- `'.'` 表示空位置
+
+这个箱子被 **顺时针旋转 90 度** ，由于重力原因，部分石头的位置会发生改变。每个石头会垂直掉落，直到它遇到障碍物，另一个石头或者箱子的底部。重力 **不会** 影响障碍物的位置，同时箱子旋转不会产生**惯性** ，也就是说石头的水平位置不会发生改变。
+
+题目保证初始时 `boxGrid` 中的石头要么在一个障碍物上，要么在另一个石头上，要么在箱子的底部。
+
+请你返回一个 `n x m` 的矩阵，表示按照上述旋转后，箱子内的结果。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/rotatingtheboxleetcodewithstones.png" alt="img" style="zoom:67%;" />
+
+```
+输入：box = [["#",".","#"]]
+输出：[["."],
+      ["#"],
+      ["#"]]
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/rotatingtheboxleetcode2withstones.png" alt="img" style="zoom:67%;" />
+
+```
+输入：box = [["#",".","*","."],
+            ["#","#","*","."]]
+输出：[["#","."],
+      ["#","#"],
+      ["*","*"],
+      [".","."]]
+```
+
+**示例 3：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/rotatingtheboxleetcode3withstone.png" alt="img" style="zoom:67%;" />
+
+```
+输入：box = [["#","#","*",".","*","."],
+            ["#","#","#","*",".","."],
+            ["#","#","#",".","#","."]]
+输出：[[".","#","#"],
+      [".","#","#"],
+      ["#","#","*"],
+      ["#","*","."],
+      ["#",".","*"],
+      ["#",".","."]]
+```
+
+ 
+
+**提示：**
+
+- `m == boxGrid.length`
+- `n == boxGrid[i].length`
+- `1 <= m, n <= 500`
+- `boxGrid[i][j]` 只可能是 `'#'` ，`'*'` 或者 `'.'` 。
+
+
+
+为了解决这个问题，我们需要模拟两个主要过程：
+
+1.  **重力模拟**：在原始矩阵中，由于旋转后石头会向下掉落，这等同于在旋转**前**，每一行中的石头会尽可能地向右移动（因为旋转 90 度后，原来的“右侧”变成了“底部”）。
+2.  **矩阵旋转**：将 $m \times n$ 的矩阵顺时针旋转 90 度，变为 $n \times m$ 的矩阵。
+
+**算法步骤**
+
+1.  **处理重力**：
+    *   遍历 `boxGrid` 的每一行。
+    *   在每一行中，使用“双指针”思想：维护一个指针 `fill`，表示当前最靠右的可用空位（初始为 `n-1`）。
+    *   从右向左遍历该行的每一个格子：
+        *   如果是障碍物 `'*'`：石头无法穿过它，因此下一个可用空位 `fill` 必须更新为该障碍物左侧的位置。
+        *   如果是石头 `'#'`：将该石头移动到 `fill` 位置，并更新 `fill` 指针向左移动一位。
+        *   如果是空位 `'.'`：继续向左寻找石头。
+
+2.  **顺时针旋转 90 度**：
+    *   旋转规律：原矩阵中坐标为 `(r, c)` 的元素，在旋转后的矩阵中新坐标为 `(c, (m - 1) - r)`。其中 $m$ 是原矩阵的行数。
+    *   创建一个大小为 $n \times m$ 的新矩阵，并根据上述映射关系填入字符。
+
+**Python 代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def rotateTheBox(self, boxGrid: List[List[str]]) -> List[List[str]]:
+        m = len(boxGrid)
+        n = len(boxGrid[0])
+        
+        # 1. 模拟重力：让石头在每一行中向右滚动
+        for r in range(m):
+            # fill 指向当前行最靠右的可以放置石头的位置
+            fill = n - 1
+            # 从右向左遍历
+            for c in range(n - 1, -1, -1):
+                if boxGrid[r][c] == '*':
+                    # 遇到障碍物，更新 fill 指针到障碍物左侧
+                    fill = c - 1
+                elif boxGrid[r][c] == '#':
+                    # 遇到石头，将其交换到 fill 指向的空位
+                    # 如果 c == fill，交换不改变位置
+                    boxGrid[r][c], boxGrid[r][fill] = boxGrid[r][fill], boxGrid[r][c]
+                    fill -= 1
+        
+        # 2. 顺时针旋转 90 度
+        # 原 (r, c) -> 新 (c, m - 1 - r)
+        res = [['' for _ in range(m)] for _ in range(n)]
+        for r in range(m):
+            for c in range(n):
+                res[c][m - 1 - r] = boxGrid[r][c]
+        
+        return res
+
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(m \times n)$。
+    *   重力模拟：遍历一次矩阵，每个格子访问一次，耗时 $O(m \times n)$。
+    *   旋转：遍历一次矩阵进行赋值，耗时 $O(m \times n)$。
+*   **空间复杂度**：$O(m \times n)$。
+    *   需要创建一个 $n \times m$ 的新矩阵来存储旋转后的结果。如果忽略输出矩阵，重力模拟是在原数组上原地进行的，空间复杂度为 $O(1)$。
+
+**关键点总结**
+
+*   **重力处理时机**：虽然题目说先旋转再掉落，但实际上在旋转前让石头“横向掉落”逻辑更简单，且效果完全等价。
+*   **旋转坐标映射**：顺时针旋转 90 度公式 $NewRow = OldCol$, $NewCol = (MaxRowIndex - OldRow)$ 是此类题目最常用的技巧。
+
+
+
+这是一个非常好的观察！对于 **顺时针旋转 90 度**，确实存在两种常见的等价变换方法：
+
+1.  **方法 A：先转置 (Transpose)，再逐行反转 (Reverse rows)**
+    *   坐标变换：$(r, c) \xrightarrow{转置} (c, r) \xrightarrow{逐行反转} (c, m-1-r)$
+2.  **方法 B：先上下翻转 (Reverse vertically)，再转置 (Transpose)**
+    *   坐标变换：$(r, c) \xrightarrow{上下翻转} (m-1-r, c) \xrightarrow{转置} (c, m-1-r)$
+
+这两种方法都能得到完全相同的结果。
+
+**为什么在 Python 中通常推荐“先反转再转置”？**
+
+在 Python 中，方法 B 有一个非常简洁、一行代码就能搞定的写法：`list(zip(*boxGrid[::-1]))`。
+
+*   `boxGrid[::-1]`：实现了**上下翻转**（即逆序行）。
+*   `zip(*...)`：实现了**转置**。
+
+针对本题的代码实现，可以使用这种更 Pythonic 的方式来重写旋转部分：
+
+```python
+class Solution:
+    def rotateTheBox(self, boxGrid: List[List[str]]) -> List[List[str]]:
+        m, n = len(boxGrid), len(boxGrid[0])
+        
+        # 1. 模拟重力（必须在旋转前处理，或者逻辑对调）
+        for r in range(m):
+            fill = n - 1
+            for c in range(n - 1, -1, -1):
+                if boxGrid[r][c] == '*':
+                    fill = c - 1
+                elif boxGrid[r][c] == '#':
+                    # 将石头移到最右侧的空位
+                    boxGrid[r][c], boxGrid[r][fill] = boxGrid[r][fill], boxGrid[r][c]
+                    fill -= 1
+        
+        # 2. 顺时针旋转 90 度
+        # 方法 B 的 Python 写法：先上下翻转，再转置
+        # [::-1] 是上下翻转，zip(*...) 是转置
+        return [list(row) for row in zip(*boxGrid[::-1])]
+
+        # 或者如果你坚持“先转置再逐行翻转”（方法 A）：
+        # transposed = list(zip(*boxGrid))
+        # return [list(row[::-1]) for row in transposed]
+```
+
+**注意事项**
+
+1.  **原地操作限制**：
+    *   如果矩阵是**长方形** ($m \neq n$)，“转置”操作无法在原地（in-place）完成，因为维度变了（从 $m \times n$ 变成 $n \times m$）。所以你必须创建一个新矩阵。
+    *   如果矩阵是**正方形**，则可以先原地转置，再逐行反转，空间复杂度 $O(1)$。
+2.  **效率**：
+    *   `zip(*...)` 在 Python 中非常高效，底层经过了优化。
+    *   先处理重力再旋转，逻辑上最直观。因为旋转后，重力方向变成了“列”，而原矩阵中重力方向是“行”。在“行”上操作数组（连续内存）通常比在“列”上操作更快。
+
+**总结**
+
+你的思路是正确的！“转置 + 每行反转”和“上下反转 + 转置”都是实现顺时针 90 度旋转的标准手段。在 Python 中，后者利用 `zip(*matrix[::-1])` 写起来最快。
 
 
 
