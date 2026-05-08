@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-05-06 10:45 GMT+8*
+*Updated 2026-05-08 10:11 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -15449,7 +15449,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -47119,6 +47119,177 @@ class Solution:
 
 - 在最坏情况下，`visited[x][y][mask]` 只会被更新有限次（每次都必须有更高的剩余能量才更新），大大剪枝了原本可能的 20M+ 状态
 - 实际跑 m,n ≤ 20 时，BFS 很快能结束，不会超时。
+
+
+
+## M3629.通过质数传送到达终点的最少跳跃次数
+
+bfs, hash table, number theory, https://leetcode.cn/problems/minimum-jumps-to-reach-end-via-prime-teleportation/
+
+给你一个长度为 `n` 的整数数组 `nums`。
+
+你从下标 0 开始，目标是到达下标 `n - 1`。
+
+在任何下标 `i` 处，你可以执行以下操作之一：
+
+- **移动到相邻格子**：跳到下标 `i + 1` 或 `i - 1`，如果该下标在边界内。
+- **质数传送**：如果 `nums[i]` 是一个**质数** `p`，你可以立即跳到任何满足 `nums[j] % p == 0` 的下标 `j` 处，且下标 `j != i` 。
+
+返回到达下标 `n - 1` 所需的 **最少** 跳跃次数。
+
+**质数** 是一个大于 1 的自然数，只有两个因子，1 和它本身。
+
+ 
+
+**示例 1:**
+
+**输入:** nums = [1,2,4,6]
+
+**输出:** 2
+
+**解释:**
+
+一个最优的跳跃序列是：
+
+- 从下标 `i = 0` 开始。向相邻下标 1 跳一步。
+- 在下标 `i = 1`，`nums[1] = 2` 是一个质数。因此，我们传送到索引 `i = 3`，因为 `nums[3] = 6` 可以被 2 整除。
+
+因此，答案是 2。
+
+**示例 2:**
+
+**输入:** nums = [2,3,4,7,9]
+
+**输出:** 2
+
+**解释:**
+
+一个最优的跳跃序列是：
+
+- 从下标 `i = 0` 开始。向相邻下标 `i = 1` 跳一步。
+- 在下标 `i = 1`，`nums[1] = 3` 是一个质数。因此，我们传送到下标 `i = 4`，因为 `nums[4] = 9` 可以被 3 整除。
+
+因此，答案是 2。
+
+**示例 3:**
+
+**输入:** nums = [4,6,5,8]
+
+**输出:** 3
+
+**解释:**
+
+- 由于无法进行传送，我们通过 `0 → 1 → 2 → 3` 移动。因此，答案是 3。
+
+ 
+
+**提示:**
+
+- `1 <= n == nums.length <= 10^5`
+- `1 <= nums[i] <= 10^6`
+
+
+
+这个问题要求在给定的整数数组中，从下标 0 移动到下标 $n-1$ 的最少跳跃次数。这可以建模为一个**无权图的最短路径问题**，因此使用**广度优先搜索 (BFS)** 是最合适的算法。
+
+**核心思路**
+
+1.  **移动规则分析**：
+    *   **相邻移动**：$i \to i+1$ 或 $i \to i-1$。这是典型的图边。
+    *   **质数传送**：如果 $nums[i]$ 本身是一个**质数** $p$，那么你可以跳到数组中任何能被 $p$ 整除的数字 $nums[j]$ 的下标 $j$。
+
+2.  **预处理**：
+    *   **素数筛（Sieve of Eratosthenes）**：我们需要快速判断一个数是否为质数，并找到一个数的所有质因数。预计算 $10^6$ 范围内的最小质因子 (MPF) 数组。
+    *   **质数映射表**：建立一个字典（或数组列表），键是质数 $p$，值是所有满足 $nums[j] \pmod p == 0$ 的下标 $j$。这样，当我们位于一个质数 $nums[i]=p$ 时，可以立即找到所有潜在的传送目的地。
+
+3.  **优化 BFS**：
+    *   为了防止 BFS 重复搜索导致 $O(N^2)$ 的复杂度，我们需要：
+        *   `dist` 数组记录下标的访问情况。
+        *   `prime_visited` 数组记录某个质数是否已经触发过“传送”逻辑。一旦某个质数 $p$ 的传送路径被探索过，就不需要再次探索，因为 BFS 保证了第一次到达时路径最短。
+
+**Python 代码实现**
+
+```python
+import collections
+from typing import List
+
+# 预处理：埃氏筛法，计算 1,000,001 以内每个数的最小质因子 (MPF)
+MAX_M = 1000001
+min_prime = list(range(MAX_M))
+for i in range(2, 1001):  # 只需要筛到根号 10^6
+    if min_prime[i] == i:
+        for j in range(i * i, MAX_M, i):
+            if min_prime[j] == j:
+                min_prime[j] = i
+
+class Solution:
+    def minJumps(self, nums: List[int]) -> int:
+        n = len(nums)
+        if n == 1:
+            return 0
+        
+        # 建立 质数 -> [包含该质因子的下标列表] 的映射
+        # 这用于加速“如果 nums[i] 是质数 p，跳到所有能被 p 整除的 j”
+        adj_prime_to_idx = collections.defaultdict(list)
+        for i, val in enumerate(nums):
+            temp = val
+            while temp > 1:
+                p = min_prime[temp]
+                adj_prime_to_idx[p].append(i)
+                # 确保每个质因数只记录一次，避免重复添加下标
+                while temp % p == 0:
+                    temp //= p
+        
+        # BFS 初始化
+        dq = collections.deque([0])
+        dist = [-1] * n
+        dist[0] = 0
+        # 记录该质数是否已经作为“传送门”被使用过
+        prime_visited = [False] * MAX_M
+        
+        while dq:
+            u = dq.popleft()
+            d = dist[u]
+            
+            # 1. 尝试移动到相邻格子
+            for v in [u - 1, u + 1]:
+                if 0 <= v < n and dist[v] == -1:
+                    dist[v] = d + 1
+                    if v == n - 1:
+                        return dist[v]
+                    dq.append(v)
+            
+            # 2. 尝试质数传送
+            # 只有当 nums[u] 本身是质数时才能发动传送
+            p = nums[u]
+            if p > 1 and min_prime[p] == p:
+                # 如果这个质数之前没有被用来传送过
+                if not prime_visited[p]:
+                    prime_visited[p] = True
+                    # 遍历所有能被 p 整除的下标
+                    for v in adj_prime_to_idx[p]:
+                        if dist[v] == -1:
+                            dist[v] = d + 1
+                            if v == n - 1:
+                                return dist[v]
+                            dq.append(v)
+                            
+        return -1 # 正常情况下题目保证可达
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(M \log \log M + N \log(\max(nums)))$。
+    *   筛法预处理：$O(M \log \log M)$，其中 $M = 10^6$。
+    *   预处理 `adj_prime_to_idx`：每个数字 $nums[i]$ 最多有 $\log_2(10^6) \approx 20$ 个质因子，所以是 $O(N \log(\max(nums)))$。
+    *   BFS：每个下标最多入队一次，每个质数最多被处理一次传送逻辑。
+*   **空间复杂度**：$O(M + N \log(\max(nums)))$。主要消耗在筛法数组和存储质数映射的哈希表中。
+
+**关键点总结**
+
+由于题目规定只有当 `nums[i]` 是质数时才能进行传送，我们将所有数字的质因子提前提取出来并索引。在 BFS 过程中，通过 `prime_visited` 剪枝，确保了每个质因子的列表只被扫描一遍，从而将复杂度控制在合理范围内。
+
+
 
 
 
