@@ -15449,7 +15449,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -34144,6 +34144,143 @@ class Solution:
         # 如果没有找到大于 1 的幻方，返回 1
         return 1
 ```
+
+
+
+## M1914.循环轮转矩阵
+
+https://leetcode.cn/problems/cyclically-rotating-a-grid/
+
+给你一个大小为 `m x n` 的整数矩阵 `grid` ，其中 `m` 和 `n` 都是 **偶数** ；另给你一个整数 `k` 。
+
+矩阵由若干层组成，如下图所示，每种颜色代表一层：
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/ringofgrid.png" alt="img" style="zoom:67%;" />
+
+矩阵的循环轮转是通过分别循环轮转矩阵中的每一层完成的。在对某一层进行一次循环旋转操作时，层中的每一个元素将会取代其 **逆时针** 方向的相邻元素。轮转示例如下：
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/explanation_grid.jpg" alt="img" style="zoom:67%;" />
+
+返回执行 `k` 次循环轮转操作后的矩阵。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/rod2.png" alt="img" style="zoom:67%;" />
+
+```
+输入：grid = [[40,10],[30,20]], k = 1
+输出：[[10,20],[40,30]]
+解释：上图展示了矩阵在执行循环轮转操作时每一步的状态。
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/9d142da03a2e9d44dd3de469d9d15d90.png" alt="9d142da03a2e9d44dd3de469d9d15d90" style="zoom: 50%;" />
+
+
+
+```
+输入：grid = [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]], k = 2
+输出：[[3,4,8,12],[2,11,10,16],[1,7,6,15],[5,9,13,14]]
+解释：上图展示了矩阵在执行循环轮转操作时每一步的状态。
+```
+
+ 
+
+**提示：**
+
+- `m == grid.length`
+- `n == grid[i].length`
+- `2 <= m, n <= 50`
+- `m` 和 `n` 都是 **偶数**
+- `1 <= grid[i][j] <= 5000`
+- `1 <= k <= 10^9`
+
+
+
+这道题要求我们对一个 $m \times n$ 的矩阵进行循环轮转。矩阵由若干层（环）组成，我们需要针对每一层独立地进行 $k$ 次逆时针旋转。由于 $m$ 和 $n$ 都是偶数，矩阵可以被完美地分解为 $\min(m, n) / 2$ 个环。
+
+**解题思路**
+
+1.  **确定环的数量**：层数（环数）为 $min(m, n) // 2$。
+2.  **提取每一层**：对于每一层，我们可以按照逆时针方向（例如：左侧垂直边 -> 下方水平边 -> 右侧垂直边 -> 上方水平边）将其元素提取到一个线性数组（列表）中。
+3.  **计算实际旋转步数**：由于旋转具有周期性，对于长度为 $L$ 的环，旋转 $k$ 次等价于旋转 $k \pmod L$ 次。这样可以处理题目中 $k$ 高达 $10^9$ 的情况。
+4.  **执行旋转**：在提取出的线性数组上进行“位移”操作。题目中“每个元素取代其逆时针方向的相邻元素”，意味着数组中的元素整体向后移动（即数组末尾的元素移动到开头）。
+5.  **填回矩阵**：将旋转后的数组元素按原路径放回矩阵中。
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(m \times n)$。我们需要遍历矩阵中的每个元素两次（一次提取，一次填回）。
+*   **空间复杂度**：$O(m \times n)$。我们需要额外的空间来存储提取出的每一层元素。
+
+**Python 代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def rotateGrid(self, grid: List[List[int]], k: int) -> List[List[int]]:
+        m = len(grid)
+        n = len(grid[0])
+        # 矩阵的层数
+        num_layers = min(m, n) // 2
+        
+        for i in range(num_layers):
+            # 定义当前层的边界
+            r1, c1 = i, i
+            r2, c2 = m - 1 - i, n - 1 - i
+            
+            # 1. 按照逆时针顺序提取当前层的元素
+            # 顺序：左侧 (r1->r2, c1) -> 下方 (r2, c1+1->c2) -> 右侧 (r2-1->r1, c2) -> 上方 (r1, c2-1->c1+1)
+            layer = []
+            # 左边缘 (向下)
+            for r in range(r1, r2 + 1):
+                layer.append(grid[r][c1])
+            # 下边缘 (向右)
+            for c in range(c1 + 1, c2 + 1):
+                layer.append(grid[r2][c])
+            # 右边缘 (向上)
+            for r in range(r2 - 1, r1 - 1, -1):
+                layer.append(grid[r][c2])
+            # 上边缘 (向左)
+            for c in range(c2 - 1, c1, -1):
+                layer.append(grid[r1][c])
+            
+            # 2. 计算实际旋转次数并移动数组
+            # 逆时针旋转 k 次，相当于数组向右循环移动 k 位
+            # 例如 [1, 2, 3, 4] 旋转 1 次变成 [4, 1, 2, 3]
+            length = len(layer)
+            real_k = k % length
+            if real_k != 0:
+                layer = layer[-real_k:] + layer[:-real_k]
+            
+            # 3. 将旋转后的元素填回矩阵
+            idx = 0
+            # 同样的顺序填回
+            for r in range(r1, r2 + 1):
+                grid[r][c1] = layer[idx]
+                idx += 1
+            for c in range(c1 + 1, c2 + 1):
+                grid[r2][c] = layer[idx]
+                idx += 1
+            for r in range(r2 - 1, r1 - 1, -1):
+                grid[r][c2] = layer[idx]
+                idx += 1
+            for c in range(c2 - 1, c1, -1):
+                grid[r1][c] = layer[idx]
+                idx += 1
+                
+        return grid
+
+```
+
+**关键点解析**
+
+*   **层序提取**：通过 `range` 函数的步长和范围，精准控制上下左右四个边界的移动。注意循环的起始点，避免四个角上的元素被重复提取。
+*   **切片操作**：`layer[-real_k:] + layer[:-real_k]` 是 Python 中实现数组循环右移的高效写法。
+*   **逆时针逻辑**：题目描述“取代逆时针方向的相邻元素”，直观理解就是沿路径向前推。在我们的线性数组中，这表现为索引的增加。因此，$k=1$ 时，原先在最后的元素会来到索引 0，这正是循环右移。
 
 
 
