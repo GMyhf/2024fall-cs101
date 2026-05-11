@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-05-10 10:35 GMT+8*
+*Updated 2026-05-11 09:13 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -8483,6 +8483,89 @@ class Solution:
 
 
 
+## E2553.分割数组中数字的数位
+
+implementation, https://leetcode.cn/problems/separate-the-digits-in-an-array/
+
+给你一个正整数数组 `nums` ，请你返回一个数组 `answer` ，你需要将 `nums` 中每个整数进行数位分割后，按照 `nums` 中出现的 **相同顺序** 放入答案数组中。
+
+对一个整数进行数位分割，指的是将整数各个数位按原本出现的顺序排列成数组。
+
+- 比方说，整数 `10921` ，分割它的各个数位得到 `[1,0,9,2,1]` 。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [13,25,83,77]
+输出：[1,3,2,5,8,3,7,7]
+解释：
+- 分割 13 得到 [1,3] 。
+- 分割 25 得到 [2,5] 。
+- 分割 83 得到 [8,3] 。
+- 分割 77 得到 [7,7] 。
+answer = [1,3,2,5,8,3,7,7] 。answer 中的数字分割结果按照原数字在数组中的相同顺序排列。
+```
+
+**示例 2：**
+
+```
+输入：nums = [7,1,3,9]
+输出：[7,1,3,9]
+解释：nums 中每个整数的分割是它自己。
+answer = [7,1,3,9] 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 1000`
+- `1 <= nums[i] <= 10^5`
+
+
+
+这道题的要求是将数组 `nums` 中的每个整数拆分为单个数字，并按照原有的顺序合并成一个新的数组。
+
+**解题思路**
+
+1.  **遍历数组**：遍历 `nums` 中的每一个整数。
+2.  **转换数位**：对于每一个整数，我们需要获取它的每一个数字位。在 Python 中，最简单的方法是将整数转换为**字符串**。
+3.  **提取并存储**：遍历转换后的字符串，将每个字符转回整数，并依次存入结果列表 `answer` 中。
+4.  **返回结果**：遍历结束后，返回 `answer` 即可。
+
+**代码实现**
+
+```python
+class Solution:
+    def separateDigits(self, nums: List[int]) -> List[int]:
+        answer = []
+        # 遍历输入数组中的每一个数字
+        for num in nums:
+            # 将数字转为字符串，以便遍历它的每一位
+            s = str(num)
+            for char in s:
+                # 将字符转回整数并加入结果数组
+                answer.append(int(char))
+        return answer
+```
+
+**另一种更简洁的写法（列表推导式）**
+
+你可以使用嵌套的列表推导式来完成这个任务：
+
+```python
+class Solution:
+    def separateDigits(self, nums: List[int]) -> List[int]:
+        return [int(digit) for num in nums for digit in str(num)]
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(n \cdot k)$，其中 $n$ 是数组 `nums` 的长度，$k$ 是数字的最大位数（在本题中，数字最大为 $10^5$，即 $k \le 6$）。我们需要遍历每个数字的所有位。
+*   **空间复杂度**：$O(n \cdot k)$，我们需要一个额外的数组来存储所有的数位。
+
 
 
 ## 2595.奇偶位数
@@ -15449,7 +15532,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
