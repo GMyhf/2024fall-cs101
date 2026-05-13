@@ -25421,6 +25421,176 @@ if __name__ == "__main__":
 
 
 
+## B3609 [图论与代数结构 701] 强连通分量
+
+SCC, https://www.luogu.com.cn/problem/B3609
+
+给定一张 $n$ 个点 $m$ 条边的有向图，求出其所有的强连通分量。
+
+**注意，本题可能存在重边和自环。**
+
+**输入格式**
+
+第一行两个正整数 $n$，$m$，表示图的点数和边数。
+
+接下来 $m$ 行，每行两个正整数 $u$ 和 $v$ 表示一条边。
+
+**输出格式**
+
+第一行一个整数表示这张图的强连通分量数目。
+
+接下来每行输出一个强连通分量。第一行输出 $1$ 号点所在强连通分量，第二行输出 $2$ 号点所在强连通分量，若已被输出，则改为输出 $3$ 号点所在强连通分量，以此类推。每个强连通分量按节点编号大小输出。
+
+输入输出样例 #1
+
+输入 #1
+
+```
+6 8
+1 2
+1 5
+2 6
+5 6
+6 1
+5 3
+6 4
+3 4
+
+```
+
+输出 #1
+
+```
+3
+1 2 5 6
+3
+4
+
+```
+
+说明/提示
+
+对于所有数据，$1 \le n \le 10000$，$1 \le m \le 100000$。
+
+
+
+这是一个经典的图论问题，要求寻找有向图中的所有**强连通分量（Strongly Connected Components, SCC）**。
+
+**算法选择**
+
+处理强连通分量最常用的算法是 **Tarjan 算法**。它的核心思想是利用 DFS 过程中每个节点的“发现时间”和“能够回溯到的最早节点”来确定 SCC。
+
+1. **dfn[u]**：记录节点 $u$ 被 DFS 访问的次序（时间戳）。
+2. **low[u]**：记录节点 $u$ 或其子树能够通过反向边追溯到的最早节点的 `dfn` 值。
+3. **栈 (Stack)**：用于存放当前 DFS 路径上的节点。如果发现某个节点的 `dfn[u] == low[u]`，说明找到了一个强连通分量的根，此时栈中该节点及其上方的所有节点共同构成一个 SCC。
+
+**题目要求细节**
+
+* **输出顺序**：按照节点编号 $1, 2, \dots, n$ 的顺序检查，如果该节点所在的 SCC 没被输出过，则输出。
+* **分量内部顺序**：每个 SCC 内部的节点编号需从小到大排序。
+* **处理重边和自环**：Tarjan 算法天然支持处理重边和自环。
+
+**Python 代码实现**
+
+```python
+import sys
+
+# 增加递归深度，防止 DFS 导致栈溢出
+sys.setrecursionlimit(200000)
+
+def solve():
+    # 使用 sys.stdin.read().split() 快速读取大数据量
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    n = int(input_data[0])
+    m = int(input_data[1])
+    
+    # 建立邻接表
+    adj = [[] for _ in range(n + 1)]
+    idx = 2
+    for _ in range(m):
+        u = int(input_data[idx])
+        v = int(input_data[idx+1])
+        adj[u].append(v)
+        idx += 2
+        
+    dfn = [0] * (n + 1)      # 发现时间戳
+    low = [0] * (n + 1)      # 最早追溯时间戳
+    stack = []               # 模拟栈
+    in_stack = [False] * (n + 1)
+    timer = 0
+    
+    # 用于存储所有找到的 SCC
+    sccs = []
+    # node_to_scc_id[i] 记录节点 i 属于第几个找到的 SCC (sccs列表的索引)
+    node_to_scc_id = [-1] * (n + 1)
+    
+    def tarjan(u):
+        nonlocal timer
+        timer += 1
+        dfn[u] = low[u] = timer
+        stack.append(u)
+        in_stack[u] = True
+        
+        for v in adj[u]:
+            if dfn[v] == 0:  # 还没访问过
+                tarjan(v)
+                low[u] = min(low[u], low[v])
+            elif in_stack[v]: # 在栈中，说明构成了环
+                low[u] = min(low[u], dfn[v])
+        
+        # 如果当前节点是 SCC 的根
+        if low[u] == dfn[u]:
+            current_scc = []
+            while True:
+                node = stack.pop()
+                in_stack[node] = False
+                current_scc.append(node)
+                if node == u:
+                    break
+            
+            # 按题目要求：内部排序
+            current_scc.sort()
+            sccs.append(current_scc)
+            scc_idx = len(sccs) - 1
+            for node in current_scc:
+                node_to_scc_id[node] = scc_idx
+
+    # 遍历所有点，处理非连通图
+    for i in range(1, n + 1):
+        if dfn[i] == 0:
+            tarjan(i)
+            
+    # 输出结果
+    # 1. 第一行：SCC 的数量
+    print(len(sccs))
+    
+    # 2. 按题目要求的顺序输出每个 SCC
+    scc_visited = [False] * len(sccs)
+    for i in range(1, n + 1):
+        sid = node_to_scc_id[i]
+        if sid != -1 and not scc_visited[sid]:
+            # 输出该 SCC 的所有成员
+            print(*(sccs[sid]))
+            scc_visited[sid] = True
+
+if __name__ == "__main__":
+    solve()
+```
+
+**关键点解释：**
+
+1. **快速 I/O**：题目数据范围 $M \le 100,000$，使用普通的 `input()` 可能会导致超时。`sys.stdin.read().split()` 是一次性读取所有内容并分割，效率极高。
+2. **递归深度**：Python 默认递归深度仅为 1000 左右。对于 $N=10,000$ 的图（如果图退化成一条链），必须使用 `sys.setrecursionlimit` 调大深度。
+3. **输出逻辑**：
+   - 先通过 `node_to_scc_id` 记录每个点属于哪个分量。
+   - 然后从点 $1$ 循环到 $n$，利用 `scc_visited` 数组保证每个分量只被输出一次，且顺序符合“$1$ 号点所在分量优先，其次 $2$ 号...”的要求。
+4. **复杂度**：Tarjan 算法的时间复杂度为 $O(N+M)$，排序所有 SCC 的总代价为 $O(N \log N)$，完全符合题目时限要求。
+
+
+
 ## P4390 [BalkanOI2007] Mokia 摩基亚
 
 https://www.luogu.com.cn/problem/P4390
