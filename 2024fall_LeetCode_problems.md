@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-05-13 11:15 GMT+8*
+*Updated 2026-05-14 00:53 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -8909,6 +8909,144 @@ if __name__ == "__main__":
 
 
 
+## E2784.检查数组是否是好的
+
+sorting, hash table, https://leetcode.cn/problems/check-if-array-is-good/
+
+给你一个整数数组 `nums` ，如果它是数组 `base[n]` 的一个排列，我们称它是个 **好** 数组。
+
+`base[n] = [1, 2, ..., n - 1, n, n]` （换句话说，它是一个长度为 `n + 1` 且包含 `1` 到 `n - 1` 恰好各一次，包含 `n` 两次的一个数组）。比方说，`base[1] = [1, 1]` ，`base[3] = [1, 2, 3, 3]` 。
+
+如果数组是一个好数组，请你返回 `true` ，否则返回 `false` 。
+
+**注意：**数组的排列是这些数字按任意顺序排布后重新得到的数组。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [2, 1, 3]
+输出：false
+解释：因为数组的最大元素是 3 ，唯一可以构成这个数组的 base[n] 对应的 n = 3 。但是 base[3] 有 4 个元素，但数组 nums 只有 3 个元素，所以无法得到 base[3] = [1, 2, 3, 3] 的排列，所以答案为 false 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1, 3, 3, 2]
+输出：true
+解释：因为数组的最大元素是 3 ，唯一可以构成这个数组的 base[n] 对应的 n = 3 ，可以看出数组是 base[3] = [1, 2, 3, 3] 的一个排列（交换 nums 中第二个和第四个元素）。所以答案为 true 。
+```
+
+**示例 3：**
+
+```
+输入：nums = [1, 1]
+输出：true
+解释：因为数组的最大元素是 1 ，唯一可以构成这个数组的 base[n] 对应的 n = 1，可以看出数组是 base[1] = [1, 1] 的一个排列。所以答案为 true 。
+```
+
+**示例 4：**
+
+```
+输入：nums = [3, 4, 4, 1, 2, 1]
+输出：false
+解释：因为数组的最大元素是 4 ，唯一可以构成这个数组的 base[n] 对应的 n = 4 。但是 base[n] 有 5 个元素而 nums 有 6 个元素。所以答案为 false 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 100`
+- `1 <= num[i] <= 200`
+
+
+
+这个问题要求我们判断一个数组是否是 `base[n]` 的一个排列。
+`base[n]` 的定义是：长度为 `n + 1`，包含 `1` 到 `n - 1` 各一次，且包含 `n` 两次。
+
+**解题思路**
+
+1.  **确定 $n$ 的值**：
+    由于 `base[n]` 的长度必须是 `n + 1`，那么对于给定的数组 `nums`，如果它是好数组，其对应的 $n$ 必须等于 `len(nums) - 1`。
+2.  **特殊情况处理**：
+    如果数组长度小于 2（即 `len(nums) < 2`），则无法构成最小的 `base[1] = [1, 1]`，直接返回 `False`。
+3.  **验证元素组成**：
+    *   我们可以先对 `nums` 进行**排序**。
+    *   排序后的数组应该满足：
+        *   前 `n - 1` 个元素依次是 `1, 2, 3, ..., n-1`。
+        *   最后两个元素都应该是 `n`。
+4.  **复杂度分析**：
+    *   时间复杂度：$O(L \log L)$，其中 $L$ 是数组的长度，主要消耗在排序上。由于题目给出 $L \le 100$，这个复杂度非常理想。
+    *   空间复杂度：$O(1)$ 或 $O(L)$，取决于排序算法的实现和是否创建辅助数组。
+
+**代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def isGood(self, nums: List[int]) -> bool:
+        # 1. 确定 n 的值
+        n = len(nums) - 1
+        
+        # 最小的好数组是 base[1] = [1, 1]，长度为 2
+        if n < 1:
+            return False
+        
+        # 2. 对数组进行排序
+        nums.sort()
+        
+        # 3. 检查前 n-1 个元素是否为 1 到 n-1
+        for i in range(n - 1):
+            if nums[i] != i + 1:
+                return False
+        
+        # 4. 检查最后两个元素是否都等于 n
+        return nums[n - 1] == n and nums[n] == n
+
+```
+
+
+
+**计数法（Hash Map / Array）**
+
+也可以统计每个数字出现的频率：
+
+1. 计算 $n = len(nums) - 1$。
+2. 遍历 `nums`，统计 1 到 $n$ 每个数字出现的次数。
+3. 检查：
+   *   $1$ 到 $n-1$ 的频率是否都为 1。
+   *   $n$ 的频率是否为 2。
+   *   是否存在大于 $n$ 的数字。
+
+```python
+from collections import Counter
+
+class Solution:
+    def isGood(self, nums: List[int]) -> bool:
+        n = len(nums) - 1
+        if n < 1: return False
+        
+        counts = Counter(nums)
+        
+        # 检查 1 到 n-1 出现次数
+        for i in range(1, n):
+            if counts[i] != 1:
+                return False
+        
+        # 检查 n 出现次数
+        return counts[n] == 2
+```
+
+这种计数法的时间复杂度为 $O(L)$，在数组长度较大时比排序法更快，但在本题约束下两者表现相近。
+
+
+
+
+
 ## M2833.距离原点最远的点
 
 implementation, https://leetcode.cn/problems/furthest-point-from-origin/
@@ -15532,7 +15670,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
