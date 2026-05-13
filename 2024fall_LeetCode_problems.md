@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-05-11 09:13 GMT+8*
+*Updated 2026-05-13 11:15 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -15532,7 +15532,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -32551,6 +32551,142 @@ class Solution:
   - 每个高度差最多进堆 / 出堆一次
 - **空间复杂度**：`O(ladders)`
   - 堆中最多存 `ladders + 1` 个元素
+
+
+
+## M1674.使数组互补的最少操作次数
+
+prefix, 差分数组, https://leetcode.cn/problems/minimum-moves-to-make-array-complementary/
+
+给你一个长度为 **偶数** `n` 的整数数组 `nums` 和一个整数 `limit` 。每一次操作，你可以将 `nums` 中的任何整数替换为 `1` 到 `limit` 之间的另一个整数。
+
+如果对于所有下标 `i`（**下标从** `0` **开始**），`nums[i] + nums[n - 1 - i]` 都等于同一个数，则数组 `nums` 是 **互补的** 。例如，数组 `[1,2,3,4]` 是互补的，因为对于所有下标 `i` ，`nums[i] + nums[n - 1 - i] = 5` 。
+
+返回使数组 **互补** 的 **最少** 操作次数。
+
+**示例 1：**
+
+```
+输入：nums = [1,2,4,3], limit = 4
+输出：1
+解释：经过 1 次操作，你可以将数组 nums 变成 [1,2,2,3]（加粗元素是变更的数字）：
+nums[0] + nums[3] = 1 + 3 = 4.
+nums[1] + nums[2] = 2 + 2 = 4.
+nums[2] + nums[1] = 2 + 2 = 4.
+nums[3] + nums[0] = 3 + 1 = 4.
+对于每个 i ，nums[i] + nums[n-1-i] = 4 ，所以 nums 是互补的。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,2,2,1], limit = 2
+输出：2
+解释：经过 2 次操作，你可以将数组 nums 变成 [2,2,2,2] 。你不能将任何数字变更为 3 ，因为 3 > limit 。
+```
+
+**示例 3：**
+
+```
+输入：nums = [1,2,1,2], limit = 2
+输出：0
+解释：nums 已经是互补的。
+```
+
+ 
+
+**提示：**
+
+- `n == nums.length`
+- `2 <= n <= 10^5`
+- `1 <= nums[i] <= limit <= 10^5`
+- `n` 是偶数。
+
+
+
+**解题思路：**
+
+对于每一对数字 `(a, b)`，要使它们的和等于 `S`，所需的操作次数取决于 `S` 的取值范围：
+
+1.  **0 次操作**：如果 `S == a + b`，不需要任何改动。
+2.  **1 次操作**：如果我们只改变 `a` 或 `b` 中的一个，能达到的和 `S` 的范围是：
+    *   最小值：将较大的数变为 $1$，此时和为 $\min(a, b) + 1$。
+    *   最大值：将较小的数变为 $limit$，此时和为 $\max(a, b) + limit$。
+    *   因此，当 $S \in [\min(a, b) + 1, \max(a, b) + limit]$ 且 $S \neq a + b$ 时，需要 **1 次**操作。
+3.  **2 次操作**：如果 $S$ 不在上述范围内（即 $S < \min(a, b) + 1$ 或 $S > \max(a, b) + limit$），我们需要将 $a$ 和 $b$ 都进行替换，此时需要 **2 次**操作。
+
+**差分数组优化：**
+
+需要计算对于每一个可能的 $S \in [2, 2 \times limit]$，所有数对的操作总和。直接计算复杂度为 $O(N \times limit)$，会超时。由于操作数的变化是在区间上进行的，我们可以使用**差分数组**来优化。
+
+对于每一对 `(a, b)`：
+
+1.  初始状态：假设所有 $S$ 都需要 **2 次**操作。
+2.  在区间 $[\min(a, b) + 1, \max(a, b) + limit]$ 内，操作数从 2 变为 1（减少 1 次）。
+3.  在点 $S = a + b$ 处，操作数从 1 变为 0（再减少 1 次）。
+
+**算法步骤：**
+
+1.  初始化一个长度为 `2 * limit + 2` 的差分数组 `diff`。
+2.  遍历每一对 `(a, b)`：
+    *   `diff[2] += 2` (区间 $[2, 2 \cdot limit]$ 初始设为 2)
+    *   `low = min(a, b) + 1`, `high = max(a, b) + limit`
+    *   `diff[low] -= 1`, `diff[high + 1] += 1` (区间 $[low, high]$ 减 1)
+    *   `target = a + b`
+    *   `diff[target] -= 1`, `diff[target + 1] += 1` (点 `target` 再减 1)
+3.  计算 `diff` 数组的前缀和，求得每个 $S$ 对应的总操作数，取最小值。
+
+**Python 代码实现：**
+
+```python
+class Solution:
+    def minMoves(self, nums: List[int], limit: int) -> int:
+        n = len(nums)
+        # 差分数组，大小覆盖可能的和范围 [2, 2*limit]
+        # 使用 2*limit + 2 是为了防止 high + 1 越界
+        diff = [0] * (2 * limit + 2)
+        
+        m = n // 2
+        for i in range(m):
+            a, b = nums[i], nums[n - 1 - i]
+            
+            # 默认每一对都需要 2 次操作
+            diff[2] += 2
+            
+            # 计算只需 1 次操作即可达到的和的范围 [low, high]
+            low = min(a, b) + 1
+            high = max(a, b) + limit
+            
+            # 在 [low, high] 范围内，操作数减 1 (从 2 变成 1)
+            diff[low] -= 1
+            diff[high + 1] += 1
+            
+            # 在 a + b 这个特定的和上，操作数再减 1 (从 1 变成 0)
+            target = a + b
+            diff[target] -= 1
+            diff[target + 1] += 1
+            
+        ans = n  # 最大可能的操作数是 n
+        curr_moves = 0
+        # 遍历所有可能的和 S，从 2 到 2*limit
+        for s in range(2, 2 * limit + 1):
+            curr_moves += diff[s]
+            if curr_moves < ans:
+                ans = curr_moves
+                
+        return ans
+```
+
+**复杂度分析：**
+
+*   **时间复杂度**：$O(n + limit)$。我们需要遍历数组的一半 $O(n/2)$ 来填充差分数组，然后遍历一次差分数组 $O(2 \cdot limit)$。
+*   **空间复杂度**：$O(limit)$。需要一个大小为 $2 \cdot limit + 2$ 的差分数组。
+
+> 差分数组好神奇（把“对一段范围的操作”变成了“对两个点的操作”），加减法看了好半天。
+>
+> 【算法小课堂】差分数组（Python/Java/C++/Go/JS/Rust）
+>
+> https://leetcode.cn/problems/car-pooling/solutions/2550264/suan-fa-xiao-ke-tang-chai-fen-shu-zu-fu-9d4ra/
 
 
 
