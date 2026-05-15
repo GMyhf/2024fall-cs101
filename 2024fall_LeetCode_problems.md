@@ -15670,7 +15670,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -21515,7 +21515,7 @@ if __name__ == "__main__":
 
 
 
-## 153.寻找旋转排序数组中的最小值
+## M153.寻找旋转排序数组中的最小值
 
 binary search, https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array/
 
@@ -21568,46 +21568,64 @@ binary search, https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array
 
 
 
+这道题要求在 $O(\log n)$ 的时间复杂度内找到旋转排序数组中的最小值。由于数组在旋转前是升序的，且旋转后依然保持局部有序，我们可以使用 **二分查找（Binary Search）** 来解决。
 
+**核心思路**
 
-这个问题可以使用 **二分查找** 来解决，时间复杂度是 O(log⁡n)。由于数组已经旋转过，所以它是一个部分排序的数组。我们可以利用二分查找来定位最小值。
+在旋转排序数组中，数组被分成了两个升序的部分：
 
-思路：
+1.  左侧部分的所有元素都大于右侧部分的所有元素（如果发生了旋转）。
+2.  我们要寻找的最小值，正是右侧部分的第一个元素。
 
-1. 数组的最小元素一定会在旋转点附近。如果数组没有被旋转，那么最小元素就是数组的第一个元素。
-2. 在旋转数组中，数组的两个部分（左部分和右部分）各自是升序的。
-3. 如果 `nums[mid]` 大于 `nums[right]`，说明最小元素在 `mid` 右边的部分，因为此时右部分的值比中间值小；否则，最小元素在 `mid` 左边或者 `mid` 就是最小元素。
+我们可以通过比较中间元素 `nums[mid]` 和 **右边界元素 `nums[right]`** 来确定最小值所在的区间：
 
-代码实现：
+1.  **如果 `nums[mid] < nums[right]`**：
+    *   说明从 `mid` 到 `right` 这一段是升序的。
+    *   最小值可能是 `nums[mid]` 本身，也可能在 `mid` 的左侧。
+    *   因此，我们将右边界收缩：`right = mid`。
+
+2.  **如果 `nums[mid] > nums[right]`**：
+    *   说明从 `mid` 到 `right` 之间发生了“断层”（旋转点在其中）。
+    *   最小值一定在 `mid` 的右侧。
+    *   因此，我们将左边界收缩：`left = mid + 1`。
+
+3.  **循环结束条件**：
+    *   当 `left == right` 时，我们就找到了数组的最小值。
+
+**代码实现**
 
 ```python
+from typing import List
+
 class Solution:
     def findMin(self, nums: List[int]) -> int:
         left, right = 0, len(nums) - 1
-    
+        
+        # 二分查找
         while left < right:
             mid = left + (right - left) // 2
             
-            # 如果中间元素大于右边元素，说明最小元素在右边
-            if nums[mid] > nums[right]:
-                left = mid + 1
-            # 否则最小元素在左边
-            else:
+            # 如果中间值小于右边界值，说明右半部分是递增的
+            # 最小值可能是 mid，或者在 mid 的左边
+            if nums[mid] < nums[right]:
                 right = mid
+            # 如果中间值大于右边界值，说明最小值一定在 mid 的右边
+            else:
+                left = mid + 1
         
-        # 最后left和right会指向最小元素
+        # 最终 left == right，指向的就是最小值
         return nums[left]
 ```
 
-时间复杂度：
+**复杂度分析**
 
-- 每次二分查找都将搜索范围缩小一半，所以时间复杂度是 O(log⁡n)。
+*   **时间复杂度**：$O(\log n)$。每次循环都将搜索区间缩小一半。
+*   **空间复杂度**：$O(1)$。只使用了常数级别的额外空间。
 
-空间复杂度：
+**为什么不和 `nums[left]` 比较？**
 
-- 只使用了常数级别的额外空间，空间复杂度是 O(1)。
-
-这种方法通过二分查找能够高效地找到最小元素。
+如果数组没有旋转（即它是完全升序的，如 `[1, 2, 3]`），`nums[mid]` 会大于 `nums[left]`。但在旋转数组（如 `[4, 5, 1, 2, 3]`）中，`nums[mid]` 同样可能大于 `nums[left]`。
+这会导致逻辑判断变得复杂。而比较 `nums[mid]` 和 `nums[right]` 可以非常清晰地判断 `mid` 是落在“大的左半段”还是“小的右半段”，逻辑更加统一。
 
 
 
