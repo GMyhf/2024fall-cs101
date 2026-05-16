@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-05-12 09:16 GMT+8*
+*Updated 2026-05-16 10:43 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -2270,6 +2270,104 @@ class Solution:
 
         return sum(candies)
 ```
+
+
+
+## T154.寻找旋转排序数组中的最小值 II
+
+binary search, https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array-ii/
+
+已知一个长度为 `n` 的数组，预先按照升序排列，经由 `1` 到 `n` 次 **旋转** 后，得到输入数组。例如，原数组 `nums = [0,1,4,4,5,6,7]` 在变化后可能得到：
+
+- 若旋转 `4` 次，则可以得到 `[4,5,6,7,0,1,4]`
+- 若旋转 `7` 次，则可以得到 `[0,1,4,4,5,6,7]`
+
+注意，数组 `[a[0], a[1], a[2], ..., a[n-1]]` **旋转一次** 的结果为数组 `[a[n-1], a[0], a[1], a[2], ..., a[n-2]]` 。
+
+给你一个可能存在 **重复** 元素值的数组 `nums` ，它原来是一个升序排列的数组，并按上述情形进行了多次旋转。请你找出并返回数组中的 **最小元素** 。
+
+你必须尽可能减少整个过程的操作步骤。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,3,5]
+输出：1
+```
+
+**示例 2：**
+
+```
+输入：nums = [2,2,2,0,1]
+输出：0
+```
+
+ 
+
+**提示：**
+
+- `n == nums.length`
+- `1 <= n <= 5000`
+- `-5000 <= nums[i] <= 5000`
+- `nums` 原来是一个升序排序的数组，并进行了 `1` 至 `n` 次旋转
+
+ 
+
+**进阶：**这道题与 [寻找旋转排序数组中的最小值](https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array/description/) 类似，但 `nums` 可能包含重复元素。允许重复会影响算法的时间复杂度吗？会如何影响，为什么？
+
+
+
+当有重复元素时，`nums[mid]` 可能等于 `nums[right]`，此时我们无法直接判断最小值在左侧还是右侧。
+
+**核心改进逻辑**
+
+1.  **`nums[mid] < nums[right]`**：最小值在 `mid` 或 `mid` 左侧，执行 `right = mid`。
+2.  **`nums[mid] > nums[right]`**：最小值在 `mid` 右侧，执行 `left = mid + 1`。
+3.  **`nums[mid] == nums[right]`**：**无法确定区间**。
+    *   例如 `[1, 0, 1, 1, 1]` 和 `[1, 1, 1, 0, 1]`，在这两种情况下 `nums[mid] == nums[right]`。
+    *   由于 `nums[mid]` 和 `nums[right]` 相等，即使 `nums[right]` 是最小值，`nums[mid]` 也是最小值。
+    *   **对策**：我们可以安全地将 `right` 向左移动一位（`right -= 1`），从而缩小搜索范围。
+
+**代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def findMin(self, nums: List[int]) -> int:
+        left, right = 0, len(nums) - 1
+        
+        while left < right:
+            mid = left + (right - left) // 2
+            
+            if nums[mid] < nums[right]:
+                # 最小值在 mid 或 mid 左侧
+                right = mid
+            elif nums[mid] > nums[right]:
+                # 最小值在 mid 右侧
+                left = mid + 1
+            else:
+                # 当 nums[mid] == nums[right] 时
+                # 我们无法判断最小值在左还是在右，但可以肯定的是：
+                # 既然 nums[mid] 等于 nums[right]，那么抛弃当前的 right 也是安全的
+                # 因为即使 nums[right] 是最小值，还有 nums[mid] 顶着
+                right -= 1
+                
+        return nums[left]
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：
+    *   **平均情况**：$O(\log n)$。
+    *   **最坏情况**：$O(n)$。当数组中大部分元素都相同时（例如 `[1, 1, 1, 1, 1, 0, 1]`），算法会退化为线性查找。
+*   **空间复杂度**：$O(1)$。
+
+**总结**
+
+对比不含重复元素的情况，唯一的区别就在于 `nums[mid] == nums[right]` 这一步。处理重复元素的核心在于**保守地缩小边界**，即 `right -= 1`，这样既能保证不跳过最小值，又能继续利用二分的优势。
 
 
 
