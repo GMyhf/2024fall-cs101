@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-05-14 00:53 GMT+8*
+*Updated 2026-05-17 09:11 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -15670,7 +15670,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -30602,6 +30602,140 @@ class Solution:
     *   总和：$O(m \cdot n \cdot \log(\min(m, n)))$。由于 $m, n \le 300$，$\log(300) \approx 8.2$，这个复杂度也是可以通过的。
 *   **空间复杂度**：$O(m \cdot n)$
     *   用于存储二维前缀和数组。
+
+
+
+## M1306.跳跃游戏 III
+
+bfs, dfs, https://leetcode.cn/problems/jump-game-iii/
+
+这里有一个非负整数数组 `arr`，你最开始位于该数组的起始下标 `start` 处。当你位于下标 `i` 处时，你可以跳到 `i + arr[i]` 或者 `i - arr[i]`。
+
+请你判断自己是否能够跳到对应元素值为 0 的 **任一** 下标处。
+
+注意，不管是什么情况下，你都无法跳到数组之外。
+
+ 
+
+**示例 1：**
+
+```
+输入：arr = [4,2,3,0,3,1,2], start = 5
+输出：true
+解释：
+到达值为 0 的下标 3 有以下可能方案： 
+下标 5 -> 下标 4 -> 下标 1 -> 下标 3 
+下标 5 -> 下标 6 -> 下标 4 -> 下标 1 -> 下标 3 
+```
+
+**示例 2：**
+
+```
+输入：arr = [4,2,3,0,3,1,2], start = 0
+输出：true 
+解释：
+到达值为 0 的下标 3 有以下可能方案： 
+下标 0 -> 下标 4 -> 下标 1 -> 下标 3
+```
+
+**示例 3：**
+
+```
+输入：arr = [3,0,2,1,2], start = 2
+输出：false
+解释：无法到达值为 0 的下标 1 处。 
+```
+
+ 
+
+**提示：**
+
+- `1 <= arr.length <= 5 * 10^4`
+- `0 <= arr[i] < arr.length`
+- `0 <= start < arr.length`
+
+
+
+这个问题是一个典型的**图遍历问题**。我们可以将数组的下标看作图中的节点，如果从下标 `i` 可以跳到下标 `j`，则视为存在一条从 `i` 到 `j` 的有向边。
+
+由于我们需要判断是否能到达值为 0 的下标，我们可以使用 **广度优先搜索 (BFS)** 或 **深度优先搜索 (DFS)**。
+
+**解题思路**
+
+1.  **初始化**：使用一个队列（用于 BFS）或递归栈（用于 DFS）来记录待访问的下标。
+2.  **避免重复访问**：为了防止在数组中陷入无限循环（比如两个下标互相跳转），我们需要标记已经访问过的下标。可以使用一个集合 `visited` 或者直接在原数组上做标记（例如将访问过的值取负数）。
+3.  **遍历过程**：
+    *   从 `start` 开始。
+    *   检查当前下标 `i` 的值是否为 0。如果是，返回 `True`。
+    *   计算两个可能的跳转位置：`i + arr[i]` 和 `i - arr[i]`。
+    *   如果跳转位置在数组边界内且未被访问过，将其加入搜索队列。
+4.  **结束条件**：如果搜索完所有可达的节点仍未发现值为 0 的下标，返回 `False`。
+
+**Python 代码实现 (BFS)**
+
+```python
+from collections import deque
+
+class Solution:
+    def canReach(self, arr: List[int], start: int) -> bool:
+        n = len(arr)
+        # 使用队列进行广度优先搜索
+        queue = deque([start])
+        # 使用集合记录访问过的下标，防止死循环
+        visited = {start}
+        
+        while queue:
+            curr = queue.popleft()
+            
+            # 找到目标
+            if arr[curr] == 0:
+                return True
+            
+            # 向左跳和向右跳的两个选项
+            for next_idx in [curr + arr[curr], curr - arr[curr]]:
+                # 确保下标在合法范围内且未被访问过
+                if 0 <= next_idx < n and next_idx not in visited:
+                    visited.add(next_idx)
+                    queue.append(next_idx)
+        
+        return False
+```
+
+**Python 代码实现 (DFS - 递归版)**
+
+```python
+class Solution:
+    def canReach(self, arr: List[int], start: int) -> bool:
+        # 如果越界或已经访问过，返回 False
+        # 这里通过将访问过的值设为负数来节省空间（原数组值非负）
+        if start < 0 or start >= len(arr) or arr[start] < 0:
+            return False
+        
+        if arr[start] == 0:
+            return True
+        
+        # 标记为已访问（取反，只要变成负数即可）
+        # 注意：需要记录原始值以便计算跳转
+        step = arr[start]
+        arr[start] = -arr[start]
+        
+        # 递归探测左右两个方向
+        # 只要有一条路径能通，就返回 True
+        return self.canReach(arr, start + step) or self.canReach(arr, start - step)
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(N)$，其中 $N$ 是数组 `arr` 的长度。在最坏情况下，我们需要访问数组中的每一个元素一次。
+*   **空间复杂度**：$O(N)$。
+    *   在 BFS 中，`visited` 集合和 `queue` 队列最多存储 $N$ 个元素。
+    *   在 DFS 中，递归栈的深度在最坏情况下为 $N$。
+
+**总结**
+
+对于此类跳跃/路径搜索问题，BFS 通常更直观，且在 Python 中不需要担心递归深度限制（`sys.setrecursionlimit`）。在本题中，两种方法效率相当。
+
+
 
 
 
