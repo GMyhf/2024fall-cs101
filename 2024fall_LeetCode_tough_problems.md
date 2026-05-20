@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-05-18 14:01 GMT+8*
+*Updated 2026-05-20 14:01 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -25340,6 +25340,315 @@ if __name__ == "__main__":
 2. 当 `r=1` (点 (4,10)) 时：`max=10, min=4`，差值 $6 \ge 5$。`ans = 4-2 = 2`。
 3. 当 `r=2` (点 (6,3)) 时：窗口内最大 $y=10$ (来自点 (4,10))，最小 $y=3$ (来自点 (6,3))，差值 $7 \ge 5$。尝试收缩 `l`，`ans = min(2, 6-4) = 2`。
 4. 最终输出 `2`。
+
+
+
+## P3387 【模板】缩点
+
+SCC, https://www.luogu.com.cn/problem/P3387
+
+给定一个 $n$ 个点 $m$ 条边有向图，每个点有一个权值，求一条路径，使路径经过的点权值之和最大。你只需要求出这个权值和。
+
+允许多次经过一条边或者一个点，但是，重复经过的点，权值只计算一次。
+
+**输入格式**
+
+第一行两个正整数 $n,m$。
+
+第二行 $n$ 个整数，其中第 $i$ 个数 $a_i$ 表示点 $i$ 的点权。
+
+第三至 $m+2$ 行，每行两个整数 $u,v$，表示一条 $u\rightarrow v$ 的有向边。
+
+**输出格式**
+
+共一行，最大的点权之和。
+
+输入输出样例 #1
+
+输入 #1
+
+```
+2 2
+1 1
+1 2
+2 1
+```
+
+输出 #1
+
+```
+2
+```
+
+说明/提示
+
+对于 $100\%$ 的数据，$1\le n \le 10^4$，$1\le m \le 10^5$，$0\le a_i\le 10^3$。
+
+- 2024-11-1 添加了 [hack 数据](https://www.luogu.com.cn/discuss/964940)；
+
+
+
+
+
+这是一个经典的图论题目，考察的是**强连通分量（SCC）**、**缩点**以及**拓扑排序+动态规划（DP）**。
+
+**核心思路**
+
+1.  **缩点 (SCC)**：题目允许重复经过点和边，但点权只算一次。这意味着如果你进入了一个“环”，你可以把环上所有的点权全部拿到。因此，我们可以使用 **Tarjan 算法** 找到所有的强连通分量（SCC），并将每个 SCC 缩成一个点。新点的权值就是原 SCC 中所有点的权值之和。
+2.  **构建 DAG**：缩点后，原图变成了一个**有向无环图（DAG）**。
+3.  **拓扑排序 + DP**：在 DAG 上求一条路径使得点权之和最大。
+    *   令 `dp[i]` 表示到达缩点后的第 $i$ 个点时能获得的最大权值。
+    *   状态转移方程：`dp[v] = max(dp[v], dp[u] + weight[v])`，其中存在一条从 $u$ 到 $v$ 的边。
+
+**Python 代码实现**
+
+由于 Python 默认递归深度限制较低且处理大规模图论数据较慢，我们需要：
+
+1.  使用 `sys.setrecursionlimit` 增加递归深度。
+2.  使用 `sys.stdin.readline` 加快输入速度。
+
+```python
+import sys
+
+# 增加递归深度，防止 Tarjan 递归爆栈
+sys.setrecursionlimit(200000)
+
+def solve():
+    # 使用快速读取
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    ptr = 0
+    n = int(input_data[ptr]); ptr += 1
+    m = int(input_data[ptr]); ptr += 1
+    
+    # 点权
+    weights = []
+    for _ in range(n):
+        weights.append(int(input_data[ptr]))
+        ptr += 1
+        
+    # 建原图
+    adj = [[] for _ in range(n + 1)]
+    edges = []
+    for _ in range(m):
+        u = int(input_data[ptr]); ptr += 1
+        v = int(input_data[ptr]); ptr += 1
+        adj[u].append(v)
+        edges.append((u, v))
+
+    # Tarjan 缩点变量
+    dfn = [0] * (n + 1)
+    low = [0] * (n + 1)
+    stack = []
+    in_stack = [False] * (n + 1)
+    scc_id = [0] * (n + 1)
+    scc_weight = []
+    timer = 0
+    scc_cnt = 0
+
+    def tarjan(u):
+        nonlocal timer, scc_cnt
+        timer += 1
+        dfn[u] = low[u] = timer
+        stack.append(u)
+        in_stack[u] = True
+        
+        for v in adj[u]:
+            if not dfn[v]:
+                tarjan(v)
+                low[u] = min(low[u], low[v])
+            elif in_stack[v]:
+                low[u] = min(low[u], dfn[v])
+        
+        if low[u] == dfn[u]:
+            scc_cnt += 1
+            current_scc_weight = 0
+            while True:
+                node = stack.pop()
+                in_stack[node] = False
+                scc_id[node] = scc_cnt
+                current_scc_weight += weights[node - 1]
+                if node == u:
+                    break
+            scc_weight.append(current_scc_weight)
+
+    # 对每个未访问点运行 Tarjan
+    for i in range(1, n + 1):
+        if not dfn[i]:
+            tarjan(i)
+
+    # 构建新图 (DAG)
+    # scc_weight 索引是从 0 开始的，对应 scc_id 1~scc_cnt
+    dag_adj = [set() for _ in range(scc_cnt + 1)]
+    in_degree = [0] * (scc_cnt + 1)
+    
+    for u, v in edges:
+        sid_u = scc_id[u]
+        sid_v = scc_id[v]
+        if sid_u != sid_v and sid_v not in dag_adj[sid_u]:
+            dag_adj[sid_u].add(sid_v)
+            in_degree[sid_v] += 1
+
+    # 拓扑排序 + DP
+    # dp[i] 表示到达 SCC i 的最大权值
+    dp = [0] * (scc_cnt + 1)
+    from collections import deque
+    queue = deque()
+    
+    for i in range(1, scc_cnt + 1):
+        dp[i] = scc_weight[i-1]
+        if in_degree[i] == 0:
+            queue.append(i)
+            
+    while queue:
+        u = queue.popleft()
+        for v in dag_adj[u]:
+            # 更新到达 v 的最大权值
+            if dp[u] + scc_weight[v-1] > dp[v]:
+                dp[v] = dp[u] + scc_weight[v-1]
+            in_degree[v] -= 1
+            if in_degree[v] == 0:
+                queue.append(v)
+
+    # 结果是所有 dp 值中的最大者
+    print(max(dp) if dp else 0)
+
+if __name__ == "__main__":
+    solve()
+```
+
+**关键点解释：**
+
+1.  **Tarjan 算法**：
+    *   `dfn[u]`：节点 `u` 被发现的时间步。
+    *   `low[u]`：从 `u` 出发，经过树边或反向边能到达的最小 `dfn`。
+    *   当 `dfn[u] == low[u]` 时，说明找到了一个 SCC 的根，此时弹出栈内所有属于该 SCC 的节点。
+2.  **去重边**：在构建缩点后的 DAG 时，如果原图中两个不同的 SCC 之间有多条边，我们在 DAG 中只需要考虑一条，或者直接用 `set` 来存储邻接表。
+3.  **动态规划**：
+    *   在 DAG 上，由于没有环，我们可以按照拓扑序来计算最长路径（权值和最大路径）。
+    *   初始状态：`dp[i] = weight[i]`（每个点至少能拿到自己所在 SCC 的权值）。
+    *   转移：`dp[v] = max(dp[v], dp[u] + weight[v])`。
+4.  **性能**：
+    *   该算法的时间复杂度为 $O(N+M)$，能够通过 $N=10^4, M=10^5$ 的数据规模。
+    *   Python 递归较慢，对于极致的 Hack 数据（如长链），递归 Tarjan 可能会超过系统栈限制，但在大部分 OJ 上设置 `setrecursionlimit` 即可。
+
+
+
+
+
+```python
+import sys
+
+# 增加递归深度，防止 DFS 爆栈
+sys.setrecursionlimit(200000)
+
+def solve():
+    # 使用快读提高效率
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    ptr = 0
+    n = int(input_data[ptr]); ptr += 1
+    m = int(input_data[ptr]); ptr += 1
+    
+    # 原始节点权值
+    weights = [0] * (n + 1)
+    for i in range(1, n + 1):
+        weights[i] = int(input_data[ptr]); ptr += 1
+        
+    # 原始邻接表
+    adj = [[] for _ in range(n + 1)]
+    edges = []
+    for _ in range(m):
+        u = int(input_data[ptr]); ptr += 1
+        v = int(input_data[ptr]); ptr += 1
+        adj[u].append(v)
+        edges.append((u, v))
+
+    # --- Tarjan 算法相关变量 ---
+    dfn = [0] * (n + 1)   # 发现时间
+    low = [0] * (n + 1)   # 追溯值
+    stack = []
+    in_stack = [False] * (n + 1)
+    timer = 0
+    
+    scc_id = [0] * (n + 1)    # 节点所属的 SCC 编号
+    scc_weight = [0] * (n + 1) # SCC 的总权值
+    scc_count = 0
+
+    def tarjan(u):
+        nonlocal timer, scc_count
+        timer += 1
+        dfn[u] = low[u] = timer
+        stack.append(u)
+        in_stack[u] = True
+        
+        for v in adj[u]:
+            if not dfn[v]:
+                tarjan(v)
+                low[u] = min(low[u], low[v])
+            elif in_stack[v]:
+                low[u] = min(low[u], dfn[v])
+        
+        if dfn[u] == low[u]:
+            scc_count += 1
+            while True:
+                node = stack.pop()
+                in_stack[node] = False
+                scc_id[node] = scc_count
+                scc_weight[scc_count] += weights[node]
+                if node == u:
+                    break
+
+    # 对每个未访问的点跑 Tarjan
+    for i in range(1, n + 1):
+        if not dfn[i]:
+            tarjan(i)
+
+    # --- 重新建图 (缩点后的 DAG) ---
+    dag_adj = [[] for _ in range(scc_count + 1)]
+    in_degree = [0] * (scc_count + 1)
+    
+    # 为了去重边，可以使用集合，但在求最长路时重复边通常不影响结果
+    # 这里我们直接建图
+    for u, v in edges:
+        if scc_id[u] != scc_id[v]:
+            dag_adj[scc_id[u]].append(scc_id[v])
+            in_degree[scc_id[v]] += 1
+
+    # --- 拓扑排序 + 动态规划 求 DAG 最长路 ---
+    # dp[i] 表示到达 SCC i 时能获得的最大权值
+    dp = [0] * (scc_count + 1)
+    queue = []
+    
+    for i in range(1, scc_count + 1):
+        dp[i] = scc_weight[i]
+        if in_degree[i] == 0:
+            queue.append(i)
+    
+    head = 0
+    while head < len(queue):
+        u = queue[head]
+        head += 1
+        for v in dag_adj[u]:
+            # 状态转移方程：到 v 的最大权值 = max(原权值, 到 u 的最大权值 + v 的权值)
+            if dp[u] + scc_weight[v] > dp[v]:
+                dp[v] = dp[u] + scc_weight[v]
+            
+            in_degree[v] -= 1
+            if in_degree[v] == 0:
+                queue.append(v)
+
+    # 最终答案是所有 dp 值中的最大者
+    print(max(dp) if scc_count > 0 else 0)
+
+solve()
+```
+
+
 
 
 
