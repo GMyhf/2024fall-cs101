@@ -26299,6 +26299,520 @@ if __name__ == "__main__":
 
 
 
+## P4148 简单题
+
+KD Tree, https://www.luogu.com.cn/problem/P4148
+
+你有一个$N \times N$的棋盘，每个格子内有一个整数，初始时的时候全部为 $0$，现在需要维护两种操作：
+
+- `1 x y A`    $1\le x,y\le N$，$A$ 是正整数。将格子`x`,`y`里的数字加上 $A$。
+- `2 x1 y1 x2 y2`    $1 \le x_1 \le x_2 \le N$，$1 \le y_1\le y_2 \le N$。输出 $x_1, y_1, x_2, y_2$ 这个矩形内的数字和
+- `3`    无 终止程序
+
+**输入格式**
+
+输入文件第一行一个正整数 $N$。
+
+接下来每行一个操作。每条命令除第一个数字之外，均要异或上一次输出的答案 `last_ans`，初始时 `last_ans` $=0$。
+
+**输出格式**
+
+对于每个 $2$ 操作，输出一个对应的答案。
+
+输入输出样例 #1
+
+输入 #1
+
+```
+4
+1 2 3 3
+2 1 1 3 3
+1 1 1 1
+2 1 1 0 7
+3
+```
+
+输出 #1
+
+```
+3
+5
+```
+
+说明/提示
+
+$1\leq N\leq 5\times 10^5$，操作数不超过 $2\times 10^5$ 个，内存限制 $20\texttt{MB}$，保证答案在 int 范围内并且解码之后数据仍合法。
+
+
+
+
+
+Python 在洛谷 P4148 这道题上确实非常难通过，主要瓶颈在于 **20MB 的内存限制**。Python 的一个整数对象就要占用 28 字节，加上列表和递归开销，几乎不可能在 20MB 内维护 $2\times 10^5$ 个节点。
+
+使用 C++ 实现时，我们需要利用 **替罪羊树 (Scapegoat Tree)** 的思想来定期重构不平衡的 KD-Tree。
+
+### C++ 代码实现
+
+```cpp
+#include <iostream>
+#include <algorithm>
+#include <cstdio>
+
+using namespace std;
+
+// 20MB 内存非常紧，结构体大小需严格控制
+// 2e5 * 11个int * 4字节 = 8.8MB 左右，加上递归栈和全局变量，可以压进20MB
+const int MAXN = 200005;
+const double alpha = 0.75; // 替罪羊树平衡因子
+
+struct Node {
+    int ch[2];       // 左右孩子
+    int x[2];        // 节点的坐标 (x, y)
+    int min[2], max[2]; // 子树内坐标的最小值和最大值边界
+    int val, sum;    // 当前节点值，子树权值和
+    int size;        // 子树大小
+} tr[MAXN];
+
+int n, tot, root, cur;
+int pool[MAXN]; // 存储待重构节点的索引
+
+// 向上更新节点的统计信息
+void pushup(int u) {
+    int l = tr[u].ch[0], r = tr[u].ch[1];
+    tr[u].size = tr[l].size + tr[r].size + 1;
+    tr[u].sum = tr[l].sum + tr[r].sum + tr[u].val;
+    for (int i = 0; i < 2; i++) {
+        tr[u].min[i] = tr[u].max[i] = tr[u].x[i];
+        if (l) {
+            tr[u].min[i] = min(tr[u].min[i], tr[l].min[i]);
+            tr[u].max[i] = max(tr[u].max[i], tr[l].max[i]);
+        }
+        if (r) {
+            tr[u].min[i] = min(tr[u].min[i], tr[r].min[i]);
+            tr[u].max[i] = max(tr[u].max[i], tr[r].max[i]);
+        }
+    }
+}
+
+// 用于重构时的排序规则
+int cmp_dim;
+bool cmp(int a, int b) {
+    return tr[a].x[cmp_dim] < tr[b].x[cmp_dim];
+}
+
+// 将子树拉平存入 pool
+void flatten(int &u) {
+    if (!u) return;
+    flatten(tr[u].ch[0]);
+    pool[++cur] = u;
+    flatten(tr[u].ch[1]);
+    u = 0; // 释放引用
+}
+
+// 递归构建平衡的 KD-Tree
+int build(int l, int r, int dim) {
+    if (l > r) return 0;
+    int mid = (l + r) >> 1;
+    cmp_dim = dim;
+    nth_element(pool + l, pool + mid, pool + r + 1, cmp);
+    int u = pool[mid];
+    tr[u].ch[0] = build(l, mid - 1, dim ^ 1);
+    tr[u].ch[1] = build(mid + 1, r, dim ^ 1);
+    pushup(u);
+    return u;
+}
+
+// 检查并重构
+void check(int &u, int dim) {
+    if (alpha * tr[u].size < max(tr[tr[u].ch[0]].size, tr[tr[u].ch[1]].size)) {
+        cur = 0;
+        flatten(u);
+        u = build(1, cur, dim);
+    }
+}
+
+// 插入新点
+void insert(int &u, int x, int y, int v, int dim) {
+    if (!u) {
+        u = ++tot;
+        tr[u].x[0] = tr[u].min[0] = tr[u].max[0] = x;
+        tr[u].x[1] = tr[u].min[1] = tr[u].max[1] = y;
+        tr[u].val = tr[u].sum = v;
+        tr[u].size = 1;
+        tr[u].ch[0] = tr[u].ch[1] = 0;
+        return;
+    }
+    if (x <= tr[u].x[dim]) insert(tr[u].ch[0], x, y, v, dim ^ 1);
+    else insert(tr[u].ch[1], x, y, v, dim ^ 1);
+    pushup(u);
+    check(u, dim); // 顺便检查平衡
+}
+
+// 矩形查询
+int query(int u, int x1, int y1, int x2, int y2) {
+    if (!u || tr[u].min[0] > x2 || tr[u].max[0] < x1 || tr[u].min[1] > y2 || tr[u].max[1] < y1)
+        return 0;
+    // 如果当前节点的子树完全在矩形内
+    if (tr[u].min[0] >= x1 && tr[u].max[0] <= x2 && tr[u].min[1] >= y1 && tr[u].max[1] <= y2)
+        return tr[u].sum;
+    
+    int res = 0;
+    // 检查根节点本身是否在矩形内
+    if (tr[u].x[0] >= x1 && tr[u].x[0] <= x2 && tr[u].x[1] >= y1 && tr[u].x[1] <= y2)
+        res += tr[u].val;
+    
+    return res + query(tr[u].ch[0], x1, y1, x2, y2) + query(tr[u].ch[1], x1, y1, x2, y2);
+}
+
+int main() {
+    int N;
+    if (scanf("%d", &N) == EOF) return 0;
+
+    int last_ans = 0;
+    int op;
+    while (scanf("%d", &op) && op != 3) {
+        if (op == 1) {
+            int x, y, a;
+            scanf("%d %d %d", &x, &y, &a);
+            x ^= last_ans; y ^= last_ans; a ^= last_ans;
+            insert(root, x, y, a, 0);
+        } else if (op == 2) {
+            int x1, y1, x2, y2;
+            scanf("%d %d %d %d", &x1, &y1, &x2, &y2);
+            x1 ^= last_ans; y1 ^= last_ans; x2 ^= last_ans; y2 ^= last_ans;
+            last_ans = query(root, x1, y1, x2, y2);
+            printf("%d\n", last_ans);
+        }
+    }
+
+    return 0;
+}
+```
+
+**关键设计点：**
+
+1.  **内存极限控制 (20MB)**：
+    *   在 C++ 中，`int` 数组是连续存储的。
+    *   结构体 `Node` 包含 11 个 `int` 成员，共 44 字节。
+    *   $200,000 \times 44 \approx 8,800,000$ 字节，即 **8.4MB** 左右。
+    *   加上辅助排序的 `pool` 数组以及递归调用的系统栈，总内存消耗约在 12-15MB 之间，安全通过 20MB 限制。
+
+2.  **动态平衡 (替罪羊重构)**：
+    *   KD-Tree 如果像普通二叉搜索树一样直接插入，最坏情况会退化成链表。
+    *   设置 `alpha = 0.75`，当某一子树的规模超过父树的 75% 时，认为该子树不平衡，通过 `flatten` 和 `build` 函数将其原地重构为完全平衡二叉树。
+
+3.  **查询优化**：
+    *   使用 `tr[u].min` 和 `tr[u].max` 维护子树内点的矩形包围盒。
+    *   在查询时，如果当前子树的边界完全不在目标矩形内，直接剪枝（返回 0）。
+    *   如果当前子树的边界完全被包含在目标矩形内，直接返回 `tr[u].sum`。
+
+4.  **nth_element**：
+    *   重构时使用 `std::nth_element` 代替 `std::sort`，将建树复杂度从 $O(k \log^2 k)$ 降至 $O(k \log k)$。
+
+
+
+
+
+<mark>Python提交超时</mark>。只能过第一个数据。
+
+这是一个在内存限制极其苛刻（20MB）的情况下，使用 Python 实现动态 KD-Tree 的经典问题。
+
+**解题思路**
+
+1.  **KD-Tree 基础**：
+    *   本题要求维护二维点集，支持**点更新**（在特定坐标增加值）和**矩形区域和查询**。
+    *   KD-Tree 每个节点存储一个点的坐标 $(x, y)$、值 $v$、以该节点为根的子树权重和 `sum`，以及子树中所有点所构成的最小外接矩形范围 $[minX, maxX, minY, maxY]$。
+
+2.  **动态维护与平衡（替罪羊树思想）**：
+    *   由于点是不断插入的，KD-Tree 可能会变得极度不平衡。
+    *   我们引入平衡因子 $\alpha$（如 0.75）。当某个子树的规模超过其父节点的 $\alpha$ 倍时，判定该子树不平衡。
+    *   **重构**：将该不平衡的子树扁平化后，重新构建为一棵完全平衡的 KD-Tree。
+
+3.  **Python 内存优化（关键）**：
+    *   **20MB** 对 Python 来说非常小。必须避免使用类（Object）来存储节点，因为对象的开销很大。
+    *   使用 `array.array` 存储数据。`array` 比 `list` 更省内存，因为它直接存储原始 C 类型数据。
+    *   我们需要 11 个数组来记录：`ls` (左孩子), `rs` (右孩子), `X, Y` (坐标), `V` (值), `Sum` (和), `L, R, D, U` (边界), `Size` (子树大小)。
+    *   使用 `sys.stdin.readline` 或生成器读取输入，避免 `sys.stdin.read().split()` 一次性产生大量字符串对象。
+
+### Python 代码实现
+
+```python
+import sys
+import array
+
+# 增加递归深度以适配 KD-Tree 操作
+sys.setrecursionlimit(200005)
+
+def solve():
+    # 限制常数
+    MAX = 200005
+    alpha = 0.75
+    INF = 10**9 + 7
+
+    # 使用 array.array 节省内存 ('i' 为带符号 4 字节整数)
+    # 这些数组总共占用约 8.8MB
+    ls = array.array('i', [0] * MAX)
+    rs = array.array('i', [0] * MAX)
+    X = array.array('i', [0] * MAX)
+    Y = array.array('i', [0] * MAX)
+    V = array.array('i', [0] * MAX)
+    Sum = array.array('i', [0] * MAX)
+    L = array.array('i', [0] * MAX)
+    R = array.array('i', [0] * MAX)
+    D = array.array('i', [0] * MAX)
+    U = array.array('i', [0] * MAX)
+    Size = array.array('i', [0] * MAX)
+
+    # 初始化空节点的边界
+    L[0] = D[0] = INF
+    R[0] = U[0] = -INF
+
+    node_count = 0
+    rebuild_list = []
+
+    def update(p):
+        lc, rc = ls[p], rs[p]
+        Size[p] = Size[lc] + Size[rc] + 1
+        Sum[p] = Sum[lc] + Sum[rc] + V[p]
+        
+        # 边界更新，尽量减少函数调用
+        lx, rx = X[p], X[p]
+        if L[lc] < lx: lx = L[lc]
+        if L[rc] < lx: lx = L[rc]
+        L[p] = lx
+        
+        if R[lc] > rx: rx = R[lc]
+        if R[rc] > rx: rx = R[rc]
+        R[p] = rx
+        
+        dy, uy = Y[p], Y[p]
+        if D[lc] < dy: dy = D[lc]
+        if D[rc] < dy: dy = D[rc]
+        D[p] = dy
+        
+        if U[lc] > uy: uy = U[lc]
+        if U[rc] > uy: uy = U[rc]
+        U[p] = uy
+
+    def collect(p):
+        if not p: return
+        collect(ls[p])
+        rebuild_list.append(p)
+        collect(rs[p])
+
+    def build(l, r, dim):
+        if l > r: return 0
+        mid = (l + r) // 2
+        # 根据维度排序，选取中位数点
+        if dim == 0:
+            rebuild_list[l:r+1] = sorted(rebuild_list[l:r+1], key=lambda i: X[i])
+        else:
+            rebuild_list[l:r+1] = sorted(rebuild_list[l:r+1], key=lambda i: Y[i])
+        
+        p = rebuild_list[mid]
+        ls[p] = build(l, mid - 1, 1 - dim)
+        rs[p] = build(mid + 1, r, 1 - dim)
+        update(p)
+        return p
+
+    def insert(p, x, y, v, dim):
+        nonlocal node_count
+        if not p:
+            node_count += 1
+            p = node_count
+            X[p], Y[p], V[p], Sum[p] = x, y, v, v
+            L[p], R[p], D[p], U[p] = x, x, y, y
+            Size[p], ls[p], rs[p] = 1, 0, 0
+            return p, False
+        
+        rebuilt = False
+        if dim == 0:
+            if x <= X[p]: ls[p], rebuilt = insert(ls[p], x, y, v, 1 - dim)
+            else: rs[p], rebuilt = insert(rs[p], x, y, v, 1 - dim)
+        else:
+            if y <= Y[p]: ls[p], rebuilt = insert(ls[p], x, y, v, 1 - dim)
+            else: rs[p], rebuilt = insert(rs[p], x, y, v, 1 - dim)
+        
+        update(p)
+        # 检查平衡因子，若不平衡则重构子树
+        if not rebuilt:
+            if Size[ls[p]] > Size[p] * alpha or Size[rs[p]] > Size[p] * alpha:
+                rebuild_list.clear()
+                collect(p)
+                p = build(0, len(rebuild_list) - 1, dim)
+                rebuilt = True
+        return p, rebuilt
+
+    def query(p, x1, y1, x2, y2):
+        # 范围裁剪
+        if not p or L[p] > x2 or R[p] < x1 or D[p] > y2 or U[p] < y1:
+            return 0
+        # 节点范围完全在查询范围内
+        if x1 <= L[p] and R[p] <= x2 and y1 <= D[p] and U[p] <= y2:
+            return Sum[p]
+        # 部分包含
+        res = 0
+        if x1 <= X[p] <= x2 and y1 <= Y[p] <= y2:
+            res += V[p]
+        res += query(ls[p], x1, y1, x2, y2) + query(rs[p], x1, y1, x2, y2)
+        return res
+
+    # 内存高效的输入读取器
+    def get_input():
+        for line in sys.stdin:
+            for word in line.split():
+                yield int(word)
+
+    gen = get_input()
+    try:
+        next(gen) # 跳过 N
+    except StopIteration:
+        return
+
+    last_ans = 0
+    root = 0
+    while True:
+        try:
+            op = next(gen)
+        except StopIteration:
+            break
+        
+        if op == 1:
+            x = next(gen) ^ last_ans
+            y = next(gen) ^ last_ans
+            v = next(gen) ^ last_ans
+            root, _ = insert(root, x, y, v, 0)
+        elif op == 2:
+            x1 = next(gen) ^ last_ans
+            y1 = next(gen) ^ last_ans
+            x2 = next(gen) ^ last_ans
+            y2 = next(gen) ^ last_ans
+            last_ans = query(root, x1, y1, x2, y2)
+            sys.stdout.write(str(last_ans) + '\n')
+        elif op == 3:
+            break
+
+if __name__ == "__main__":
+    solve()
+```
+
+**关键点说明：**
+
+1.  **内存管理**：`array.array` 极大地降低了数据存储开销。Python 默认的 `int` 对象和 `list` 容器在 $2 \times 10^5$ 量级下会轻松突破 20MB。
+2.  **强制在线**：通过 `last_ans` 进行异或解密。
+3.  **时间复杂度**：
+    *   插入：均摊 $O(\log n)$。
+    *   查询：$O(\sqrt{n})$。
+    *   重构：$O(k \log k)$（$k$ 为子树节点数），基于替罪羊树原理，总均摊插入代价仍为 $O(\log n)$。
+4.  **递归优化**：在 `insert` 中，我们返回一个元组 `(new_p, rebuilt_flag)`。这能保证一次插入操作中，只从最浅（最高）的不平衡节点处进行一次重构，避免了重复重构带来的性能损失。
+5.  **剪枝**：在 `query` 中，通过 `L, R, D, U` 四个边界数组实现的剪枝是 KD-Tree 能通过本题的关键。
+
+
+
+超时代码，能过第一个数据。
+
+```python
+class KDTree:
+    def __init__(self):
+        self.root = None
+
+    class Node:
+        def __init__(self, x, y, value):
+            self.x = x
+            self.y = y
+            self.value = value
+            self.sum = value  # 子树权重和
+            self.left = None
+            self.right = None
+            self.dim = 0  # 分割维度
+
+    def update(self, node):
+        """更新当前节点的子树权重和"""
+        if not node:
+            return 0
+        node.sum = node.value
+        if node.left:
+            node.sum += node.left.sum
+        if node.right:
+            node.sum += node.right.sum
+        return node.sum
+
+    def insert(self, root, x, y, value, depth=0):
+        """插入一个点到 KD 树"""
+        if not root:
+            return self.Node(x, y, value)
+        dim = depth % 2
+        if (x < root.x if dim == 0 else y < root.y):
+            root.left = self.insert(root.left, x, y, value, depth + 1)
+        elif (x == root.x and y == root.y):
+            root.value += value
+        else:
+            root.right = self.insert(root.right, x, y, value, depth + 1)
+        self.update(root)
+        return root
+
+    def query(self, root, x1, y1, x2, y2, depth=0):
+        """查询范围 [x1, y1, x2, y2] 内的点数量"""
+        if not root:
+            return 0
+        x, y = root.x, root.y
+        dim = depth % 2
+
+        # 当前点是否在范围内
+        res = root.value if x1 <= x <= x2 and y1 <= y <= y2 else 0
+
+        # 左右子树递归
+        if root.left and (dim == 0 and x1 <= root.x or dim == 1 and y1 <= root.y):
+            res += self.query(root.left, x1, y1, x2, y2, depth + 1)
+        if root.right and (dim == 0 and x2 >= root.x or dim == 1 and y2 >= root.y):
+            res += self.query(root.right, x1, y1, x2, y2, depth + 1)
+
+        return res
+
+    def add_point(self, x, y, value):
+        """插入点到 KD 树"""
+        self.root = self.insert(self.root, x, y, value)
+
+    def range_query(self, x1, y1, x2, y2):
+        """查询范围内的点数量"""
+        return self.query(self.root, x1, y1, x2, y2)
+
+
+# 主程序
+import sys
+input = sys.stdin.read
+data = input().splitlines()
+
+# 解析输入
+N = int(data[0])  # 棋盘大小
+kdtree = KDTree()
+last_ans = 0
+
+for line in data[1:]:
+    cmd = list(map(int, line.split()))
+    if cmd[0] == 1:
+        # 操作 1：更新点
+        x = cmd[1] ^ last_ans
+        y = cmd[2] ^ last_ans
+        A = cmd[3] ^ last_ans
+        kdtree.add_point(x, y, A)
+    elif cmd[0] == 2:
+        # 操作 2：范围查询
+        x1 = cmd[1] ^ last_ans
+        y1 = cmd[2] ^ last_ans
+        x2 = cmd[3] ^ last_ans
+        y2 = cmd[4] ^ last_ans
+        last_ans = kdtree.range_query(x1, y1, x2, y2)
+        print(last_ans)
+    elif cmd[0] == 3:
+        # 操作 3：终止程序
+        break
+```
+
+
+
+
+
 ## P4390 [BalkanOI2007] Mokia 摩基亚
 
 https://www.luogu.com.cn/problem/P4390
