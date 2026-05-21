@@ -15670,7 +15670,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -25069,6 +25069,93 @@ class Solution:
                 return True
         
         return dp[-1][target]
+```
+
+
+
+## M421.数组中两个数的最大异或值
+
+bit manipulation, trie, hash table, https://leetcode.cn/problems/maximum-xor-of-two-numbers-in-an-array/
+
+> 与这个题目一样，
+>
+> 2218E. The 67th XOR Problem
+>
+> binary search, bitmasks, brute force, *1200, https://codeforces.com/problemset/problem/2218/E
+
+给你一个整数数组 `nums` ，返回 `nums[i] XOR nums[j]` 的最大运算结果，其中 `0 ≤ i ≤ j < n` 。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [3,10,5,25,2,8]
+输出：28
+解释：最大运算结果是 5 XOR 25 = 28.
+```
+
+**示例 2：**
+
+```
+输入：nums = [14,70,53,83,49,91,36,80,92,51,66,70]
+输出：127
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 2 * 10^5`
+- `0 <= nums[i] <= 2^31 - 1`
+
+
+
+```python
+from typing import List
+class Solution:
+    def findMaximumXOR(self, nums: List[int]) -> int:
+        # trie[node][0] 表示 0 分支，trie[node][1] 表示 1 分支
+        # 使用列表模拟 Trie，初始化根节点
+        trie = [[-1, -1]]
+
+        def insert(val):
+            node_idx = 0
+            for i in range(30, -1, -1):
+                bit = (val >> i) & 1
+                if trie[node_idx][bit] == -1:
+                    # 创建新节点
+                    trie[node_idx][bit] = len(trie)
+                    trie.append([-1, -1])
+                node_idx = trie[node_idx][bit]
+
+        def query(val):
+            node_idx = 0
+            res = 0
+            for i in range(30, -1, -1):
+                bit = (val >> i) & 1
+                target_bit = 1 - bit  # 我们希望找相反的位
+
+                if trie[node_idx][target_bit] != -1:
+                    # 如果相反的位存在，这一位异或结果就是 1
+                    res |= (1 << i)
+                    node_idx = trie[node_idx][target_bit]
+                else:
+                    # 否则只能走相同的位，这一位异或结果是 0
+                    node_idx = trie[node_idx][bit]
+            return res
+
+        # 1. 先把所有数存入 Trie
+        for x in nums:
+            insert(x)
+
+        # 2. 遍历每个数，在 Trie 中找能和它产生最大异或值的数
+        max_xor = 0
+        for x in nums:
+            max_xor = max(max_xor, query(x))
+
+        return max_xor
+        
 ```
 
 
