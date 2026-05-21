@@ -27290,7 +27290,245 @@ if __name__ == "__main__":
 
 
 
+## P8867 [NOIP2022] 建造军营
 
+树形DP, Tarjan, 双连通分量, 容斥原理, https://www.luogu.com.cn/problem/P8867
+
+难度 紫色（省选/NOI-）
+
+A 国与 B 国正在激烈交战中，A 国打算在自己的国土上建造一些军营。
+
+A 国的国土由 $n$ 座城市组成，$m$ 条双向道路连接这些城市，使得**任意两座城市均可通过道路直接或间接到达**。A 国打算选择一座或多座城市（**至少一座**），并在这些城市上各建造一座军营。
+
+众所周知，军营之间的联络是十分重要的。然而此时 A 国接到情报，B 国将会于不久后袭击 A 国的一条道路，但具体的袭击目标却无从得知。如果 B 国袭击成功，这条道路将被切断，可能会造成 A 国某两个军营无法互相到达，这是 A 国极力避免的。因此 A 国决定派兵看守若干条道路（**可以是一条或多条，也可以一条也不看守**），A 国有信心保证被派兵看守的道路能够抵御 B 国的袭击而不被切断。
+
+A 国希望制定一个建造军营和看守道路的方案，使得 B 国袭击的无论是 A 国的哪条道路，都不会造成某两座军营无法互相到达。现在，请你帮 A 国计算一下可能的建造军营和看守道路的方案数共有多少。由于方案数可能会很多，你只需要输出其对 $1,000,000,007\left(10^{9}+7\right)$ 取模的值即可。两个方案被认为是不同的，当且仅当存在至少一座城市在一个方案中建造了军营而在另一个方案中没有，或者存在至少一条道路在一个方案中被派兵看守而在另一个方案中没有。
+
+**输入格式**
+
+第一行包含两个正整数 $n,m$，分别表示城市的个数和双向道路的数量。
+
+接下来 $m$ 行，每行包含两个正整数 $u_{i},v_{i}$，描述一条连接 $u_{i}$ 和 $v_{i}$ 的双向道路。保证没有重边和自环。
+
+**输出格式**
+
+输出一行包含一个整数，表示建造军营和看守道路的方案数对 $1,000,000,007\left(10^{9}+ 7\right)$ 取模的结果。
+
+输入输出样例 #1
+
+输入 #1
+
+```
+2 1
+1 2
+```
+
+输出 #1
+
+```
+5
+```
+
+输入输出样例 #2
+
+输入 #2
+
+```
+4 4
+1 2
+2 3
+3 1
+1 4
+```
+
+输出 #2
+
+```
+184
+```
+
+**说明/提示**
+
+样例 1 解释
+
+样例中，A 国共有两座城市，有 $1$ 条道路连接他们。
+
+所有可能的方案如下：
+
+- 在城市 $1$ 建军营，不看守这条道路；
+- 在城市 $1$ 建军营，看守这条道路；
+- 在城市 $2$ 建军营，不看守这条道路；
+- 在城市 $2$ 建军营，看守这条道路；
+- 在城市 $1,2$ 建军营，看守这条道路。
+
+**数据规模与约定**
+
+对于所有数据，保证 $1 \leq n \leq 5 \times 10^5$，$n - 1 \leq m \leq 10^6$，$1 \leq u_i, v_i \leq n$，$u_i \neq v_i$。
+
+::cute-table{tuack}
+
+|  测试点编号  |      n <=       |  m <=  |       特殊条件        |
+| :----------: | :-------------: | :----: | :-------------------: |
+|  $1 \sim 3$  |       $8$       |  $10$  |          无           |
+|  $4 \sim 7$  |      $16$       |  $25$  |           ^           |
+|  $8 \sim 9$  |     $3000$      | $5000$ |           ^           |
+| $10 \sim 11$ | $5 \times 10^5$ | $10^6$ | 特殊性质 $\mathrm{A}$ |
+| $12 \sim 14$ |        ^        |   ^    |      $m = n - 1$      |
+| $15 \sim 16$ |        ^        |   ^    |        $m = n$        |
+| $17 \sim 20$ |        ^        |   ^    |          无           |
+
+特殊性质 $\mathrm{A}$：保证 $m=n-1$ 且第 $i$ 条道路连接城市 $i$ 与 $i+1$。
+
+
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/cf935e32d3f4d6ac620e8e353be25c0c.png" alt="cf935e32d3f4d6ac620e8e353be25c0c" style="zoom: 33%;" />
+
+
+
+这是一个经典的图论和动态规划（DP）问题。
+
+### 核心思路：
+
+1.  **边双连通分量 (ECC) 缩点**：
+    *   题目要求：任意两座军营在破坏任意一条**未看守**的道路后仍能互相到达。
+    *   这意味着军营之间的路径上，所有的**桥**必须被看守。而对于非桥的边（即属于某个环或边双连通分量内的边），即使破坏一条，分量内部依然连通。
+    *   因此，我们首先使用 Tarjan 算法找到所有的边双连通分量，并将每个分量缩成一个点。缩点后的图是一棵**树**，树边即为原图中的桥。
+
+2.  **树上动态规划**：
+    *   设缩点后每个新节点 $u$ 包含原图节点数 $v_u$，包含的内部边数为 $e_u$。
+    *   设 $E$ 为原图总边数，$m'$ 为缩点后的树边（桥）总数。
+    *   定义 $dp[u][0]$：以 $u$ 为根的子树中**没有**建造任何军营的方案数。
+    *   定义 $dp[u][1]$：以 $u$ 为根的子树中**至少有一座**军营，且所有军营都与 $u$ 连通（意味着子树内连接这些军营的桥都已被看守）的方案数。
+
+3.  **状态转移**：
+    *   对于叶子节点（初始化）：
+        *   $dp[u][0] = 2^{e_u}$（内部边可选可不选）。
+        *   $dp[u][1] = (2^{v_u} - 1) \times 2^{e_u}$（至少选一个城市建军营，内部边可选可不选）。
+    *   对于父节点 $u$ 及其子节点 $v$：
+        *   $dp[u][1]$ 的更新包含三种情况：
+            1. 军营只在 $u$ 原有的连通块（含之前处理过的子树）中：$dp[u]_{old} \times (2 \times dp[v][0] + dp[v][1])$。这里的 $2 \times dp[v][0]$ 表示桥 $(u,v)$ 可选可不选，$dp[v][1]$ 表示桥 $(u,v)$ 必须选。
+            2. 军营只在当前子树 $v$ 中：$dp[u][0]_{old} \times dp[v][1]$（桥 $(u,v)$ 必须选）。
+            3. $u$ 原有的和子树 $v$ 中都有军营（包含在情况1中）。
+        *   $dp[u][0] = dp[u][0]_{old} \times (2 \times dp[v][0])$（桥 $(u,v)$ 可选可不选）。
+
+4.  **统计答案**：
+    *   为了不重不漏，我们统计以 $u$ 为“最高连接点”的方案。
+    *   当 $u$ 是树中包含所有军营的最小子树的根时，该点对答案的贡献为 $dp[u][1] \times 2^{m' - \text{子树内桥数} - 1}$（如果是根节点则不减1）。
+
+### Python 代码实现：
+
+```python
+import sys
+
+# 增加递归深度
+sys.setrecursionlimit(2000000)
+
+def solve():
+    # 快速读入
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    n, m = int(input_data[0]), int(input_data[1])
+    
+    adj = [[] for _ in range(n + 1)]
+    for i in range(m):
+        u, v = int(input_data[2 + 2*i]), int(input_data[3 + 2*i])
+        adj[u].append(v)
+        adj[v].append(u)
+    
+    # 1. Tarjan 缩点找边双连通分量 (ECC)
+    dfn, low = [0] * (n + 1), [0] * (n + 1)
+    stk, ecc = [], [0] * (n + 1)
+    timer, ecc_cnt = 0, 0
+    
+    # 迭代实现 Tarjan 以防递归过深
+    for i in range(1, n + 1):
+        if dfn[i] == 0:
+            dfs_stack = [[i, -1, 0]]
+            while dfs_stack:
+                state = dfs_stack[-1]
+                u, p, next_idx = state[0], state[1], state[2]
+                if next_idx == 0:
+                    timer += 1
+                    dfn[u] = low[u] = timer
+                    stk.append(u)
+                found = False
+                for j in range(next_idx, len(adj[u])):
+                    v = adj[u][j]
+                    if v == p: continue
+                    if dfn[v] == 0:
+                        state[2] = j + 1
+                        dfs_stack.append([v, u, 0])
+                        found = True
+                        break
+                    else:
+                        low[u] = min(low[u], dfn[v])
+                if not found:
+                    dfs_stack.pop()
+                    if low[u] == dfn[u]:
+                        ecc_cnt += 1
+                        while True:
+                            node = stk.pop()
+                            ecc[node] = ecc_cnt
+                            if node == u: break
+                    if dfs_stack:
+                        parent = dfs_stack[-1][0]
+                        low[parent] = min(low[parent], low[u])
+
+    # 2. 统计 ECC 内部信息并建树
+    v_size = [0] * (ecc_cnt + 1)
+    e_size = [0] * (ecc_cnt + 1)
+    tree_adj = [[] for _ in range(ecc_cnt + 1)]
+    for u in range(1, n + 1):
+        u_ecc = ecc[u]
+        v_size[u_ecc] += 1
+        for v in adj[u]:
+            if u < v:
+                if ecc[v] == u_ecc: e_size[u_ecc] += 1
+                else:
+                    tree_adj[u_ecc].append(ecc[v])
+                    tree_adj[ecc[v]].append(u_ecc)
+
+    # 3. 树上 DP
+    MOD = 1000000007
+    pow2 = [1] * (m + 1)
+    for i in range(1, m + 1): pow2[i] = (pow2[i-1] << 1) % MOD
+    
+    dp0, dp1 = [0] * (ecc_cnt + 1), [0] * (ecc_cnt + 1)
+    sz_e, sz_v_e = [0] * (ecc_cnt + 1), [0] * (ecc_cnt + 1)
+    
+    # 获取后序遍历
+    order, traversal_stk = [], [(1, -1)]
+    while traversal_stk:
+        u, p = traversal_stk.pop()
+        order.append((u, p))
+        for v in tree_adj[u]:
+            if v != p: traversal_stk.append((v, u))
+    
+    ans = 0
+    for u, p in reversed(order):
+        dp0[u] = pow2[e_size[u]]
+        dp1[u] = (pow2[v_size[u]] - 1) * pow2[e_size[u]] % MOD
+        curr_e, curr_ve = 0, e_size[u]
+        
+        for v in tree_adj[u]:
+            if v == p: continue
+            dp1[u] = (dp1[u] * (2 * dp0[v] + dp1[v]) + dp0[u] * dp1[v]) % MOD
+            dp0[u] = (dp0[u] * 2 * dp0[v]) % MOD
+            curr_e += sz_e[v] + 1
+            curr_ve += sz_v_e[v]
+            
+        sz_e[u], sz_v_e[u] = curr_e, curr_ve
+        # 计算该点作为最高点的贡献
+        rem = m - (curr_e + curr_ve)
+        if u != 1: rem -= 1 # 非根节点需断开与父亲的桥
+        ans = (ans + dp1[u] * pow2[rem]) % MOD
+        
+    print(ans % MOD)
+
+if __name__ == '__main__':
+    solve()
+```
 
 
 
