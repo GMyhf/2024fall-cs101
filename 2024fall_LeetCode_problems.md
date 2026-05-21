@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-05-20 09:11 GMT+8*
+*Updated 2026-05-21 09:11 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -15670,7 +15670,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -40377,6 +40377,239 @@ for u, v, c in zip(original, changed, cost):
 ```
 
 这种方式在字符集很大（比如不局限于 26 个字母）时更节省空间。
+
+
+
+## M3043.最长公共前缀的长度
+
+hash table, trie, https://leetcode.cn/problems/find-the-length-of-the-longest-common-prefix/
+
+给你两个 **正整数** 数组 `arr1` 和 `arr2` 。
+
+正整数的 **前缀** 是其 **最左边** 的一位或多位数字组成的整数。例如，`123` 是整数 `12345` 的前缀，而 `234` **不是** 。
+
+设若整数 `c` 是整数 `a` 和 `b` 的 **公共前缀** ，那么 `c` 需要同时是 `a` 和 `b` 的前缀。例如，`5655359` 和 `56554` 有公共前缀 `565` 和 `5655`，而 `1223` 和 `43456` **没有** 公共前缀。
+
+你需要找出属于 `arr1` 的整数 `x` 和属于 `arr2` 的整数 `y` 组成的所有数对 `(x, y)` 之中最长的公共前缀的长度。
+
+返回所有数对之中最长公共前缀的长度。如果它们之间不存在公共前缀，则返回 `0` 。
+
+ 
+
+**示例 1：**
+
+```
+输入：arr1 = [1,10,100], arr2 = [1000]
+输出：3
+解释：存在 3 个数对 (arr1[i], arr2[j]) ：
+- (1, 1000) 的最长公共前缀是 1 。
+- (10, 1000) 的最长公共前缀是 10 。
+- (100, 1000) 的最长公共前缀是 100 。
+最长的公共前缀是 100 ，长度为 3 。
+```
+
+**示例 2：**
+
+```
+输入：arr1 = [1,2,3], arr2 = [4,4,4]
+输出：0
+解释：任何数对 (arr1[i], arr2[j]) 之中都不存在公共前缀，因此返回 0 。
+请注意，同一个数组内元素之间的公共前缀不在考虑范围内。
+```
+
+ 
+
+**提示：**
+
+- `1 <= arr1.length, arr2.length <= 5 * 10^4`
+- `1 <= arr1[i], arr2[i] <= 10^8`
+
+
+
+这道题的要求是：在两个整数数组 `arr1` 和 `arr2` 中，找出任意一对数字 $(x, y)$ 的最长公共前缀的长度。
+
+### 思路1：哈希表
+
+1. **公共前缀的特性**：
+   一个正整数的前缀是其从左侧开始的连续数字。例如，`12345` 的前缀有 `1`, `12`, `123`, `1234`, `12345`。
+   如果 $x$ 和 $y$ 有公共前缀 $c$，那么 $c$ 本身必然是 $x$ 的前缀，也是 $y$ 的前缀。
+
+2. **空间换时间（哈希表）**：
+   由于 `arr1` 和 `arr2` 的长度最大为 $5 \times 10^4$，且数字最大为 $10^8$（每个数最多 9 位数字），如果我们穷举所有可能的对 $(x, y)$，时间复杂度将达到 $O(n \times m)$，即 $2.5 \times 10^9$，这显然会超时。
+
+   我们可以先处理其中一个数组（比如 `arr1`），将其所有数字的所有前缀提取出来存入一个哈希集合（Set）中。
+
+3. **查找与匹配**：
+   遍历第二个数组 `arr2`。对于 `arr2` 中的每一个数字，我们检查它的每一个前缀（从长到短检查）是否在哈希集合中。一旦找到匹配的前缀，其长度即为该数字能贡献的最大公共前缀长度。
+
+**算法步骤**
+
+1.  创建一个哈希集合 `prefixes`。
+2.  遍历 `arr1` 中的每个数字，通过不断除以 10 的方式获取其所有前缀，并将前缀存入 `prefixes`。
+3.  初始化变量 `max_len = 0`。
+4.  遍历 `arr2` 中的每个数字：
+    *   获取该数字的所有前缀（从大到小）。
+    *   如果当前前缀的长度已经小于等于 `max_len`，则不需要再检查该数字更短的前缀，直接跳过。
+    *   如果在 `prefixes` 中找到了当前前缀，更新 `max_len` 并跳到下一个 `arr2` 的数字。
+5.  返回 `max_len`。
+
+**代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def longestCommonPrefix(self, arr1: List[int], arr2: List[int]) -> int:
+        prefixes = set()
+        
+        # 1. 提取 arr1 中所有数字的所有可能前缀，放入哈希集合
+        for val in arr1:
+            while val > 0:
+                prefixes.add(val)
+                val //= 10
+        
+        max_len = 0
+        
+        # 2. 遍历 arr2，寻找在哈希集合中存在的最长前缀
+        for val in arr2:
+            # 获取当前数字的字符串长度，方便计算前缀长度
+            # 也可以通过数学方法获取长度，这里 str(val) 在 val <= 10^8 时性能足够
+            s_val = str(val)
+            curr_len = len(s_val)
+            
+            while val > 0:
+                # 优化：如果当前数字的长度已经不比已知的 max_len 长，就不需要往下看了
+                if curr_len <= max_len:
+                    break
+                
+                # 如果当前数值在集合中，说明找到了一个公共前缀
+                if val in prefixes:
+                    max_len = curr_len
+                    break # 因为是从长到短查，找到的第一个一定是该数字最长的
+                
+                # 否则，去掉末尾数字，继续检查更短的前缀
+                val //= 10
+                curr_len -= 1
+                
+        return max_len
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O((N + M) \cdot \log_{10}V)$。
+    *   $N$ 和 $M$ 分别是 `arr1` 和 `arr2` 的长度（最大 $5 \times 10^4$）。
+    *   $V$ 是数组中元素的最大值（最大 $10^8$），$\log_{10}V$ 代表数字的位数（最大为 9）。
+    *   提取前缀和查询操作均与位数成线性关系，总操作次数约为 $10^5 \times 9$，远低于时间限制。
+*   **空间复杂度**：$O(N \cdot \log_{10}V)$。
+    *   哈希集合中存储了 `arr1` 所有数字的所有前缀，最多包含 $5 \times 10^4 \times 9$ 个元素。
+
+
+
+### 思路2：字典树 (Trie) 
+
+使用 **字典树 (Trie)** 是解决“前缀”相关问题的标准且高效的方法。
+
+在本题中，我们可以将数字看作由 `'0'-'9'` 组成的字符串。通过将 `arr1` 中的所有数字插入字典树，我们可以构建一个存储了所有可能前缀的结构。然后遍历 `arr2` 中的每个数字，并在字典树中搜索其能匹配的最长路径。
+
+**解题思路**
+
+1.  **构建 Trie**：
+    *   创建一个 `TrieNode` 类（或者直接用字典嵌套），每个节点代表一个数字位（0-9）。
+    *   遍历 `arr1` 中的每个整数，将其转换为字符串（或逐位取余），依次插入 Trie。
+2.  **查询 Trie**：
+    *   遍历 `arr2` 中的每个整数。
+    *   在 Trie 中沿着该整数的数字位向下走，直到无法继续匹配或数字结束。
+    *   记录当前匹配到的深度（即长度），并更新全局最大长度。
+
+**代码实现**
+
+```python
+class TrieNode:
+    def __init__(self):
+        # 使用字典存储子节点，键为字符 '0'-'9'，值为下一个 TrieNode
+        self.children = {}
+
+class Solution:
+    def longestCommonPrefix(self, arr1: List[int], arr2: List[int]) -> int:
+        root = TrieNode()
+        
+        # 1. 将 arr1 中的数字全部插入 Trie
+        for num in arr1:
+            curr = root
+            # 转换为字符串处理最为直观
+            for digit in str(num):
+                if digit not in curr.children:
+                    curr.children[digit] = TrieNode()
+                curr = curr.children[digit]
+        
+        max_len = 0
+        
+        # 2. 遍历 arr2，在 Trie 中查找最长匹配前缀
+        for num in arr2:
+            curr = root
+            current_match_len = 0
+            for digit in str(num):
+                if digit in curr.children:
+                    current_match_len += 1
+                    curr = curr.children[digit]
+                else:
+                    # 一旦不匹配，后续更长的部分也不可能匹配，直接跳出
+                    break
+            
+            # 更新全局最大长度
+            if current_match_len > max_len:
+                max_len = current_match_len
+                
+        return max_len
+```
+
+**进一步优化（Python 特色）**
+
+在 Python 中，如果追求更高的性能，可以使用嵌套字典来代替类定义：
+
+```python
+class Solution:
+    def longestCommonPrefix(self, arr1: List[int], arr2: List[int]) -> int:
+        trie = {}
+        
+        # 构建 Trie
+        for num in arr1:
+            curr = trie
+            for digit in str(num):
+                if digit not in curr:
+                    curr[digit] = {}
+                curr = curr[digit]
+        
+        max_len = 0
+        
+        # 匹配 Trie
+        for num in arr2:
+            curr = trie
+            match_len = 0
+            for digit in str(num):
+                if digit in curr:
+                    match_len += 1
+                    curr = curr[digit]
+                else:
+                    break
+            if match_len > max_len:
+                max_len = match_len
+                
+        return max_len
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(L_1 + L_2)$。
+    *   $L_1$ 是 `arr1` 中所有数字的位总数，$L_2$ 是 `arr2` 中所有数字的位总数。
+    *   每个数字最多 8-9 位。在最坏情况下，时间复杂度约为 $O((N+M) \times 9)$。
+*   **空间复杂度**：$O(L_1)$。
+    *   最坏情况下，Trie 需要存储 `arr1` 中所有数字的所有位。由于每个节点只有 10 个可能的子节点，空间消耗在可控范围内。
+
+**Trie vs 哈希表**
+
+*   **哈希表**（如上一个回复）：实现简单，利用了 Python 集合的高度优化，通常在实际运行速度上非常快。
+*   **Trie**：逻辑更符合前缀匹配的本质，当需要处理极其大量的数字且前缀重合度极高时，Trie 往往比哈希表更节省内存。
 
 
 
