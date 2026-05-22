@@ -14873,7 +14873,7 @@ class Solution:
 
 
 
-## 33.搜索旋转排序数组
+## M33.搜索旋转排序数组
 
 二分查找，https://leetcode.cn/problems/search-in-rotated-sorted-array/
 
@@ -14913,42 +14913,75 @@ class Solution:
 **提示：**
 
 - `1 <= nums.length <= 5000`
-- `-104 <= nums[i] <= 104`
+- `-10^4 <= nums[i] <= 10^4`
 - `nums` 中的每个值都 **独一无二**
 - 题目数据保证 `nums` 在预先未知的某个下标上进行了旋转
-- `-104 <= target <= 104`
+- `-10^4 <= target <= 10^4`
 
 
+
+这个问题要求在 $O(\log n)$ 的时间复杂度内完成搜索，这暗示了必须使用**二分查找（Binary Search）**。
+
+**核心思路**
+
+虽然数组被旋转了，但如果我们从中间切开，**一半必定是有序的，另一半可能是有序的也可能是旋转的**。
+
+我们可以利用这一特性：
+1. 查看左半部分 `[left, mid]` 是否有序（即 `nums[left] <= nums[mid]`）。
+2. 如果左半部分有序：
+   - 检查 `target` 是否在左半部分的范围内。如果在，就在左边找；否则去右边找。
+3. 如果左半部分无序，那么右半部分 `[mid, right]` 必定是有序的：
+   - 检查 `target` 是否在右半部分的范围内。如果在，就在右边找；否则去左边找。
+
+代码实现
 
 ```python
+from typing import List
+
 class Solution:
     def search(self, nums: List[int], target: int) -> int:
+        if not nums:
+            return -1
+        
         left, right = 0, len(nums) - 1
         
         while left <= right:
             mid = (left + right) // 2
             
+            # 找到目标值
             if nums[mid] == target:
                 return mid
             
-            # 如果左侧是有序的
-            if nums[left] < nums[mid]:
+            # 判断哪一半是有序的
+            # 情况 1：左半部分 [left, mid] 是有序的
+            if nums[left] <= nums[mid]:
+                # 判断 target 是否在左半部分范围内
                 if nums[left] <= target < nums[mid]:
                     right = mid - 1
                 else:
                     left = mid + 1
-            # 如果右侧是有序的
-            elif nums[left] > nums[mid]:
+            
+            # 情况 2：右半部分 [mid, right] 是有序的
+            else:
+                # 判断 target 是否在右半部分范围内
                 if nums[mid] < target <= nums[right]:
                     left = mid + 1
                 else:
                     right = mid - 1
-            else:
-                left += 1
-        
+                    
         return -1
-        
 ```
+
+**复杂度分析**
+
+*   **时间复杂度：$O(\log n)$**。标准的二分查找过程，每次排除一半的搜索空间。
+*   **空间复杂度：$O(1)$**。只使用了常数个额外变量。
+
+**关键点解析**
+
+*   **`nums[left] <= nums[mid]`**：这里的 `<=` 是为了处理区间只有 1 或 2 个元素的情况。
+*   **边界检查**：在判断 `target` 是否在有序区间内时，使用了严格的范围界定（例如 `nums[left] <= target < nums[mid]`），这确保了逻辑的严密性，防止漏掉元素。
+*   **互不相同**：题目声明数组中值互不相同，这简化了二分查找的逻辑（如果有重复元素，则需要更复杂的处理，见 LeetCode 第 81 题）。
 
 
 
@@ -15670,7 +15703,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
