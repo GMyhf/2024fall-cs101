@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-05-21 09:11 GMT+8*
+*Updated 2026-05-23 09:11 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -6929,6 +6929,97 @@ class Solution:
         
         return max_balls_count
 ```
+
+
+
+## E1752.检查数组是否经排序和轮转得到
+
+https://leetcode.cn/problems/check-if-array-is-sorted-and-rotated/
+
+给你一个数组 `nums` 。`nums` 的源数组中，所有元素与 `nums` 相同，但按非递减顺序排列。
+
+如果 `nums` 能够由源数组轮转若干位置（包括 0 个位置）得到，则返回 `true` ；否则，返回 `false`。
+
+源数组中可能存在 **重复项** 。
+
+**注意：**数组 `A` 在轮转 `x` 个位置后得到长度相同的数组 `B` ，使得对于每一个有效的下标 `i`，满足 `B[i] == A[(i+x) % A.length]`。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [3,4,5,1,2]
+输出：true
+解释：[1,2,3,4,5] 为有序的源数组。
+可以轮转 x = 2 个位置，使新数组从值为 3 的元素开始：[3,4,5,1,2] 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [2,1,3,4]
+输出：false
+解释：源数组无法经轮转得到 nums 。
+```
+
+**示例 3：**
+
+```
+输入：nums = [1,2,3]
+输出：true
+解释：[1,2,3] 为有序的源数组。
+可以轮转 x = 0 个位置（即不轮转）得到 nums 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 100`
+- `1 <= nums[i] <= 100`
+
+
+
+利用**循环数组**的思想来简化这段代码。一个数组如果是“分类排序且旋转过的”，那么在将它看作一个首尾相连的环形数组时，**最多只能存在一个位置满足“前一个元素大于后一个元素”**。
+
+以下是两种优化方案：
+
+**方案一：使用单次循环（推荐，逻辑更清晰）**
+
+这种方法遍历数组，并对比相邻元素（包括最后一个元素与第一个元素的对比）。如果逆序对（即前一个数大于后一个数）的数量大于 1，则返回 `False`。
+
+```python
+class Solution:
+    def check(self, nums: List[int]) -> bool:
+        n = len(nums)
+        cnt = 0
+        
+        for i in range(n):
+            # 使用取模运算 (i + 1) % n 来连接首尾
+            if nums[i] > nums[(i + 1) % n]:
+                cnt += 1
+                if cnt > 1:
+                    return False
+                    
+        return True
+```
+
+**方案二：Python 风格的一行式写法**
+
+如果你更倾向于简洁的代码，可以使用 Python 的生成器表达式和 `sum` 函数：
+
+```python
+class Solution:
+    def check(self, nums: List[int]) -> bool:
+        n = len(nums)
+        return sum(nums[i] > nums[(i + 1) % n] for i in range(n)) <= 1
+```
+
+**复杂度分析**
+
+* **时间复杂度**：$O(n)$，其中 $n$ 是数组的长度。我们只需要遍历一次数组。
+* **空间复杂度**：$O(1)$，仅使用了常数级别的额外空间。
 
 
 
@@ -15703,7 +15794,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
