@@ -5101,6 +5101,189 @@ class Solution:
 
 
 
+## T1340.跳跃游戏 V
+
+dp, https://leetcode.cn/problems/jump-game-v/
+
+给你一个整数数组 `arr` 和一个整数 `d` 。每一步你可以从下标 `i` 跳到：
+
+- `i + x` ，其中 `i + x < arr.length` 且 `0 < x <= d` 。
+- `i - x` ，其中 `i - x >= 0` 且 `0 < x <= d` 。
+
+除此以外，你从下标 `i` 跳到下标 `j` 需要满足：`arr[i] > arr[j]` 且 `arr[i] > arr[k]` ，其中下标 `k` 是所有 `i` 到 `j` 之间的数字（更正式的，`min(i, j) < k < max(i, j)`）。
+
+你可以选择数组的任意下标开始跳跃。请你返回你 **最多** 可以访问多少个下标。
+
+请注意，任何时刻你都不能跳到数组的外面。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/meta-chart.jpeg" alt="img" style="zoom:50%;" />
+
+```
+输入：arr = [6,4,14,6,8,13,9,7,10,6,12], d = 2
+输出：4
+解释：你可以从下标 10 出发，然后如上图依次经过 10 --> 8 --> 6 --> 7 。
+注意，如果你从下标 6 开始，你只能跳到下标 7 处。你不能跳到下标 5 处因为 13 > 9 。你也不能跳到下标 4 处，因为下标 5 在下标 4 和 6 之间且 13 > 9 。
+类似的，你不能从下标 3 处跳到下标 2 或者下标 1 处。
+```
+
+**示例 2：**
+
+```
+输入：arr = [3,3,3,3,3], d = 3
+输出：1
+解释：你可以从任意下标处开始且你永远无法跳到任何其他坐标。
+```
+
+**示例 3：**
+
+```
+输入：arr = [7,6,5,4,3,2,1], d = 1
+输出：7
+解释：从下标 0 处开始，你可以按照数值从大到小，访问所有的下标。
+```
+
+**示例 4：**
+
+```
+输入：arr = [7,1,7,1,7,1], d = 2
+输出：2
+```
+
+**示例 5：**
+
+```
+输入：arr = [66], d = 1
+输出：1
+```
+
+ 
+
+**提示：**
+
+- `1 <= arr.length <= 1000`
+- `1 <= arr[i] <= 10^5`
+- `1 <= d <= arr.length`
+
+
+
+这是一个经典的记忆化搜索（动态规划）问题。由于每次跳跃只能从数值较大的位置跳到数值较小的位置，跳跃的关系构成了一个有向无环图（DAG），因此我们可以使用深度优先搜索（DFS）配合记忆化技术来解决。
+
+**解题思路**
+
+1. **状态定义**：
+   定义 `dfs(i)` 表示从下标 `i` 出发，最多可以访问的下标个数。
+
+2. **状态转移**：
+   从下标 `i` 开始，我们可以尝试向右和向左跳跃：
+   - **向右跳跃**：探索区间 $[i + 1, \min(n - 1, i + d)]$。
+     - 如果遇到 $arr[j] < arr[i]$，则说明可以跳到 $j$。我们可以递归计算从 $j$ 开始能访问的最大长度 $1 + dfs(j)$，并更新最大值。
+     - 如果遇到 $arr[j] \ge arr[i]$，根据题目规则，我们不能跳过比当前高度矮或一样高以上的元素。因此，一旦遇到不满足 $arr[i] > arr[j]$ 的元素，就必须**立即停止**向右探索。
+   - **向左跳跃**：同理，探索区间 $[\max(0, i - d), i - 1]$，自右向左扫描。如果遇到 $arr[j] \ge arr[i]$ 则立即停止向左探索。
+
+3. **记忆化**：
+   我们使用一个数组 `memo` 来记录已经计算过的 `dfs(i)` 的值，避免重复计算。
+
+4. **最终结果**：
+   遍历数组的所有可能起始位置，返回 `max(dfs(i))`。
+
+**Python 代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def maxJumps(self, arr: List[int], d: int) -> int:
+        n = len(arr)
+        # memo[i] 存储从下标 i 出发最多能访问的下标数
+        memo = [-1] * n
+
+        def dfs(i: int) -> int:
+            if memo[i] != -1:
+                return memo[i]
+            
+            max_steps = 1
+            
+            # 向右跳跃
+            for j in range(i + 1, min(n, i + d + 1)):
+                if arr[i] > arr[j]:
+                    max_steps = max(max_steps, 1 + dfs(j))
+                else:
+                    # 遇到不小于 arr[i] 的元素，无法继续向右跳跃
+                    break
+            
+            # 向左跳跃
+            for j in range(i - 1, max(-1, i - d - 1), -1):
+                if arr[i] > arr[j]:
+                    max_steps = max(max_steps, 1 + dfs(j))
+                else:
+                    # 遇到不小于 arr[i] 的元素，无法继续向左跳跃
+                    break
+            
+            memo[i] = max_steps
+            return max_steps
+
+        # 尝试从每一个下标出发，寻找最大值
+        return max(dfs(i) for i in range(n))
+
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(n \cdot d)$。数组长度为 $n$。对于每个位置 $i$，我们最多分别向左和向右扫描 $d$ 个元素，每个状态只会被计算一次。在最坏情况下（例如 $d = n$），时间复杂度为 $O(n^2)$。当 $n \le 1000$ 时，计算量大约为 $10^6$ 次操作，运行效率较高。
+- **空间复杂度**：$O(n)$。用于存储记忆化数组 `memo` 以及递归调用栈的开销。
+
+
+
+可以使用 `functools` 模块中的 `lru_cache`（或者 Python 3.9 及以上版本的 `cache`）来代替手动维护的 `memo` 数组。
+
+使用内置装饰器可以让代码更加简洁，减少了手动初始化和读写 `memo` 数组的样板代码。
+
+**使用 `lru_cache` 的代码实现**
+
+```python
+from typing import List
+from functools import lru_cache
+
+class Solution:
+    def maxJumps(self, arr: List[int], d: int) -> int:
+        n = len(arr)
+
+        # 使用 lru_cache 自动进行记忆化
+        # maxsize=None 表示不限制缓存大小，等价于 Python 3.9+ 中的 @cache
+        @lru_cache(maxsize=None)
+        def dfs(i: int) -> int:
+            max_steps = 1
+            
+            # 向右跳跃
+            for j in range(i + 1, min(n, i + d + 1)):
+                if arr[i] > arr[j]:
+                    max_steps = max(max_steps, 1 + dfs(j))
+                else:
+                    break
+            
+            # 向左跳跃
+            for j in range(i - 1, max(-1, i - d - 1), -1):
+                if arr[i] > arr[j]:
+                    max_steps = max(max_steps, 1 + dfs(j))
+                else:
+                    break
+            
+            return max_steps
+
+        return max(dfs(i) for i in range(n))
+```
+
+**说明**
+
+* **兼容性**：在 LeetCode 的 Python 3 环境中，可以直接使用 `from functools import cache` 并使用 `@cache` 装饰器，它的效果与 `@lru_cache(maxsize=None)` 相同，且运行开销稍小一些。
+* **效率**：由于 `dfs(i)` 的参数只有单个整数 `i` 且取值范围较小（$0 \le i < 1000$），`lru_cache` 的哈希表查询开销非常低，完全能够满足本题的时间限制要求。
+
+
+
 ## T1345.跳跃游戏 IV
 
 bfs, hash table, https://leetcode.cn/problems/jump-game-iv/
