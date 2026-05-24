@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-05-20 14:01 GMT+8*
+*Updated 2026-05-24 22:46 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -24483,7 +24483,7 @@ class Solution:
 
 # 洛谷
 
-## P1002 [NOIP 2002 普及组] 过河卒
+## P1002 [NOIP 2002 普及组] 过河卒（橙色 普及-）
 
 dp, https://www.luogu.com.cn/problem/P1002
 
@@ -24600,7 +24600,127 @@ print(count_paths(n, m, horse_x, horse_y))
 
 
 
-## P1165 日志分析
+## P1113 [USACO02FEB] 杂务（黄色 普及/提高-）
+
+dp, topological order, https://www.luogu.com.cn/problem/P1113
+
+John 的农场在给奶牛挤奶前有很多杂务要完成，每一项杂务都需要一定的时间来完成它。比如：他们要将奶牛集合起来，将他们赶进牛棚，为奶牛清洗乳房以及一些其它工作。尽早将所有杂务完成是必要的，因为这样才有更多时间挤出更多的牛奶。
+
+当然，有些杂务必须在另一些杂务完成的情况下才能进行。比如：只有将奶牛赶进牛棚才能开始为它清洗乳房，还有在未给奶牛清洗乳房之前不能挤奶。我们把这些工作称为完成本项工作的准备工作。至少有一项杂务不要求有准备工作，这个可以最早着手完成的工作，标记为杂务 $1$。
+
+John 有需要完成的 $n$ 个杂务的清单，并且这份清单是有一定顺序的，杂务 $k\ (k>1)$ 的准备工作只可能在杂务 $1$ 至 $k-1$ 中。
+
+写一个程序依次读入每个杂务的工作说明。计算出所有杂务都被完成的最短时间。当然互相没有关系的杂务可以同时工作，并且，你可以假定 John 的农场有足够多的工人来同时完成任意多项任务。
+
+**输入格式**
+
+第 $1$ 行，一个整数 $n\ (3 \le n \le 10{,}000)$，必须完成的杂务的数目；
+
+第 $2$ 至 $n+1$ 行，每行有一些用空格隔开的整数，分别表示：
+
+- 工作序号（保证在输入文件中是从 $1$ 到 $n$ 有序递增的）；
+- 完成工作所需要的时间 $len\ (1 \le len \le 100)$；
+- 一些必须完成的准备工作，总数不超过 $100$ 个，由一个数字 $0$ 结束。有些杂务没有需要准备的工作只描述一个单独的 $0$。
+
+保证整个输入文件中不会出现多余的空格。
+
+**输出格式**
+
+一个整数，表示完成所有杂务所需的最短时间。
+
+输入输出样例 #1
+
+输入 #1
+
+```
+7
+1 5 0
+2 2 1 0
+3 3 2 0
+4 6 1 0
+5 1 2 4 0
+6 8 2 4 0
+7 4 3 5 6 0
+
+```
+
+输出 #1
+
+```
+23
+```
+
+
+
+这是一个典型的有向无环图（DAG）上的动态规划（DP）或拓扑排序问题。
+
+**解题思路**
+
+1. **依赖关系与拓扑序**：
+   题目中明确指出：“杂务 $k\ (k>1)$ 的准备工作只可能在杂务 $1$ 至 $k-1$ 中”。这意味着输入给出的任务顺序已经天然满足拓扑序。我们不需要显式地进行拓扑排序，只需要按照任务编号从 $1$ 到 $n$ 顺序计算即可。
+
+2. **状态定义**：
+   设 $dp[i]$ 表示完成第 $i$ 个杂务所需的最短时间（即该任务的最早完工时间）。
+
+3. **状态转移方程**：
+   对于任务 $i$，它必须在它所有的准备工作完成之后才能开始。因此，它的开始时间取决于其所有准备工作中完工时间最晚的那一个。
+   $$dp[i] = len_i + \max(\{dp[j] \mid j \text{ 是 } i \text{ 的准备工作}\} \cup \{0\})$$
+   如果任务 $i$ 没有准备工作，则对应的最大值为 $0$。
+
+4. **最终答案**：
+   所有任务都完成的最短时间为所有任务完工时间的最大值，即 $\max_{1 \le i \le n} dp[i]$。
+
+**Python 代码实现**
+
+```python
+import sys
+
+def solve():
+    # 读取所有输入数据
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    n = int(input_data[0])
+    
+    # dp[i] 表示完成第 i 个杂务的最短时间
+    dp = [0] * (n + 1)
+    
+    ptr = 1
+    for _ in range(n):
+        u = int(input_data[ptr])
+        length = int(input_data[ptr+1])
+        ptr += 2
+        
+        max_prev_dp = 0
+        # 读取准备工作，直到遇到 0 结束
+        while True:
+            pre = int(input_data[ptr])
+            if pre == 0:
+                ptr += 1
+                break
+            if dp[pre] > max_prev_dp:
+                max_prev_dp = dp[pre]
+            ptr += 1
+            
+        # 转移方程
+        dp[u] = length + max_prev_dp
+        
+    # 最终输出完成所有任务所需的最短时间
+    print(max(dp))
+
+if __name__ == '__main__':
+    solve()
+```
+
+**复杂度分析**
+
+- **时间复杂度**：每个任务和每个依赖关系都只会被遍历一次。题目规定每个任务的准备工作总数不超过 100 个，因此总时间复杂度为 $O(n)$，在 $n = 10,000$ 的情况下运行效率较高。
+- **空间复杂度**：需要一个大小为 $n+1$ 的数组来存储每个任务的 $dp$ 值，空间复杂度为 $O(n)$。
+
+
+
+## P1165 日志分析（橙色 普及-）
 
 辅助栈，懒删除，https://www.luogu.com.cn/problem/P1165
 
@@ -24741,7 +24861,7 @@ if __name__ == "__main__":
 
 
 
-## P1429 平面最近点对（加强版）
+## P1429 平面最近点对（加强版）（蓝色 提高+/省选-）
 
 https://www.luogu.com.cn/problem/P1429
 
@@ -24891,7 +25011,7 @@ int main() {
 
 但是能AC这个题目。 
 
-## P1257 平面上的最接近点对
+## P1257 平面上的最接近点对（橙色 普及-）
 
 https://www.luogu.com.cn/problem/P1257
 
@@ -25076,7 +25196,7 @@ if __name__ == "__main__":
 
 
 
-## P1352 没有上司的舞会
+## P1352 没有上司的舞会（黄色 普及/提高-）
 
 tree dp, https://www.luogu.com.cn/problem/P1352
 
@@ -25184,7 +25304,7 @@ print(max(dp[boss]))
 
 
 
-## P1528 切蛋糕
+## P1528 切蛋糕（蓝色 提高+/省选-）
 
 https://www.luogu.com.cn/problem/P1528
 
@@ -25360,7 +25480,203 @@ if __name__ == "__main__":
 
 
 
-## P2698 [USACO12MAR] Flowerpot S
+## P2515 [HAOI2010] 软件安装（蓝色 提高+/省选-）
+
+SCC + tree DP, https://www.luogu.com.cn/problem/P2515
+
+现在我们的手头有 $N$ 个软件，对于一个软件 $i$，它要占用 $W_i$ 的磁盘空间，它的价值为 $V_i$。我们希望从中选择一些软件安装到一台磁盘容量为 $M$ 计算机上，使得这些软件的价值尽可能大（即 $V_i$ 的和最大）。
+
+但是现在有个问题：软件之间存在依赖关系，即软件 $i$ 只有在安装了软件 $j$（包括软件 $j$ 的直接或间接依赖）的情况下才能正确工作（软件 $i$ 依赖软件 $j$)。幸运的是，一个软件最多依赖另外一个软件。如果一个软件不能正常工作，那么它能够发挥的作用为 $0$。
+
+
+我们现在知道了软件之间的依赖关系：软件 $i$ 依赖软件 $D_i$。现在请你设计出一种方案，安装价值尽量大的软件。一个软件只能被安装一次，如果一个软件没有依赖则 $D_i=0$，这时只要这个软件安装了，它就能正常工作。
+
+**输入格式**
+
+第 1 行：$N,M(0\leq N\leq 100, 0\leq M\leq 500)$
+
+第 2 行：$W_1,W_2, ... W_i, ..., W_n (0\leq W_i\leq M)$
+
+第 3 行：$V_1, V_2, ..., V_i, ..., V_n  (0\leq V_i\leq 1000)$
+
+第 4 行：$D_1, D_2, ..., D_i, ..., D_n (0\leq D_i\leq N, D_i≠i)$
+
+**输出格式**
+
+一个整数，代表最大价值。
+
+输入输出样例 #1
+
+输入 #1
+
+```
+3 10
+5 5 6
+2 3 4
+0 1 1
+```
+
+输出 #1
+
+```
+5
+```
+
+
+
+这是一道典型的有向图强连通分量（SCC）缩点与树形背包动态规划结合的题目。
+
+**解题思路**
+
+1. **关系分析与缩点**：
+   - 每个软件最多依赖另一个软件。如果我们将依赖关系看作有向边（$D_i \to i$，表示安装 $i$ 必须先安装 $D_i$），那么整个图是由若干个基环外向树构成的森林。
+   - 如果图中存在环（即几个软件相互依赖），由于必须同时安装环中的所有软件，我们可以使用 **Tarjan 算法** 找出所有的强连通分量（SCC），并将每个 SCC 缩成一个点。
+   - 缩点后，新点的权重 $W'$ 和价值 $V'$ 分别为原强连通分量中所有点权重之和与价值之和。
+
+2. **重构图为树形结构**：
+   - 缩点后的新图是一个有向无环图（DAG）。因为每个点在原图中最多只有一个入度，所以缩点后的图实际上是一个**森林**。
+   - 为了方便进行树形 DP，可以引入一个**虚拟根节点 $0$**（其重量和价值均为 $0$）。将所有入度为 $0$ 的新节点连接到虚拟根节点 $0$ 下，从而将森林转化为一棵以 $0$ 为根的树。
+
+3. **树形背包 DP**：
+   - 设 $dp[u][j]$ 表示在以 $u$ 为根的子树中，选择若干节点（**必须包含根节点 $u$**）且总重量不超过 $j$ 时能获得的最大价值。
+   - 对于每个节点 $u$：
+     - 若 $j < W'_u$，由于必须选择 $u$，因此状态无效，初始化为 $-1$。
+     - 若 $j \ge W'_u$，初始化 $dp[u][j] = V'_u$。
+   - 然后，递归遍历 $u$ 的每一个子节点 $v$ 并进行背包合并：
+     - 对于容量 $j$ 从 $M$ 递减到 $W'_u$，我们考虑给子树 $v$ 分配容量 $k$ ($W'_v \le k \le j - W'_u$)：
+       $$dp[u][j] = \max(dp[u][j], dp[u][j-k] + dp[v][k])$$
+       （其中需保证 $dp[v][k] \neq -1$）。
+   - 最终，以虚拟根节点 $0$ 运行 DP 后，$dp[0][M]$ 即为所求的最大价值。
+
+**Python 3 实现代码**
+
+```python
+import sys
+
+# 增加递归深度限制，防止树较深时递归溢出
+sys.setrecursionlimit(100000)
+
+def solve():
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    N = int(input_data[0])
+    M = int(input_data[1])
+    
+    W = [0] + [int(x) for x in input_data[2 : 2 + N]]
+    V = [0] + [int(x) for x in input_data[2 + N : 2 + 2 * N]]
+    D = [0] + [int(x) for x in input_data[2 + 2 * N : 2 + 3 * N]]
+    
+    # 1. 构建原图，D[i] -> i 表示安装 i 依赖 D[i]
+    adj = [[] for _ in range(N + 1)]
+    for i in range(1, N + 1):
+        if D[i] != 0:
+            adj[D[i]].append(i)
+            
+    # 2. 使用 Tarjan 算法求强连通分量
+    dfn = [0] * (N + 1)
+    low = [0] * (N + 1)
+    dfn_cnt = 0
+    scc = [0] * (N + 1)
+    scc_cnt = 0
+    stack = []
+    in_stack = [False] * (N + 1)
+    
+    def tarjan(u):
+        nonlocal dfn_cnt, scc_cnt
+        dfn_cnt += 1
+        dfn[u] = low[u] = dfn_cnt
+        stack.append(u)
+        in_stack[u] = True
+        
+        for v in adj[u]:
+            if not dfn[v]:
+                tarjan(v)
+                low[u] = min(low[u], low[v])
+            elif in_stack[v]:
+                low[u] = min(low[u], dfn[v])
+                
+        if low[u] == dfn[u]:
+            scc_cnt += 1
+            while True:
+                v = stack.pop()
+                in_stack[v] = False
+                scc[v] = scc_cnt
+                if v == u:
+                    break
+                    
+    for i in range(1, N + 1):
+        if not dfn[i]:
+            tarjan(i)
+            
+    # 3. 缩点，计算新点的重量和价值
+    W_scc = [0] * (scc_cnt + 1)
+    V_scc = [0] * (scc_cnt + 1)
+    for i in range(1, N + 1):
+        W_scc[scc[i]] += W[i]
+        V_scc[scc[i]] += V[i]
+        
+    # 4. 构建缩点后的新图，并统计入度
+    adj_scc = [[] for _ in range(scc_cnt + 1)]
+    in_degree = [0] * (scc_cnt + 1)
+    edges = set()
+    
+    for u in range(1, N + 1):
+        for v in adj[u]:
+            su = scc[u]
+            sv = scc[v]
+            if su != sv and (su, sv) not in edges:
+                edges.add((su, sv))
+                adj_scc[su].append(sv)
+                in_degree[sv] += 1
+                
+    # 5. 引入虚拟根节点 0，连接所有入度为 0 的节点
+    for i in range(1, scc_cnt + 1):
+        if in_degree[i] == 0:
+            adj_scc[0].append(i)
+            
+    W_scc[0] = 0
+    V_scc[0] = 0
+    
+    # 6. 树形 DP
+    # dp[u][j] 表示在以 u 为根的子树中选择且必须选 u，总重量不超过 j 时的最大价值
+    dp = [[-1] * (M + 1) for _ in range(scc_cnt + 1)]
+    
+    def dfs(u):
+        wu = W_scc[u]
+        vu = V_scc[u]
+        # 初始化选 u 的状态
+        for j in range(wu, M + 1):
+            dp[u][j] = vu
+            
+        for v in adj_scc[u]:
+            dfs(v)
+            wv = W_scc[v]
+            # 树形背包合并
+            for j in range(M, wu - 1, -1):
+                max_val = dp[u][j]
+                # 分配给子树 v 的容量为 k
+                for k in range(wv, j - wu + 1):
+                    val_v = dp[v][k]
+                    if val_v != -1:
+                        val_u = dp[u][j - k]
+                        if val_u + val_v > max_val:
+                            max_val = val_u + val_v
+                dp[u][j] = max_val
+
+    dfs(0)
+    print(dp[0][M])
+
+if __name__ == '__main__':
+    solve()
+```
+
+
+
+
+
+## P2698 [USACO12MAR] Flowerpot S（绿色 普及+/提高）
 
 monotonic queue, https://www.luogu.com.cn/problem/P2698
 
@@ -25526,7 +25842,7 @@ if __name__ == "__main__":
 
 
 
-## P3387 【模板】缩点
+## P3387 【模板】缩点（绿色 普及+/提高）
 
 SCC, https://www.luogu.com.cn/problem/P3387
 
@@ -25835,7 +26151,7 @@ solve()
 
 
 
-## P3379 【模板】最近公共祖先（LCA）
+## P3379 【模板】最近公共祖先（LCA）（黄色 普及/提高-）
 
 LCA, binary lifting, https://www.luogu.com.cn/problem/P3379
 
@@ -26312,7 +26628,7 @@ if __name__ == "__main__":
 
 
 
-## B3609 [图论与代数结构 701] 强连通分量
+## B3609 [图论与代数结构 701] 强连通分量（绿色 普及+/提高）
 
 SCC, https://www.luogu.com.cn/problem/B3609
 
@@ -26482,7 +26798,7 @@ if __name__ == "__main__":
 
 
 
-## P4148 简单题
+## P4148 简单题（紫色 省选/NOI-）
 
 KD Tree, https://www.luogu.com.cn/problem/P4148
 
@@ -26996,7 +27312,7 @@ for line in data[1:]:
 
 
 
-## P4390 [BalkanOI2007] Mokia 摩基亚
+## P4390 [BalkanOI2007] Mokia 摩基亚（紫色 省选/NOI-）
 
 https://www.luogu.com.cn/problem/P4390
 
@@ -27209,7 +27525,7 @@ process_commands(data)
 
 
 
-## P6192 【模板】最小斯坦纳树
+## P6192 【模板】最小斯坦纳树（紫色 省选/NOI-）
 
 bitmask/state_compression dp, dijkstra , https://www.luogu.com.cn/problem/P6192
 
@@ -27473,7 +27789,7 @@ if __name__ == "__main__":
 
 
 
-## P8867 [NOIP2022] 建造军营
+## P8867 [NOIP2022] 建造军营（紫色 省选/NOI-）
 
 树形DP, Tarjan, 双连通分量, 容斥原理, https://www.luogu.com.cn/problem/P8867
 
@@ -27715,7 +28031,7 @@ if __name__ == '__main__':
 
 
 
-## U534853 被五步蛇咬了怎么办？
+## U534853 被五步蛇咬了怎么办？（蓝色 提高+/省选-）
 
 https://www.luogu.com.cn/problem/U534853
 
@@ -28086,7 +28402,7 @@ if __name__ == '__main__':
 
 
 
-## P14635 [NOIP2025] 糖果店 / candy（官方数据）
+## P14635 [NOIP2025] 糖果店（黄色 普及/提高-）
 
 greedy, binary search, https://www.luogu.com.cn/problem/P14635
 
