@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-05-23 09:11 GMT+8*
+*Updated 2026-05-25 09:11 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -15794,7 +15794,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -34409,6 +34409,105 @@ class Solution:
 **总结**
 
 你的思路是正确的！“转置 + 每行反转”和“上下反转 + 转置”都是实现顺时针 90 度旋转的标准手段。在 Python 中，后者利用 `zip(*matrix[::-1])` 写起来最快。
+
+
+
+## M1871.跳跃游戏 VII
+
+dp+sliding window, https://leetcode.cn/problems/jump-game-vii/
+
+给你一个下标从 **0** 开始的二进制字符串 `s` 和两个整数 `minJump` 和 `maxJump` 。一开始，你在下标 `0` 处，且该位置的值一定为 `'0'` 。当同时满足如下条件时，你可以从下标 `i` 移动到下标 `j` 处：
+
+- `i + minJump <= j <= min(i + maxJump, s.length - 1)` 且
+- `s[j] == '0'`.
+
+如果你可以到达 `s` 的下标 `s.length - 1` 处，请你返回 `true` ，否则返回 `false` 。
+
+**示例 1：**
+
+```
+输入：s = "011010", minJump = 2, maxJump = 3
+输出：true
+解释：
+第一步，从下标 0 移动到下标 3 。
+第二步，从下标 3 移动到下标 5 。
+```
+
+**示例 2：**
+
+```
+输入：s = "01101110", minJump = 2, maxJump = 3
+输出：false
+```
+
+ 
+
+**提示：**
+
+- `2 <= s.length <= 10^5`
+- `s[i]` 要么是 `'0'` ，要么是 `'1'`
+- `s[0] == '0'`
+- `1 <= minJump <= maxJump < s.length`
+
+
+
+这道题可以通过**动态规划 + 滑动窗口（双指针）**的方法来高效解决。
+
+**解题思路**
+
+设 `dp[i]` 表示是否可以到达下标 `i`。根据题目要求，要到达下标 `i`，必须满足以下两个条件：
+
+1. `s[i] == '0'`
+2. 存在一个可以到达的下标 `j`，满足 `i - maxJump <= j <= i - minJump` 且 `dp[j] == True`。
+
+如果对于每个 `i` 都去遍历区间 `[i - maxJump, i - minJump]`，时间复杂度会达到 $O(N \times (maxJump - minJump))$，在最坏情况下（如 $10^5$ 级别）会超时。
+
+为了优化，我们可以利用**滑动窗口**的思想，用一个变量 `cnt` 来维护当前窗口 `[i - maxJump, i - minJump]` 内可行起点（即 `dp[j] == True`）的数量：
+
+* 当 `i` 右移时，新的元素 `i - minJump` 进入窗口。如果 `dp[i - minJump]` 为 `True`，则 `cnt` 加 1。
+* 旧的元素 `i - maxJump - 1` 离开窗口。如果 `dp[i - maxJump - 1]` 为 `True`，则 `cnt` 减 1。
+* 只要 `cnt > 0` 且 `s[i] == '0'`，说明当前位置 `i` 是可达的，即 `dp[i] = True`。
+
+这种方法将时间复杂度降低到了 $O(N)$。
+
+**Python 3 代码实现**
+
+```python
+class Solution:
+    def canReach(self, s: str, minJump: int, maxJump: int) -> bool:
+        n = len(s)
+        # 如果终点本身是 '1'，则一定无法到达
+        if s[n - 1] == '1':
+            return False
+        
+        dp = [False] * n
+        dp[0] = True
+        
+        # cnt 用于记录当前窗口 [i - maxJump, i - minJump] 内值为 True 的 dp 数量
+        cnt = 0
+        
+        for i in range(1, n):
+            # 1. 元素进入窗口：i - minJump
+            if i >= minJump:
+                if dp[i - minJump]:
+                    cnt += 1
+            
+            # 2. 元素离开窗口：i - maxJump - 1
+            if i > maxJump:
+                if dp[i - maxJump - 1]:
+                    cnt -= 1
+            
+            # 3. 判断当前位置是否可达
+            if s[i] == '0' and cnt > 0:
+                dp[i] = True
+                
+        return dp[n - 1]
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(N)$，其中 $N$ 是字符串 `s` 的长度。我们只需对整个字符串进行一次线性扫描，每次状态转移的操作都是 $O(1)$ 的。
+- **空间复杂度**：$O(N)$，用于存储状态数组 `dp`。
 
 
 
