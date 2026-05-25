@@ -26817,6 +26817,178 @@ if __name__ == "__main__":
 
 
 
+## P3403 跳楼机 （提高+/省选）
+
+同余最短路，https://www.luogu.com.cn/problem/P3403
+
+DJL 为了避免成为一只咸鱼，来找 srwudi 学习压代码的技巧。
+
+Srwudi 的家是一幢 $h$ 层的摩天大楼。由于前来学习的蒟蒻越来越多，srwudi 改造了一个跳楼机，使得访客可以更方便的上楼。
+
+经过改造，srwudi 的跳楼机可以采用以下四种方式移动：
+
+1. 向上移动 $x$ 层；
+2. 向上移动 $y$ 层；
+3. 向上移动 $z$ 层；
+4. 回到第一层。
+
+一个月黑风高的大中午，DJL 来到了 srwudi 的家，现在他在 srwudi 家的第一层，碰巧跳楼机也在第一层。DJL 想知道，他可以乘坐跳楼机前往的楼层数。
+
+**输入格式**
+
+第一行一个整数 $h$，表示摩天大楼的层数。
+
+第二行三个正整数，分别表示题目中的 $x, y, z$。
+
+**输出格式**
+
+一行一个整数，表示 DJL 可以到达的楼层数。
+
+输入输出样例 #1
+
+输入 #1
+
+```
+15
+4 7 9
+
+```
+
+输出 #1
+
+```
+9
+
+```
+
+输入输出样例 #2
+
+输入 #2
+
+```
+33333333333
+99005 99002 100000
+
+```
+
+输出 #2
+
+```
+33302114671
+
+```
+
+说明/提示
+
+【样例 1 解释】
+
+可以到达的楼层有：$1,5,8,9,10,12,13,14,15$。
+
+【数据规模与约定】
+
+对于 $100\%$ 的数据，$1 \le h \le 2^{63}-1$，$1 \le x,y,z \le 10^5$。
+
+
+
+这道题是一道经典的**同余最短路**（Shortest Path on Congruence）问题。
+
+**思路分析**
+
+根据题意，我们可以从第 $1$ 层出发，每次向上移动 $x$、$y$ 或 $z$ 层。
+由于 $h$ 的范围非常大（可达 $2^{63}-1$），直接进行搜索或动态规划是不可能的。但注意到 $x, y, z$ 的范围较小（$\le 10^5$），我们可以利用其中一个数作为模数（Modulus），将无限的状态空间转化为有限的同余类。
+
+设 $m = \min(x, y, z)$。我们将大楼的每一层按模 $m$ 的余数进行分类。
+定义 $dist[i]$ 表示**仅通过向上移动 $y$ 和 $z$ 层，能够到达的满足 $\text{楼层} \equiv i \pmod m$ 的最小楼层数**（初始在第 1 层，所以起点余数为 $1 \bmod m$，初始最小楼层为 $1$）。
+
+如果我们能求出所有的 $dist[i]$，那么对于任意一个余数 $i$：
+所有满足 $F \equiv i \pmod m$ 且 $dist[i] \le F \le h$ 的楼层 $F$，都可以通过在 $dist[i]$ 的基础上不断向上移动 $m$ 层（即 $x$ 层）来达到。
+对于每一个余数 $i$，其能到达的合法楼层数量为：
+$$\lfloor \frac{h - dist[i]}{m} \rfloor + 1 \quad (\text{前提是 } dist[i] \le h)$$
+
+将所有余数的贡献相加即为答案。
+
+**算法步骤**
+
+1. 选择 $m = \min(x, y, z)$ 作为一个基准模数，剩余两步设为 $dy$ 和 $dz$。
+2. 构建一个大小为 $m$ 的最短路图，节点为 $0$ 到 $m-1$。
+3. 从起点 $1 \bmod m$ 开始跑 Dijkstra 算法，初始距离 $dist[1 \bmod m] = 1$，其余初始化为正无穷。
+4. 每次从堆中取出当前距离最小的点 $u$，尝试通过增加 $dy$ 和 $dz$ 转移到相邻的同余状态：
+   - 转移到 $(u + dy) \bmod m$，代价为 $dy$。
+   - 转移到 $(u + dz) \bmod m$，代价为 $dz$。
+5. 最终遍历所有 $0 \le i < m$，统计满足 $dist[i] \le h$ 的路径对答案的贡献。
+
+**Python 代码实现**
+
+```python
+import heapq
+import sys
+
+def solve():
+    # 读入所有输入
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    h = int(input_data[0])
+    x = int(input_data[1])
+    y = int(input_data[2])
+    z = int(input_data[3])
+    
+    if h == 0:
+        print(0)
+        return
+
+    # 选择最小的值作为模数，以最小化状态数
+    mod = min(x, y, z)
+    
+    choices = [x, y, z]
+    choices.remove(mod)
+    dy, dz = choices[0], choices[1]
+    
+    # dist[i] 表示到达的楼层中，模 mod 余数为 i 的最小楼层
+    dist = [float('inf')] * mod
+    start_node = 1 % mod
+    dist[start_node] = 1
+    
+    # 优先队列 (距离, 节点)
+    pq = [(1, start_node)]
+    
+    while pq:
+        d, u = heapq.heappop(pq)
+        
+        if d > dist[u]:
+            continue
+            
+        # 尝试移动 dy 层
+        v1 = (u + dy) % mod
+        if dist[u] + dy < dist[v1]:
+            dist[v1] = dist[u] + dy
+            heapq.heappush(pq, (dist[v1], v1))
+            
+        # 尝试移动 dz 层
+        v2 = (u + dz) % mod
+        if dist[u] + dz < dist[v2]:
+            dist[v2] = dist[u] + dz
+            heapq.heappush(pq, (dist[v2], v2))
+            
+    # 计算答案
+    ans = 0
+    for i in range(mod):
+        if dist[i] <= h:
+            ans += (h - dist[i]) // mod + 1
+            
+    print(ans)
+
+if __name__ == '__main__':
+    solve()
+```
+
+**复杂度分析**
+
+- **时间复杂度**：状态总数为 $O(m)$，每个状态有 $2$ 条出边。Dijkstra 算法使用堆优化后的时间复杂度为 $O(m \log m)$。在 $m \le 10^5$ 的情况下，计算量大约在 $1.7 \times 10^6$ 次操作以内，Python 可以在规定的时间内运行完毕。
+- **空间复杂度**：由于只存储了大小为 $m$ 的 `dist` 数组和优先队列，空间复杂度为 $O(m)$，远低于空间限制。
+
+
+
 ## B3609 [图论与代数结构 701] 强连通分量（绿色 普及+/提高）
 
 SCC, https://www.luogu.com.cn/problem/B3609
