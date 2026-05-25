@@ -25669,6 +25669,224 @@ if __name__ == "__main__":
 
 
 
+## P1967 [NOIP 2013 提高组] 货车运输（蓝色 提高+/省选-）
+
+https://www.luogu.com.cn/problem/P1967
+
+NOIP2013 提高组 D1T3
+
+A 国有 $n$ 座城市，编号从 $1$ 到 $n$，城市之间有 $m$ 条双向道路。每一条道路对车辆都有重量限制，简称限重。
+
+现在有 $q$ 辆货车在运输货物，司机们想知道每辆车在不超过车辆限重的情况下，最多能运多重的货物。
+
+**输入格式**
+
+第一行有两个用一个空格隔开的整数 $n,m$，表示 A 国有 $n$ 座城市和 $m$ 条道路。  
+
+接下来 $m$ 行每行三个整数 $x, y, z$，每两个整数之间用一个空格隔开，表示从 $x$ 号城市到 $y$ 号城市有一条限重为 $z$ 的道路。    
+注意：$x \neq y$，两座城市之间可能有多条道路。
+
+接下来一行有一个整数 $q$，表示有 $q$ 辆货车需要运货。
+
+接下来 $q$ 行，每行两个整数 $x,y$，之间用一个空格隔开，表示一辆货车需要从 $x$ 城市运输货物到 $y$ 城市，保证 $x \neq y$。
+
+**输出格式**
+
+共有 $q$ 行，每行一个整数，表示对于每一辆货车，它的最大载重是多少。  
+如果货车不能到达目的地，输出 $-1$。
+
+输入输出样例 #1
+
+输入 #1
+
+```
+4 3
+1 2 4
+2 3 3
+3 1 1
+3
+1 3
+1 4
+1 3
+```
+
+输出 #1
+
+```
+3
+-1
+3
+```
+
+说明/提示
+
+对于 $30\%$ 的数据，$1 \le n < 1000$，$1 \le m < 10,000$，$1\le q< 1000$；
+
+对于 $60\%$ 的数据，$1 \le n < 1000$，$1 \le m < 5\times 10^4$，$1 \le q< 1000$；
+
+对于 $100\%$ 的数据，$1 \le n < 10^4$，$1 \le m < 5\times 10^4$，$1 \le q< 3\times 10^4$，$0 \le z \le 10^5$。
+
+
+
+这是一个经典的最大生成树与最近公共祖先（LCA）结合的问题。
+
+### 解题思路
+
+1. **最大生成树 (Maximum Spanning Tree)**：
+   为了让两点之间路径上的最小边权最大，我们需要选择一条“瓶颈”边权尽可能大的路径。根据克鲁斯卡尔（Kruskal）算法的性质，在**最大生成树**（或最大生成森林）上，任意两点之间的唯一路径，就是所有可能路径中“最小边权最大”的路径。
+   因此，我们首先使用 Kruskal 算法求出原图的最大生成树（或森林）。
+
+2. **树上倍增 (LCA)**：
+   在最大生成树建立好后，问题转化为：求树上任意两点 $x$ 和 $y$ 之间的路径上的最小边权。
+   我们可以使用**最近公共祖先 (LCA)** 算法，配合**倍增**（Binary Lifting）来在线地快速回答每个询问。
+   * $up[i][j]$ 表示节点 $i$ 的第 $2^j$ 个祖先。
+   * $min\_w[i][j]$ 表示从节点 $i$ 向上走到其第 $2^j$ 个祖先的路径上的最小边权。
+   * 通过 BFS 或 DFS 预处理出所有节点的深度、直接父亲（即 $up[i][0]$）和直接边权（即 $min\_w[i][0]$），然后通过递推公式进行预处理。
+   * 递推公式：
+     * $up[i][j] = up[up[i][j-1]][j-1]$
+     * $min\_w[i][j] = \min(min\_w[i][j-1], min\_w[up[i][j-1]][j-1])$
+
+3. **连通性判断**：
+   如果两个节点在并查集中不属于同一个集合，说明它们不连通，直接输出 `-1`。
+
+### Python 3 实现
+
+由于 Python 执行效率稍慢，我们使用 `sys.stdin.read` 一次性读取输入，并采用 BFS 代替 DFS 预处理以避免递归开销并提高运行速度。
+
+```python
+import sys
+from collections import deque
+
+def solve():
+    # 快速输入
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    n = int(input_data[0])
+    m = int(input_data[1])
+    
+    # 读入边
+    edges = []
+    idx = 2
+    for _ in range(m):
+        u = int(input_data[idx])
+        v = int(input_data[idx+1])
+        w = int(input_data[idx+2])
+        edges.append((w, u, v))
+        idx += 3
+        
+    # 按边权从大到小排序，用于 Kruskal 算法
+    edges.sort(key=lambda x: x[0], reverse=True)
+    
+    # 并查集初始化
+    parent_dsu = list(range(n + 1))
+    
+    def find(i):
+        # 路径压缩
+        path = []
+        while parent_dsu[i] != i:
+            path.append(i)
+            i = parent_dsu[i]
+        for node in path:
+            parent_dsu[node] = i
+        return i
+
+    def union(i, j):
+        root_i = find(i)
+        root_j = find(j)
+        if root_i != root_j:
+            parent_dsu[root_i] = root_j
+            return True
+        return False
+
+    # 构建最大生成树/森林
+    adj = [[] for _ in range(n + 1)]
+    for w, u, v in edges:
+        if union(u, v):
+            adj[u].append((v, w))
+            adj[v].append((u, w))
+            
+    # 倍增表初始化
+    # n <= 10000, 2^14 = 16384, 15层足够
+    LOGN = 15
+    up = [[0] * LOGN for _ in range(n + 1)]
+    min_w = [[10**9] * LOGN for _ in range(n + 1)]
+    depth = [0] * (n + 1)
+    visited = [False] * (n + 1)
+    
+    # BFS 预处理深度、直接父节点和直接边权（支持非连通图/森林）
+    for i in range(1, n + 1):
+        if not visited[i]:
+            queue = deque([i])
+            visited[i] = True
+            depth[i] = 1
+            # 根节点的 up[i][0] 保持为 0，min_w[i][0] 为无穷大
+            while queue:
+                u = queue.popleft()
+                for v, w in adj[u]:
+                    if not visited[v]:
+                        visited[v] = True
+                        depth[v] = depth[u] + 1
+                        up[v][0] = u
+                        min_w[v][0] = w
+                        queue.append(v)
+                        
+    # 填充倍增表
+    for j in range(1, LOGN):
+        for i in range(1, n + 1):
+            p = up[i][j-1]
+            up[i][j] = up[p][j-1]
+            min_w[i][j] = min(min_w[i][j-1], min_w[p][j-1])
+            
+    # LCA 查询
+    def query(u, v):
+        if find(u) != find(v):
+            return -1
+        
+        ans = 10**9
+        if depth[u] < depth[v]:
+            u, v = v, u
+            
+        # 使 u 和 v 深度相同
+        diff = depth[u] - depth[v]
+        for j in range(LOGN):
+            if (diff >> j) & 1:
+                ans = min(ans, min_w[u][j])
+                u = up[u][j]
+                
+        if u == v:
+            return ans
+            
+        # 向上倍增寻找 LCA
+        for j in range(LOGN - 1, -1, -1):
+            if up[u][j] != up[v][j]:
+                ans = min(ans, min_w[u][j], min_w[v][j])
+                u = up[u][j]
+                v = up[v][j]
+                
+        # 此时 u 和 v 的父节点即为 LCA
+        ans = min(ans, min_w[u][0], min_w[v][0])
+        return ans
+
+    # 处理查询
+    q = int(input_data[idx])
+    idx += 1
+    out = []
+    for _ in range(q):
+        u = int(input_data[idx])
+        v = int(input_data[idx+1])
+        idx += 2
+        out.append(str(query(u, v)))
+        
+    print('\n'.join(out))
+
+if __name__ == '__main__':
+    solve()
+```
+
+
+
 ## P2515 [HAOI2010] 软件安装（蓝色 提高+/省选-）
 
 SCC + tree DP, https://www.luogu.com.cn/problem/P2515
