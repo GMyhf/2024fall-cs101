@@ -10268,6 +10268,84 @@ class Solution:
 
 
 
+## E3120.统计特殊字母的数量 I
+
+hash table, https://leetcode.cn/problems/count-the-number-of-special-characters-i/
+
+给你一个字符串 `word`。如果 `word` 中同时存在某个字母的小写形式和大写形式，则称这个字母为 **特殊字母** 。
+
+返回 `word` 中 **特殊字母** 的数量。
+
+**示例 1:**
+
+**输入：**word = "aaAbcBC"
+
+**输出：**3
+
+**解释：**
+
+`word` 中的特殊字母是 `'a'`、`'b'` 和 `'c'`。
+
+**示例 2:**
+
+**输入：**word = "abc"
+
+**输出：**0
+
+**解释：**
+
+`word` 中不存在大小写形式同时出现的字母。
+
+**示例 3:**
+
+**输入：**word = "abBCab"
+
+**输出：**1
+
+**解释：**
+
+`word` 中唯一的特殊字母是 `'b'`。
+
+ 
+
+**提示：**
+
+- `1 <= word.length <= 50`
+- `word` 仅由小写和大写英文字母组成。
+
+
+
+这个问题可以通过集合（Set）来高效解决。
+
+**解题思路**
+
+我们可以将问题拆解为：找出所有在字符串中出现过的小写字母，以及所有在字符串中出现过的大写字母（并将其转换为小写），然后求两者的交集。交集的大小即为“特殊字母”的数量。
+
+具体步骤如下：
+
+1. 找出 `word` 中所有的小写字母，存入集合 `lowers`。
+2. 找出 `word` 中所有的大写字母，转换为小写后存入集合 `uppers`。
+3. 计算 `lowers` 和 `uppers` 的交集大小。
+
+**Python 代码实现**
+
+```python
+class Solution:
+    def numberOfSpecialChars(self, word: str) -> int:
+        # 收集所有出现过的小写字母
+        lowers = {c for c in word if c.islower()}
+        # 收集所有出现过的大写字母，并转换为小写
+        uppers = {c.lower() for c in word if c.isupper()}
+        
+        # 返回交集的长度
+        return len(lowers & uppers)
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(N)$，其中 $N$ 是字符串 `word` 的长度。我们需要遍历一次字符串来构建两个集合，集合求交集的操作时间复杂度取决于字符集的大小（最多为 26 个字母），因此也是常数级别的。
+- **空间复杂度**：$O(1)$ 或 $O(\Sigma)$，其中 $\Sigma$ 是字符集的大小（这里最多为 26 个英文字母）。因为存储的字符数量不会超过英文字母的数量，所以占用常数级别的额外空间。
+
 
 
 ## 3270.求出数字答案
@@ -15794,7 +15872,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
