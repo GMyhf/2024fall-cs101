@@ -15872,7 +15872,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -41067,6 +41067,111 @@ class Solution:
             cnt += 1
         return cnt
 ```
+
+
+
+## M3121.统计特殊字母的数量 II
+
+hash table, https://leetcode.cn/problems/count-the-number-of-special-characters-ii/
+
+给你一个字符串 `word`。如果 `word` 中同时出现某个字母 `c` 的小写形式和大写形式，并且 **每个** 小写形式的 `c`都出现在第一个大写形式的 `c` 之前，则称字母 `c` 是一个 **特殊字母** 。
+
+返回 `word` 中 **特殊字母** 的数量。
+
+ 示例 1:**
+
+**输入：**word = "aaAbcBC"
+
+**输出：**3
+
+**解释：**
+
+特殊字母是 `'a'`、`'b'` 和 `'c'`。
+
+**示例 2:**
+
+**输入：**word = "abc"
+
+**输出：**0
+
+**解释：**
+
+`word` 中不存在特殊字母。
+
+**示例 3:**
+
+**输入：**word = "AbBCab"
+
+**输出：**0
+
+**解释：**
+
+`word` 中不存在特殊字母。
+
+ 
+
+**提示：**
+
+- `1 <= word.length <= 2 * 10^5`
+- `word` 仅由小写和大写英文字母组成。
+
+
+
+这道题的目标是统计符合特定要求的“特殊字母”的数量。
+
+根据题意，一个字母要成为“特殊字母”，需要满足以下条件：
+
+1. 该字母的小写形式和大写形式都必须在字符串 `word` 中出现。
+2. 该字母的**每一个**小写形式都必须出现在其**第一个**大写形式之前。
+
+换句话说，对于任意一个字母：
+
+* 记它小写形式最后一次出现的下标为 $last\_lower$。
+* 记它大写形式第一次出现的下标为 $first\_upper$。
+* 如果这两个下标都存在，且满足 $last\_lower < first\_upper$，那么该字母就是一个特殊字母。
+
+我们可以使用两个大小为 26 的数组来分别记录：
+
+1. 每个小写字母最后一次出现的下标（初始化为 -1）。
+2. 每个大写字母第一次出现的下标（初始化为 -1）。
+
+**Python 代码实现**
+
+```python
+class Solution:
+    def numberOfSpecialChars(self, word: str) -> int:
+        # 记录小写字母最后一次出现的下标
+        last_lower = [-1] * 26
+        # 记录大写字母第一次出现的下标
+        first_upper = [-1] * 26
+        
+        # 遍历字符串，记录位置
+        for i, char in enumerate(word):
+            if 'a' <= char <= 'z':
+                idx = ord(char) - ord('a')
+                last_lower[idx] = i
+            elif 'A' <= char <= 'Z':
+                idx = ord(char) - ord('A')
+                # 仅记录第一次出现的位置
+                if first_upper[idx] == -1:
+                    first_upper[idx] = i
+                    
+        # 统计特殊字母的数量
+        special_count = 0
+        for i in range(26):
+            if last_lower[i] != -1 and first_upper[i] != -1:
+                if last_lower[i] < first_upper[i]:
+                    special_count += 1
+                    
+        return special_count
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(N)$，其中 $N$ 是字符串 `word` 的长度。我们需要遍历一次字符串来记录位置，然后再遍历一次大小为 26 的辅助数组，整体时间复杂度为线性。
+- **空间复杂度**：$O(1)$。我们使用了两个大小为 26 的固定长度数组，占用的额外空间是常数级别的。
+
+
 
 
 
