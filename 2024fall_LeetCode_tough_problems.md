@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-05-24 22:46 GMT+8*
+*Updated 2026-05-28 00:54 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -11088,6 +11088,7 @@ class Solution:
    - 最终每个节点 `i` 被翻转的次数即其在所选“被操作过奇数次”的边集合中出现的次数的奇偶性。
    - 记对于节点 `i`，若翻转次数为奇数，则值从 `nums[i]` 变为 `nums[i] ^ k`，否则保持 `nums[i]`。
 2. **减至「选点翻转」问题**
+   
    - 定义二进制标记数组 `f[i] ∈ {0,1}` 表示节点 `i` 是否翻转。
    - 翻转后的总和 = `sum(nums) + sum_{i}( f[i] * ((nums[i]^k) - nums[i]) )`。
    - 翻转标记 `f` 在树上可实现的唯一约束是 `sum_i f[i]` 必须为偶数（因为树是连通的，在任意连通图中，度数模 2 的向量之和必然为 0）。
@@ -11100,6 +11101,142 @@ class Solution:
    - 比较两种方案的净增量，取较大者。
 
    此算法只遍历了一次数组，时间复杂度 O(n)，空间复杂度 O(n)。
+
+
+
+## T3093.最长公共后缀查询
+
+字典树（Trie）, https://leetcode.cn/problems/longest-common-suffix-queries/
+
+给你两个字符串数组 `wordsContainer` 和 `wordsQuery` 。
+
+对于每个 `wordsQuery[i]` ，你需要从 `wordsContainer` 中找到一个与 `wordsQuery[i]` 有 **最长公共后缀** 的字符串。如果 `wordsContainer` 中有两个或者更多字符串有最长公共后缀，那么答案为长度 **最短** 的。如果有超过两个字符串有 **相同** 最短长度，那么答案为它们在 `wordsContainer` 中出现 **更早** 的一个。
+
+请你返回一个整数数组 `ans` ，其中 `ans[i]`是 `wordsContainer`中与 `wordsQuery[i]` 有 **最长公共后缀** 字符串的下标。
+
+ 
+
+**示例 1：**
+
+**输入：**wordsContainer = ["abcd","bcd","xbcd"], wordsQuery = ["cd","bcd","xyz"]
+
+**输出：**[1,1,1]
+
+**解释：**
+
+我们分别来看每一个 `wordsQuery[i]` ：
+
+- 对于 `wordsQuery[0] = "cd"` ，`wordsContainer` 中有最长公共后缀 `"cd"` 的字符串下标分别为 0 ，1 和 2 。这些字符串中，答案是下标为 1 的字符串，因为它的长度为 3 ，是最短的字符串。
+- 对于 `wordsQuery[1] = "bcd"` ，`wordsContainer` 中有最长公共后缀 `"bcd"` 的字符串下标分别为 0 ，1 和 2 。这些字符串中，答案是下标为 1 的字符串，因为它的长度为 3 ，是最短的字符串。
+- 对于 `wordsQuery[2] = "xyz"` ，`wordsContainer` 中没有字符串跟它有公共后缀，所以最长公共后缀为 `""` ，下标为 0 ，1 和 2 的字符串都得到这一公共后缀。这些字符串中， 答案是下标为 1 的字符串，因为它的长度为 3 ，是最短的字符串。
+
+**示例 2：**
+
+**输入：**wordsContainer = ["abcdefgh","poiuygh","ghghgh"], wordsQuery = ["gh","acbfgh","acbfegh"]
+
+**输出：**[2,0,2]
+
+**解释：**
+
+我们分别来看每一个 `wordsQuery[i]` ：
+
+- 对于 `wordsQuery[0] = "gh"` ，`wordsContainer` 中有最长公共后缀 `"gh"` 的字符串下标分别为 0 ，1 和 2 。这些字符串中，答案是下标为 2 的字符串，因为它的长度为 6 ，是最短的字符串。
+- 对于 `wordsQuery[1] = "acbfgh"` ，只有下标为 0 的字符串有最长公共后缀 `"fgh"` 。所以尽管下标为 2 的字符串是最短的字符串，但答案是 0 。
+- 对于 `wordsQuery[2] = "acbfegh"` ，`wordsContainer` 中有最长公共后缀 `"gh"` 的字符串下标分别为 0 ，1 和 2 。这些字符串中，答案是下标为 2 的字符串，因为它的长度为 6 ，是最短的字符串。
+
+ 
+
+**提示：**
+
+- `1 <= wordsContainer.length, wordsQuery.length <= 10^4`
+- `1 <= wordsContainer[i].length <= 5 * 10^3`
+- `1 <= wordsQuery[i].length <= 5 * 10^3`
+- `wordsContainer[i]` 只包含小写英文字母。
+- `wordsQuery[i]` 只包含小写英文字母。
+- `wordsContainer[i].length` 的和至多为 `5 * 10^5` 。
+- `wordsQuery[i].length` 的和至多为 `5 * 10^5` 。
+
+
+
+这道题要为每个查询字符串在 `wordsContainer` 中找到具有**最长公共后缀**的字符串。若有多个，则选择**长度最短**的；若长度仍相同，则选择在 `wordsContainer` 中**最早出现**（下标最小）的。
+
+因为是关于“后缀”的匹配，可以将所有字符串**反转**，这样“最长公共后缀”就转换为了“最长公共前缀”问题。这可以利用**字典树（Trie）**高效地解决。
+
+**解题思路**
+
+1. **反转字符串**：将 `wordsContainer` 中的每个字符串反转，并插入到字典树中。
+2. **在字典树节点中维护最优解**：
+   在字典树的每个节点上，我们需要记录“经过当前节点的所有单词中，最符合条件的单词下标”。
+   * “最符合条件”的定义：长度最短；若长度相同，下标最小。
+   * 由于是从前往后（下标 `0` 到 `N-1`）依次将单词插入字典树，因此如果新单词的长度**严格小于**当前节点记录的最优单词长度，我们就更新该节点记录的下标。如果长度相同，由于先插入的下标更小，我们保持原样不动。
+3. **查询**：
+   对于 `wordsQuery` 中的每个查询，先将其反转，然后在字典树中进行前缀匹配。
+   * 沿着字符路径向下走，直到无法匹配。
+   * 停止时所在的节点所记录的 `best_idx`，即为与该查询具有最长公共后缀且满足长度、下标要求的最佳答案。
+   * 如果一开始就无法匹配（即根节点就没有该字符的子节点），则返回根节点记录的 `best_idx`（它代表了整个 `wordsContainer` 中长度最短且下标最小的单词）。
+
+**Python 代码实现**
+
+```python
+from typing import List
+
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.best_idx = -1  # 记录经过该节点的最优单词在 wordsContainer 中的下标
+
+class Solution:
+    def stringIndices(self, wordsContainer: List[str], wordsQuery: List[str]) -> List[int]:
+        root = TrieNode()
+        
+        # 辅助函数：根据规则更新节点上的最优下标
+        def update_node(node: TrieNode, idx: int):
+            if node.best_idx == -1:
+                node.best_idx = idx
+            else:
+                # 比较当前单词与已有最优单词的长度
+                if len(wordsContainer[idx]) < len(wordsContainer[node.best_idx]):
+                    node.best_idx = idx
+                # 如果长度相同，由于我们按顺序遍历，先前的下标更小，因此无需更新
+
+        # 1. 构建字典树
+        for i, word in enumerate(wordsContainer):
+            curr = root
+            update_node(curr, i)  # 根节点记录全局最优解
+            # 反转单词进行插入
+            for char in reversed(word):
+                if char not in curr.children:
+                    curr.children[char] = TrieNode()
+                curr = curr.children[char]
+                update_node(curr, i)
+        
+        # 2. 查询
+        ans = []
+        for query in wordsQuery:
+            curr = root
+            # 反转查询词进行匹配
+            for char in reversed(query):
+                if char in curr.children:
+                    curr = curr.children[char]
+                else:
+                    break
+            ans.append(curr.best_idx)
+            
+        return ans
+```
+
+**复杂度分析**
+
+- **时间复杂度**：
+  - **建树**：设 `wordsContainer` 中所有字符串的总长度为 $L_c$。每个字符插入耗时 $O(1)$，因此建树时间复杂度为 $O(L_c)$。
+  - **查询**：设 `wordsQuery` 中所有字符串的总长度为 $L_q$。每个字符在树中匹配耗时 $O(1)$，因此查询时间复杂度为 $O(L_q)$。
+  - **总时间复杂度**：$O(L_c + L_q)$，在本题限制下（总长度不超过 $5 \times 10^5$），运行效率非常高。
+
+- **空间复杂度**：
+  - 字典树最多包含 $L_c$ 个节点，每个节点包含一个哈希表。
+  - **总空间复杂度**：$O(L_c \times \Sigma)$，其中 $\Sigma$ 是字符集大小（此处为 26 个小写英文字母）。实际空间开销在合理范围内。
+
+
 
 
 
