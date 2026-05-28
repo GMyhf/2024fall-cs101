@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-05-25 09:11 GMT+8*
+*Updated 2026-05-29 00:11 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -10496,6 +10496,91 @@ class Solution:
 
 
 
+## E3300.替换为数位和以后的最小元素
+
+math, https://leetcode.cn/problems/minimum-element-after-replacement-with-digit-sum/
+
+给你一个整数数组 `nums` 。
+
+请你将 `nums` 中每一个元素都替换为它的各个数位之 **和** 。
+
+请你返回替换所有元素以后 `nums` 中的 **最小** 元素。
+
+ 
+
+**示例 1：**
+
+**输入：**nums = [10,12,13,14]
+
+**输出：**1
+
+**解释：**
+
+`nums` 替换后变为 `[1, 3, 4, 5]` ，最小元素为 1 。
+
+**示例 2：**
+
+**输入：**nums = [1,2,3,4]
+
+**输出：**1
+
+**解释：**
+
+`nums` 替换后变为 `[1, 2, 3, 4]` ，最小元素为 1 。
+
+**示例 3：**
+
+**输入：**nums = [999,19,199]
+
+**输出：**10
+
+**解释：**
+
+`nums` 替换后变为 `[27, 10, 19]` ，最小元素为 10 。
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 100`
+- `1 <= nums[i] <= 10^4`
+
+
+
+这道题的要求是计算数组 `nums` 中每个元素的数位之和，并返回这些和之中的最小值。
+
+**解题思路**
+
+我们可以遍历数组中的每一个整数，计算它的数位之和。为了求得数位和，可以将整数转换成字符串，然后将每一位字符转换回整数并求和；或者通过循环对 10 取余和整除来计算。由于数据范围较小（每个数最大为 $10^4$），两种方式的效率都很高。
+
+在遍历过程中，维护一个最小值，最终返回该最小值。
+
+```python
+from typing import List
+
+class Solution:
+    def minElement(self, nums: List[int]) -> int:
+        def get_digit_sum(n: int) -> int:
+            # 计算一个整数的数位之和
+            s = 0
+            while n > 0:
+                s += n % 10
+                n //= 10
+            return s
+        
+        # 计算所有元素的数位之和并求出最小值
+        return min(get_digit_sum(num) for num in nums)
+```
+
+复杂度分析
+
+- **时间复杂度**：$O(N \log_{10} M)$，其中 $N$ 是数组 `nums` 的长度，$M$ 是数组中的最大数值。因为 $nums[i] \le 10^4$，所以对每个数求数位和最多需要执行 5 次循环，整体时间复杂度非常低，接近 $O(N)$。
+- **空间复杂度**：$O(1)$，只需要常数级别的额外空间来存储临时变量和最小值。
+
+
+
+
+
 ## E3314.构造最小位运算数组 I
 
 https://leetcode.cn/problems/construct-the-minimum-bitwise-array-i/
@@ -15872,7 +15957,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
