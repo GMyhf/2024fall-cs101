@@ -10972,6 +10972,8 @@ class Solution:
 
 
 
+
+
 ## T3068.最大节点价值之和
 
 greedy, https://leetcode.cn/problems/find-the-maximum-sum-of-node-values/
@@ -11324,6 +11326,211 @@ class Solution:
 
 
 ```
+
+
+
+## T3161.物块放置查询
+
+链表，并查集，线段树，https://leetcode.cn/problems/block-placement-queries/
+
+有一条无限长的数轴，原点在 0 处，沿着 x 轴 **正** 方向无限延伸。
+
+给你一个二维数组 `queries` ，它包含两种操作：
+
+1. 操作类型 1 ：`queries[i] = [1, x]` 。在距离原点 `x` 处建一个障碍物。数据保证当操作执行的时候，位置 `x` 处 **没有** 任何障碍物。
+2. 操作类型 2 ：`queries[i] = [2, x, sz]` 。判断在数轴范围 `[0, x]` 内是否可以放置一个长度为 `sz` 的物块，这个物块需要 **完全** 放置在范围 `[0, x]` 内。如果物块与任何障碍物有重合，那么这个物块 **不能** 被放置，但物块可以与障碍物刚好接触。注意，你只是进行查询，并 **不是** 真的放置这个物块。每个查询都是相互独立的。
+
+请你返回一个 boolean 数组`results` ，如果第 `i` 个操作类型 2 的操作你可以放置物块，那么 `results[i]` 为 `true` ，否则为 `false` 。
+
+ 
+
+**示例 1：**
+
+**输入：**queries = [[1,2],[2,3,3],[2,3,1],[2,2,2]]
+
+**输出：**[false,true,true]
+
+**解释：**
+
+**![img](https://assets.leetcode.com/uploads/2024/04/22/example0block.png)**
+
+查询 0 ，在 `x = 2` 处放置一个障碍物。在 `x = 3` 之前任何大小不超过 2 的物块都可以被放置。
+
+**示例 2：**
+
+**输入：**queries = [[1,7],[2,7,6],[1,2],[2,7,5],[2,7,6]]
+
+**输出：**[true,true,false]
+
+**解释：**
+
+**![img](https://assets.leetcode.com/uploads/2024/04/22/example1block.png)**
+
+- 查询 0 在 `x = 7` 处放置一个障碍物。在 `x = 7` 之前任何大小不超过 7 的物块都可以被放置。
+- 查询 2 在 `x = 2` 处放置一个障碍物。现在，在 `x = 7` 之前任何大小不超过 5 的物块可以被放置，`x = 2` 之前任何大小不超过 2 的物块可以被放置。
+
+ 
+
+**提示：**
+
+- `1 <= queries.length <= 15 * 10^4`
+- `2 <= queries[i].length <= 3`
+- `1 <= queries[i][0] <= 2`
+- `1 <= x, sz <= min(5 * 10^4, 3 * queries.length)`
+- 输入保证操作 1 中，`x` 处不会有障碍物。
+- 输入保证至少有一个操作类型 2 。
+
+
+
+一个可行且高效的方法是**离线查询**配合**线段树**和**并查集（DSU）**。
+
+**解题思路**
+
+由于位置坐标 $x$ 的最大值较小（不超过 $5 \cdot 10^4$），直接在线处理可能需要复杂的平衡树结构。如果我们**逆序处理**所有操作，问题会变得简单许多：
+
+1. **逆序操作**：
+   - 将“在 $x$ 处放置障碍物”转换为“在 $x$ 处移除障碍物”。
+   - “查询是否能放置大小为 $sz$ 的物块”依然是区间最大值查询。
+2. **并查集（DSU）维护前驱**：
+   - 当我们逆序从后往前处理时，障碍物在不断减少。
+   - 我们可以用并查集维护每个位置 $i$ 左侧最近的活动障碍物位置。初始化时，非障碍物位置 $i$ 的父亲指向 $i-1$。当移除障碍物 $x$ 时，将其与左边的前驱障碍物 $L$ 进行合并即可。
+3. **线段树维护区间最大间距**：
+   - 线段树中每个点 $i$ 存储的值表示“若 $i$ 处有障碍物，其与左侧相邻障碍物的距离”。
+   - 移除障碍物 $x$ 时，在 $x$ 处的距离置为 `0`；而 $x$ 右侧相邻障碍物 $R$ 的距离更新为 $R - L$。
+   - 查询 `[2, x, sz]` 时，利用并查集找到 $x$ 左侧最近的障碍物 $L$。那么 $[0, x]$ 之间的最大间距就是：
+     $$\max(\text{query\_max}(0, L), x - L)$$
+     若该值 $\ge sz$ 则可以放置。
+
+**Python 实现**
+
+```python
+from typing import List
+
+class Solution:
+    def getResults(self, queries: List[List[int]]) -> List[bool]:
+        # 找出最大的 x 坐标，用于定义数据范围
+        max_x = max(q[1] for q in queries)
+        limit = max_x + 1
+        
+        # W 为大于 limit 的最小 2 的幂次，用于构建线段树
+        W = 1
+        while W <= limit:
+            W <<= 1
+            
+        # 收集最终存在的所有障碍物位置
+        final_obstacles = set()
+        for q in queries:
+            if q[0] == 1:
+                final_obstacles.add(q[1])
+                
+        # 障碍物列表，包含起点 0 和右边界 limit 作为哨兵
+        obs_list = [0] + sorted(list(final_obstacles)) + [limit]
+        
+        # 双向链表，用于快速获取某个障碍物的前驱和后继
+        prev_obs = [0] * (limit + 1)
+        next_obs = [0] * (limit + 1)
+        for i in range(len(obs_list)):
+            val = obs_list[i]
+            if i > 0:
+                prev_obs[val] = obs_list[i-1]
+            if i < len(obs_list) - 1:
+                next_obs[val] = obs_list[i+1]
+                
+        # 初始化线段树，维护相邻障碍物间距的最大值
+        tree = [0] * (2 * W)
+        for val in obs_list[1:]:
+            tree[val + W] = val - prev_obs[val]
+            
+        for i in range(W - 1, 0, -1):
+            tree[i] = max(tree[2 * i], tree[2 * i + 1])
+            
+        # 单点更新
+        def update(pos, val):
+            pos += W
+            tree[pos] = val
+            pos >>= 1
+            while pos > 0:
+                tree[pos] = max(tree[2 * pos], tree[2 * pos + 1])
+                pos >>= 1
+                
+        # 区间最大值查询 [0, L]
+        def query(L):
+            res = 0
+            l = W
+            r = L + W
+            while l <= r:
+                if l & 1:
+                    res = max(res, tree[l])
+                    l += 1
+                if not (r & 1):
+                    res = max(res, tree[r])
+                    r -= 1
+                l >>= 1
+                r >>= 1
+            return res
+            
+        # 并查集初始化，用于快速寻找当前位置左侧最近的障碍物
+        parent = list(range(limit + 1))
+        def find(i):
+            path = []
+            while parent[i] != i:
+                path.append(i)
+                i = parent[i]
+            for node in path:
+                parent[node] = i
+            return i
+            
+        obstacle_set = set(obs_list)
+        for i in range(1, limit + 1):
+            if i not in obstacle_set:
+                parent[i] = i - 1
+                
+        ans = []
+        # 逆序处理所有询问
+        for q in reversed(queries):
+            if q[0] == 1:
+                x = q[1]
+                L = prev_obs[x]
+                R = next_obs[x]
+                
+                # 链表中移除 x
+                next_obs[L] = R
+                prev_obs[R] = L
+                
+                # 更新线段树中对应的间距
+                update(x, 0)
+                update(R, R - L)
+                
+                # 并查集中合并 x 到左侧前驱
+                parent[x] = find(L)
+            else:
+                x = q[1]
+                sz = q[2]
+                
+                # 找到 x 左侧最近的障碍物位置 L
+                L = find(x)
+                
+                # 比较 [0, L] 内最大间距与剩余部分 [L, x] 的长度
+                max_gap = query(L)
+                if max(max_gap, x - L) >= sz:
+                    ans.append(True)
+                else:
+                    ans.append(False)
+                    
+        ans.reverse()
+        return ans
+```
+
+**复杂度分析**
+
+- **时间复杂度**：
+  - 设查询数量为 $Q$，最大坐标值为 $U$。
+  - 构建线段树和并查集初始化：$O(U + Q \log Q)$。
+  - 逆序处理每个查询：单次 DSU 的 `find` 操作时间复杂度接近 $O(1)$，线段树单次 `update` 或 `query` 操作时间复杂度为 $O(\log U)$。
+  - 总体时间复杂度为 $O(Q \log U + U)$，在 $Q = 1.5 \cdot 10^5, U \le 5 \cdot 10^4$ 的情况下能快速通过。
+- **空间复杂度**：$O(U)$，主要用于并查集和线段树的数组，在空间使用上非常轻量。
+
+
 
 
 
