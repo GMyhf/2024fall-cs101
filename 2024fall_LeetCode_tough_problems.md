@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-05-31 17:08 GMT+8*
+*Updated 2026-06-01 15:54 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -9668,6 +9668,117 @@ class Solution:
     *   最后过滤结果需要 $O(N)$。
 *   **空间复杂度**：$O(N)$。
     *   用于存储索引数组 `indices` 和辅助栈 `stack`。
+
+
+
+## T2561.重排水果
+
+greedy, sort, https://leetcode.cn/problems/rearranging-fruits/
+
+你有两个果篮，每个果篮中有 `n` 个水果。给你两个下标从 **0** 开始的整数数组 `basket1` 和 `basket2` ，用以表示两个果篮中每个水果的交换成本。你想要让两个果篮相等。为此，可以根据需要多次执行下述操作：
+
+- 选中两个下标 `i` 和 `j` ，并交换 `basket1` 中的第 `i` 个水果和 `basket2` 中的第 `j` 个水果。
+- 交换的成本是 `min(basket1i,basket2j)` 。
+
+根据果篮中水果的成本进行排序，如果排序后结果完全相同，则认为两个果篮相等。
+
+返回使两个果篮相等的最小交换成本，如果无法使两个果篮相等，则返回 `-1` 。
+
+ 
+
+**示例 1：**
+
+```
+输入：basket1 = [4,2,2,2], basket2 = [1,4,1,2]
+输出：1
+解释：交换 basket1 中下标为 1 的水果和 basket2 中下标为 0 的水果，交换的成本为 1 。此时，basket1 = [4,1,2,2] 且 basket2 = [2,4,1,2] 。重排两个数组，发现二者相等。
+```
+
+**示例 2：**
+
+```
+输入：basket1 = [2,3,4,1], basket2 = [3,2,5,1]
+输出：-1
+解释：可以证明无法使两个果篮相等。
+```
+
+ 
+
+**提示：**
+
+- `basket1.length == basket2.length`
+- `1 <= basket1.length <= 10^5`
+- `1 <= basket1i,basket2i <= 10^9`
+
+
+
+一个优雅且高效的解决该问题的思路如下：
+
+**方法解释**
+
+1. **判断可行性与计算目标频次**：
+   - 首先，统计两个果篮中所有水果的总频次。如果某种水果的总频次是奇数，那么无论如何也无法平均分配到两个果篮中，直接返回 `-1`。
+   - 每个水果在每个果篮中最终应该拥有的频次是其总频次的一半。
+
+2. **找出多余的水果**：
+   - 比较两个果篮中每种水果的实际频次与目标频次。
+   - 如果 `basket1` 中的某种水果多于目标频次，说明这些多余的水果需要被交换出去；同理，如果 `basket2` 中的某种水果多余，也需要交换。
+   - 我们将所有这些多余的水果收集到一个列表 `excess` 中。
+
+3. **贪心选择最小代价**：
+   - 设需要进行的交换次数为 $m$（即 `len(excess) // 2`）。
+   - 我们将 `excess` 升序排序。排序后的前 $m$ 个较小的元素代表了我们要用来进行配对交换的代价来源。
+   - 对于前 $m$ 个元素中的每一个值 $x$，我们有两种交换策略：
+     1. **直接交换**：将它与另一侧的一个较大元素直接交换，代价为 $x$。
+     2. **间接交换**：利用全局最小值 `min_val` 作为中介。即先将它与 `min_val` 交换，再与另一侧的元素交换。总代价为 $2 \times min\_val$。
+   - 因此，对于前 $m$ 个元素中的每一个 $x$，其最小交换代价为 $\min(x, 2 \times min\_val)$。
+   - 将这 $m$ 个最小代价累加，即为使两个果篮相等的最小总成本。
+
+**Python 3 实现**
+
+```python
+from typing import List
+from collections import Counter
+
+class Solution:
+    def minCost(self, basket1: List[int], basket2: List[int]) -> int:
+        c1 = Counter(basket1)
+        c2 = Counter(basket2)
+        
+        # 获取全局最小值
+        min_val = min(min(basket1), min(basket2))
+        
+        excess = []
+        all_keys = set(c1.keys()).union(c2.keys())
+        
+        for x in all_keys:
+            total_count = c1[x] + c2[x]
+            # 如果某种水果的总数是奇数，则无法平分
+            if total_count % 2 != 0:
+                return -1
+            
+            target = total_count // 2
+            if c1[x] > target:
+                excess.extend([x] * (c1[x] - target))
+            elif c2[x] > target:
+                excess.extend([x] * (c2[x] - target))
+                
+        # 排序所有多余的水果
+        excess.sort()
+        
+        # 共有 len(excess) // 2 对水果需要交换
+        m = len(excess) // 2
+        ans = 0
+        for i in range(m):
+            ans += min(excess[i], 2 * min_val)
+            
+        return ans
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(N \log N)$。其中 $N$ 是数组的长度。统计频次需要 $O(N)$ 时间，找出多余水果需要 $O(N)$，对其进行排序需要 $O(N \log N)$ 级别的时间。
+- **空间复杂度**：$O(N)$。用于存储哈希表频次以及 `excess` 列表。
 
 
 
