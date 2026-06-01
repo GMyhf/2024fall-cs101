@@ -3897,6 +3897,125 @@ if __name__ == "__main__":
 
 
 
+## T1192.查找集群内的关键连接
+
+BCC双连通分量，https://leetcode.cn/problems/critical-connections-in-a-network/
+
+力扣数据中心有 `n` 台服务器，分别按从 `0` 到 `n-1` 的方式进行了编号。它们之间以 **服务器到服务器** 的形式相互连接组成了一个内部集群，连接是无向的。用  `connections` 表示集群网络，`connections[i] = [a, b]` 表示服务器 `a` 和 `b` 之间形成连接。任何服务器都可以直接或者间接地通过网络到达任何其他服务器。
+
+**关键连接** 是在该集群中的重要连接，假如我们将它移除，便会导致某些服务器无法访问其他服务器。
+
+请你以任意顺序返回该集群内的所有 **关键连接** 。
+
+ 
+
+**示例 1：**
+
+**<img src="https://assets.leetcode.cn/aliyun-lc-upload/original_images/critical-connections-in-a-network.png" alt="img" style="zoom: 33%;" />**
+
+```
+输入：n = 4, connections = [[0,1],[1,2],[2,0],[1,3]]
+输出：[[1,3]]
+解释：[[3,1]] 也是正确的。
+```
+
+**示例 2:**
+
+```
+输入：n = 2, connections = [[0,1]]
+输出：[[0,1]]
+```
+
+ 
+
+**提示：**
+
+- `2 <= n <= 105`
+- `n - 1 <= connections.length <= 10^5`
+- `0 <= ai, bi <= n - 1`
+- `ai != bi`
+- 不存在重复的连接
+
+
+
+这道题要求寻找无向连通图中的所有“关键连接”（即桥）。在一个连通图中，如果删除某条边会使得图不再连通，那么这条边就是**桥（Bridge）**。
+
+我们可以使用 **Tarjan 算法**（基于深度优先搜索 DFS）来高效地寻找所有的桥。
+
+**算法思路**
+
+在 DFS 遍历的过程中，我们为每个节点 $u$ 记录两个关键的值：
+
+1. `dfn[u]`：节点 $u$ 被深度优先搜索到的次序号（时间戳）。
+2. `low[u]`：节点 $u$ 或者是 $u$ 的子树中的节点，通过一条非树边（回边）能够到达的最小时间戳。
+
+当我们在 DFS 树中从节点 $u$ 访问到节点 $v$ 时（且 $v$ 不是 $u$ 的父节点）：
+
+- 如果 $v$ 还没有被访问过，我们递归地对 $v$ 进行 DFS。在 $v$ 的 DFS 结束后，我们用 `low[v]` 更新 `low[u]`（即 `low[u] = min(low[u], low[v])`）。
+  - 此时，如果满足 **`low[v] > dfn[u]`**，说明从 $v$ 及其子树出发，没有任何一条路径可以不通过边 `(u, v)` 访问到 $u$ 或其祖先。因此，边 `(u, v)` 就是一个关键连接（桥）。
+- 如果 $v$ 已经被访问过，说明找到了一个环，我们用 `dfn[v]` 更新 `low[u]`（即 `low[u] = min(low[u], dfn[v])`）。
+
+**Python 3 实现**
+
+由于节点的数量最多为 $10^5$，递归深度可能会超过 Python 默认的限制，我们需要使用 `sys.setrecursionlimit` 来调大递归深度。
+
+```python
+import sys
+from typing import List
+
+# 调大 Python 的最大递归深度以防止栈溢出
+sys.setrecursionlimit(200000)
+
+class Solution:
+    def criticalConnections(self, n: int, connections: List[List[int]]) -> List[List[int]]:
+        # 1. 构建邻接表
+        adj = [[] for _ in range(n)]
+        for u, v in connections:
+            adj[u].append(v)
+            adj[v].append(u)
+        
+        dfn = [-1] * n
+        low = [-1] * n
+        bridges = []
+        time = 0
+        
+        # 2. 定义 DFS 函数
+        def dfs(u: int, parent: int):
+            nonlocal time
+            dfn[u] = low[u] = time
+            time += 1
+            
+            for v in adj[u]:
+                if v == parent:
+                    continue
+                if dfn[v] == -1:
+                    # v 未被访问，递归访问
+                    dfs(v, u)
+                    # 更新当前节点的 low 值
+                    if low[v] < low[u]:
+                        low[u] = low[v]
+                    # 判断是否为桥
+                    if low[v] > dfn[u]:
+                        bridges.append([u, v])
+                else:
+                    # v 已被访问，且不是父节点，更新当前节点的 low 值
+                    if dfn[v] < low[u]:
+                        low[u] = dfn[v]
+                        
+        # 因为整个网络是连通的，所以从任意节点（例如 0）开始 DFS 即可遍历所有的点
+        dfs(0, -1)
+        return bridges
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(V + E)$，其中 $V = n$ 是服务器的数量，$E$ 是连接的数量。DFS 过程中每个顶点和每条边都只被访问了常数次。
+- **空间复杂度**：$O(V + E)$。邻接表需要 $O(V + E)$ 的空间，`dfn` 和 `low` 数组以及递归调用栈最多需要 $O(V)$ 的空间。
+
+
+
+
+
 ## 1203.项目管理
 
 dfs, bfs, graphs, topological order, https://leetcode.cn/problems/sort-items-by-groups-respecting-dependencies/
@@ -26339,6 +26458,166 @@ def solve():
 if __name__ == '__main__':
     solve()
 ```
+
+
+
+## P1991 无线通讯网（黄色 普及/提高-）
+
+MST变种，https://www.luogu.com.cn/problem/P1991
+
+国防部计划用无线网络连接若干个边防哨所。$2$ 种不同的通讯技术用来搭建无线网络；
+
+每个边防哨所都要配备无线电收发器；有一些哨所还可以增配卫星电话。
+
+任意两个配备了一条卫星电话线路的哨所（两边都有卫星电话）均可以通话，无论他们相距多远。而只通过无线电收发器通话的哨所之间的距离不能超过 $D$，这是受收发器的功率限制。收发器的功率越高，通话距离 $D$ 会更远，但同时价格也会更贵。
+
+收发器需要统一购买和安装，所以全部哨所只能选择安装一种型号的收发器。换句话说，每一对哨所之间的通话距离都是同一个 $D$。你的任务是确定收发器必须的最小通话距离 $D$，使得每一对哨所之间至少有一条通话路径（直接的或者间接的）。
+
+**输入格式**
+
+第一行，$2$ 个整数 $S$ 和 $P$，$S$ 表示可安装的卫星电话的哨所数，$P$ 表示边防哨所的数量。
+
+接下里 $P$ 行，每行两个整数 $x$，$y$ 描述一个哨所的平面坐标 $(x, y)$，以 km 为单位。
+
+**输出格式**
+
+第一行，$1$ 个实数 $D$，表示无线电收发器的最小传输距离，精确到小数点后两位。
+
+输入输出样例 #1
+
+输入 #1
+
+```
+2 4
+0 100
+0 300
+0 600
+150 750
+```
+
+输出 #1
+
+```
+212.13
+```
+
+说明/提示
+
+数据范围及约定
+
+- 对于 $20\%$ 的数据：$P = 2$，$S = 1$；
+- 对于另外 $20\%$ 的数据：$P = 4$，$S = 2$；
+- 对于 $100\%$ 的数据保证：$1 ≤ S ≤ 100$，$S < P ≤ 500$，$0 ≤ x,y ≤ 10000$。
+
+
+
+这是一个经典的最小生成树（MST）变种问题。我们可以通过 Kruskal 算法来解决。
+
+**解题思路**
+
+1. **模型转化**：
+   - 假设有 $P$ 个哨所。如果没有任何卫星电话（即 $S = 0$ 或 $1$），我们需要将所有哨所连通，这就需要保留最小生成树中的所有 $P - 1$ 条边，此时 $D$ 为这 $P - 1$ 条边中权值最大的那条边。
+   - 现在我们有 $S$ 个卫星电话，这意味着我们可以将 $S$ 个哨所配备卫星电话，从而将它们直接连通。换句话说，我们可以将整个图分成最多 $S$ 个连通分量，每个连通分量内部通过无线电（距离不超过 $D$）通信，而这 $S$ 个连通分量之间可以通过卫星电话相互连接。
+   - 因此，我们的目标是通过无线电建立边，使得最终的连通分量个数减少到 $S$ 个。
+
+2. **具体步骤**：
+   - 计算出所有哨所两两之间的欧几里得距离，作为边的权值。
+   - 将所有的边按照权值从小到大进行排序。
+   - 使用并查集（DSU）来维护连通性。初始时有 $P$ 个独立的连通分量。
+   - 依次遍历排好序的边，如果边连接的两个哨所属于不同的连通分量，则合并它们，同时连通分量个数减 $1$。
+   - 当连通分量个数减少到 $S$ 时停止。此时最后加入的那条边的长度就是所需的最小通话距离 $D$（即我们需要进行的合并次数为 $P - S$ 次，第 $P - S$ 次合并时的边权即为答案）。
+
+**Python 实现代码**
+
+```python
+import math
+import sys
+
+
+def solve():
+    # 读取所有输入
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+
+    S = int(input_data[0])
+    P = int(input_data[1])
+
+    coords = []
+    idx = 2
+    for _ in range(P):
+        x = float(input_data[idx])
+        y = float(input_data[idx + 1])
+        coords.append((x, y))
+        idx += 2
+
+    # 计算所有两两哨所之间的距离并存储为边
+    edges = []
+    for i in range(P):
+        for j in range(i + 1, P):
+            dx = coords[i][0] - coords[j][0]
+            dy = coords[i][1] - coords[j][1]
+            dist = math.sqrt(dx * dx + dy * dy)
+            edges.append((dist, i, j))
+
+    # 按边权（距离）升序排序
+    edges.sort(key=lambda x: x[0])
+
+    # 并查集初始化
+    parent = list(range(P))
+
+    def find(i):
+        path = []
+        while parent[i] != i:
+            path.append(i)
+            i = parent[i]
+        for node in path:
+            parent[node] = i
+        return i
+
+    def union(i, j):
+        root_i = find(i)
+        root_j = find(j)
+        if root_i != root_j:
+            parent[root_i] = root_j
+            return True
+        return False
+
+    count = 0
+    target = P - S  # 需要进行的合并次数
+    ans = 0.0
+
+    # 如果 S >= P，说明每个哨所都可以配一个卫星电话，D 理论上为 0
+    if target <= 0:
+        print("0.00")
+        return
+
+    # 运行 Kruskal 算法
+    for dist, u, v in edges:
+        if union(u, v):
+            count += 1
+            ans = dist
+            if count == target:
+                break
+
+    # 输出结果，保留两位小数
+    print(f"{ans:.2f}")
+
+
+if __name__ == "__main__":
+    solve()
+```
+
+**复杂度分析**
+
+- **时间复杂度**：
+  - 计算所有边：共有 $P(P-1)/2$ 条边。对于 $P \le 500$，边数约为 $125,000$。
+  - 排序边：$O(E \log E)$，其中 $E \approx 125,000$，排序操作在 Python 中通常可以在 0.1 秒内完成。
+  - 并查集操作：接近 $O(E \alpha(P))$，效率极高。
+  - 整体时间复杂度为 $O(P^2 \log P)$，完全满足时限要求。
+
+- **空间复杂度**：
+  - 存储边需要 $O(P^2)$ 的空间，存储坐标和并查集需要 $O(P)$ 的空间，空间消耗在数兆字节以内，远低于空间限制。
 
 
 
