@@ -25802,6 +25802,186 @@ if __name__ == '__main__':
 
 
 
+## P1363 幻象迷宫
+
+bfs, dfs, stack, https://www.luogu.com.cn/problem/P1363
+
+**题目背景**
+
+（喵星人 LHX 和 WD 同心协力击退了汪星人的入侵，不幸的是，汪星人撤退之前给它们制造了一片幻象迷宫。）
+
+WD：呜呜，肿么办啊……
+
+LHX：momo...我们一定能走出去的！
+
+WD：嗯，+U+U！
+
+**题目描述**
+
+幻象迷宫可以认为是无限大的，不过它由若干个 $N\times M$ 的矩阵重复组成。矩阵中有的地方是道路，用 $\verb!.!$ 表示；有的地方是墙，用 $\verb!#!$ 表示。LHX 和 WD 所在的位置用 $\verb!S!$ 表示。也就是对于迷宫中的一个点$(x,y)$，如果 $(x \bmod n,y \bmod m)$ 是 $\verb!.!$ 或者 $\verb!S!$，那么这个地方是道路；如果 $(x \bmod n,y \bmod m)$ 是$\verb!#!$，那么这个地方是墙。LHX 和 WD 可以向上下左右四个方向移动，当然不能移动到墙上。
+
+请你告诉 LHX 和 WD，它们能否走出幻象迷宫（如果它们能走到距离起点无限远处，就认为能走出去）。如果不能的话，LHX 就只好启动城堡的毁灭程序了……当然不到万不得已，他不想这么做。
+
+**输入格式**
+
+输入包含多组数据。
+
+每组数据的第一行是两个整数 $N,M$。
+
+接下来是一个 $N\times M$ 的字符矩阵，表示迷宫里 $(0,0)$ 到 $(n-1,m-1)$ 这个矩阵单元。
+
+**输出格式**
+
+对于每组数据，输出一个字符串，`Yes` 或者 `No`。
+
+输入输出样例 #1
+
+输入 #1
+
+```
+5 4
+##.#
+##S#
+#..#
+#.##
+#..#
+5 4
+##.#
+##S#
+#..#
+..#.
+#.##
+
+```
+
+输出 #1
+
+```
+Yes
+No
+
+
+```
+
+**说明/提示**
+
+- 对于 $30\%$ 的数据，$1\le N,M\le 20$；
+- 对于 $50\%$ 的数据，$1\le N,M\le 100$；
+- 对于 $100\%$ 的数据，$1\le N,M\le 1500$，每个测试点不超过 $10$ 组数据。
+
+
+
+
+
+这是一个经典的地牢/迷宫穿梭问题。由于迷宫在四个方向上无限循环延伸，我们要判断能否走到无限远处。
+
+**解题思路**
+
+1. **核心判定条件**：
+   如果我们能从起点出发，到达某一个网格副本中的位置 $(x_1, y_1)$，并且也能到达另一个网格副本中的位置 $(x_2, y_2)$，满足它们在单个迷宫矩阵中的相对位置相同（即 $x_1 \equiv x_2 \pmod N$ 且 $y_1 \equiv y_2 \pmod M$），但它们的实际坐标不同（即 $(x_1, y_1) \neq (x_2, y_2)$），这就意味着我们找到了一条跨越边界的环路。
+   一旦存在这样的环路，我们就可以沿着这个环路无限走下去，从而到达距离起点无限远的地方。
+
+2. **具体实现**：
+   - 使用深度优先搜索（DFS）或广度优先搜索（BFS）遍历迷宫。由于 Python 的递归深度限制，使用**非递归（迭代式）的 DFS** 会更加安全和高效。
+   - 维护一个 `visited` 数组记录在模 $N$ 和模 $M$ 意义下的位置是否被访问过。
+   - 维护两个数组 `rec_x` 和 `rec_y`，记录第一次到达该相对位置时的真实坐标 $(x, y)$。
+   - 在搜索过程中：
+     - 如果遇到一个从未到达过的相对位置 $(r_x, r_y)$，记录其真实坐标并继续搜索。
+     - 如果遇到一个已经到达过的相对位置 $(r_x, r_y)$，比较当前的真实坐标 $(nx, ny)$ 与记录的坐标。如果不同，说明找到了可行通路，直接输出 `Yes`；如果相同，则无需重复搜索。
+     - 如果所有可达点都搜索完毕仍未触发上述条件，说明活动范围是有界的，输出 `No`。
+
+**Python 3 实现代码**
+
+```python
+import sys
+
+
+def solve():
+    # 提高输入读取效率
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+
+    idx = 0
+    num_inputs = len(input_data)
+
+    # 方向数组：上下左右
+    dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+    while idx < num_inputs:
+        N = int(input_data[idx])
+        M = int(input_data[idx + 1])
+        idx += 2
+
+        grid = []
+        start_x, start_y = -1, -1
+        for r in range(N):
+            row = input_data[idx]
+            grid.append(row)
+            if start_x == -1:
+                c = row.find("S")
+                if c != -1:
+                    start_x, start_y = r, c
+            idx += 1
+
+        # 使用一维数组扁平化存储，提高 Python 的运行效率
+        size = N * M
+        visited = [False] * size
+        rec_x = [0] * size
+        rec_y = [0] * size
+
+        # 初始状态
+        start_flat = start_x * M + start_y
+        visited[start_flat] = True
+        rec_x[start_flat] = start_x
+        rec_y[start_flat] = start_y
+
+        stack = [(start_x, start_y)]
+        possible = False
+
+        while stack:
+            cx, cy = stack.pop()
+
+            for dx, dy in dirs:
+                nx, ny = cx + dx, cy + dy
+                rx, ry = nx % N, ny % M
+
+                # 墙壁不可通行
+                if grid[rx][ry] == "#":
+                    continue
+
+                flat = rx * M + ry
+                if visited[flat]:
+                    # 如果相对位置相同但实际坐标不同，说明找到了无限延伸的环路
+                    if rec_x[flat] != nx or rec_y[flat] != ny:
+                        possible = True
+                        break
+                else:
+                    visited[flat] = True
+                    rec_x[flat] = nx
+                    rec_y[flat] = ny
+                    stack.append((nx, ny))
+
+            if possible:
+                break
+
+        if possible:
+            print("Yes")
+        else:
+            print("No")
+
+
+if __name__ == "__main__":
+    solve()
+```
+
+**复杂度分析**
+
+- **时间复杂度**：每个测试点最多包含 10 组数据。对于每组数据，在最坏情况下，我们最多会遍历到原迷宫大小的所有状态（因为一旦重复访问且坐标不同就会立即退出）。状态总数为 $O(N \times M)$。由于 $N, M \le 1500$，单组数据的最大状态数为 $2.25 \times 10^6$。使用一维数组存储和迭代式 DFS，可以在时限内完成。
+- **空间复杂度**：$O(N \times M)$，用于存储访问状态、真实坐标和栈。
+
+
+
 ## P1429 平面最近点对（加强版）（蓝色 提高+/省选-）
 
 https://www.luogu.com.cn/problem/P1429
