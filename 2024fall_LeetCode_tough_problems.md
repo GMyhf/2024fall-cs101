@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-06-01 15:54 GMT+8*
+*Updated 2026-06-03 15:54 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -30325,4 +30325,150 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+
+
+
+## NC208830找到搜索二叉树中两个错误的节点
+
+https://ac.nowcoder.com/acm/problem/208830
+
+一棵二叉树原本是搜索二叉树，但是其中有两个节点调换了位置，使得这棵二叉树不再是搜索二叉树，请按升序输出这两个错误节点的值。(每个节点的值各不相同) 
+
+搜索二叉树：满足每个节点的左子节点小于当前节点，右子节点大于当前节点。 
+
+样例1图
+
+![img](https://uploadfiles.nowcoder.com/images/20210929/382300087_1632908334841/B87E10E9B10E1C17811E1A3CA710F9FB)
+
+样例2图
+
+![img](https://uploadfiles.nowcoder.com/images/20211008/382300087_1633659404587/C7D7B15D4EC4EB73A2A884CC13314B08)
+
+数据范围：3≤n≤1000003≤*n*≤100000,节点上的值满足 1≤val≤n1≤*v**a**l*≤*n* ，保证每个value各不相同 
+
+进阶：空间复杂度 O(1)*O*(1)，时间复杂度 O(n)*O*(*n*)
+
+示例1
+
+**输入**
+
+```
+{1,2,3}
+```
+
+**返回值**
+
+```
+[1,2]
+```
+
+说明
+
+```
+如题面图    
+```
+
+示例2
+
+**输入**
+
+```
+{4,2,5,3,1}
+```
+
+**返回值**
+
+```
+[1,3]
+```
+
+
+
+我们可以通过对二叉树进行**中序遍历**（In-order Traversal）来解决这个问题。
+
+**解题思路**
+
+在一个正常的二叉搜索树（BST）中，中序遍历得到的值序列应该是严格递增的。如果其中有两个节点的值被交换了，那么中序遍历的序列中就会出现逆序对（即前一个节点的值大于后一个节点的值）。
+
+设中序遍历序列为 $A$。
+
+1. **如果交换的两个节点不相邻**，序列中会出现**两处**逆序对。
+   - 例如：正常序列为 `[1, 2, 3, 4, 5, 6]`，交换 `2` 和 `5` 后变为 `[1, 5, 3, 4, 2, 6]`。
+   - 逆序对为：`5 > 3` 和 `4 > 2`。
+   - 第一个错误节点是第一处逆序对中较大的那个值（`5`），第二个错误节点是第二处逆序对中较小的那个值（`2`）。
+2. **如果交换的两个节点相邻**，序列中只会存在**一处**逆序对。
+   - 例如：正常序列为 `[1, 2, 3, 4]`，交换 `2` 和 `3` 后变为 `[1, 3, 2, 4]`。
+   - 逆序对为：`3 > 2`。
+   - 第一个错误节点是这处逆序对中较大的值（`3`），第二个错误节点是较小的值（`2`）。
+
+根据题目进阶要求，我们需要实现 $O(1)$ 的额外空间复杂度。普通的递归或迭代中序遍历需要 $O(n)$ 或 $O(h)$ 的栈空间。为了达到 $O(1)$ 空间复杂度，我们可以采用 **Morris 中序遍历** 算法。
+
+**Python 代码实现**
+
+```python
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+#
+# 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+#
+# 
+# @param root TreeNode类 the root
+# @return int整型一维数组
+#
+class Solution:
+    def findError(self , root: TreeNode) -> List[int]:
+        # 用于记录两个错误的节点值
+        first_err = None
+        second_err = None
+        # 记录中序遍历中的前一个节点值
+        prev_val = float('-inf')
+        
+        curr = root
+        # 使用 Morris 中序遍历
+        while curr is not None:
+            if curr.left is None:
+                # 访问当前节点
+                if prev_val > curr.val:
+                    if first_err is None:
+                        first_err = prev_val
+                        second_err = curr.val
+                    else:
+                        second_err = curr.val
+                prev_val = curr.val
+                curr = curr.right
+            else:
+                # 寻找当前节点的前驱节点
+                pred = curr.left
+                while pred.right is not None and pred.right is not curr:
+                    pred = pred.right
+                
+                if pred.right is None:
+                    # 建立临时线索指针
+                    pred.right = curr
+                    curr = curr.left
+                else:
+                    # 恢复树的结构
+                    pred.right = None
+                    # 访问当前节点
+                    if prev_val > curr.val:
+                        if first_err is None:
+                            first_err = prev_val
+                            second_err = curr.val
+                        else:
+                            second_err = curr.val
+                    prev_val = curr.val
+                    curr = curr.right
+        
+        # 题目要求按升序输出这两个节点的值
+        # first_err 记录的是较大的错误值，second_err 记录的是较小的错误值
+        return [second_err, first_err]
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(n)$。在 Morris 遍历中，虽然存在内部循环寻找前驱节点，但整棵树的每条边最多被访问 3 次，因此总体时间复杂度为线性。
+- **空间复杂度**：$O(1)$。我们只使用了几个辅助指针和变量，没有使用递归栈或额外的队列/栈结构，符合进阶的空间复杂度要求。
 
