@@ -29196,6 +29196,158 @@ process_commands(data)
 
 
 
+## P4408 [NOI2003] 逃学的小孩 / 数据生成器
+
+https://www.luogu.com.cn/problem/P4408
+
+Chris 家的电话铃响起了，里面传出了 Chris 的老师焦急的声音：“喂，是 Chris 的家长吗？你们的孩子又没来上课，不想参加考试了吗？”一听说要考试，Chris 的父母就心急如焚，他们决定在尽量短的时间内找到 Chris。他们告诉 Chris 的老师：“根据以往的经验，Chris 现在必然躲在朋友 Shermie 或 Yashiro 家里偷玩《拳皇》游戏。现在，我们就从家出发去找 Chris，一旦找到，我们立刻给您打电话。”说完砰的一声把电话挂了。
+
+Chris 居住的城市由 $N$ 个居住点和若干条连接居住点的双向街道组成，经过街道 $x$ 需花费 $T_{x}$ 分钟。可以保证，任意两个居住点间有且仅有一条通路。Chris 家在点 $C$，Shermie 和 Yashiro 分别住在点 $A$ 和点 $B$。Chris 的老师和 Chris 的父母都有城市地图，但 Chris 的父母知道点 $A$、$B$、$C$ 的具体位置而 Chris 的老师不知。
+
+为了尽快找到 Chris，Chris 的父母会遵守以下两条规则：
+
+1. 如果 $A$ 距离 $C$ 比 $B$ 距离 $C$ 近，那么 Chris 的父母先去 Shermie 家寻找 Chris，如果找不到，Chris 的父母再去 Yashiro 家；反之亦然。
+2. Chris 的父母总沿着两点间唯一的通路行走。
+
+显然，Chris 的老师知道 Chris 的父母在寻找 Chris 的过程中会遵守以上两条规则，但由于他并不知道 $A$、$B$、$C$ 的具体位置，所以现在他希望你告诉他，最坏情况下 Chris的父母要耗费多长时间才能找到 Chris？
+
+**输入格式**
+
+输入文件第一行是两个整数 $N$ 和 $M$，分别表示居住点总数和街道总数。
+
+以下 $M$ 行，每行给出一条街道的信息。第 $i+1$ 行包含整数 $U_{i}$、$V_{i}$、$T_{i}$，表示街道 $i$ 连接居住点 $U_{i}$ 和 $V_{i}$，并且经过街道 $i$ 需花费 $T_{i}$ 分钟。街道信息不会重复给出。
+
+**输出格式**
+
+输出文件仅包含整数 $T$，即最坏情况下 Chris 的父母需要花费 $T$ 分钟才能找到 Chris。
+
+输入输出样例 #1
+
+输入 #1
+
+```
+4 3
+1 2 1
+2 3 1
+3 4 1
+```
+
+输出 #1
+
+```
+4
+```
+
+说明/提示
+
+对于 $100\%$ 的数据，$3 \le N \le 2\times 10^5$，$1 \le U_{i},V_{i} \le N$，$0 \le T_{i} \le 10^{9}$。
+
+
+
+下面是解决该问题的 Python AC（Accepted）代码。
+
+**解题思路**
+
+题目要求找到最坏情况下 Chris 的父母找到他所花费的最大时间。
+Chris 的父母会先去距离起点 $C$ 较近的一家（假设是 $A$），如果找不到再去另一家（$B$）。因此，他们走过的总距离为 $\text{dist}(C, A) + \text{dist}(A, B)$（假设 $A$ 比 $B$ 近）。
+由此可知，在最坏情况下，花费的时间为：
+$$\text{dist}(A, B) + \min(\text{dist}(C, A), \text{dist}(C, B))$$
+
+为了让这个值最大，我们需要合理选择 $A, B, C$ 三点：
+
+1. 根据树的性质，要使两点间距离最大， $A$ 和 $B$ 必须是**树的直径**的两个端点。
+2. 确定了直径的两个端点 $P$ 和 $Q$（即 $A$ 和 $B$）后，我们遍历树中的每一个节点作为 $C$，计算出 $\text{dist}(P, Q) + \min(\text{dist}(C, P), \text{dist}(C, Q))$ 的最大值。
+
+**算法步骤**：
+
+1. 从任意节点（如节点 1）出发进行一次 BFS，找到距离它最远的点 $P$（$P$ 为直径的一个端点）。
+2. 从 $P$ 出发进行第二次 BFS，找到距离 $P$ 最远的点 $Q$（$Q$ 为直径的另一个端点），并记录 $P$ 到所有点的距离 `dist_P`。
+3. 从 $Q$ 出发进行第三次 BFS，记录 $Q$ 到所有点的距离 `dist_Q`。
+4. 遍历所有节点 $i$ 作为 $C$，计算 $\text{dist}(P, Q) + \min(\text{dist\_P}[i], \text{dist\_Q}[i])$ 的最大值。
+
+由于 Python 的递归深度限制以及递归带来的额外开销，这里使用**迭代式 BFS** 代替 DFS，以确保在 $N = 2 \times 10^5$ 的数据规模下不会产生栈溢出，并能在线时限制内完成。
+
+**AC 代码**
+
+```python
+import sys
+
+# 优化输入读取
+def solve():
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    N = int(input_data[0])
+    M = int(input_data[1])
+    
+    # 构建邻接表
+    adj = [[] for _ in range(N + 1)]
+    idx = 2
+    for _ in range(M):
+        u = int(input_data[idx])
+        v = int(input_data[idx+1])
+        w = int(input_data[idx+2])
+        adj[u].append((v, w))
+        adj[v].append((u, w))
+        idx += 3
+
+    # 使用手动维护的队列进行 BFS，避免 deque 的额外开销
+    def bfs(start):
+        dist = [-1] * (N + 1)
+        dist[start] = 0
+        queue = [0] * (N + 1)
+        queue[0] = start
+        head = 0
+        tail = 1
+        
+        while head < tail:
+            u = queue[head]
+            head += 1
+            du = dist[u]
+            for v, w in adj[u]:
+                if dist[v] == -1:
+                    dist[v] = du + w
+                    queue[tail] = v
+                    tail += 1
+                    
+        # 寻找距离最远的点
+        max_node = start
+        max_dist = 0
+        for i in range(1, N + 1):
+            if dist[i] > max_dist:
+                max_dist = dist[i]
+                max_node = i
+        return max_node, dist
+
+    # 1. 第一次 BFS 寻找直径的一个端点 P
+    p, _ = bfs(1)
+    
+    # 2. 第二次 BFS 得到 P 到所有点的距离
+    q, dist_p = bfs(p)
+    
+    # 3. 第三次 BFS 得到 Q 到所有点的距离
+    _, dist_q = bfs(q)
+    
+    # 直径长度
+    diameter = dist_p[q]
+    
+    # 4. 计算最大花费时间
+    ans = 0
+    for i in range(1, N + 1):
+        # 此时 i 作为 C 点，p 和 q 作为 A 和 B 点
+        temp = diameter + min(dist_p[i], dist_q[i])
+        if temp > ans:
+            ans = temp
+            
+    print(ans)
+
+if __name__ == '__main__':
+    solve()
+```
+
+
+
 ## P6192 【模板】最小斯坦纳树（紫色 省选/NOI-）
 
 bitmask/state_compression dp, dijkstra , https://www.luogu.com.cn/problem/P6192
