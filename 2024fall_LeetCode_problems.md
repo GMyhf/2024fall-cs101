@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-06-01 10:45 GMT+8*
+*Updated 2026-06-03 09:21 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -16185,7 +16185,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -49537,6 +49537,146 @@ class Solution:
         return n - max_keep
 
 ```
+
+
+
+## M3635.最早完成陆地和水上游乐设施的时间 II
+
+greedy, https://leetcode.cn/problems/earliest-finish-time-for-land-and-water-rides-ii/
+
+给你两种类别的游乐园项目：**陆地游乐设施** 和 **水上游乐设施**。
+
+- **陆地游乐设施**
+  - `landStartTime[i]` – 第 `i` 个陆地游乐设施最早可以开始的时间。
+  - `landDuration[i]` – 第 `i` 个陆地游乐设施持续的时间。
+- **水上游乐设施**
+  - `waterStartTime[j]` – 第 `j` 个水上游乐设施最早可以开始的时间。
+  - `waterDuration[j]` – 第 `j` 个水上游乐设施持续的时间。
+
+一位游客必须从 **每个** 类别中体验 **恰好****一个** 游乐设施，顺序 **不限** 。
+
+- 游乐设施可以在其开放时间开始，或 **之后任意时间** 开始。
+- 如果一个游乐设施在时间 `t` 开始，它将在时间 `t + duration` 结束。
+- 完成一个游乐设施后，游客可以立即乘坐另一个（如果它已经开放），或者等待它开放。
+
+返回游客完成这两个游乐设施的 **最早可能时间** 。
+
+ 
+
+**示例 1:**
+
+**输入：**landStartTime = [2,8], landDuration = [4,1], waterStartTime = [6], waterDuration = [3]
+
+**输出：**9
+
+**解释：**
+
+- 方案 A（陆地游乐设施 0 → 水上游乐设施 0）：
+  - 在时间 `landStartTime[0] = 2` 开始陆地游乐设施 0。在 `2 + landDuration[0] = 6` 结束。
+  - 水上游乐设施 0 在时间 `waterStartTime[0] = 6` 开放。立即在时间 `6` 开始，在 `6 + waterDuration[0] = 9` 结束。
+- 方案 B（水上游乐设施 0 → 陆地游乐设施 1）：
+  - 在时间 `waterStartTime[0] = 6` 开始水上游乐设施 0。在 `6 + waterDuration[0] = 9` 结束。
+  - 陆地游乐设施 1 在 `landStartTime[1] = 8` 开放。在时间 `9` 开始，在 `9 + landDuration[1] = 10` 结束。
+- 方案 C（陆地游乐设施 1 → 水上游乐设施 0）：
+  - 在时间 `landStartTime[1] = 8` 开始陆地游乐设施 1。在 `8 + landDuration[1] = 9` 结束。
+  - 水上游乐设施 0 在 `waterStartTime[0] = 6` 开放。在时间 `9` 开始，在 `9 + waterDuration[0] = 12` 结束。
+- 方案 D（水上游乐设施 0 → 陆地游乐设施 0）：
+  - 在时间 `waterStartTime[0] = 6` 开始水上游乐设施 0。在 `6 + waterDuration[0] = 9` 结束。
+  - 陆地游乐设施 0 在 `landStartTime[0] = 2` 开放。在时间 `9` 开始，在 `9 + landDuration[0] = 13` 结束。
+
+方案 A 提供了最早的结束时间 9。
+
+**示例 2:**
+
+**输入：**landStartTime = [5], landDuration = [3], waterStartTime = [1], waterDuration = [10]
+
+**输出：**14
+
+**解释：**
+
+- 方案 A（水上游乐设施 0 → 陆地游乐设施 0）：
+  - 在时间 `waterStartTime[0] = 1` 开始水上游乐设施 0。在 `1 + waterDuration[0] = 11` 结束。
+  - 陆地游乐设施 0 在 `landStartTime[0] = 5` 开放。立即在时间 `11` 开始，在 `11 + landDuration[0] = 14` 结束。
+- 方案 B（陆地游乐设施 0 → 水上游乐设施 0）：
+  - 在时间 `landStartTime[0] = 5` 开始陆地游乐设施 0。在 `5 + landDuration[0] = 8` 结束。
+  - 水上游乐设施 0 在 `waterStartTime[0] = 1` 开放。立即在时间 `8` 开始，在 `8 + waterDuration[0] = 18` 结束。
+
+方案 A 提供了最早的结束时间 14。
+
+ 
+
+**提示:**
+
+- `1 <= n, m <= 5 * 10^4`
+- `landStartTime.length == landDuration.length == n`
+- `waterStartTime.length == waterDuration.length == m`
+- `1 <= landStartTime[i], landDuration[i], waterStartTime[j], waterDuration[j] <= 10^5`
+
+
+
+这是一个经典的贪心算法问题。我们可以分别考虑两种不同的游乐顺序，并求取两者的最小值：
+
+1. **先进行陆地项目，再进行水上项目**。
+2. **先进行水上项目，再进行陆地项目**。
+
+**思路与算法分析**
+
+以**先玩类别 1、再玩类别 2**的顺序为例：
+假设我们已经选定了类别 2 中的某个项目 $j$，其开始时间为 `startTime2[j]`，持续时间为 `duration2[j]`。为了让总体完成时间最早，我们需要从类别 1 中选择一个项目 $i$。
+
+- 选择项目 $i$ 后，类别 1 的结束时间为 $E_i = \text{startTime1}[i] + \text{duration1}[i]$。
+- 随后开始项目 $j$，由于项目 $j$ 必须在其开放时间之后才能开始，因此它的开始时间为 $\max(E_i, \text{startTime2}[j])$。
+- 完成项目 $j$ 的时间即为 $\max(E_i, \text{startTime2}[j]) + \text{duration2}[j]$。
+
+为了使上述结束时间最小化，对于任意固定的 $j$，我们应当让 $E_i$ 越小越好。
+因此，最佳的选择就是直接选取类别 1 中**完成时间最早**的项目，即：
+$$\text{minEnd} = \min_{i} (\text{startTime1}[i] + \text{duration1}[i])$$
+
+这样，对于类别 2 中的每个项目 $j$，与最佳类别 1 项目组合后的完成时间为：
+$$\max(\text{minEnd}, \text{startTime2}[j]) + \text{duration2}[j]$$
+
+我们只需遍历类别 2 的所有项目 $j$，求出上述计算结果的最小值，即为该游乐顺序下的最早可能结束时间。
+
+由于既可以「先陆地再水上」也可以「先水上再陆地」，我们对这两种情况分别应用上述贪心计算逻辑，并返回两者的较小值即可。
+
+
+
+**Python 3 代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def earliestFinishTime(self, landStartTime: List[int], landDuration: List[int], waterStartTime: List[int], waterDuration: List[int]) -> int:
+        def calc(a1: List[int], t1: List[int], a2: List[int], t2: List[int]) -> int:
+            # a1, t1 分别为第一类项目的开始时间和持续时间
+            # a2, t2 分别为第二类项目的开始时间和持续时间
+            
+            # 第一步：求第一类项目的最早结束时间
+            min_end = min(start + duration for start, duration in zip(a1, t1))
+            
+            # 第二步：对于第二类项目的每一个，与其组合并求出总时间，最后取最小值
+            return min(max(start, min_end) + duration for start, duration in zip(a2, t2))
+        
+        # 情况 1：先陆地项目，后水上项目
+        ans_land_first = calc(landStartTime, landDuration, waterStartTime, waterDuration)
+        
+        # 情况 2：先水上项目，后陆地项目
+        ans_water_first = calc(waterStartTime, waterDuration, landStartTime, landDuration)
+        
+        return min(ans_land_first, ans_water_first)
+```
+
+
+
+**复杂度分析**
+
+- **时间复杂度**：$\mathcal{O}(n + m)$。
+  其中 $n$ 为陆地项目数量，$m$ 为水上项目数量。我们只需对输入数组进行数次线性扫描即可得到结果。
+- **空间复杂度**：$\mathcal{O}(1)$。
+  算法中除了用于存储临时极值的变量外，不需要申请额外的动态空间。
+
+
 
 
 
