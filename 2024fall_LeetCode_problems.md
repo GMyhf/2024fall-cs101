@@ -16185,7 +16185,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -26332,6 +26332,157 @@ class Solution:
 1.  **为什么不递归 'M'**：在统计相邻地雷时，我们只统计 `'M'`，但递归揭露时只揭露 `'E'`。这是因为根据游戏逻辑，如果一个格子周围有 `'M'`，它的 `mine_count` 一定大于 0，它会被标记为数字并停止递归，所以程序永远不会从一个 `'B'` 自动递归到一个 `'M'`。
 2.  **搜索方向**：扫雷是 8 个方向（包含对角线），所以循环范围是 `range(-1, 2)`。
 3.  **终止条件**：`board[i][j] != 'E'` 是 DFS 的关键终止条件，它既防止了重复访问（死循环），也符合只揭露未揭露方块的规则。
+
+
+
+## M538.把二叉搜索树转换为累加树
+
+bst, https://leetcode.cn/problems/convert-bst-to-greater-tree/
+
+给出二叉 **搜索** 树的根节点 `root`，该树的节点值各不相同，请你将其转换为累加树（Greater Sum Tree），将其转换为一个更大的树，使得原始二叉搜索树中的每个节点值都变为原本值加上原本二叉搜索树中所有比该节点值大的节点值的总和。
+
+提醒一下，二叉搜索树满足下列约束条件：
+
+- 节点的左子树仅包含键 **小于** 节点键的节点。
+- 节点的右子树仅包含键 **大于** 节点键的节点。
+- 左右子树也必须是二叉搜索树。
+
+**注意：**本题和 1038: https://leetcode.cn/problems/binary-search-tree-to-greater-sum-tree/ 相同
+
+ 
+
+**示例 1：**
+
+**<img src="https://assets.leetcode.cn/aliyun-lc-upload/uploads/2019/05/03/tree.png" alt="img" style="zoom:50%;" />**
+
+```
+输入：[4,1,6,0,2,5,7,null,null,null,3,null,null,null,8]
+输出：[30,36,21,36,35,26,15,null,null,null,33,null,null,null,8]
+```
+
+**示例 2：**
+
+```
+输入：root = [0,null,1]
+输出：[1,null,1]
+```
+
+**示例 3：**
+
+```
+输入：root = [1,0,2]
+输出：[3,3,2]
+```
+
+**示例 4：**
+
+```
+输入：root = [3,2,4,1]
+输出：[7,9,4,10]
+```
+
+ 
+
+**提示：**
+
+- 树中的节点数介于 `0` 和 `10^4` 之间。
+- 每个节点的值介于 `-10^4` 和 `10^4` 之间。
+- 树中的所有值 **互不相同** 。
+- 给定的树为二叉搜索树。
+
+
+
+这个问题可以通过利用二叉搜索树（BST）的性质来解决。
+
+**思路分析**
+
+在二叉搜索树中：
+
+* 左子树所有节点的值都**小于**当前节点的值。
+* 右子树所有节点的值都**大于**当前节点的值。
+* 如果我们对二叉搜索树进行**中序遍历**（左 -> 根 -> 右），得到的是一个**升序**序列。
+* 如果我们反过来，进行**反向中序遍历**（右 -> 根 -> 左），得到的就是一个**降序**序列。
+
+在本题中，我们需要将每个节点的值修改为“原节点值加上所有比它大的节点值之和”。
+由于反向中序遍历是按照从大到小的顺序访问节点的，因此，当我们遍历到某个节点时，之前访问过的所有节点的值都比当前节点的值大。我们只需要维护一个累加变量 `total`，在遍历过程中：
+
+1. 先递归遍历右子树。
+2. 将当前节点的值累加到 `total` 中。
+3. 将当前节点的值更新为 `total`。
+4. 再递归遍历左子树。
+
+代码实现
+
+### 方法一：递归（反向中序遍历）
+
+这是最直观的解法，代码如下：
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class Solution:
+    def convertBST(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        self.total = 0
+        
+        def dfs(node):
+            if not node:
+                return
+            
+            # 1. 先遍历右子树（值较大的节点）
+            dfs(node.right)
+            
+            # 2. 处理当前节点，累加值并更新
+            self.total += node.val
+            node.val = self.total
+            
+            # 3. 再遍历左子树（值较小的节点）
+            dfs(node.left)
+            
+        dfs(root)
+        return root
+```
+
+### 方法二：迭代（双指针/栈）
+
+如果不想使用递归，也可以利用栈来显式模拟反向中序遍历的过程：
+
+```python
+class Solution:
+    def convertBST(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        total = 0
+        stack = []
+        curr = root
+        
+        while stack or curr:
+            # 尽可能往右走
+            while curr:
+                stack.append(curr)
+                curr = curr.right
+            
+            # 弹出并处理当前节点
+            curr = stack.pop()
+            total += curr.val
+            curr.val = total
+            
+            # 转向左子树
+            curr = curr.left
+            
+        return root
+```
+
+---
+
+**复杂度分析**
+
+* **时间复杂度**：$O(N)$，其中 $N$ 是二叉树中的节点个数。我们需要遍历树中的每个节点且仅遍历一次。
+* **空间复杂度**：
+  * 递归和迭代栈方法在最坏情况下（树呈链状）需要 $O(N)$ 的空间，在平均情况下（平衡二叉树）需要 $O(\log N)$ 的空间，主要取决于递归栈或显式栈的深度。
+  * 如果需要将空间复杂度优化至 $O(1)$，可以使用 **Morris 反向中序遍历** 算法。该方法利用了树中空闲指针（线索二叉树）来保存回溯信息，从而避免了栈的使用。
 
 
 
