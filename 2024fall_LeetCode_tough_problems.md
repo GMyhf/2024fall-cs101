@@ -28483,6 +28483,160 @@ if __name__ == "__main__":
 
 
 
+## P3915 树的分解 （黄色 普及/提高-）
+
+树形 DP / 拓扑性质，https://www.luogu.com.cn/problem/P3915
+
+给出 $N$ 个点的树和 $K$，问能否把树划分成 $\frac{N}{K}$ 个连通块，且每个连通块的点数都是 $K$。
+
+**输入格式**
+
+第一行，一个整数 $T$，表示数据组数。接下来 $T$ 组数据，对于每组数据：
+
+第一行，两个整数 $N, K$。
+
+接下来 $N - 1$ 行，每行两个整数 $A_i, B_i$，表示边 $(A_i, B_i)$。点用 $1, 2, \ldots, N$ 编号。
+
+**输出格式**
+
+对于每组数据，输出 `YES` 或 `NO`。
+
+输入输出样例 #1
+
+输入 #1
+
+```
+2
+4 2
+1 2
+2 3
+3 4
+4 2
+1 2
+1 3
+1 4
+
+```
+
+输出 #1
+
+```
+YES
+NO
+```
+
+说明/提示
+
+- 对于 $60 \%$ 的数据，$1 \le N, K \le 10^3$；
+- 对于 $100 \%$ 的数据，$1 \le T \le 10$，$1 \le N ,K \le 10^5$。
+
+
+
+这是一个经典的树形 DP / 拓扑性质问题。我们可以通过分析子树大小的性质来解决。
+
+**算法分析**
+
+要将一棵大小为 $N$ 的树划分成若干个大小为 $K$ 的连通块，首先必须满足 **$N$ 能被 $K$ 整除**（即 $N \bmod K == 0$）。如果不能整除，直接输出 `NO`。
+
+如果满足整除条件，我们可以任选一个点作为根节点（例如节点 $1$），然后计算每个节点的子树大小。
+
+设以 $u$ 为根的子树大小为 $S[u]$。
+
+* 如果我们将树切成若干个大小为 $K$ 的连通块，那么每一次“切断”一条边，都会分离出一个大小为 $K$ 的倍数的连通块。
+* 也就是说，若能成功划分，那么原树中**子树大小为 $K$ 的倍数的节点个数**必须正好等于 $\frac{N}{K}$。
+* 这是一个充要条件。因为如果一个子树的大小是 $K$ 的倍数，我们就可以在其上方切一刀，将其独立出来，然后递归地在内部继续划分。
+
+**算法步骤**
+
+1. **特判**：若 $N \bmod K \neq 0$，直接输出 `NO`。
+2. **建图**：构建无向树。
+3. **拓扑排序 / BFS**：由于 Python 的递归深度限制以及递归带来的额外开销，推荐使用**非递归（BFS）**的方式获取从根节点（假设为 $1$）出发的拓扑序（自顶向下），然后**逆序**处理（自底向上）来计算子树大小。
+4. **统计**：自底向上累加子树大小。如果某个节点 $u$ 的子树大小 $S[u]$ 满足 $S[u] \bmod K == 0$，则计数器 `count` 加 1。
+5. **判断**：若 `count == N // K`，输出 `YES`，否则输出 `NO`。
+
+### Python 实现
+
+```python
+import sys
+
+
+def solve():
+    # 使用 sys.stdin.read 快速读取所有输入
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+
+    iterator = iter(input_data)
+    num_test_cases = int(next(iterator))
+
+    out = []
+    for _ in range(num_test_cases):
+        n = int(next(iterator))
+        k = int(next(iterator))
+
+        # 构建邻接表
+        adj = [[] for _ in range(n + 1)]
+        for _ in range(n - 1):
+            u = int(next(iterator))
+            v = int(next(iterator))
+            adj[u].append(v)
+            adj[v].append(u)
+
+        # 如果 N 不能被 K 整除，直接判定为 NO
+        if n % k != 0:
+            out.append("NO")
+            continue
+
+        # 使用 BFS 得到自顶向下的节点顺序，并记录每个节点的父节点
+        order = []
+        parent = [0] * (n + 1)
+        visited = [False] * (n + 1)
+
+        queue = [1]
+        visited[1] = True
+        head = 0
+        while head < len(queue):
+            u = queue[head]
+            head += 1
+            order.append(u)
+            for v in adj[u]:
+                if not visited[v]:
+                    visited[v] = True
+                    parent[v] = u
+                    queue.append(v)
+
+        # 初始化每个节点的子树大小为 1
+        size = [1] * (n + 1)
+        count = 0
+
+        # 逆序（自底向上）计算子树大小
+        for u in reversed(order):
+            if size[u] % k == 0:
+                count += 1
+            p = parent[u]
+            if p != 0:
+                size[p] += size[u]
+
+        # 如果大小为 K 的倍数的子树数量恰好为 N // K
+        if count == n // k:
+            out.append("YES")
+        else:
+            out.append("NO")
+
+    print("\n".join(out))
+
+
+if __name__ == "__main__":
+    solve()
+```
+
+**复杂度分析**
+
+* **时间复杂度**：对于每组数据，BFS 遍历所有节点和边的时间复杂度为 $O(N)$，自底向上计算子树大小的时间复杂度也是 $O(N)$。总时间复杂度为 $O(T \cdot N)$。在 $T \le 10, N \le 10^5$ 的数据规模下，该算法可以在 1 秒内运行完毕。
+* **空间复杂度**：主要消耗在邻接表、BFS 队列以及辅助数组上，空间复杂度为 $O(N)$，能够轻松通过空间限制。
+
+
+
 ## P4148 简单题（紫色 省选/NOI-）
 
 KD Tree, https://www.luogu.com.cn/problem/P4148
