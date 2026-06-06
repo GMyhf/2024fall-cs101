@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-06-04 19:00 GMT+8*
+*Updated 2026-06-06 08:36 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -8752,6 +8752,141 @@ class Solution:
 
 
 
+## E2574.左右元素和的差值
+
+prefix sum, https://leetcode.cn/problems/left-and-right-sum-differences/
+
+给你一个下标从 **0** 开始的长度为 `n` 的整数数组 `nums`。
+
+定义两个数组 `leftSum` 和 `rightSum`，其中：
+
+- `leftSum[i]` 是数组 `nums` 中下标 `i` 左侧元素之和。如果不存在对应的元素，`leftSum[i] = 0` 。
+- `rightSum[i]` 是数组 `nums` 中下标 `i` 右侧元素之和。如果不存在对应的元素，`rightSum[i] = 0` 。
+
+返回长度为 `n` 数组 `answer`，其中 `answer[i] = |leftSum[i] - rightSum[i]|`。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [10,4,8,3]
+输出：[15,1,11,22]
+解释：数组 leftSum 为 [0,10,14,22] 且数组 rightSum 为 [15,11,3,0] 。
+数组 answer 为 [|0 - 15|,|10 - 11|,|14 - 3|,|22 - 0|] = [15,1,11,22] 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1]
+输出：[0]
+解释：数组 leftSum 为 [0] 且数组 rightSum 为 [0] 。
+数组 answer 为 [|0 - 0|] = [0] 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 1000`
+- `1 <= nums[i] <= 10^5`
+
+
+
+这道题可以通过维护一个**前缀和**和一个**后缀和**的思想来高效解决。
+
+**解题思路**
+
+如果要计算每一个位置 `i` 的 `leftSum[i]` 和 `rightSum[i]`：
+
+1. **右侧元素之和** `rightSum[i]` 实际上等于 `整个数组的总和 - 左侧元素之和 leftSum[i] - 当前元素 nums[i]`。
+2. 因此，不需要创建额外的 `leftSum` 和 `rightSum` 数组。我们可以先计算出数组的总和 `total_sum`。
+3. 接着，在一次遍历中：
+   - 维护一个变量 `left_sum`，初始化为 `0`。
+   - 对于每个元素 `nums[i]`，其对应的右侧元素和为 `right_sum = total_sum - left_sum - nums[i]`。
+   - 计算差值 `abs(left_sum - right_sum)` 并存入结果数组。
+   - 更新 `left_sum = left_sum + nums[i]`，为计算下一个位置做准备。
+
+这种方法只需要两轮遍历（第一轮求和，第二轮计算结果），时间复杂度为 $O(n)$，空间复杂度为 $O(1)$（不计入返回结果的数组空间）。
+
+Python 代码实现
+
+```python
+from typing import List
+
+class Solution:
+    def leftRightDifference(self, nums: List[int]) -> List[int]:
+        total_sum = sum(nums)
+        left_sum = 0
+        answer = []
+        
+        for num in nums:
+            right_sum = total_sum - left_sum - num
+            answer.append(abs(left_sum - right_sum))
+            left_sum += num
+            
+        return answer
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(n)$。其中 $n$ 是数组 `nums` 的长度。需要遍历一次数组求和，再遍历一次数组计算每个位置的差值。
+- **空间复杂度**：$O(1)$。除去用于存储结果的 `answer` 数组，仅使用了 `total_sum`、`left_sum` 和 `right_sum` 等常数个额外变量。
+
+
+
+如果按照题目定义，先显式地计算出每个位置的 `leftSum` 和 `rightSum` 数组，然后再计算它们差值的绝对值，也是一种非常直观且符合直觉的解法。
+
+可以通过前缀和与后缀和的递推关系来分别计算这两个数组：
+
+1. **计算 `leftSum`**：
+   - `leftSum[0] = 0`
+   - 对于 $i > 0$，`leftSum[i] = leftSum[i-1] + nums[i-1]`
+
+2. **计算 `rightSum`**：
+   - `rightSum[n-1] = 0`（其中 $n$ 为数组长度）
+   - 对于 $i < n-1$（从右往左递推），`rightSum[i] = rightSum[i+1] + nums[i+1]`
+
+3. **计算结果**：
+   - 遍历每个位置，计算 `abs(leftSum[i] - rightSum[i])`。
+
+Python 代码实现
+
+```python
+from typing import List
+
+class Solution:
+    def leftRightDifference(self, nums: List[int]) -> List[int]:
+        n = len(nums)
+        leftSum = [0] * n
+        rightSum = [0] * n
+        
+        # 1. 计算 leftSum
+        for i in range(1, n):
+            leftSum[i] = leftSum[i-1] + nums[i-1]
+            
+        # 2. 计算 rightSum (从右往左遍历)
+        for i in range(n-2, -1, -1):
+            rightSum[i] = rightSum[i+1] + nums[i+1]
+            
+        # 3. 计算绝对值差
+        answer = []
+        for i in range(n):
+            answer.append(abs(leftSum[i] - rightSum[i]))
+            
+        return answer
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(n)$。分别进行了三次独立的循环（计算 `leftSum`、计算 `rightSum`、计算最终结果 `answer`），每次循环的长度为 $n$。总时间复杂度与数组长度成正比。
+- **空间复杂度**：$O(n)$。除了返回的结果数组外，显式地创建了长度为 $n$ 的 `leftSum` 和 `rightSum` 数组。
+
+
+
+
+
 ## 2595.奇偶位数
 
 https://leetcode.cn/problems/number-of-even-and-odd-bits/
@@ -16185,7 +16320,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
