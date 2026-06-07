@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-06-06 08:36 GMT+8*
+*Updated 2026-06-07 08:36 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -16320,7 +16320,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -37447,6 +37447,92 @@ upper >= hidden[0] + max_p      →   hidden[0] <= upper - max_p
 你用数学方式框定 `hidden[0]` 的范围，效率就极高，时间复杂度 O(n)。
 
 有没有感觉这题其实是“差分数组”的逆操作？😄
+
+
+
+## M2196.根据描述创建二叉树
+
+tree, https://leetcode.cn/problems/create-binary-tree-from-descriptions/
+
+给你一个二维整数数组 `descriptions` ，其中 `descriptions[i] = [parenti, childi, isLefti]` 表示 `parenti` 是 `childi` 在 **二叉树** 中的 **父节点**，二叉树中各节点的值 **互不相同** 。此外：
+
+- 如果 `isLefti == 1` ，那么 `childi` 就是 `parenti` 的左子节点。
+- 如果 `isLefti == 0` ，那么 `childi` 就是 `parenti` 的右子节点。
+
+请你根据 `descriptions` 的描述来构造二叉树并返回其 **根节点** 。
+
+测试用例会保证可以构造出 **有效** 的二叉树。
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/example1drawio.png" alt="img" style="zoom:50%;" />
+
+```
+输入：descriptions = [[20,15,1],[20,17,0],[50,20,1],[50,80,0],[80,19,1]]
+输出：[50,20,80,15,17,19]
+解释：根节点是值为 50 的节点，因为它没有父节点。
+结果二叉树如上图所示。
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/example2drawio.png" alt="img" style="zoom:50%;" />
+
+```
+输入：descriptions = [[1,2,1],[2,3,0],[3,4,1]]
+输出：[1,2,null,null,3,4]
+解释：根节点是值为 1 的节点，因为它没有父节点。 
+结果二叉树如上图所示。 
+```
+
+**提示：**
+
+- `1 <= descriptions.length <= 10^4`
+- `descriptions[i].length == 3`
+- `1 <= parenti, childi <= 10^5`
+- `0 <= isLefti <= 1`
+- `descriptions` 所描述的二叉树是一棵有效二叉树
+
+
+
+```python
+class Solution:
+    def createBinaryTree(self, descriptions: List[List[int]]) -> Optional[TreeNode]:
+        # 1. 使用字典存储已创建的节点，避免重复创建，保证树的连通性
+        node_map = {}  
+        # 2. 分别记录所有出现的节点值和作为子节点的值
+        all_nodes = set()
+        child_nodes = set()
+
+        for parent_val, child_val, is_left in descriptions:
+            # 获取或创建父节点
+            if parent_val not in node_map:
+                node_map[parent_val] = TreeNode(parent_val)
+            
+            # 获取或创建子节点
+            if child_val not in node_map:
+                node_map[child_val] = TreeNode(child_val)
+            
+            # 建立父子连接
+            parent_node = node_map[parent_val]
+            child_node = node_map[child_val]
+            if is_left == 1:
+                parent_node.left = child_node
+            else:
+                parent_node.right = child_node
+            
+            # 记录节点归属
+            all_nodes.add(parent_val)
+            all_nodes.add(child_val)
+            child_nodes.add(child_val)
+
+        # 3. 寻找根节点：在所有节点中，唯一不是别人子节点的即为根节点
+        root_val = (all_nodes - child_nodes).pop()
+        
+        return node_map[root_val]
+```
+
+
 
 
 
