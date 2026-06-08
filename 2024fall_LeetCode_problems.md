@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-06-07 08:36 GMT+8*
+*Updated 2026-06-08 10:41 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -16320,7 +16320,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -37447,6 +37447,130 @@ upper >= hidden[0] + max_p      →   hidden[0] <= upper - max_p
 你用数学方式框定 `hidden[0]` 的范围，效率就极高，时间复杂度 O(n)。
 
 有没有感觉这题其实是“差分数组”的逆操作？😄
+
+
+
+## M2161.根据给定数字划分数组
+
+implementation, https://leetcode.cn/problems/partition-array-according-to-given-pivot/
+
+给你一个下标从 **0** 开始的整数数组 `nums` 和一个整数 `pivot` 。请你将 `nums` 重新排列，使得以下条件均成立：
+
+- 所有小于 `pivot` 的元素都出现在所有大于 `pivot` 的元素 **之前** 。
+- 所有等于 `pivot` 的元素都出现在小于和大于 `pivot` 的元素 **中间** 。
+- 小于 `pivot` 的元素之间和大于 `pivot` 的元素之间的 **相对顺序** 不发生改变。
+  - 更正式的，考虑每一对 `pi`，`pj` ，`pi` 是初始时位置 `i` 元素的新位置，`pj` 是初始时位置 `j` 元素的新位置。如果 `i < j` 且两个元素 **都** 小于（或大于）`pivot`，那么 `pi < pj` 。
+
+请你返回重新排列 `nums` 数组后的结果数组。
+
+**示例 1：**
+
+```
+输入：nums = [9,12,5,10,14,3,10], pivot = 10
+输出：[9,5,3,10,10,12,14]
+解释：
+元素 9 ，5 和 3 小于 pivot ，所以它们在数组的最左边。
+元素 12 和 14 大于 pivot ，所以它们在数组的最右边。
+小于 pivot 的元素的相对位置和大于 pivot 的元素的相对位置分别为 [9, 5, 3] 和 [12, 14] ，它们在结果数组中的相对顺序需要保留。
+```
+
+**示例 2：**
+
+```
+输入：nums = [-3,4,3,2], pivot = 2
+输出：[-3,2,4,3]
+解释：
+元素 -3 小于 pivot ，所以在数组的最左边。
+元素 4 和 3 大于 pivot ，所以它们在数组的最右边。
+小于 pivot 的元素的相对位置和大于 pivot 的元素的相对位置分别为 [-3] 和 [4, 3] ，它们在结果数组中的相对顺序需要保留。
+```
+
+**提示：**
+
+- `1 <= nums.length <= 10^5`
+- `-10^6 <= nums[i] <= 10^6`
+- `pivot` 等于 `nums` 中的一个元素。
+
+
+
+针对这道题，我们可以通过以下两种方法来实现：
+
+### 方法一：分类收集法（利用 Python 列表推导式）
+
+这是最直观且符合 Python 编程习惯的方法。我们通过三次遍历（或者一次遍历分类）分别收集小于、等于和大于 `pivot` 的元素，最后将它们拼接起来。由于列表推导式在 Python 底层是用 C 语言实现的，这种方法的实际执行效率通常很高。
+
+Python 代码：
+
+```python
+from typing import List
+
+class Solution:
+    def pivotArray(self, nums: List[int], pivot: int) -> List[int]:
+        # 分别收集小于、等于、大于 pivot 的元素
+        less = [x for x in nums if x < pivot]
+        equal = [x for x in nums if x == pivot]
+        greater = [x for x in nums if x > pivot]
+        
+        # 拼接并返回结果
+        return less + equal + greater
+```
+
+**复杂度分析：**
+
+- **时间复杂度**：$O(N)$，其中 $N$ 是数组 `nums` 的长度。我们需要遍历数组三次（或通过单次遍历分类），每次遍历的时间复杂度为 $O(N)$。
+- **空间复杂度**：$O(N)$，用于存储划分后的元素。
+
+---
+
+### 方法二：双指针预分配空间法
+
+如果希望减少中间临时列表的创建，可以先统计小于和等于 `pivot` 的元素个数，从而确定它们在结果数组中的起始写入位置。然后通过一次遍历，直接将元素填入目标位置。
+
+Python 代码：
+
+```python
+from typing import List
+
+class Solution:
+    def pivotArray(self, nums: List[int], pivot: int) -> List[int]:
+        n = len(nums)
+        ans = [0] * n
+        
+        # 统计小于和等于 pivot 的元素个数
+        count_less = 0
+        count_equal = 0
+        for num in nums:
+            if num < pivot:
+                count_less += 1
+            elif num == pivot:
+                count_equal += 1
+        
+        # 确定三个区域的起始指针
+        less_idx = 0
+        equal_idx = count_less
+        greater_idx = count_less + count_equal
+        
+        # 再次遍历，按顺序填入结果数组，以保持相对顺序
+        for num in nums:
+            if num < pivot:
+                ans[less_idx] = num
+                less_idx += 1
+            elif num == pivot:
+                ans[equal_idx] = num
+                equal_idx += 1
+            else:
+                ans[greater_idx] = num
+                greater_idx += 1
+                
+        return ans
+```
+
+**复杂度分析：**
+
+- **时间复杂度**：$O(N)$，进行了两次线性扫描，时间复杂度为 $O(N)$。
+- **空间复杂度**：$O(N)$，需要一个大小为 $N$ 的数组来存储最终结果（如果不计输出空间，则额外空间复杂度为 $O(1)$）。
+
+
 
 
 
