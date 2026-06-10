@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-06-05 15:54 GMT+8*
+*Updated 2026-06-10 19:07 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -17818,6 +17818,457 @@ class Solution:
 *   **重合处理**：机器人位置的墙壁总是能被摧毁，这简化了 DP 逻辑。
 *   **阻挡逻辑**：通过 `min/max` 函数限制射程，确保子弹不会越过相邻的机器人。
 *   **并集计算**：当两个机器人相向射击时，利用坐标判断它们的射程是否重叠，从而准确计算该区域内被摧毁的墙壁数。
+
+
+
+## T3691.最大子数组总值 II
+
+st, heap, greedy, https://leetcode.cn/problems/maximum-total-subarray-value-ii/
+
+给你一个长度为 `n` 的整数数组 `nums` 和一个整数 `k`。
+
+你必须从 `nums` 中选择 **恰好** `k` 个 **不同** 的非空子数组 `nums[l..r]`。子数组可以重叠，但同一个子数组（相同的 `l` 和 `r`）**不能** 被选择超过一次。
+
+子数组 `nums[l..r]` 的 **值** 定义为：`max(nums[l..r]) - min(nums[l..r])`。
+
+**总值** 是所有被选子数组的 **值** 之和。
+
+返回你能实现的 **最大** 可能总值。
+
+**子数组** 是数组中连续的 **非空** 元素序列。
+
+ 
+
+**示例 1:**
+
+**输入:** nums = [1,3,2], k = 2
+
+**输出:** 4
+
+**解释:**
+
+一种最优的方法是：
+
+- 选择 `nums[0..1] = [1, 3]`。最大值为 3，最小值为 1，得到的值为 `3 - 1 = 2`。
+- 选择 `nums[0..2] = [1, 3, 2]`。最大值仍为 3，最小值仍为 1，所以值也是 `3 - 1 = 2`。
+
+将它们相加得到 `2 + 2 = 4`。
+
+**示例 2:**
+
+**输入:** nums = [4,2,5,1], k = 3
+
+**输出:** 12
+
+**解释:**
+
+一种最优的方法是：
+
+- 选择 `nums[0..3] = [4, 2, 5, 1]`。最大值为 5，最小值为 1，得到的值为 `5 - 1 = 4`。
+- 选择 `nums[1..3] = [2, 5, 1]`。最大值为 5，最小值为 1，所以值也是 `4`。
+- 选择 `nums[2..3] = [5, 1]`。最大值为 5，最小值为 1，所以值同样是 `4`。
+
+将它们相加得到 `4 + 4 + 4 = 12`。
+
+ 
+
+**提示:**
+
+- `1 <= n == nums.length <= 5 * 10^4`
+- `0 <= nums[i] <= 10^9`
+- `1 <= k <= min(10^5, n * (n + 1) / 2)`
+
+
+
+### **ST 表 和 堆**
+
+使用 **ST 表（Sparse Table）** 和 **堆（Heap / 优先队列）** 是一种非常经典且优雅的解法。
+
+**核心原理**
+
+1. **单调性分析**：
+   对于任意一个固定的起点 $L$，当终点 $R$ 从 $L$ 开始向右移动到 $n-1$ 时，子数组 $nums[L..R]$ 的范围在不断扩大。
+
+   * 范围扩大，最大值 $\max$ 只会变大或不变，最小值 $\min$ 只会变小或不变。
+   * 因此，差值 $\max - \min$（即子数组的值）随着 $R$ 的增加是**单调不减**的。
+
+   这意味着，对于每个固定的起点 $L$，所有以 $L$ 开头的子数组，其价值从大到小排列依次为：
+   $$ R = n-1 \implies R = n-2 \dots \implies R = L $$
+
+2. **多路归并（堆）**：
+   由于每个起点 $L$ 都对应一个“从大到小排好序”的单调列表，问题就转化为了：**从 $n$ 个已排序的列表中，找出前 $k$ 个最大的元素。**
+   这可以通过一个**大顶堆**来完成：
+
+   * 初始时，将每个列表的最大值（即 $R = n-1$ 的情况）放入堆中。
+   * 每次从堆中取出最大值（设其起点为 $L$，终点为 $R$），累加到答案中。
+   * 然后将该列表的“下一个最大值”（即终点为 $R-1$ 的情况）放入堆中。
+   * 重复上述过程 $k$ 次。
+
+3. **ST 表（区间最值查询）**：
+   在堆的维护过程中，我们需要快速求出任意区间 $[L, R]$ 的最大值和最小值。利用 ST 表进行预处理后，我们可以在 $O(1)$ 时间内回答每次查询。
+
+---
+
+**Python 3 实现**
+
+```python
+from typing import List, Tuple
+# 从 heapq 库导入 C 语言实现的大顶堆替换函数（LeetCode 环境支持此私有函数，效率极高）
+from heapq import _heapreplace_max as heapreplace_max
+
+# ==========================================
+# 常数优化：手写双元 lambda 替代系统内置 min/max 函数
+# 避开了系统原生函数复杂的参数校验与打包开销
+# ==========================================
+min_op = lambda a, b: b if b < a else a
+max_op = lambda a, b: b if b > a else a
+
+# ==========================================
+# 区间合并操作：双值合一
+# 将两个表示 (区间最小值, 区间最大值) 的元组进行合并
+# ==========================================
+def op(a: Tuple[int, int], b: Tuple[int, int]) -> Tuple[int, int]:
+    return min_op(a[0], b[0]), max_op(a[1], b[1])
+
+# ==========================================
+# 静态区间最值查询：ST 表 (左闭右开区间 [l, r) 版)
+# ==========================================
+class ST:
+    def __init__(self, a: List[int]):
+        n = len(a)
+        w = n.bit_length()  # 计算 ST 表所需的层数 w = log2(n) + 1
+        
+        # 预分配 st 二维列表，st[i][j] 表示以 j 为起点，长度为 2^i 的区间最值元组 (min, max)
+        st = [[None] * n for _ in range(w)]
+        
+        # 初始化第 0 层（区间长度为 2^0 = 1）：此时最小值和最大值均为元素本身
+        st[0] = [(x, x) for x in a]
+        
+        # 动态规划倍增构建 ST 表
+        for i in range(1, w):
+            # 保证右端点不越界
+            for j in range(n - (1 << i) + 1):
+                # 将当前区间平分为两半，合并两半的最值
+                st[i][j] = op(st[i - 1][j], st[i - 1][j + (1 << (i - 1))])
+        self.st = st
+
+    # 查询区间 [l, r) 内的极差（最大值 - 最小值），注意这里是左闭右开
+    def query(self, l: int, r: int) -> int:
+        # 快速算出区间长度对应的最大 2 的幂次指数 k (等价于 floor(log2(r - l)))
+        k = (r - l).bit_length() - 1
+        
+        # 用两段长度为 2^k 的重叠区间完整覆盖 [l, r)，并合并出总的最值
+        mn, mx = op(self.st[k][l], self.st[k][r - (1 << k)])
+        return mx - mn
+
+# ==========================================
+# 主解法：贪心与多路归并（堆）
+# ==========================================
+class Solution:
+    def maxTotalValue(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        # 初始化 ST 表
+        st = ST(nums)
+
+        # 初始时，对于每个左起点 i，我们都取最大的子区间 [i, n)
+        # 列表中存放元组格式为：(区间极差, 左端点, 右端点加一)
+        # 这里的 r 代表右开端点，所以初始的子区间在 nums 中的索引范围是 [i, n-1]，即 ST 表中的 [i, n)
+        h = [(st.query(i, n), i, n) for i in range(n)]
+        
+        # 核心物理规律优化：随着左端点 i 往右移动，区间 [i, n) 变窄，其最大极差必单调不增
+        # 因此，列表 h 的值天然呈“降序”排列。
+        # 在堆排序理论中，降序列表天然是一个合格的“最大堆”，无需调用 heapify 函数，省去初始化开销
+        
+        ans = 0
+        # 依次取出前 k 个最大极差值
+        for _ in range(k):
+            # 堆顶 h[0] 永远是当前未被挑选的极差最大值
+            d, l, r = h[0]
+            
+            # 剪枝：如果当前最大极差都为 0，后面所有的也只能是 0。
+            # 累加 0 不会增大总和，故提前结束
+            if d == 0:  
+                break
+                
+            ans += d
+            
+            # 使用 heapreplace_max 进行原地更新：
+            # 弹出当前最大区间 [l, r) 后，我们需要将左端点相同、但右端点左移一格的区间 [l, r-1) 推入堆中。
+            # 这是因为根据单调性，[l, r-1) 是以 l 为起点的下一个可能的最大值。
+            # heapreplace_max 合并了 pop 和 push 的步骤，只进行一次堆重平衡，性能更优。
+            heapreplace_max(h, (st.query(l, r - 1), l, r - 1))
+            
+        return ans
+```
+
+
+
+```python
+import heapq
+from typing import List
+
+class Solution:
+    def maxTotalValue(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        
+        # 1. 预处理 log 数组
+        log_table = [0] * (n + 1)
+        for i in range(2, n + 1):
+            log_table[i] = log_table[i >> 1] + 1
+            
+        K = log_table[n] + 1
+        st_max = [[0] * n for _ in range(K)]
+        st_min = [[0] * n for _ in range(K)]
+        
+        # 2. 构建 ST 表
+        for i in range(n):
+            st_max[0][i] = nums[i]
+            st_min[0][i] = nums[i]
+            
+        for j in range(1, K):
+            length = 1 << (j - 1)
+            prev_max = st_max[j - 1]
+            prev_min = st_min[j - 1]
+            curr_max = st_max[j]
+            curr_min = st_min[j]
+            # 局部变量优化，加快 Python 遍历速度
+            for i in range(n - (1 << j) + 1):
+                curr_max[i] = max(prev_max[i], prev_max[i + length])
+                curr_min[i] = min(prev_min[i], prev_min[i + length])
+                
+        # 3. 初始化堆
+        # Python 的 heapq 默认是小顶堆，所以存入负值实现大顶堆的效果
+        heap = []
+        for L in range(n):
+            R = n - 1
+            length = R - L + 1
+            k_log = log_table[length]
+            max_v = max(st_max[k_log][L], st_max[k_log][R - (1 << k_log) + 1])
+            min_v = min(st_min[k_log][L], st_min[k_log][R - (1 << k_log) + 1])
+            val = max_v - min_v
+            heap.append((-val, L, R))
+            
+        heapq.heapify(heap)
+        
+        # 4. 弹出前 k 大的子数组并累加
+        total_val = 0
+        for _ in range(k):
+            neg_val, L, R = heapq.heappop(heap)
+            total_val -= neg_val # 负数变回正数累加
+            
+            # 如果当前起点 L 还有更短的子数组，则将下一个（R - 1）推入堆中
+            if R - 1 >= L:
+                next_R = R - 1
+                length = next_R - L + 1
+                k_log = log_table[length]
+                max_v = max(st_max[k_log][L], st_max[k_log][next_R - (1 << k_log) + 1])
+                min_v = min(st_min[k_log][L], st_min[k_log][next_R - (1 << k_log) + 1])
+                val = max_v - min_v
+                heapq.heappush(heap, (-val, L, next_R))
+                
+        return total_val
+```
+
+**复杂度分析**
+
+* **时间复杂度**：
+  * **ST 表预处理**：$O(n \log n)$，对于 $n = 5 \cdot 10^4$，内部运算约为 $8 \times 10^5$ 次，耗时极短。
+  * **堆操作**：堆的初始大小为 $n$，每次弹出和推入的时间复杂度为 $O(\log n)$。我们需要执行 $k$ 次操作，因此耗时为 $O(k \log n)$。由于 $k \le 10^5$，这部分运算约为 $1.6 \times 10^6$ 次。
+  * **总时间复杂度**：$O((n + k) \log n)$。在 Python 中运行仅需约 $0.2 \sim 0.3$ 秒，效率非常高。
+
+* **空间复杂度**：
+  * ST 表需要 $O(n \log n)$ 空间。
+  * 堆的大小最大为 $n$，需要 $O(n)$ 空间。
+  * **总空间复杂度**：$O(n \log n)$，约占用数兆字节的内存，完全处于安全范围内。
+
+
+
+这道题要求从长度为 $n$ 的数组中选择恰好 $k$ 个不同的非空子数组，使得这些子数组的值（即最大值减去最小值）之和最大。这实际上是要求我们找出所有可能的子数组中，值最大的前 $k$ 个子数组，并计算它们的总和。
+
+由于 $n \le 5 \cdot 10^4$，子数组的总数可以达到 $1.25 \cdot 10^9$，我们无法直接生成所有子数组并排序。因此，我们可以采用**二分答案（二分阈值）**结合**双指针（滑动窗口）**和**单调队列/单调栈**的方法来高效解决。
+
+**算法思路**
+
+1. **二分阈值 $D$**：
+   我们二分查找一个阈值 $D \in [0, \max(nums) - \min(nums)]$，使得值 $\ge D$ 的子数组数量至少为 $k$，而值 $\ge D + 1$ 的子数组数量严格小于 $k$。
+
+2. **高效计数 `count_ge(D)`**：
+   如何统计值 $\ge D$ 的子数组数量？
+   由于随着子数组的扩展，其最大值与最小值的差值单调递增，可以使用双指针（滑动窗口）结合单调队列。对于每个右端点 $r$，寻找最小的左端点 $L(r)$ 使得整个窗口 $nums[L(r)..r]$ 的最大值与最小值之差小于 $D$。那么对于所有 $l \in [L(r), r]$，子数组的值都小于 $D$。
+
+   - 小于 $D$ 的子数组个数为 $\sum (r - L(r) + 1)$。
+   - $\ge D$ 的子数组个数即为：总子数组数 $\frac{n(n+1)}{2}$ 减去小于 $D$ 的子数组个数。
+   - 每次计数的时间复杂度为 $O(n)$。
+
+3. **求前 $k$ 项和**：
+   通过二分确定了阈值 $D^*$ 后，我们将取：
+
+   - 所有值 $\ge D^* + 1$ 的子数组，它们的个数为 `count_ge(D^* + 1)`，设其总价值之和为 $S_{\ge D^* + 1}$。
+   - 剩余的 $k - \text{count\_ge}(D^* + 1)$ 个子数组，其价值都恰好等于 $D^*$。
+
+   总价值为：
+   $$ S_{\ge D^* + 1} + (k - \text{count\_ge}(D^* + 1)) \times D^* $$
+
+4. **区间最大值与最小值之和 `sum_val_lt(X)`**：
+   为了求出 $S_{\ge D^* + 1}$，我们可以先求出所有子数组的总价值 `total_sum_val`，再减去所有价值 $< D^* + 1$ 的子数组的价值之和 `sum_val_lt(D^* + 1)`。
+
+   要计算所有价值 $< X$ 的子数组的价值之和，即对于每个右端点 $r$，计算 $l \in [L(r), r]$ 内所有子数组的 $\max(nums[l..r]) - \min(nums[l..r])$ 之和。
+   可以使用一个单调双端队列来维护每个区间的最大值和最小值块。由于 $L(r)$ 是非递减的，当 $L(r)$ 增加时，我们只需从队列的左侧移除或截断失效的下标块，从右侧正常进行单调栈的合并。这样可以在 $O(n)$ 时间内维护区间最大值之和与最小值之和。
+
+**Python 3 实现**
+
+```python
+from typing import List
+import collections
+
+class Solution:
+    def maxTotalValue(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        
+        # 统计值 >= D 的子数组数量
+        def count_ge(D: int) -> int:
+            if D <= 0:
+                return n * (n + 1) // 2
+            
+            max_q = collections.deque()
+            min_q = collections.deque()
+            L = 0
+            cnt_lt = 0
+            for r in range(n):
+                val = nums[r]
+                while max_q and nums[max_q[-1]] <= val:
+                    max_q.pop()
+                max_q.append(r)
+                
+                while min_q and nums[min_q[-1]] >= val:
+                    min_q.pop()
+                min_q.append(r)
+                
+                while nums[max_q[0]] - nums[min_q[0]] >= D:
+                    if max_q[0] == L:
+                        max_q.popleft()
+                    if min_q[0] == L:
+                        min_q.popleft()
+                    L += 1
+                
+                cnt_lt += (r - L + 1)
+                
+            return n * (n + 1) // 2 - cnt_lt
+
+        # 计算所有值 < X 的子数组价值总和
+        def sum_val_lt(X: int) -> int:
+            if X <= 0:
+                return 0
+            
+            max_q = collections.deque()
+            min_q = collections.deque()
+            L = [0] * n
+            curr_L = 0
+            for r in range(n):
+                val = nums[r]
+                while max_q and nums[max_q[-1]] <= val:
+                    max_q.pop()
+                max_q.append(r)
+                
+                while min_q and nums[min_q[-1]] >= val:
+                    min_q.pop()
+                min_q.append(r)
+                
+                while nums[max_q[0]] - nums[min_q[0]] >= X:
+                    if max_q[0] == curr_L:
+                        max_q.popleft()
+                    if min_q[0] == curr_L:
+                        min_q.popleft()
+                    curr_L += 1
+                L[r] = curr_L
+                
+            # 计算最大值之和
+            sum_max = 0
+            cur_sum = 0
+            dq = collections.deque() # 元素格式为 [start, end, val]
+            for r in range(n):
+                val = nums[r]
+                s_new = r
+                while dq and dq[-1][2] <= val:
+                    s, e, v = dq.pop()
+                    cur_sum -= (e - s + 1) * v
+                    s_new = s
+                dq.append([s_new, r, val])
+                cur_sum += (r - s_new + 1) * val
+                
+                lr = L[r]
+                while dq and dq[0][1] < lr:
+                    s, e, v = dq.popleft()
+                    cur_sum -= (e - s + 1) * v
+                if dq and dq[0][0] < lr:
+                    s, e, v = dq[0]
+                    cur_sum -= (lr - s) * v
+                    dq[0][0] = lr
+                    
+                sum_max += cur_sum
+                
+            # 计算最小值之和
+            sum_min = 0
+            cur_sum = 0
+            dq = collections.deque()
+            for r in range(n):
+                val = nums[r]
+                s_new = r
+                while dq and dq[-1][2] >= val:
+                    s, e, v = dq.pop()
+                    cur_sum -= (e - s + 1) * v
+                    s_new = s
+                dq.append([s_new, r, val])
+                cur_sum += (r - s_new + 1) * val
+                
+                lr = L[r]
+                while dq and dq[0][1] < lr:
+                    s, e, v = dq.popleft()
+                    cur_sum -= (e - s + 1) * v
+                if dq and dq[0][0] < lr:
+                    s, e, v = dq[0]
+                    cur_sum -= (lr - s) * v
+                    dq[0][0] = lr
+                    
+                sum_min += cur_sum
+                
+            return sum_max - sum_min
+
+        # 记录原始最大差值，避免被二分指针修改
+        max_diff = max(nums) - min(nums)
+        
+        # 二分查找目标阈值 D*
+        low = 0
+        high = max_diff
+        ans_D = 0
+        while low <= high:
+            mid = (low + high) // 2
+            if count_ge(mid) >= k:
+                ans_D = mid
+                low = mid + 1
+            else:
+                high = mid - 1
+        
+        # 使用固定的 max_diff 计算总值
+        total_sum_val = sum_val_lt(max_diff + 1) 
+        cnt_ge_next = count_ge(ans_D + 1)
+        sum_ge_next = total_sum_val - sum_val_lt(ans_D + 1)
+        
+        return sum_ge_next + (k - cnt_ge_next) * ans_D
+```
+
+**复杂度分析**
+
+- **时间复杂度**：
+  - 二分查找范围为 $[0, \max(nums) - \min(nums)]$，其中最大差值为 $10^9$，因此二分循环执行约 $30$ 次。
+  - 每次二分调用 `count_ge(D)` 函数，每个元素最多进出双端队列各两次，时间复杂度为 $O(n)$。
+  - 确定阈值后调用 `sum_val_lt` 两遍，内部也包含数次 $O(n)$ 的线性扫描。
+  - 整体时间复杂度为 $O(n \log(\max(nums) - \min(nums)))$，在 $n = 5 \cdot 10^4$ 下运行时间约为 0.1s。
+
+- **空间复杂度**：
+  - 双端队列最多存储 $n$ 个元素，空间复杂度为 $O(n)$。
+
+
 
 
 
