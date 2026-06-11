@@ -16454,7 +16454,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -49285,7 +49285,7 @@ bfs, math, https://leetcode.cn/problems/number-of-ways-to-assign-edge-weights-i/
 
 **示例 1：**
 
-<img src="https://pic.leetcode.cn/1748074049-lsGWuV-screenshot-2025-03-24-at-060006.png" alt="img" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/1748074049-lsGWuV-screenshot-2025-03-24-at-060006.png" alt="img" style="zoom:33%;" />
 
 **输入：** edges = [[1,2]]
 
@@ -49298,7 +49298,7 @@ bfs, math, https://leetcode.cn/problems/number-of-ways-to-assign-edge-weights-i/
 
 **示例 2：**
 
-<img src="https://pic.leetcode.cn/1748074095-sRyffx-screenshot-2025-03-24-at-055820.png" alt="img" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/1748074095-sRyffx-screenshot-2025-03-24-at-055820.png" alt="img" style="zoom:33%;" />
 
 **输入：** edges = [[1,2],[1,3],[3,4],[3,5]]
 
@@ -49326,67 +49326,96 @@ bfs, math, https://leetcode.cn/problems/number-of-ways-to-assign-edge-weights-i/
 
   
 
-思路：
 
-1. **求最大深度**
-   把树看作以 1 为根的有向树，用 BFS 或 DFS 计算每个节点到根的深度，取最大值记为 D。
 
-2. **计算方案数**
-   只考虑从 1 到深度为 D 的某个节点的这条路径上的 D 条边，每条边权重只能是 1（奇）或 2（偶）。我们要统计总和为奇数的方案数。
+这道题结合了**图论（树的遍历）**与**组合数学（二项式定理）**。以下是对本题的详细解读、数学原理分析以及算法实现。
 
-   令 O(D)O(D) 为长度为 DD 的序列中和为奇数的方案数，则有递推：
+**一、 题目核心解读**
 
-   $O(D)=E(D−1)×(\#选 1)+O(D−1)×(\#选 2)=[2^{D−1}−O(D−1)]×1+O(D−1)×1=2^{D−1}$.
+结合题目的定义与限制，可以将问题简化为以下几个步骤：
 
-   因此答案就是
+1. **确定目标路径的长度**：
+   * 题目要求选择任意一个**最大深度**的节点 $x$。
+   * 深度定义为从根节点 1 到该节点的路径所包含的**边数**。
+   * 设树的最大深度为 $d$。由于“忽略路径外的所有边”，实际上只需要关注这条长度为 $d$ 的路径，路径上有且仅有 $d$ 条边。
 
-   $O(D)=2^{D−1} \mod (10^9+7)$.
+2. **边权赋值的奇偶性约束**：
+   * 每条边可以赋值为 `1` 或 `2`。
+   * 路径的代价为所有边权之和。要使这个和为**奇数**。
+
+**二、 数学原理推导**
+
+设路径上共有 $d$ 条边。分配给这些边的值中，设共有 $k$ 条边被赋予了权重 `1`，剩下的 $d - k$ 条边被赋予了权重 `2`。
+
+此时，路径的总权重之和为：
+$$ \text{Sum} = 1 \times k + 2 \times (d - k) = 2d - k $$
+
+要使 $\text{Sum}$ 为奇数，由于 $2d$ 显然是偶数，因此 $k$（权重为 `1` 的边数）必须为**奇数**。
+
+这意味着，需要在 $d$ 条边中选择奇数个位置赋值为 `1`，其余位置赋值为 `2`。根据组合数，总方案数 $S$ 为：
+$$ S = \sum_{k \text{ 为奇数}} \binom{d}{k} = \binom{d}{1} + \binom{d}{3} + \binom{d}{5} + \dots $$
+
+根据二项式定理的性质，在一个大小为 $d$ ($d \ge 1$) 的集合中，选择奇数个元素的子集个数与选择偶数个元素的子集个数相等，它们都等于总子集数（即 $2^d$）的一半：
+$$ S = 2^{d-1} $$
+
+因此，只要求出树的最大深度 $d$，最终的答案就是 $2^{d-1} \pmod{10^9+7}$。因为 $n \ge 2$，所以 $d \ge 1$，公式始终有效。
+
+**三、 算法设计与实现**
+
+整个算法可以分为两步：
+
+1. **求最大深度**：使用广度优先搜索（BFS）或深度优先搜索（DFS）遍历整棵树，求出从根节点 1 出发所能到达的最大深度 $d$。
+2. **计算结果**：使用快速幂求出 $2^{d-1} \pmod{10^9+7}$。
+
+**Python3 代码实现**
 
 ```python
+from collections import deque
 from typing import List
 
 class Solution:
     def assignEdgeWeights(self, edges: List[List[int]]) -> int:
-        MOD = 10**9 + 7
         n = len(edges) + 1
-
-        # 构建无向图
-        g = [[] for _ in range(n+1)]
+        # 1. 构建邻接表
+        adj = [[] for _ in range(n + 1)]
         for u, v in edges:
-            g[u].append(v)
-            g[v].append(u)
-
-        # BFS 求各节点深度
-        from collections import deque
-        q = deque([1])
-        depth = [0] * (n+1)
-        seen = [False] * (n+1)
-        seen[1] = True
-
-        maxd = 0
-        while q:
-            u = q.popleft()
-            for v in g[u]:
-                if not seen[v]:
-                    seen[v] = True
-                    depth[v] = depth[u] + 1
-                    maxd = max(maxd, depth[v])
-                    q.append(v)
-
-        return pow(2, maxd-1, MOD)
-
-if __name__ == "__main__":
-    sol = Solution()
-    print(sol.assignEdgeWeights([[1,2]]))
-    print(sol.assignEdgeWeights([[1,2],[1,3],[3,4],[3,5]]))
+            adj[u].append(v)
+            adj[v].append(u)
+        
+        # 2. BFS 寻找从节点 1 出发的最深距离 (最大深度)
+        max_depth = 0
+        queue = deque([(1, 0)])  # 存储队列元素: (当前节点, 深度)
+        visited = [False] * (n + 1)
+        visited[1] = True
+        
+        while queue:
+            u, depth = queue.popleft()
+            if depth > max_depth:
+                max_depth = depth
+            for v in adj[u]:
+                if not visited[v]:
+                    visited[v] = True
+                    queue.append((v, depth + 1))
+        
+        # 3. 计算结果
+        MOD = 10**9 + 7
+        return pow(2, max_depth - 1, MOD)
 ```
 
-**时间复杂度**
+**四、 复杂度分析**
 
-- 构图 O(n)
-- BFS/DFS 求深度 O(n)
-- 快速幂 O(logn)
-  总体 O(n)。
+* **时间复杂度**：$\mathcal{O}(n)$
+  * 建图需要遍历所有的边，耗时 $\mathcal{O}(n)$。
+  * BFS 遍历中，每个节点和每条边最多被访问常数次，耗时 $\mathcal{O}(n)$。
+  * 快速幂计算 $2^{d-1} \pmod{10^9+7}$ 的时间复杂度为 $\mathcal{O}(\log d)$。
+  * 整体时间复杂度为 $\mathcal{O}(n)$，在 $n = 10^5$ 的数据规模下可以快速运行完毕。
+
+* **空间复杂度**：$\mathcal{O}(n)$
+  * 邻接表需要 $\mathcal{O}(n)$ 的空间。
+  * 队列和 `visited` 数组需要 $\mathcal{O}(n)$ 的空间。
+  * 整体辅助空间复杂度为 $\mathcal{O}(n)$。
+
+
 
 
 
