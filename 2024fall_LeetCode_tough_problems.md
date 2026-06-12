@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-06-10 19:07 GMT+8*
+*Updated 2026-06-12 10:06 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -16580,6 +16580,202 @@ class Solution:
 ```
 
 I’ve replaced the brute-force cell scans with value-to-row/col maps plus binary searches. This cuts down each split check to O(log k) instead of O(region size), so the overall complexity becomes O(m · n + (m + n) log (m · n)). Let me know if you hit any edge-case issues!
+
+
+
+## T3559.给边赋权值的方案数 II
+
+倍增法（Binary Lifting），https://leetcode.cn/problems/number-of-ways-to-assign-edge-weights-ii/
+
+给你一棵有 `n` 个节点的无向树，节点从 1 到 `n` 编号，树以节点 1 为根。树由一个长度为 `n - 1` 的二维整数数组 `edges` 表示，其中 `edges[i] = [ui, vi]` 表示在节点 `ui` 和 `vi` 之间有一条边。
+
+一开始，所有边的权重为 0。你可以将每条边的权重设为 **1** 或 **2**。
+
+两个节点 `u` 和 `v` 之间路径的 **代价** 是连接它们路径上所有边的权重之和。
+
+给定一个二维整数数组 `queries`。对于每个 `queries[i] = [ui, vi]`，计算从节点 `ui` 到 `vi` 的路径中，使得路径代价为 **奇数** 的权重分配方式数量。
+
+返回一个数组 `answer`，其中 `answer[i]` 表示第 `i` 个查询的合法赋值方式数量。
+
+由于答案可能很大，请对每个 `answer[i]` 取模 `109 + 7`。
+
+**注意：** 对于每个查询，仅考虑 `ui` 到 `vi` 路径上的边，忽略其他边。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/1748074049-lsGWuV-screenshot-2025-03-24-at-060006-20260612090936360.png" alt="img" style="zoom: 33%;" />
+
+**输入：** edges = [[1,2]], queries = [[1,1],[1,2]]
+
+**输出：** [0,1]
+
+**解释：**
+
+- 查询 `[1,1]`：节点 1 到自身没有边，代价为 0，因此合法赋值方式为 0。
+- 查询 `[1,2]`：从节点 1 到节点 2 的路径有一条边（`1 → 2`）。将权重设为 1 时代价为奇数，设为 2 时为偶数，因此合法赋值方式为 1。
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/1748074095-sRyffx-screenshot-2025-03-24-at-055820-20260612090927972.png" alt="img" style="zoom:33%;" />
+
+**输入：** edges = [[1,2],[1,3],[3,4],[3,5]], queries = [[1,4],[3,4],[2,5]]
+
+**输出：** [2,1,4]
+
+**解释：**
+
+- 查询 `[1,4]`：路径为两条边（`1 → 3` 和 `3 → 4`），(1,2) 或 (2,1) 的组合会使代价为奇数，共 2 种。
+- 查询 `[3,4]`：路径为一条边（`3 → 4`），仅权重为 1 时代价为奇数，共 1 种。
+- 查询 `[2,5]`：路径为三条边（`2 → 1 → 3 → 5`），组合 (1,2,2)、(2,1,2)、(2,2,1)、(1,1,1) 均为奇数代价，共 4 种。
+
+ 
+
+**提示：**
+
+- `2 <= n <= 10^5`
+- `edges.length == n - 1`
+- `edges[i] == [ui, vi]`
+- `1 <= queries.length <= 10^5`
+- `queries[i] == [ui, vi]`
+- `1 <= ui, vi <= n`
+- `edges` 表示一棵合法的树。
+
+
+
+对于这道题，目标是：
+对于每个查询 `queries[i] = [ui, vi]`，计算将 $u_i$ 到 $v_i$ 路径上的边赋予 $1$ 或 $2$ 的权值时，使得路径权值之和为**奇数**的方案数。
+
+**算法分析**
+
+设 $u_i$ 到 $v_i$ 路径上的边数为 $L$。
+由于偶数权值 $2$ 不改变权值和的奇偶性，只有奇数权值 $1$ 会改变。
+为了让路径总权值和为奇数，我们需要在这 $L$ 条边中选择奇数个边赋予权值 $1$，其余的边赋予权值 $2$。
+因此，设赋予 $1$ 的边数为 $k$（$k$ 为奇数，$0 \le k \le L$），满足条件的方案数为：
+$$ \sum_{k \text{ 为奇数}} \binom{L}{k} $$
+
+根据二项式定理，当 $L \ge 1$ 时：
+$$ \sum_{k \text{ 为奇数}} \binom{L}{k} = 2^{L-1} $$
+
+当 $L = 0$ 时（即 $u_i = v_i$），由于无边可赋权，路径权值和为 $0$（偶数），所以方案数为 $0$。
+
+因此，对于每个查询 $[u_i, v_i]$：
+
+- 如果 $u_i = v_i$，方案数为 $0$；
+- 如果 $u_i \ne v_i$，方案数为 $2^{L-1} \pmod{10^9+7}$，其中 $L$ 为两点在树上的距离。
+
+**计算树上两点距离**
+
+在树中，两点 $u$ 和 $v$ 之间的距离 $L$ 为：
+$$ L = \text{depth}[u] + \text{depth}[v] - 2 \cdot \text{depth}[\text{LCA}(u, v)] $$
+
+为了快速求出任意两点的最近公共祖先（LCA），我们可以使用**倍增法（Binary Lifting）**。
+
+1. 使用 BFS 遍历整棵树，求出每个节点的深度（`depth`）和直接父节点（`parent`）。
+2. 构建倍增祖先表 `up[j][i]`，表示节点 `i` 的第 $2^j$ 代祖先。
+3. 预处理 $2$ 的幂次以实现 $O(1)$ 的答案转换。
+4. 对每个查询在 $O(\log n)$ 的时间内求出 LCA 并计算最终方案数。
+
+**Python 代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def assignEdgeWeights(self, edges: List[List[int]], queries: List[List[int]]) -> List[int]:
+        n = len(edges) + 1
+        adj = [[] for _ in range(n + 1)]
+        for u, v in edges:
+            adj[u].append(v)
+            adj[v].append(u)
+            
+        depth = [-1] * (n + 1)
+        parent = [0] * (n + 1)
+        depth[1] = 0
+        queue = [1]
+        
+        # 1. BFS 得到深度和父节点
+        head = 0
+        while head < len(queue):
+            u = queue[head]
+            head += 1
+            for v in adj[u]:
+                if depth[v] == -1:
+                    depth[v] = depth[u] + 1
+                    parent[v] = u
+                    queue.append(v)
+                    
+        # 2. 构建倍增祖先表 (最多支持 2^17 = 131072 深度)
+        up = [parent] + [[0] * (n + 1) for _ in range(17)]
+        for j in range(1, 18):
+            up_j = up[j]
+            up_prev = up[j-1]
+            for i in range(1, n + 1):
+                up_j[i] = up_prev[up_prev[i]]
+                
+        # 3. 预处理 2 的幂次
+        MOD = 10**9 + 7
+        pow2 = [1] * (n + 5)
+        for i in range(1, n + 5):
+            pow2[i] = (pow2[i-1] * 2) % MOD
+            
+        q_len = len(queries)
+        ans = [0] * q_len
+        
+        # 使用局部变量缓存提升查找速度
+        depth_ref = depth
+        up_ref = up
+        
+        # 4. 回答查询
+        for idx in range(q_len):
+            u, v = queries[idx]
+            if u == v:
+                ans[idx] = 0
+                continue
+            
+            orig_u, orig_v = u, v
+            # 保证 u 的深度不小于 v 的深度
+            if depth_ref[u] < depth_ref[v]:
+                u, v = v, u
+            
+            # 提升 u 到与 v 相同的深度
+            diff = depth_ref[u] - depth_ref[v]
+            j = 0
+            while diff > 0:
+                if diff & 1:
+                    u = up_ref[j][u]
+                diff >>= 1
+                j += 1
+            
+            # 若相遇则 LCA 即为 u
+            if u == v:
+                lca = u
+            else:
+                # 否则共同向上倍增寻找 LCA
+                for j in range(17, -1, -1):
+                    if up_ref[j][u] != up_ref[j][v]:
+                        u = up_ref[j][u]
+                        v = up_ref[j][v]
+                lca = up_ref[0][u]
+                
+            dist = depth_ref[orig_u] + depth_ref[orig_v] - 2 * depth_ref[lca]
+            ans[idx] = pow2[dist - 1]
+            
+        return ans
+```
+
+**复杂度分析**
+
+- **时间复杂度**：
+  - **建图与 BFS**：$O(n)$。
+  - **倍增表构建**：$O(n \log n)$，最大层数为 18。
+  - **查询**：每次查询利用倍增计算 LCA 需要 $O(\log n)$ 时间，共有 $q$ 次查询，因此查询总时间复杂度为 $O(q \log n)$。
+  - 总体时间复杂度为 $O(n \log n + q \log n)$，可在 1 秒内完成。
+- **空间复杂度**：
+  - 邻接表 `adj` 空间为 $O(n)$。
+  - 倍增数组 `up` 的空间为 $18 \times (n + 1)$，即 $O(n \log n)$ 级别。
+  - 总体空间复杂度为 $O(n \log n + q)$。
 
 
 
