@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-06-13 00:29 GMT+8*
+*Updated 2026-06-14 08:19 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -16569,7 +16569,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -37278,6 +37278,130 @@ class Solution:
             mass += asteroid
         return True   # 成功摧毁所有小行星
 ```
+
+
+
+## M2130.链表最大孪生和
+
+linked list, https://leetcode.cn/problems/maximum-twin-sum-of-a-linked-list/
+
+在一个大小为 `n` 且 `n` 为 **偶数** 的链表中，对于 `0 <= i <= (n / 2) - 1` 的 `i` ，第 `i` 个节点（下标从 **0** 开始）的孪生节点为第 `(n-1-i)` 个节点 。
+
+- 比方说，`n = 4` 那么节点 `0` 是节点 `3` 的孪生节点，节点 `1` 是节点 `2` 的孪生节点。这是长度为 `n = 4` 的链表中所有的孪生节点。
+
+**孪生和** 定义为一个节点和它孪生节点两者值之和。
+
+给你一个长度为偶数的链表的头节点 `head` ，请你返回链表的 **最大孪生和** 。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/eg1drawio.png" alt="img" style="zoom:50%;" />
+
+```
+输入：head = [5,4,2,1]
+输出：6
+解释：
+节点 0 和节点 1 分别是节点 3 和 2 的孪生节点。孪生和都为 6 。
+链表中没有其他孪生节点。
+所以，链表的最大孪生和是 6 。
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/eg2drawio.png" alt="img" style="zoom:50%;" />
+
+```
+输入：head = [4,2,2,3]
+输出：7
+解释：
+链表中的孪生节点为：
+- 节点 0 是节点 3 的孪生节点，孪生和为 4 + 3 = 7 。
+- 节点 1 是节点 2 的孪生节点，孪生和为 2 + 2 = 4 。
+所以，最大孪生和为 max(7, 4) = 7 。
+```
+
+**示例 3：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/eg3drawio.png" alt="img" style="zoom:50%;" />
+
+```
+输入：head = [1,100000]
+输出：100001
+解释：
+链表中只有一对孪生节点，孪生和为 1 + 100000 = 100001 。
+```
+
+ 
+
+**提示：**
+
+- 链表的节点数目是 `[2, 10^5]` 中的 **偶数** 。
+- `1 <= Node.val <= 10^5`
+
+
+
+可以使用**快慢指针**和**链表反转**的方法来在线性时间复杂度 $O(n)$ 和常数级空间复杂度 $O(1)$ 内解决此问题。
+
+**解题思路**
+
+1. **寻找链表的中点**：
+   使用快慢指针（`slow` 和 `fast`）。快指针每次走两步，慢指针每次走一步。当快指针到达链表末尾时，慢指针刚好指向链表的后半部分的起始节点。
+
+2. **反转后半部分链表**：
+   从慢指针 `slow` 开始，将后半部分的链表进行原地反转。这样，我们可以从后半部分的末尾向前遍历（即反转后的链表头部开始）。
+
+3. **计算最大孪生和**：
+   同时遍历前半部分链表（从 `head` 开始）和反转后的后半部分链表（从反转后的头节点开始），计算对应节点的和，并更新最大值。
+
+**Python 3 代码实现**
+
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+
+class Solution:
+    def pairSum(self, head: Optional[ListNode]) -> int:
+        # 1. 使用快慢指针找到链表的中点
+        slow = head
+        fast = head
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+            
+        # 此时 slow 指向后半部分链表的起点
+        
+        # 2. 反转后半部分链表
+        prev = None
+        curr = slow
+        while curr:
+            next_node = curr.next
+            curr.next = prev
+            prev = curr
+            curr = next_node
+            
+        # prev 现在是反转后后半部分链表的头节点
+        
+        # 3. 双指针遍历，计算最大孪生和
+        max_sum = 0
+        first_half = head
+        second_half = prev
+        while second_half:
+            max_sum = max(max_sum, first_half.val + second_half.val)
+            first_half = first_half.next
+            second_half = second_half.next
+            
+        return max_sum
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(n)$。寻找中点需要 $O(n/2)$，反转后半部分需要 $O(n/2)$，计算最大和需要 $O(n/2)$，总体时间复杂度为线性。
+- **空间复杂度**：$O(1)$。我们只使用了几个指针变量，未消耗额外的存储空间。
 
 
 
