@@ -16569,7 +16569,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -49091,6 +49091,87 @@ class Solution:
 - **非空约束**：代码中 `range(m - 1)` 和 `range(n - 1)` 确保了分割后至少留下一行或一列，满足“非空”条件。
 - **效率**：虽然矩阵可能很大（$10^5$ 级），但总元素个数 $m \times n$ 限制在 $10^5$ 以内，因此 $O(m \times n)$ 的算法完全可以胜任。
 - **内存安全**：在 Python 中，`sum(row)` 和列遍历都是标准的线性操作。
+
+
+
+## M3612.用特殊操作处理字符串 I
+
+implementation, https://leetcode.cn/problems/process-string-with-special-operations-i/
+
+给你一个字符串 `s`，它由小写英文字母和特殊字符：`*`、`#` 和 `%` 组成。
+
+请根据以下规则从左到右处理 `s` 中的字符，构造一个新的字符串 `result`：
+
+- 如果字符是 **小写** 英文字母，则将其添加到 `result` 中。
+- 字符 `'*'` 会 **删除** `result` 中的最后一个字符（如果存在）。
+- 字符 `'#'` 会 **复制** 当前的 `result` 并 **追加** 到其自身后面。
+- 字符 `'%'` 会 **反转** 当前的 `result`。
+
+在处理完 `s` 中的所有字符后，返回最终的字符串 `result`。
+
+ 
+
+**示例 1：**
+
+**输入：** s = "a#b%*"
+
+**输出：** "ba"
+
+**解释：**
+
+| `i`  | `s[i]` | 操作             | 当前 `result` |
+| ---- | ------ | ---------------- | ------------- |
+| 0    | `'a'`  | 添加 `'a'`       | `"a"`         |
+| 1    | `'#'`  | 复制 `result`    | `"aa"`        |
+| 2    | `'b'`  | 添加 `'b'`       | `"aab"`       |
+| 3    | `'%'`  | 反转 `result`    | `"baa"`       |
+| 4    | `'*'`  | 删除最后一个字符 | `"ba"`        |
+
+因此，最终的 `result` 是 `"ba"`。
+
+**示例 2：**
+
+**输入：** s = "z*#"
+
+**输出：** ""
+
+**解释：**
+
+| `i`  | `s[i]` | 操作             | 当前 `result` |
+| ---- | ------ | ---------------- | ------------- |
+| 0    | `'z'`  | 添加 `'z'`       | `"z"`         |
+| 1    | `'*'`  | 删除最后一个字符 | `""`          |
+| 2    | `'#'`  | 复制字符串       | `""`          |
+
+因此，最终的 `result` 是 `""`。
+
+ 
+
+**提示:**
+
+- `1 <= s.length <= 20`
+- `s` 只包含小写英文字母和特殊字符 `*`、`#` 和 `%`。
+
+
+
+```python
+class Solution:
+    def processStr(self, s: str) -> str:
+        result = []
+        for c in s:
+            if c.islower():
+                result.append(c)
+            elif c == '*':
+                if result:
+                    result.pop()
+            elif c == '#':
+                result = result + result
+            elif c == '%':
+                result.reverse()
+        return ''.join(result)
+```
+
+
 
 
 
