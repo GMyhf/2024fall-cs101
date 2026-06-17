@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-06-14 08:19 GMT+8*
+*Updated 2026-06-18 01:15 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -16569,7 +16569,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -32052,6 +32052,113 @@ class Solution:
     *   `total_sum` 最大约为 $5 \times 10^8$。
     *   `max_prod` 最大约为 $(2.5 \times 10^8)^2 = 6.25 \times 10^{16}$。
     *   在 Python 中，整数支持任意精度，因此可以直接计算。如果在 C++ 或 Java 中，需要使用 `long long` 或 `long` 来存储乘积，防止溢出。
+
+
+
+## M1344.时钟指针的夹角
+
+math, https://leetcode.cn/problems/angle-between-hands-of-a-clock/
+
+给你两个数 `hour` 和 `minutes` 。请你返回在时钟上，由给定时间的时针和分针组成的较小角的角度（60 单位制）。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202606180056231.png" alt="img" style="zoom: 33%;" />
+
+```
+输入：hour = 12, minutes = 30
+输出：165
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202606180057149.png" alt="img" style="zoom:33%;" />
+
+```
+输入：hour = 3, minutes = 30
+输出；75
+```
+
+**示例 3：**
+
+**<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202606180057532.png" alt="img" style="zoom:33%;" />**
+
+```
+输入：hour = 3, minutes = 15
+输出：7.5
+```
+
+**示例 4：**
+
+```
+输入：hour = 4, minutes = 50
+输出：155
+```
+
+**示例 5：**
+
+```
+输入：hour = 12, minutes = 0
+输出：0
+```
+
+ 
+
+**提示：**
+
+- `1 <= hour <= 12`
+- `0 <= minutes <= 59`
+- 与标准答案误差在 `10^-5` 以内的结果都被视为正确结果。
+
+
+
+这是一个关于时钟指针夹角计算的问题。可以通过计算时针和分针分别相对于 12 点钟方向的角度，然后求出它们之间的差值来解决。
+
+**解题思路**
+
+1. **计算分针的角度**：
+   * 钟表一圈为 $360^\circ$，共 60 分钟。因此，分针每分钟移动 $360^\circ / 60 = 6^\circ$。
+   * 给定 `minutes`，分针的角度为：
+     $$\text{minutes\_angle} = \text{minutes} \times 6$$
+
+2. **计算时针的角度**：
+   * 钟表一圈共 12 个小时，时针每小时移动 $360^\circ / 12 = 30^\circ$。
+   * 同时，分针的移动也会带动时针移动。在 1 小时（60 分钟）内，时针移动 $30^\circ$，因此时针每分钟移动 $30^\circ / 60 = 0.5^\circ$。
+   * 我们需要将 12 点视为 0 点（即 `hour % 12`）。
+   * 给定 `hour` 和 `minutes`，时针的角度为：
+     $$\text{hour\_angle} = (\text{hour} \bmod 12) \times 30 + \text{minutes} \times 0.5$$
+
+3. **计算夹角**：
+   * 两个指针之间的绝对差值为 $\text{diff} = |\text{hour\_angle} - \text{minutes\_angle}|$。
+   * 因为题目要求返回较小的夹角，如果 $\text{diff} > 180^\circ$，则实际的较小夹角为 $360^\circ - \text{diff}$。
+
+**Python 3 实现代码**
+
+```python
+class Solution:
+    def angleClock(self, hour: int, minutes: int) -> float:
+        # 分针每分钟走 6 度
+        minutes_angle = minutes * 6
+        
+        # 时针每小时走 30 度，每分钟走 0.5 度
+        # 使用 hour % 12 将 12 点归零
+        hour_angle = (hour % 12) * 30 + minutes * 0.5
+        
+        # 计算两个角度的绝对差值
+        diff = abs(hour_angle - minutes_angle)
+        
+        # 返回较小的夹角
+        return diff if diff <= 180 else 360 - diff
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(1)$。计算过程仅包含基本的算术运算。
+- **空间复杂度**：$O(1)$。只使用了常数个辅助变量。
+
+
 
 
 
