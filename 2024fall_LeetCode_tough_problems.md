@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-06-17 10:06 GMT+8*
+*Updated 2026-06-20 18:47 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -6956,6 +6956,146 @@ if __name__ == "__main__":
     print(sol.checkPartitioning("abcbdd"))
     print(sol.checkPartitioning("bcbddxy"))
 ```
+
+
+
+## T1840.最高建筑高度
+
+greedy, https://leetcode.cn/problems/maximum-building-height/
+
+在一座城市里，你需要建 `n` 栋新的建筑。这些新的建筑会从 `1` 到 `n` 编号排成一列。
+
+这座城市对这些新建筑有一些规定：
+
+- 每栋建筑的高度必须是一个非负整数。
+- 第一栋建筑的高度 **必须** 是 `0` 。
+- 任意两栋相邻建筑的高度差 **不能超过** `1` 。
+
+除此以外，某些建筑还有额外的最高高度限制。这些限制会以二维整数数组 `restrictions` 的形式给出，其中 `restrictions[i] = [idi, maxHeighti]` ，表示建筑 `idi` 的高度 **不能超过** `maxHeighti` 。
+
+题目保证每栋建筑在 `restrictions` 中 **至多出现一次** ，同时建筑 `1` **不会** 出现在 `restrictions` 中。
+
+请你返回 **最高** 建筑能达到的 **最高高度** 。
+
+ 
+
+**示例 1：**
+
+![img](https://raw.githubusercontent.com/GMyhf/img/main/img/ic236-q4-ex1-1.png)
+
+```
+输入：n = 5, restrictions = [[2,1],[4,1]]
+输出：2
+解释：上图中的绿色区域为每栋建筑被允许的最高高度。
+我们可以使建筑高度分别为 [0,1,2,1,2] ，最高建筑的高度为 2 。
+```
+
+**示例 2：**
+
+![img](https://raw.githubusercontent.com/GMyhf/img/main/img/ic236-q4-ex2.png)
+
+```
+输入：n = 6, restrictions = []
+输出：5
+解释：上图中的绿色区域为每栋建筑被允许的最高高度。
+我们可以使建筑高度分别为 [0,1,2,3,4,5] ，最高建筑的高度为 5 。
+```
+
+**示例 3：**
+
+![img](https://raw.githubusercontent.com/GMyhf/img/main/img/ic236-q4-ex3.png)
+
+```
+输入：n = 10, restrictions = [[5,3],[2,5],[7,4],[10,3]]
+输出：5
+解释：上图中的绿色区域为每栋建筑被允许的最高高度。
+我们可以使建筑高度分别为 [0,1,2,3,3,4,4,5,4,3] ，最高建筑的高度为 5 。
+```
+
+ 
+
+**提示：**
+
+- `2 <= n <= 10^9`
+- `0 <= restrictions.length <= min(n - 1, 10^5)`
+- `2 <= idi <= n`
+- `idi` 是 **唯一的** 。
+- `0 <= maxHeighti <= 10^9`
+
+
+
+这道题可以通过**双向限制传播（Constraint Propagation）**和**数学计算**来解决。
+
+**解题思路**
+
+1. **添加边界条件**：
+   * 建筑 1 的高度必须为 0，即限制为 `[1, 0]`。
+   * 如果最后一栋建筑 $n$ 没有显式的限制，我们可以为其添加一个默认的最大高度限制 `[n, n - 1]`（因为从建筑 1 开始，高度每次最多增加 1，所以建筑 $n$ 的最大可能高度为 $n - 1$）。
+
+2. **双向限制更新**：
+   由于相邻建筑的高度差不能超过 1，某些位置的低矮建筑限制会限制其周围建筑的最高高度。
+   * **从左向右更新**：对于每一栋受限建筑，其最高高度不能超过左边受限建筑的高度加上它们之间的距离。
+     $$h[i] = \min(h[i], h[i-1] + (id[i] - id[i-1]))$$
+   * **从右向左更新**：同理，其最高高度不能超过右边受限建筑的高度加上它们之间的距离。
+     $$h[i] = \min(h[i], h[i+1] + (id[i+1] - id[i]))$$
+
+3. **计算区间内的最大高度**：
+   在所有受限建筑的最高高度限制更新完毕后，对于任意相邻的两个限制点 $A(id_A, h_A)$ 和 $B(id_B, h_B)$，它们之间能达到的最大高度可以通过“从 $A$ 尽可能往上建，再从 $B$ 尽可能往上建，两边交汇”来确定。
+   数学公式为：
+   $$\text{max\_height} = \lfloor \frac{id_B - id_A + h_A + h_B}{2} \rfloor$$
+   遍历所有相邻的限制点，计算区间内的最大高度，其最大值即为答案。
+
+**Python 3 实现**
+
+```python
+from typing import List
+
+class Solution:
+    def maxBuilding(self, n: int, restrictions: List[List[int]]) -> int:
+        # 1. 添加边界限制
+        # 检查是否已有关于 n 的限制
+        has_n = False
+        for r in restrictions:
+            if r[0] == n:
+                has_n = True
+                break
+        if not has_n:
+            restrictions.append([n, n - 1])
+        
+        restrictions.append([1, 0])
+        
+        # 按建筑 ID 排序
+        restrictions.sort()
+        m = len(restrictions)
+        
+        # 2. 从左向右传递限制
+        for i in range(1, m):
+            limit = restrictions[i-1][1] + (restrictions[i][0] - restrictions[i-1][0])
+            restrictions[i][1] = min(restrictions[i][1], limit)
+            
+        # 3. 从右向左传递限制
+        for i in range(m - 2, -1, -1):
+            limit = restrictions[i+1][1] + (restrictions[i+1][0] - restrictions[i][0])
+            restrictions[i][1] = min(restrictions[i][1], limit)
+            
+        # 4. 计算相邻限制点之间的最大高度
+        max_h = 0
+        for i in range(m - 1):
+            id1, h1 = restrictions[i]
+            id2, h2 = restrictions[i+1]
+            # 计算两点之间能达到的最高峰值
+            peak = (id2 - id1 + h1 + h2) // 2
+            max_h = max(max_h, peak)
+            
+        return max_h
+```
+
+**复杂度分析**
+
+* **时间复杂度**：$O(M \log M)$，其中 $M$ 是限制条件 `restrictions` 的数量。主要时间开销在对限制列表进行排序。
+* **空间复杂度**：$O(M)$，用于存储和操作限制条件列表（在 Python 中，排序和列表操作需要 $O(M)$ 的辅助空间）。
+
+
 
 
 
