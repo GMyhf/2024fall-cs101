@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-06-21 09:45 GMT+8*
+*Updated 2026-06-22 00:54 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -6271,6 +6271,98 @@ class Solution:
 		
 		return result
 ```
+
+
+
+## E1189.“气球” 的最大数量
+
+implementation, https://leetcode.cn/problems/maximum-number-of-balloons/
+
+给你一个字符串 `text`，你需要使用 `text` 中的字母来拼凑尽可能多的单词 **"balloon"（气球）**。
+
+字符串 `text` 中的每个字母最多只能被使用一次。请你返回最多可以拼凑出多少个单词 **"balloon"**。
+
+ 
+
+**示例 1：**
+
+**<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202606220046619.jpeg" alt="img" style="zoom:67%;" />**
+
+```
+输入：text = "nlaebolko"
+输出：1
+```
+
+**示例 2：**
+
+**![img](https://raw.githubusercontent.com/GMyhf/img/main/img/202606220046179.jpeg)**
+
+```
+输入：text = "loonbalxballpoon"
+输出：2
+```
+
+**示例 3：**
+
+```
+输入：text = "leetcode"
+输出：0
+```
+
+ 
+
+**提示：**
+
+- `1 <= text.length <= 10^4`
+- `text` 全部由小写英文字母组成
+
+
+
+这道题可以通过统计字符频次的方法来解决。
+
+**解题思路**
+
+单词 **"balloon"** 由以下字符组成：
+
+- `'b'` 出现 1 次
+- `'a'` 出现 1 次
+- `'l'` 出现 2 次
+- `'o'` 出现 2 次
+- `'n'` 出现 1 次
+
+要组成尽可能多的 "balloon"，每个单词所需的字母数量是固定的。因此，拼凑出的最大单词数量取决于这五个字母在输入字符串 `text` 中出现频次的限制（即瓶颈）：
+
+- 对于 `'b'`、`'a'` 和 `'n'`，每个单词需要 1 个，所以它们的限制分别是 `count('b')`、`count('a')` 和 `count('n')`。
+- 对于 `'l'` 和 `'o'`，每个单词需要 2 个，所以它们的限制分别是 `count('l') // 2` 和 `count('o') // 2`（整除）。
+
+我们只需统计这些字符在 `text` 中的出现次数，并取上述限制条件中的最小值即可。
+
+**Python 代码实现**
+
+```python
+from collections import Counter
+
+class Solution:
+    def maxNumberOfBalloons(self, text: str) -> int:
+        # 统计 text 中每个字符出现的频次
+        counts = Counter(text)
+        
+        # 计算拼凑 "balloon" 的最大数量
+        return min(
+            counts['b'],
+            counts['a'],
+            counts['l'] // 2,
+            counts['o'] // 2,
+            counts['n']
+        )
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(N)$，其中 $N$ 是字符串 `text` 的长度。我们需要遍历一次字符串来统计字符频次，之后获取各个特定字符频次并求最小值的时间复杂度为 $O(1)$。
+- **空间复杂度**：$O(1)$。虽然使用了哈希表存储频次，但由于输入只包含小写英文字母，哈希表的大小最多为 26，占用常数级别的额外空间。
+
+
 
 
 
@@ -16619,7 +16711,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
