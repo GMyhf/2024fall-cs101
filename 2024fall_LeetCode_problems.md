@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-06-19 06:45 GMT+8*
+*Updated 2026-06-21 09:45 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -16619,7 +16619,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -35189,6 +35189,114 @@ class Solution:
 
         return total
 ```
+
+
+
+## M1833.雪糕的最大数量
+
+greedy, https://leetcode.cn/problems/maximum-ice-cream-bars/
+
+夏日炎炎，小男孩 Tony 想买一些雪糕消消暑。
+
+商店中新到 `n` 支雪糕，用长度为 `n` 的数组 `costs` 表示雪糕的定价，其中 `costs[i]` 表示第 `i` 支雪糕的现金价格。Tony 一共有 `coins` 现金可以用于消费，他想要买尽可能多的雪糕。
+
+**注意：**Tony 可以按任意顺序购买雪糕。
+
+给你价格数组 `costs` 和现金量 `coins` ，请你计算并返回 Tony 用 `coins` 现金能够买到的雪糕的 **最大数量** 。
+
+你必须使用计数排序解决此问题。
+
+ 
+
+**示例 1：**
+
+```
+输入：costs = [1,3,2,4,1], coins = 7
+输出：4
+解释：Tony 可以买下标为 0、1、2、4 的雪糕，总价为 1 + 3 + 2 + 1 = 7
+```
+
+**示例 2：**
+
+```
+输入：costs = [10,6,8,7,7,8], coins = 5
+输出：0
+解释：Tony 没有足够的钱买任何一支雪糕。
+```
+
+**示例 3：**
+
+```
+输入：costs = [1,6,3,1,2,5], coins = 20
+输出：6
+解释：Tony 可以买下所有的雪糕，总价为 1 + 6 + 3 + 1 + 2 + 5 = 18 。
+```
+
+ 
+
+**提示：**
+
+- `costs.length == n`
+- `1 <= n <= 105`
+- `1 <= costs[i] <= 10^5`
+- `1 <= coins <= 10^8`
+
+
+
+题目要求我们使用**计数排序**（Counting Sort）的方法来解决这个问题。
+
+由于雪糕的最大价格 $costs[i]$ 不超过 $10^5$，我们可以利用计数排序的思想，统计每种价格的雪糕出现的次数，然后从小到大依次购买，从而在保证时间复杂度的情况下找到可以购买的最大数量。
+
+**解题思路**
+
+1. **统计频率**：首先，我们找出 `costs` 中的最大价格 `max_cost`，并创建一个大小为 `max_cost + 1` 的频数数组 `freq`。遍历 `costs`，记录每个价格出现的次数。
+2. **贪心购买**：从价格 `1` 开始遍历到 `max_cost`：
+   * 如果当前价格 `i` 的雪糕有存货（即 `freq[i] > 0`）：
+     * 我们计算在剩余现金 `coins` 的限制下，最多能买多少支价格为 `i` 的雪糕。最大可购买数量为 `count = min(freq[i], coins // i)`。
+     * 累加购买的数量，并扣除相应的金额。
+     * 如果当前的剩余现金 `coins` 已经不足以购买一支价格为 `i` 的雪糕，说明后续更贵的雪糕也无法购买，此时可以提前结束循环。
+3. **返回结果**：返回累计购买的雪糕总数。
+
+**Python 3 代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def maxIceCream(self, costs: List[int], coins: int) -> int:
+        if not costs:
+            return 0
+        
+        # 找出价格的最大值以确定计数数组的大小
+        max_cost = max(costs)
+        freq = [0] * (max_cost + 1)
+        
+        # 统计每种价格的雪糕数量
+        for cost in costs:
+            freq[cost] += 1
+            
+        ans = 0
+        # 从价格低到高依次尝试购买
+        for i in range(1, max_cost + 1):
+            if freq[i] > 0:
+                if coins >= i:
+                    # 计算当前价格最多可以购买的数量
+                    buy_count = min(freq[i], coins // i)
+                    coins -= buy_count * i
+                    ans += buy_count
+                else:
+                    # 钱不够买当前价格的任何一支雪糕，由于价格递增，后续也无法购买
+                    break
+                    
+        return ans
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(n + M)$，其中 $n$ 是数组 `costs` 的长度，$M$ 是数组 `costs` 中的最大值（根据题目提示，$M \le 10^5$）。我们需要遍历一次 `costs` 数组来构建频数表，之后遍历一次长度为 $M + 1$ 的频数表。
+- **空间复杂度**：$O(M)$。我们需要一个大小为 $M + 1$ 的辅助数组 `freq` 来存储各个价格出现的频率。
+
+
 
 
 
