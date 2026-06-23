@@ -18934,6 +18934,190 @@ class Solution:
 
 
 
+## T3700.锯齿形数组的总数 II
+
+矩阵快速幂，https://leetcode.cn/problems/number-of-zigzag-arrays-ii/
+
+给你三个整数 `n`、`l` 和 `r`。
+
+长度为 `n` 的锯齿形数组定义如下：
+
+- 每个元素的取值范围为 `[l, r]`。
+- 任意 **两个** 相邻的元素都不相等。
+- 任意 **三个** 连续的元素不能构成一个 **严格递增** 或 **严格递减** 的序列。
+
+返回满足条件的锯齿形数组的总数。
+
+由于答案可能很大，请将结果对 `109 + 7` 取余数。
+
+**序列** 被称为 **严格递增** 需要满足：当且仅当每个元素都严格大于它的前一个元素（如果存在）。
+
+**序列** 被称为 **严格递减** 需要满足，当且仅当每个元素都严格小于它的前一个元素（如果存在）。
+
+ 
+
+**示例 1：**
+
+**输入：**n = 3, l = 4, r = 5
+
+**输出：**2
+
+**解释：**
+
+在取值范围 `[4, 5]` 内，长度为 `n = 3` 的锯齿形数组只有 2 种：
+
+- `[4, 5, 4]`
+- `[5, 4, 5]`
+
+**示例 2：**
+
+**输入：**n = 3, l = 1, r = 3
+
+**输出：**10
+
+**解释：**
+
+在取值范围 `[1, 3]` 内，长度为 `n = 3` 的锯齿形数组共有 10 种：
+
+- `[1, 2, 1]`, `[1, 3, 1]`, `[1, 3, 2]`
+- `[2, 1, 2]`, `[2, 1, 3]`, `[2, 3, 1]`, `[2, 3, 2]`
+- `[3, 1, 2]`, `[3, 1, 3]`, `[3, 2, 3]`
+
+所有数组均符合锯齿形条件。
+
+ 
+
+**提示：**
+
+- `3 <= n <= 10^9`
+- `1 <= l < r <= 75`
+
+
+
+这个问题可以通过**矩阵快速幂**来解决。
+
+**解题思路**
+
+1. **锯齿形数组的性质**：
+   根据题意，锯齿形数组 $A = [a_1, a_2, \dots, a_n]$ 需要满足：
+
+   -   $a_i \neq a_{i+1}$
+   -   不能出现 $a_{i-1} < a_i < a_{i+1}$ 或 $a_{i-1} > a_i > a_{i+1}$。
+
+   这意味着数组的方向必须交替。也就是说，如果 $a_1 < a_2$，那么必须有 $a_2 > a_3$，接着 $a_3 < a_4$，依此类推。这种模式被称为“上升-下降-上升...”。同理，如果 $a_1 > a_2$，模式就是“下降-上升-下降...”。
+
+2. **状态定义**：
+   由于 $n$ 很大 ($10^9$)，而数值范围 $m = r - l + 1$ 很小 ($75$)，我们可以用动态规划配合矩阵幂。
+   定义 $dp[i][j][\text{up}]$ 为长度为 $i$、最后一个元素为 $j$、且最后一步是“上升”（$a_{i-1} < a_i$）的方案数。
+   定义 $dp[i][j][\text{down}]$ 为长度为 $i$、最后一个元素为 $j$、且最后一步是“下降”（$a_{i-1} > a_i$）的方案数。
+
+3. **转移方程**：
+
+   -   $dp[i+1][k][\text{up}] = \sum_{j < k} dp[i][j][\text{down}]$
+   -   $dp[i+1][k][\text{down}] = \sum_{j > k} dp[i][j][\text{up}]$
+
+4. **矩阵构建**：
+   由于上升和下降是对称的，且范围 $[l, r]$ 中的每个值都可以对应到 $[0, m-1]$。
+   设 $A$ 为一个 $m \times m$ 的矩阵，其中 $A_{kj} = 1$ 当 $k > j$ 时，否则为 $0$。
+   设 $B$ 为 $A$ 的转置（即 $B_{kj} = 1$ 当 $k < j$ 时）。
+   从长度 $2$ 开始：
+
+   -   $V_{up}^{(2)} = [0, 1, 2, \dots, m-1]^T$（因为对于结尾 $k$，前面可以选 $0 \dots k-1$）
+   -   $V_{down}^{(2)} = [m-1, m-2, \dots, 0]^T$
+
+   经过推导：
+
+   -   $V_{up}^{(i+2)} = (AB) V_{up}^{(i)}$
+   -   $V_{down}^{(i+2)} = (BA) V_{down}^{(i)}$
+
+   矩阵 $T = AB$ 的元素 $T_{ij} = \min(i, j)$。矩阵 $T' = BA$ 的元素 $T'_{ij} = (m-1) - \max(i, j)$。
+
+5. **对称性优化**：
+   总方案数 = 以“上升”开始的方案数 + 以“下降”开始的方案数。由对称性可知，两者相等。因此只需计算其中一种并乘以 2 即可。
+
+**Python 代码实现**
+
+```python
+class Solution:
+    def zigZagArrays(self, n: int, l: int, r: int) -> int:
+        MOD = 10**9 + 7
+        m = r - l + 1
+        
+        # 矩阵乘法优化
+        def mat_mul(A, B):
+            C = [[0] * m for _ in range(m)]
+            for i in range(m):
+                Ai = A[i]
+                Ci = C[i]
+                for k in range(m):
+                    aik = Ai[k]
+                    if aik == 0: continue
+                    Bk = B[k]
+                    for j in range(m):
+                        Ci[j] += aik * Bk[j]
+                for j in range(m):
+                    Ci[j] %= MOD
+            return C
+
+        # 矩阵快速幂
+        def mat_pow(A, p):
+            res = [[0] * m for _ in range(m)]
+            for i in range(m):
+                res[i][i] = 1
+            base = A
+            while p > 0:
+                if p % 2 == 1:
+                    res = mat_mul(res, base)
+                base = mat_mul(base, base)
+                p //= 2
+            return res
+
+        # 向量与矩阵乘法
+        def mat_vec_mul(M, V):
+            res = [0] * m
+            for i in range(m):
+                Mi = M[i]
+                s = 0
+                for j in range(m):
+                    s += Mi[j] * V[j]
+                res[i] = s % MOD
+            return res
+
+        # 基础向量 (n=2 时的状态)
+        V_up2 = [i for i in range(m)]
+        V_down2 = [(m - 1 - i) for i in range(m)]
+
+        n_minus_2 = n - 2
+        k = n_minus_2 // 2
+        
+        if n_minus_2 % 2 == 0:
+            # 偶数步转移使用 T = AB
+            T = [[min(i, j) for j in range(m)] for i in range(m)]
+            Tk = mat_pow(T, k)
+            V_final = mat_vec_mul(Tk, V_up2)
+        else:
+            # 奇数步转移先经过 (BA)^k 再乘一次 A
+            T_prime = [[(m - 1) - max(i, j) for j in range(m)] for i in range(m)]
+            Tpk = mat_pow(T_prime, k)
+            Temp = mat_vec_mul(Tpk, V_down2)
+            V_final = [0] * m
+            prefix_sum = 0
+            for i in range(m):
+                V_final[i] = prefix_sum
+                prefix_sum = (prefix_sum + Temp[i]) % MOD
+        
+        # 结果为所有结尾状态之和的 2 倍（上升开始和下降开始对称）
+        return (sum(V_final) * 2) % MOD
+
+```
+
+**复杂度分析**
+
+-   **时间复杂度**：$O(m^3 \log n)$，其中 $m = r - l + 1 \le 75$。$75^3 \approx 4.2 \times 10^5$，$\log n \approx 30$，总运算量约 $1.2 \times 10^7$，在 Python 的可接受范围内。
+-   **空间复杂度**：$O(m^2)$，主要用于存储转移矩阵。
+
+
+
 
 
 ## T3753.范围内总波动值 II
