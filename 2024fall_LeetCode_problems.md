@@ -16711,7 +16711,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -51985,6 +51985,159 @@ class Solution:
 
 *   **时间复杂度**：$O(n^2)$。外层循环执行 $n$ 次，内层循环平均执行 $n/2$ 次。在内层循环中，集合的添加和长度获取操作的时间复杂度均为 $O(1)$。对于 $n=1500$，计算量约为 $10^6$ 级，符合要求。
 *   **空间复杂度**：$O(n)$。在内层循环中，集合最多存储 $n$ 个不同的元素。
+
+
+
+## M3737.统计主要元素子数组数目 I
+
+prefix sum, segment tree, https://leetcode.cn/problems/count-subarrays-with-majority-element-i/
+
+给你一个整数数组 `nums` 和一个整数 `target`。
+
+返回数组 `nums` 中满足 `target` 是 **主要元素** 的 **子数组** 的数目。
+
+一个子数组的 **主要元素** 是指该元素在该子数组中出现的次数 **严格大于** 其长度的 **一半** 。
+
+**子数组** 是数组中的一段连续且 **非空** 的元素序列。
+
+ 
+
+**示例 1:**
+
+**输入:** nums = [1,2,2,3], target = 2
+
+**输出:** 5
+
+**解释:**
+
+以 `target = 2` 为主要元素的子数组有:
+
+- `nums[1..1] = [2]`
+- `nums[2..2] = [2]`
+- `nums[1..2] = [2,2]`
+- `nums[0..2] = [1,2,2]`
+- `nums[1..3] = [2,2,3]`
+
+因此共有 5 个这样的子数组。
+
+**示例 2:**
+
+**输入:** nums = [1,1,1,1], target = 1
+
+**输出:** 10
+
+**解释:** 
+
+所有 10 个子数组都以 1 为主要元素。
+
+**示例 3:**
+
+**输入:** nums = [1,2,3], target = 4
+
+**输出:** 0
+
+**解释:**
+
+`target = 4` 完全没有出现在 `nums` 中。因此，不可能有任何以 4 为主要元素的子数组。故答案为 0。
+
+ 
+
+**提示:**
+
+- `1 <= nums.length <= 1000`
+- `1 <= nums[i] <= 10^9`
+- `1 <= target <= 10^9`
+
+
+
+**解题思路**
+
+**核心转化：** 把 `target` 映射为 `+1`，其他元素映射为 `-1`。对于任意子数组，`target` 是主要元素 ⇔ 子数组的和 `> 0`（因为和 = `count_target - count_other`，而 `count_target > len/2` 等价于 `count_target > count_other`）。
+
+问题变为：**统计有多少子数组满足和 > 0**。
+
+设前缀和 `pref[i]` = `arr[0..i-1]` 的和。子数组 `[l, r]` 的和 = `pref[r+1] - pref[l]`。需要 `pref[r+1] > pref[l]`，即对于每个右边界，数前面有多少个前缀和比它小。
+
+------
+
+## 解法一：O(n²) 暴力（适合 n ≤ 1000）
+
+```python
+from typing import List
+
+class Solution:
+    def countMajoritySubarrays(self, nums: List[int], target: int) -> int:
+        n = len(nums)
+        arr = [1 if x == target else -1 for x in nums]
+        ans = 0
+        for i in range(n):
+            s = 0
+            for j in range(i, n):
+                s += arr[j]
+                if s > 0:
+                    ans += 1
+        return ans
+```
+
+------
+
+## 解法二：O(n log n) 树状数组（更优，适合更大数据）
+
+```python
+from typing import List
+
+class Solution:
+    def countMajoritySubarrays(self, nums: List[int], target: int) -> int:
+        n = len(nums)
+        # 1. 计算前缀和
+        pref = [0]
+        for x in nums:
+            pref.append(pref[-1] + (1 if x == target else -1))
+        
+        # 2. 离散化（处理负数）
+        vals = sorted(set(pref))
+        rank = {v: i + 1 for i, v in enumerate(vals)}  # BIT 从 1 开始
+        
+        # 3. 树状数组
+        m = len(vals)
+        bit = [0] * (m + 1)
+        
+        def update(idx: int, delta: int) -> None:
+            while idx <= m:
+                bit[idx] += delta
+                idx += idx & -idx
+        
+        def query(idx: int) -> int:
+            s = 0
+            while idx > 0:
+                s += bit[idx]
+                idx -= idx & -idx
+            return s
+        
+        # 4. 统计
+        ans = 0
+        for p in pref:
+            # 数前面有多少个前缀和严格小于 p
+            ans += query(rank[p] - 1)
+            update(rank[p], 1)
+        
+        return ans
+```
+
+------
+
+**复杂度分析**
+
+| 解法     | 时间       | 空间 |
+| -------- | ---------- | ---- |
+| 暴力     | O(n²)      | O(1) |
+| 树状数组 | O(n log n) | O(n) |
+
+由于题目约束 `n ≤ 1000`，**暴力 O(n²) 完全够用**（~10⁶ 次操作）。树状数组解法是通用思路，对更大数据量也能应对。
+
+**思路关键点：** `+1/-1` 映射 + 前缀和大小关系 → 转化为"数前面更小的前缀和"。
+
+
 
 
 
