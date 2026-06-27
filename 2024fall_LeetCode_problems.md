@@ -16711,7 +16711,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -42633,6 +42633,135 @@ for u, v, c in zip(original, changed, cost):
 
 
 
+## M3020.子集中元素的最大数量
+
+hash table, https://leetcode.cn/problems/find-the-maximum-number-of-elements-in-subset/
+
+给你一个 **正整数** 数组 `nums` 。
+
+你需要从数组中选出一个满足下述条件的子集：
+
+- 你可以将选中的元素放置在一个下标从 **0** 开始的数组中，并使其遵循以下模式：`[x, x^2, x^4, ..., x^{k/2}, x^k, x^{k/2}, ..., x4, x2, x]`（**注意**，`k` 可以是任何 **非负** 的 2 的幂）。例如，`[2, 4, 16, 4, 2]` 和 `[3, 9, 3]` 都符合这一模式，而 `[2, 4, 8, 4, 2]` 则不符合。
+
+返回满足这些条件的子集中，元素数量的 **最大值** *。*
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [5,4,1,2,2]
+输出：3
+解释：选择子集 {4,2,2} ，将其放在数组 [2,4,2] 中，它遵循该模式，且 2^2 == 4 。因此答案是 3 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,3,2,4]
+输出：1
+解释：选择子集 {1}，将其放在数组 [1] 中，它遵循该模式。因此答案是 1 。注意我们也可以选择子集 {2} 、{4} 或 {3} ，可能存在多个子集都能得到相同的答案。
+```
+
+ 
+
+**提示：**
+
+- `2 <= nums.length <= 10^5`
+- `1 <= nums[i] <= 10^9`
+
+
+
+这个问题要求我们在数组中找到一个特定模式的子集，其形式为 `[x, x^2, x^4, ..., x^k, ..., x^4, x^2, x]`。
+
+**核心逻辑分析：**
+
+1.  **模式特征**：
+    *   除了“中心峰值”元素 $x^k$ 以外，其余每个元素（$x, x^2, \dots$）都必须在子集中出现**至少两次**（因为是对称的）。
+    *   中心峰值元素 $x^k$ 至少出现**一次**。
+    *   模式的长度始终是**奇数**。
+    *   如果起始元素 $x=1$，由于 $1$ 的任何次方都是 $1$，规律变为 `[1, 1, 1, ..., 1]`。题目要求遵循该模式，对于 $1$ 来说，只要选择奇数个 $1$，就能满足对称的平方关系。
+
+2.  **特殊情况 $x=1$**：
+    *   如果我们有 $c$ 个 $1$，那么能组成的最长子集长度是 $c$（如果 $c$ 是奇数）或者 $c-1$（如果 $c$ 是偶数）。
+    *   总结：`max_len = c if c % 2 != 0 else c - 1`。
+
+3.  **一般情况 $x > 1$**：
+    *   遍历数组中每一个存在的数字作为起始 $x$。
+    *   尝试不断平方：$x \to x^2 \to x^4 \to \dots$
+    *   如果当前数字 $v$ 的出现次数 $\ge 2$，我们可以把它作为模式中的一对（左右各一个），然后继续检查 $v^2$。
+    *   如果当前数字 $v$ 的出现次数 $= 1$，它只能作为“中心峰值”，此时序列停止。
+    *   如果当前数字 $v$ 的出现次数 $= 0$，说明前一个数字虽然有 $\ge 2$ 个，但其中一个必须作为“中心峰值”，序列停止。
+
+**Python 代码实现：**
+
+```python
+from collections import Counter
+from typing import List
+
+class Solution:
+    def maximumLength(self, nums: List[int]) -> int:
+        # 1. 统计每个数字出现的频率
+        count = Counter(nums)
+        ans = 0
+        
+        # 2. 处理 x = 1 的特殊情况
+        if 1 in count:
+            c = count[1]
+            # 1 构成的子集长度必须是奇数
+            ans = c if c % 2 != 0 else c - 1
+            
+        # 3. 处理 x > 1 的情况
+        # 遍历统计字典中的键（即去重后的数字）
+        for x in count:
+            if x == 1:
+                continue
+            
+            curr_len = 0
+            curr_val = x
+            
+            # 只要当前值出现次数 >= 2，就可以往两边放，继续寻找平方值
+            while curr_val in count and count[curr_val] >= 2:
+                curr_len += 2
+                curr_val = curr_val * curr_val
+            
+            # 循环结束时，curr_val 可能是：
+            # A. 出现次数为 1：它可以作为中心峰值
+            # B. 出现次数为 0：它不存在，上一个数字（出现 >=2 次的那个）必须扣掉一个来当峰值
+            if curr_val in count and count[curr_val] >= 1:
+                curr_len += 1
+            else:
+                curr_len -= 1
+            
+            ans = max(ans, curr_len)
+            
+        return ans
+
+```
+
+**复杂度分析：**
+
+*   **时间复杂度**：$O(N)$。
+    *   统计频率需要 $O(N)$。
+    *   遍历唯一元素。对于每个 $x \ge 2$，其平方增长极快（$x^2, x^4, x^8, x^{16}, x^{32}$）。因为题目限制 $nums[i] \le 10^9$，且 $2^{32} > 10^9$，所以 `while` 循环对每个起始值最多运行 5-6 次。
+    *   因此，总时间复杂度与数组长度 $N$ 呈线性关系。
+*   **空间复杂度**：$O(N)$。主要开销是存储频率的哈希表（Counter）。
+
+**示例运行：**
+
+对于 `nums = [5, 4, 1, 2, 2]`：
+
+1. `count = {5:1, 4:1, 1:1, 2:2}`
+2. 处理 `1`: `ans = 1`。
+3. 处理 `2`: `count[2]=2` (len=2), 下一个是 `4`。`count[4]=1` (len=2+1=3)。`ans = 3`。
+4. 处理 `4`: `count[4]=1` (len=1)。`ans` 保持 3。
+5. 处理 `5`: `count[5]=1` (len=1)。`ans` 保持 3。
+   最终返回 `3`。
+
+
+
+
+
 ## M3043.最长公共前缀的长度
 
 hash table, trie, https://leetcode.cn/problems/find-the-length-of-the-longest-common-prefix/
@@ -42935,107 +43064,6 @@ class Solution:
 
 
 
-## M3121.统计特殊字母的数量 II
-
-hash table, https://leetcode.cn/problems/count-the-number-of-special-characters-ii/
-
-给你一个字符串 `word`。如果 `word` 中同时出现某个字母 `c` 的小写形式和大写形式，并且 **每个** 小写形式的 `c`都出现在第一个大写形式的 `c` 之前，则称字母 `c` 是一个 **特殊字母** 。
-
-返回 `word` 中 **特殊字母** 的数量。
-
- 示例 1:**
-
-**输入：**word = "aaAbcBC"
-
-**输出：**3
-
-**解释：**
-
-特殊字母是 `'a'`、`'b'` 和 `'c'`。
-
-**示例 2:**
-
-**输入：**word = "abc"
-
-**输出：**0
-
-**解释：**
-
-`word` 中不存在特殊字母。
-
-**示例 3:**
-
-**输入：**word = "AbBCab"
-
-**输出：**0
-
-**解释：**
-
-`word` 中不存在特殊字母。
-
- 
-
-**提示：**
-
-- `1 <= word.length <= 2 * 10^5`
-- `word` 仅由小写和大写英文字母组成。
-
-
-
-这道题的目标是统计符合特定要求的“特殊字母”的数量。
-
-根据题意，一个字母要成为“特殊字母”，需要满足以下条件：
-
-1. 该字母的小写形式和大写形式都必须在字符串 `word` 中出现。
-2. 该字母的**每一个**小写形式都必须出现在其**第一个**大写形式之前。
-
-换句话说，对于任意一个字母：
-
-* 记它小写形式最后一次出现的下标为 $last\_lower$。
-* 记它大写形式第一次出现的下标为 $first\_upper$。
-* 如果这两个下标都存在，且满足 $last\_lower < first\_upper$，那么该字母就是一个特殊字母。
-
-我们可以使用两个大小为 26 的数组来分别记录：
-
-1. 每个小写字母最后一次出现的下标（初始化为 -1）。
-2. 每个大写字母第一次出现的下标（初始化为 -1）。
-
-**Python 代码实现**
-
-```python
-class Solution:
-    def numberOfSpecialChars(self, word: str) -> int:
-        # 记录小写字母最后一次出现的下标
-        last_lower = [-1] * 26
-        # 记录大写字母第一次出现的下标
-        first_upper = [-1] * 26
-        
-        # 遍历字符串，记录位置
-        for i, char in enumerate(word):
-            if 'a' <= char <= 'z':
-                idx = ord(char) - ord('a')
-                last_lower[idx] = i
-            elif 'A' <= char <= 'Z':
-                idx = ord(char) - ord('A')
-                # 仅记录第一次出现的位置
-                if first_upper[idx] == -1:
-                    first_upper[idx] = i
-                    
-        # 统计特殊字母的数量
-        special_count = 0
-        for i in range(26):
-            if last_lower[i] != -1 and first_upper[i] != -1:
-                if last_lower[i] < first_upper[i]:
-                    special_count += 1
-                    
-        return special_count
-```
-
-**复杂度分析**
-
-- **时间复杂度**：$O(N)$，其中 $N$ 是字符串 `word` 的长度。我们需要遍历一次字符串来记录位置，然后再遍历一次大小为 26 的辅助数组，整体时间复杂度为线性。
-- **空间复杂度**：$O(1)$。我们使用了两个大小为 26 的固定长度数组，占用的额外空间是常数级别的。
-
 
 
 
@@ -43220,6 +43248,111 @@ class Solution:
 
         return minv if minv != float('inf') else -1
 ```
+
+
+
+## M3121.统计特殊字母的数量 II
+
+hash table, https://leetcode.cn/problems/count-the-number-of-special-characters-ii/
+
+给你一个字符串 `word`。如果 `word` 中同时出现某个字母 `c` 的小写形式和大写形式，并且 **每个** 小写形式的 `c`都出现在第一个大写形式的 `c` 之前，则称字母 `c` 是一个 **特殊字母** 。
+
+返回 `word` 中 **特殊字母** 的数量。
+
+ 示例 1:**
+
+**输入：**word = "aaAbcBC"
+
+**输出：**3
+
+**解释：**
+
+特殊字母是 `'a'`、`'b'` 和 `'c'`。
+
+**示例 2:**
+
+**输入：**word = "abc"
+
+**输出：**0
+
+**解释：**
+
+`word` 中不存在特殊字母。
+
+**示例 3:**
+
+**输入：**word = "AbBCab"
+
+**输出：**0
+
+**解释：**
+
+`word` 中不存在特殊字母。
+
+ 
+
+**提示：**
+
+- `1 <= word.length <= 2 * 10^5`
+- `word` 仅由小写和大写英文字母组成。
+
+
+
+这道题的目标是统计符合特定要求的“特殊字母”的数量。
+
+根据题意，一个字母要成为“特殊字母”，需要满足以下条件：
+
+1. 该字母的小写形式和大写形式都必须在字符串 `word` 中出现。
+2. 该字母的**每一个**小写形式都必须出现在其**第一个**大写形式之前。
+
+换句话说，对于任意一个字母：
+
+* 记它小写形式最后一次出现的下标为 $last\_lower$。
+* 记它大写形式第一次出现的下标为 $first\_upper$。
+* 如果这两个下标都存在，且满足 $last\_lower < first\_upper$，那么该字母就是一个特殊字母。
+
+我们可以使用两个大小为 26 的数组来分别记录：
+
+1. 每个小写字母最后一次出现的下标（初始化为 -1）。
+2. 每个大写字母第一次出现的下标（初始化为 -1）。
+
+**Python 代码实现**
+
+```python
+class Solution:
+    def numberOfSpecialChars(self, word: str) -> int:
+        # 记录小写字母最后一次出现的下标
+        last_lower = [-1] * 26
+        # 记录大写字母第一次出现的下标
+        first_upper = [-1] * 26
+        
+        # 遍历字符串，记录位置
+        for i, char in enumerate(word):
+            if 'a' <= char <= 'z':
+                idx = ord(char) - ord('a')
+                last_lower[idx] = i
+            elif 'A' <= char <= 'Z':
+                idx = ord(char) - ord('A')
+                # 仅记录第一次出现的位置
+                if first_upper[idx] == -1:
+                    first_upper[idx] = i
+                    
+        # 统计特殊字母的数量
+        special_count = 0
+        for i in range(26):
+            if last_lower[i] != -1 and first_upper[i] != -1:
+                if last_lower[i] < first_upper[i]:
+                    special_count += 1
+                    
+        return special_count
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(N)$，其中 $N$ 是字符串 `word` 的长度。我们需要遍历一次字符串来记录位置，然后再遍历一次大小为 26 的辅助数组，整体时间复杂度为线性。
+- **空间复杂度**：$O(1)$。我们使用了两个大小为 26 的固定长度数组，占用的额外空间是常数级别的。
+
+
 
 
 
