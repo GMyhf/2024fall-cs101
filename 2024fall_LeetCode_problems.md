@@ -16711,7 +16711,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -32299,6 +32299,127 @@ class Solution:
 
 - **时间复杂度**：$O(1)$。计算过程仅包含基本的算术运算。
 - **空间复杂度**：$O(1)$。只使用了常数个辅助变量。
+
+
+
+## M1358.包含所有三种字符的子字符串数目
+
+https://leetcode.cn/problems/number-of-substrings-containing-all-three-characters/
+
+给你一个字符串 `s` ，它只包含三种字符 a, b 和 c 。
+
+请你返回 a，b 和 c 都 **至少** 出现过一次的子字符串数目。
+
+ 
+
+**示例 1：**
+
+```
+输入：s = "abcabc"
+输出：10
+解释：包含 a，b 和 c 各至少一次的子字符串为 "abc", "abca", "abcab", "abcabc", "bca", "bcab", "bcabc", "cab", "cabc" 和 "abc" (相同字符串算多次)。
+```
+
+**示例 2：**
+
+```
+输入：s = "aaacb"
+输出：3
+解释：包含 a，b 和 c 各至少一次的子字符串为 "aaacb", "aacb" 和 "acb" 。
+```
+
+**示例 3：**
+
+```
+输入：s = "abc"
+输出：1
+```
+
+ 
+
+**提示：**
+
+- `3 <= s.length <= 5 x 10^4`
+- `s` 只包含字符 a，b 和 c 。
+
+
+
+这道题可以通过**滑动窗口（双指针）**或**记录字符最近出现位置**的方法来解决。这两种方法的时间复杂度均为 $O(N)$，空间复杂度为 $O(1)$。
+
+下面为您介绍这两种具体的实现方法。
+
+### 方法一：记录字符最近出现的位置
+
+**思路：**
+当我们遍历字符串 `s` 时，可以使用一个哈希表或数组记录字符 `'a'`, `'b'`, `'c'` 最近一次出现的位置。
+
+假设当前遍历到索引 `i`：
+
+1. 更新当前字符的最晚出现位置。
+2. 找到三个字符中，最近出现位置的**最小值**（记为 `min_idx`）。
+3. 如果这三个字符都已至少出现过一次（即 `min_idx` 不为 `-1`），那么以当前 `i` 作为右端点，左端点在区间 `[0, min_idx]` 内的所有子字符串（共 `min_idx + 1` 个）都必定同时包含 `'a'`, `'b'`, `'c'`。
+4. 将 `min_idx + 1` 累加到结果中。
+
+**Python 代码实现：**
+
+```python
+class Solution:
+    def numberOfSubstrings(self, s: str) -> int:
+        # 记录 'a', 'b', 'c' 最近一次出现的索引，初始化为 -1
+        pos = {'a': -1, 'b': -1, 'c': -1}
+        ans = 0
+        
+        for i, char in enumerate(s):
+            pos[char] = i
+            # 找到三个字符最近出现位置的最小值
+            min_idx = min(pos['a'], pos['b'], pos['c'])
+            # 如果三个字符都出现过，累加可行的子串数量
+            if min_idx != -1:
+                ans += min_idx + 1
+                
+        return ans
+```
+
+---
+
+### 方法二：滑动窗口（双指针）
+
+**思路：**
+我们维护一个滑动窗口 `[left, right]`，并用一个哈希表记录窗口内每个字符的出现次数。
+
+1. 右指针 `right` 向右移动，将字符加入窗口，更新字符计数。
+2. 当窗口内同时包含 `'a'`, `'b'`, `'c'` 时，说明以当前 `left` 为起点、`right` 或其右侧任意位置为终点的子字符串都满足条件。满足条件的终点有 `len(s) - right` 个。
+3. 此时我们将 `len(s) - right` 累加到结果中，然后将左指针 `left` 向右移动，缩减窗口，并更新字符计数，直到窗口不再满足条件。
+
+**Python 代码实现：**
+
+```python
+class Solution:
+    def numberOfSubstrings(self, s: str) -> int:
+        counts = {'a': 0, 'b': 0, 'c': 0}
+        ans = 0
+        left = 0
+        n = len(s)
+        
+        for right in range(n):
+            counts[s[right]] += 1
+            
+            # 当窗口内包含所有三种字符时，尝试收缩左边界
+            while counts['a'] > 0 and counts['b'] > 0 and counts['c'] > 0:
+                # 此时从 left 开始，到 right 以及 right 之后的子串都符合要求
+                ans += n - right
+                counts[s[left]] -= 1
+                left += 1
+                
+        return ans
+```
+
+---
+
+**复杂度分析**
+
+* **时间复杂度**：$O(N)$。其中 $N$ 是字符串 `s` 的长度。在方法一中，我们只需遍历一次字符串；在方法二中，左右指针各最多移动 $N$ 次。
+* **空间复杂度**：$O(1)$。我们只需要常数级别的空间来存储字符的计数或位置（仅包含 `'a'`, `'b'`, `'c'` 三种字符）。
 
 
 
