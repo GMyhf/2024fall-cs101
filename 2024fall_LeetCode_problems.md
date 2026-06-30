@@ -16711,7 +16711,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -40991,6 +40991,164 @@ class Solution:
 **总结**
 
 这道题看起来像是一个最短路径搜索（如 Dijkstra）问题，但由于代价只与“进入的行列索引”有关，它实际上转化为了一个简单的区间求和问题。只要理解了“不回头即最优”的逻辑，题目便迎刃而解。
+
+
+
+## M2812.找出最安全路径
+
+bfs, heap, dijkstra, https://leetcode.cn/problems/find-the-safest-path-in-a-grid/
+
+给你一个下标从 **0** 开始、大小为 `n x n` 的二维矩阵 `grid` ，其中 `(r, c)` 表示：
+
+- 如果 `grid[r][c] = 1` ，则表示一个存在小偷的单元格
+- 如果 `grid[r][c] = 0` ，则表示一个空单元格
+
+你最开始位于单元格 `(0, 0)` 。在一步移动中，你可以移动到矩阵中的任一相邻单元格，包括存在小偷的单元格。
+
+矩阵中路径的 **安全系数** 定义为：从路径中任一单元格到矩阵中任一小偷所在单元格的 **最小** 曼哈顿距离。
+
+返回所有通向单元格 `(n - 1, n - 1)` 的路径中的 **最大安全系数** 。
+
+单元格 `(r, c)` 的某个 **相邻** 单元格，是指在矩阵中存在的 `(r, c + 1)`、`(r, c - 1)`、`(r + 1, c)` 和 `(r - 1, c)` 之一。
+
+两个单元格 `(a, b)` 和 `(x, y)` 之间的 **曼哈顿距离** 等于 `| a - x | + | b - y |` ，其中 `|val|` 表示 `val` 的绝对值。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202607010132954.png" alt="img" style="zoom:33%;" />
+
+```
+输入：grid = [[1,0,0],[0,0,0],[0,0,1]]
+输出：0
+解释：从 (0, 0) 到 (n - 1, n - 1) 的每条路径都经过存在小偷的单元格 (0, 0) 和 (n - 1, n - 1) 。
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202607010132573.png" alt="img" style="zoom: 33%;" />
+
+```
+输入：grid = [[0,0,1],[0,0,0],[0,0,0]]
+输出：2
+解释：
+上图所示路径的安全系数为 2：
+- 该路径上距离小偷所在单元格（0，2）最近的单元格是（0，0）。它们之间的曼哈顿距离为 | 0 - 0 | + | 0 - 2 | = 2 。
+可以证明，不存在安全系数更高的其他路径。
+```
+
+**示例 3：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/202607010132888.png" alt="img" style="zoom:33%;" />
+
+```
+输入：grid = [[0,0,0,1],[0,0,0,0],[0,0,0,0],[1,0,0,0]]
+输出：2
+解释：
+上图所示路径的安全系数为 2：
+- 该路径上距离小偷所在单元格（0，3）最近的单元格是（1，2）。它们之间的曼哈顿距离为 | 0 - 1 | + | 3 - 2 | = 2 。
+- 该路径上距离小偷所在单元格（3，0）最近的单元格是（3，2）。它们之间的曼哈顿距离为 | 3 - 3 | + | 0 - 2 | = 2 。
+可以证明，不存在安全系数更高的其他路径。
+```
+
+ 
+
+**提示：**
+
+- `1 <= grid.length == n <= 400`
+- `grid[i].length == n`
+- `grid[i][j]` 为 `0` 或 `1`
+- `grid` 至少存在一个小偷
+
+
+
+这个问题可以通过以下两个主要步骤来解决：
+
+1. **计算每个格子到最近小偷的曼哈顿距离**：
+   我们可以将所有小偷的位置作为起点，使用**多源广度优先搜索 (Multi-source BFS)**。这样可以在 $O(n^2)$ 的时间内计算出网格中每个单元格到最近小偷的距离。这个距离就是该格子的“安全系数”。
+
+2. **寻找最大安全系数路径**：
+   在得到了每个格子的安全系数后，我们需要找到一条从 `(0, 0)` 到 `(n-1, n-1)` 的路径，使得路径上所有格子的最小安全系数最大。
+   这属于典型的**最大瓶颈路径问题**，可以使用类似 **Dijkstra 算法** 的堆优化贪心策略来解决：
+   * 使用一个最大堆（在 Python 中通过存负数实现最小堆），每次从小顶堆中取出当前路径安全系数最大的节点进行扩展。
+   * 扩展到邻居节点时，该邻居节点能达到的安全系数是 `min(当前路径的安全系数, 邻居格子的安全系数)`。
+   * 当首次到达终点 `(n-1, n-1)` 时，此时对应的安全系数即为所求的最大安全系数。
+
+**Python 代码实现**
+
+```python
+from collections import deque
+import heapq
+from typing import List
+
+
+class Solution:
+
+    def maximumSafenessFactor(self, grid: List[List[int]]) -> int:
+        n = len(grid)
+
+        # 1. 多源 BFS：计算每个格子到最近小偷的曼哈顿距离
+        dist = [[float("inf")] * n for _ in range(n)]
+        q = deque()
+
+        for r in range(n):
+            for c in range(n):
+                if grid[r][c] == 1:
+                    dist[r][c] = 0
+                    q.append((r, c))
+
+        dirs = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+
+        while q:
+            r, c = q.popleft()
+            for dr, dc in dirs:
+                nr, nc = r + dr, c + dc
+                if 0 <= nr < n and 0 <= nc < n:
+                    if dist[nr][nc] == float("inf"):
+                        dist[nr][nc] = dist[r][c] + 1
+                        q.append((nr, nc))
+
+        # 如果起点或终点本身存在小偷，安全系数直接为 0
+        if dist[0][0] == 0 or dist[n - 1][n - 1] == 0:
+            return 0
+
+        # 2. Dijkstra 变种：寻找最大化瓶颈路径
+        # 堆元素格式: (-当前路径上的最小安全系数, 行, 列)
+        # Python 的 heapq 是最小堆，通过对安全系数取负值来实现最大堆
+        max_heap = [(-dist[0][0], 0, 0)]
+        visited = [[False] * n for _ in range(n)]
+        visited[0][0] = True
+
+        while max_heap:
+            d, r, c = heapq.heappop(max_heap)
+            d = -d  # 恢复为正数
+
+            # 首次到达终点即为最优解
+            if r == n - 1 and c == n - 1:
+                return d
+
+            for dr, dc in dirs:
+                nr, nc = r + dr, c + dc
+                if 0 <= nr < n and 0 <= nc < n and not visited[nr][nc]:
+                    visited[nr][nc] = True
+                    # 下一个位置的安全系数是当前路径安全系数与该格子自身安全系数的较小值
+                    next_safeness = min(d, dist[nr][nc])
+                    heapq.heappush(max_heap, (-next_safeness, nr, nc))
+
+        return 0
+```
+
+**复杂度分析**
+
+- **时间复杂度**：
+  - **多源 BFS**：每个格子最多入队一次，共有 $n^2$ 个格子，每个格子检查 $4$ 个方向，时间复杂度为 $O(n^2)$。
+  - **Dijkstra 算法**：堆中最多包含 $n^2$ 个元素，每次堆操作（插入和取出）的时间复杂度为 $O(\log(n^2)) = O(\log n)$。总的时间复杂度为 $O(n^2 \log n)$。
+  - **总时间复杂度**：$O(n^2 \log n)$。对于 $n \le 400$ 而言，运算次数在百万级，可以在限定时间内运行完毕。
+
+- **空间复杂度**：
+  - 需要存储 `dist` 距离矩阵、`visited` 访问标记、BFS 队列以及最大堆。
+  - 占用的空间大小均与网格格子总数成正比，因此总空间复杂度为 $O(n^2)$。
 
 
 
