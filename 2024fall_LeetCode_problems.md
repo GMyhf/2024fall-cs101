@@ -16711,7 +16711,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -43986,6 +43986,141 @@ class Solution:
     *   `c=2`: `rowX=0, rowY=1` -> `colX[2]=1, colY[2]=2` (不满足)
 
     最终输出 `3`，符合预期。
+
+
+
+## M3286.穿越网格图的安全路径
+
+bfs, https://leetcode.cn/problems/find-a-safe-walk-through-a-grid/
+
+给你一个 `m x n` 的二进制矩形 `grid` 和一个整数 `health` 表示你的健康值。
+
+你开始于矩形的左上角 `(0, 0)` ，你的目标是矩形的右下角 `(m - 1, n - 1)` 。
+
+你可以在矩形中往上下左右相邻格子移动，但前提是你的健康值始终是 **正数** 。
+
+对于格子 `(i, j)` ，如果 `grid[i][j] = 1` ，那么这个格子视为 **不安全** 的，会使你的健康值减少 1 。
+
+如果你可以到达最终的格子，请你返回 `true` ，否则返回 `false` 。
+
+**注意** ，当你在最终格子的时候，你的健康值也必须为 **正数** 。
+
+ 
+
+**示例 1：**
+
+**输入：**grid = [[0,1,0,0,0],[0,1,0,1,0],[0,0,0,1,0]], health = 1
+
+**输出：**true
+
+**解释：**
+
+沿着下图中灰色格子走，可以安全到达最终的格子。
+
+![img](https://assets.leetcode.com/uploads/2024/08/04/3868_examples_1drawio.png)
+
+**示例 2：**
+
+**输入：**grid = [[0,1,1,0,0,0],[1,0,1,0,0,0],[0,1,1,1,0,1],[0,0,1,0,1,0]], health = 3
+
+**输出：**false
+
+**解释：**
+
+健康值最少为 4 才能安全到达最后的格子。
+
+![img](https://assets.leetcode.com/uploads/2024/08/04/3868_examples_2drawio.png)
+
+**示例 3：**
+
+**输入：**grid = [[1,1,1],[1,0,1],[1,1,1]], health = 5
+
+**输出：**true
+
+**解释：**
+
+沿着下图中灰色格子走，可以安全到达最终的格子。
+
+![img](https://assets.leetcode.com/uploads/2024/08/04/3868_examples_3drawio.png)
+
+任何不经过格子 `(1, 1)` 的路径都是不安全的，因为你的健康值到达最终格子时，都会小于等于 0 。
+
+ 
+
+**提示：**
+
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 50`
+- `2 <= m * n`
+- `1 <= health <= m + n`
+- `grid[i][j]` 要么是 0 ，要么是 1 。
+
+
+
+这个问题可以转化为在网格图中寻找一条从左上角 $(0,0)$ 到右下角 $(m-1, n-1)$ 的路径，使得路径上不安全格子（值为 `1`）的数量最少。
+
+因为移动到相邻格子的代价（减少的健康值）要么是 `0`（目标格子是 `0`），要么是 `1`（目标格子是 `1`），我们可以使用 **0-1 广度优先搜索 (0-1 BFS)** 算法。这种方法比普通的 Dijkstra 算法更高效，可以在 $O(m \times n)$ 的时间复杂度内解决问题。
+
+**0-1 BFS 算法步骤**
+
+1. **距离数组**：使用一个二维数组 `dist` 来存储从起点到各个单元格累计遇到的最小不安全格子数。初始化为无穷大。
+2. **双端队列**：使用双端队列 `deque` 来存储待访问的网格坐标 `(r, c)`。
+3. **起点初始化**：起点的初始代价为 `grid[0][0]`。将 `dist[0][0]` 设为 `grid[0][0]`，并把起点放入队列中。
+4. **状态转移**：
+   - 每次从队列头部弹出一个坐标 `(r, c)`。
+   - 遍历其四个相邻方向 `(nr, nc)`。
+   - 计算新路径的代价：`new_dist = dist[r][c] + grid[nr][nc]`。
+   - 如果发现了一条更短的路径（`new_dist < dist[nr][nc]`），则更新 `dist[nr][nc]`。
+   - 根据转移代价进行入队操作：
+     - 若 `grid[nr][nc] == 0`（代价为 0），将 `(nr, nc)` 插入队列的**前端**。
+     - 若 `grid[nr][nc] == 1`（代价为 1），将 `(nr, nc)` 插入队列的**后端**。
+5. **结果判断**：最后，如果到达终点的最小代价 `dist[m-1][n-1]` 小于初始健康值 `health`，说明可以以正数健康值到达终点，返回 `True`；否则返回 `False`。
+
+**Python 3 实现**
+
+```python
+from typing import List
+from collections import deque
+
+class Solution:
+    def findSafeWalk(self, grid: List[List[int]], health: int) -> bool:
+        m, n = len(grid), len(grid[0])
+        # dist[r][c] 表示到达 (r, c) 累计扣除的最小健康值
+        dist = [[float('inf')] * n for _ in range(m)]
+        
+        dist[0][0] = grid[0][0]
+        queue = deque([(0, 0)])
+        
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        
+        while queue:
+            r, c = queue.popleft()
+            
+            # 如果到达当前格子的代价已经使得健康值归零或以下，无法继续
+            if dist[r][c] >= health:
+                continue
+                
+            for dr, dc in directions:
+                nr, nc = r + dr, c + dc
+                if 0 <= nr < m and 0 <= nc < n:
+                    weight = grid[nr][nc]
+                    if dist[r][c] + weight < dist[nr][nc]:
+                        dist[nr][nc] = dist[r][c] + weight
+                        # 0-1 BFS：权值为0放入队首，权值为1放入队尾
+                        if weight == 0:
+                            queue.appendleft((nr, nc))
+                        else:
+                            queue.append((nr, nc))
+                            
+        # 只要到达终点所扣除的健康值小于初始健康值即可
+        return dist[m - 1][n - 1] < health
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(m \times n)$。由于每个状态最多入队和出队常数次，网格中共有 $m \times n$ 个单元格，整体时间复杂度与网格大小成线性关系。
+- **空间复杂度**：$O(m \times n)$。主要来自于存储每个单元格最小代价的 `dist` 数组以及双端队列的大小。
 
 
 
