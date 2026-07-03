@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-06-23 18:47 GMT+8*
+*Updated 2026-07-03 11:26 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -17414,6 +17414,223 @@ class Solution:
 
 - **时间复杂度**：$O(N)$，其中 $N$ 是字符串 `s` 的长度。我们只需要正向和反向各遍历一次字符串 `s`，每次迭代内的操作均为常数级 $O(1)$ 时间。
 - **空间复杂度**：$O(N)$，用于存储长度数组 `sizes`。对于 $N \le 10^5$，该空间消耗极小，能完美通过各项限制。
+
+
+
+## T3620.恢复网络路径 
+
+graph, topological sort, binary search, https://leetcode.cn/problems/network-recovery-pathways/
+
+给你一个包含 `n` 个节点（编号从 0 到 `n - 1`）的有向无环图。图由长度为 `m` 的二维数组 `edges` 表示，其中 `edges[i] = [ui, vi, costi]` 表示从节点 `ui` 到节点 `vi` 的单向通信，恢复成本为 `costi`。
+
+一些节点可能处于离线状态。给定一个布尔数组 `online`，其中 `online[i] = true` 表示节点 `i` 在线。节点 0 和 `n - 1` 始终在线。
+
+从 0 到 `n - 1` 的路径如果满足以下条件，那么它是 **有效** 的：
+
+- 路径上的所有中间节点都在线。
+- 路径上所有边的总恢复成本不超过 `k`。
+
+对于每条有效路径，其 **分数** 定义为该路径上的最小边成本。
+
+返回所有有效路径中的 **最大** 路径分数（即最大 **最小** 边成本）。如果没有有效路径，则返回 -1。
+
+ 
+
+**示例 1:**
+
+**输入:** edges = [[0,1,5],[1,3,10],[0,2,3],[2,3,4]], online = [true,true,true,true], k = 10
+
+**输出:** 3
+
+**解释:**
+
+![img](https://assets.leetcode.com/uploads/2025/06/06/graph-10.png)
+
+- 图中有两条从节点 0 到节点 3 的可能路线：
+  1. 路径 `0 → 1 → 3`
+     - 总成本 = `5 + 10 = 15`，超过了 k (`15 > 10`)，因此此路径无效。
+  2. 路径 `0 → 2 → 3`
+     - 总成本 = `3 + 4 = 7 <= k`，因此此路径有效。
+     - 此路径上的最小边成本为 `min(3, 4) = 3`。
+- 没有其他有效路径。因此，所有有效路径分数中的最大值为 3。
+
+**示例 2:**
+
+**输入:** edges = [[0,1,7],[1,4,5],[0,2,6],[2,3,6],[3,4,2],[2,4,6]], online = [true,true,true,false,true], k = 12
+
+**输出:** 6
+
+**解释:**
+
+![img](https://assets.leetcode.com/uploads/2025/06/06/graph-11.png)
+
+- 节点 3 离线，因此任何通过 3 的路径都是无效的。
+- 考虑从 0 到 4 的其余路线：
+  1. 路径 `0 → 1 → 4`
+     - 总成本 = `7 + 5 = 12 <= k`，因此此路径有效。
+     - 此路径上的最小边成本为 `min(7, 5) = 5`。
+  2. 路径 `0 → 2 → 3 → 4`
+     - 节点 3 离线，因此无论成本多少，此路径无效。
+  3. 路径 `0 → 2 → 4`
+     - 总成本 = `6 + 6 = 12 <= k`，因此此路径有效。
+     - 此路径上的最小边成本为 `min(6, 6) = 6`。
+- 在两条有效路径中，它们的分数分别为 5 和 6。因此，答案是 6。
+
+ 
+
+**提示:**
+
+- `n == online.length`
+- `2 <= n <= 5 * 10^4`
+- `0 <= m == edges.length <= min(10^5, n * (n - 1) / 2)`
+- `edges[i] = [ui, vi, costi]`
+- `0 <= ui, vi < n`
+- `ui != vi`
+- `0 <= costi <= 10^9`
+- `0 <= k <= 5 * 10^13`
+- `online[i]` 是 `true` 或 `false`，且 `online[0]` 和 `online[n - 1]` 均为 `true`。
+- 给定的图是一个有向无环图。
+
+
+
+下面是解决该问题的思路和一种高效的算法实现：
+
+**解题思路**
+
+1. **基本约束过滤**：
+   - 路径中的所有中间节点都必须在线。因此，如果一个节点的 `online[i] = false`（且该节点不是起点 `0` 或终点 `n-1`），那么它就不能作为路径的一部分。
+   - 我们可以直接过滤掉所有连接到离线节点的边，即只保留两个端点均在线的边。
+
+2. **可达性过滤（双向 BFS）**：
+   - 有些节点虽然在线，但无法从起点 `0` 到达，或者无法到达终点 `n-1`。为了提高二分查找时的性能，我们可以通过正向 BFS（从 `0` 开始）和反向 BFS（从 `n-1` 开始）计算出所有**既可由起点到达，又能到达终点**的有效节点集合 `valid_set`。
+   - 如果起点 `0` 无法到达终点 `n-1`，则直接返回 `-1`。
+
+3. **拓扑排序**：
+   - 在有向无环图 (DAG) 中，求单源最短路径最有效率的方法是在拓扑序上进行动态规划 (DP)。
+   - 重新建图，仅保留两个端点都在 `valid_set` 里的有效边。接着在 `valid_set` 的子图上跑拓扑排序，得到拓扑序列 `topo`。
+
+4. **二分查找**：
+   - 路径分数定义为路径上所有边的最小成本。我们可以二分这个“最小成本”的可能取值 $mid$。
+   - $mid$ 的备选值只能是图中出现过的边成本。我们收集所有有效边的成本，去重并排序，作为二分查找的候选区间。
+   - 对于每次二分猜测的 $mid$ 值：
+     - 我们仅使用成本 $\ge mid$ 的边进行 DP，求从 `0` 到 `n-1` 的最短路径。
+     - 如果最短路径总成本 $\le k$，则该 $mid$ 是可行的，尝试更大的值；否则，尝试更小的值。
+
+**Python3 代码实现**
+
+```python
+class Solution:
+    def findMaxPathScore(self, edges: list[list[int]], online: list[bool], k: int) -> int:
+        n = len(online)
+        
+        # 1. 过滤：只保留两个端点均为在线的边
+        valid_edges = []
+        for u, v, cost in edges:
+            if online[u] and online[v]:
+                valid_edges.append((u, v, cost))
+                
+        # 2. 双向 BFS 确定既可从 0 到达，又可到达 n-1 的有效节点集合
+        adj_f = [[] for _ in range(n)]
+        adj_b = [[] for _ in range(n)]
+        for u, v, cost in valid_edges:
+            adj_f[u].append(v)
+            adj_b[v].append(u)
+            
+        visited_f = [False] * n
+        visited_f[0] = True
+        q = [0]
+        head = 0
+        while head < len(q):
+            u = q[head]
+            head += 1
+            for v in adj_f[u]:
+                if not visited_f[v]:
+                    visited_f[v] = True
+                    q.append(v)
+                    
+        # 若 0 无法到达 n - 1，直接返回 -1
+        if not visited_f[n - 1]:
+            return -1
+            
+        visited_b = [False] * n
+        visited_b[n - 1] = True
+        q = [n - 1]
+        head = 0
+        while head < len(q):
+            u = q[head]
+            head += 1
+            for v in adj_b[u]:
+                if not visited_b[v]:
+                    visited_b[v] = True
+                    q.append(v)
+                    
+        # 取得双向可达节点的交集
+        valid_set = {i for i in range(n) if visited_f[i] and visited_b[i]}
+        
+        # 3. 重新建图，仅包含有效节点之间的边，并统计入度以进行拓扑排序
+        adj = [[] for _ in range(n)]
+        in_degree = [0] * n
+        costs = set()
+        for u, v, cost in valid_edges:
+            if u in valid_set and v in valid_set:
+                adj[u].append((v, cost))
+                in_degree[v] += 1
+                costs.add(cost)
+                
+        # 4. 拓扑排序 (在有效子图中，0 为唯一的源点)
+        queue = [0]
+        topo = []
+        head = 0
+        while head < len(queue):
+            u = queue[head]
+            head += 1
+            topo.append(u)
+            for v, _ in adj[u]:
+                in_degree[v] -= 1
+                if in_degree[v] == 0:
+                    queue.append(v)
+                    
+        # 排序所有可能达到的边权值
+        sorted_costs = sorted(list(costs))
+        
+        # 5. 二分查找
+        def check(mid_val, topo=topo, adj=adj, k=k, n=n):
+            dp = [10**18] * n
+            dp[0] = 0
+            for u in topo:
+                dist = dp[u]
+                if dist > k:  # 剪枝：若当前距离已大于 k，则其后续点总花费必然大于 k
+                    continue
+                for v, cost in adj[u]:
+                    if cost >= mid_val:
+                        new_dist = dist + cost
+                        if new_dist < dp[v]:
+                            dp[v] = new_dist
+            return dp[n - 1] <= k
+
+        ans = -1
+        left = 0
+        right = len(sorted_costs) - 1
+        while left <= right:
+            mid = (left + right) // 2
+            if check(sorted_costs[mid]):
+                ans = sorted_costs[mid]
+                left = mid + 1
+            else:
+                right = mid - 1
+                
+        return ans
+```
+
+**复杂度分析**
+
+- **时间复杂度**：
+  - 双向 BFS 及拓扑排序耗时 $O(V + E)$。
+  - 二分查找的范围为有效边成本的个数，最多进行 $\log_2(E)$ 次判断。
+  - 每次判定（`check` 函数）中，利用拓扑序进行 DP 的时间复杂度为 $O(V' + E')$，其中 $V' \le V$, $E' \le E$ 是有效子图的节点和边数。
+  - 综上，总时间复杂度为 $O((V + E) \log E)$。在 $V \le 5 \times 10^4$ 且 $E \le 10^5$ 的情况下，能够在可接受的时间内平稳运行。
+
+- **空间复杂度**：$O(V + E)$，主要来自于构建的正反向邻接表和 DP 数组。
 
 
 
