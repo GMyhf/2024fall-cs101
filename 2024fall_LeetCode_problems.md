@@ -16711,7 +16711,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -39578,6 +39578,112 @@ class Solution:
 
 1.  **字典 `dictionary` 非常大**：如果有 10 万个单词，暴力枚举每个单词会超时，而 Trie 可以合并前缀，减少大量的重复比较。
 2.  **前缀共享**：如果字典中有很多单词具有相同的前缀，Trie 的搜索路径会大大压缩，避免了暴力法中对相同前缀的反复扫描。
+
+
+
+## M2492.两个城市间路径的最小分数
+
+https://leetcode.cn/problems/minimum-score-of-a-path-between-two-cities/
+
+给你一个正整数 `n` ，表示总共有 `n` 个城市，城市从 `1` 到 `n` 编号。给你一个二维数组 `roads` ，其中 `roads[i] = [ai, bi, distancei]` 表示城市 `ai` 和 `bi` 之间有一条 **双向** 道路，道路距离为 `distancei` 。城市构成的图不一定是连通的。
+
+两个城市之间一条路径的 **分数** 定义为这条路径中道路的 **最小** 距离。
+
+返回城市 `1` 和城市 `n` 之间的所有路径的 **最小** 分数。
+
+**注意：**
+
+- 一条路径指的是两个城市之间的道路序列。
+- 一条路径可以 **多次** 包含同一条道路，你也可以沿着路径多次到达城市 `1` 和城市 `n` 。
+- 测试数据保证城市 `1` 和城市`n` 之间 **至少** 有一条路径。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2022/10/12/graph11.png)
+
+```
+输入：n = 4, roads = [[1,2,9],[2,3,6],[2,4,5],[1,4,7]]
+输出：5
+解释：城市 1 到城市 4 的路径中，分数最小的一条为：1 -> 2 -> 4 。这条路径的分数是 min(9,5) = 5 。
+不存在分数更小的路径。
+```
+
+**示例 2：**
+
+![img](https://assets.leetcode.com/uploads/2022/10/12/graph22.png)
+
+```
+输入：n = 4, roads = [[1,2,2],[1,3,4],[3,4,7]]
+输出：2
+解释：城市 1 到城市 4 分数最小的路径是：1 -> 2 -> 1 -> 3 -> 4 。这条路径的分数是 min(2,2,4,7) = 2 。
+```
+
+ 
+
+**提示：**
+
+- `2 <= n <= 10^5`
+- `1 <= roads.length <= 10^5`
+- `roads[i].length == 3`
+- `1 <= ai, bi <= n`
+- `ai != bi`
+- `1 <= distancei <= 10^4`
+- 不会有重复的边。
+- 城市 `1` 和城市 `n` 之间至少有一条路径。
+
+
+
+这道题的核心在于：我们可以在路径中**重复访问**任何城市和道路。
+
+由于城市 $1$ 和城市 $n$ 之间至少存在一条路径，它们必然属于同一个连通分量。既然可以重复经过任意道路，那么只要是与城市 $1$（以及城市 $n$）处于同一个连通分量中的道路，我们都可以通过“绕路”的方式走过去，然后再返回原来的路径。
+
+因此，问题可以转化为：**求包含城市 $1$ 的连通分量中，所有道路的最小距离。**
+
+我们可以使用广度优先搜索（BFS）来遍历与城市 $1$ 相连的所有节点和边，并在遍历过程中维护最小的道路权重。
+
+**Python3 代码实现**
+
+```python
+from collections import deque
+from typing import List
+
+
+class Solution:
+
+    def minScore(self, n: int, roads: List[List[int]]) -> int:
+        # 构建邻接表，存储邻接点以及对应的道路距离
+        adj = [[] for _ in range(n + 1)]
+        for u, v, w in roads:
+            adj[u].append((v, w))
+            adj[v].append((u, w))
+
+        # 用于记录最小分数，初始化为无穷大
+        min_score = float("inf")
+
+        # BFS 准备工作
+        visited = set([1])
+        queue = deque([1])
+
+        while queue:
+            curr = queue.popleft()
+            for neighbor, weight in adj[curr]:
+                # 即使邻接点已经访问过，当前的道路权重也需要参与比较
+                min_score = min(min_score, weight)
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append(neighbor)
+
+        return min_score
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(V + E)$，其中 $V = n$ 是城市的数量，$E$ 是道路的数量（即 `roads` 的长度）。构建邻接表需要 $O(E)$ 的时间，BFS 遍历连通分量中的每个节点和每条边至多一次，因此总体时间复杂度为线性。
+- **空间复杂度**：$O(V + E)$。邻接表需要 $O(V + E)$ 的空间，队列和已访问集合在最坏情况下需要 $O(V)$ 的空间。
+
+
 
 
 
