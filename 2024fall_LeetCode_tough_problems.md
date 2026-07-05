@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-07-03 11:26 GMT+8*
+*Updated 2026-07-05 10:29 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -5011,6 +5011,154 @@ class Solution:
 | 易理解性 | 逻辑直接        | 更像图搜索         |
 
 两种写法都可以 **AC**，你可以根据个人偏好选择结构清晰或逻辑更紧凑的方式。
+
+
+
+## T1301.最大得分的路径数目
+
+dp, https://leetcode.cn/problems/number-of-paths-with-max-score/
+
+给你一个正方形字符数组 `board` ，你从数组最右下方的字符 `'S'` 出发。
+
+你的目标是到达数组最左上角的字符 `'E'` ，数组剩余的部分为数字字符 `1, 2, ..., 9` 或者障碍 `'X'`。在每一步移动中，你可以向上、向左或者左上方移动，可以移动的前提是到达的格子没有障碍。
+
+一条路径的 「得分」 定义为：路径上所有数字的和。
+
+请你返回一个列表，包含两个整数：第一个整数是 「得分」 的最大值，第二个整数是得到最大得分的方案数，请把结果对 **`10^9 + 7`** **取余**。
+
+如果没有任何路径可以到达终点，请返回 `[0, 0]` 。
+
+ 
+
+**示例 1：**
+
+```
+输入：board = ["E23","2X2","12S"]
+输出：[7,1]
+```
+
+**示例 2：**
+
+```
+输入：board = ["E12","1X1","21S"]
+输出：[4,2]
+```
+
+**示例 3：**
+
+```
+输入：board = ["E11","XXX","11S"]
+输出：[0,0]
+```
+
+ 
+
+**提示：**
+
+- `2 <= board.length == board[i].length <= 100`
+
+
+
+这是一个典型的动态规划（Dynamic Programming）问题。由于我们只能向上、向左或向左上方移动，这等价于如果我们从终点（左上角 `(0, 0)`）往回看，只能从右方、下方、右下方转移而来。因此，我们可以从右下角的起点 `'S'` 开始，向左上方进行状态转移。
+
+**解题思路**
+
+1. **状态定义**：
+   定义 `dp[i][j]` 为到达位置 `(i, j)` 的状态，包含两个值 `[max_score, path_count]`：
+
+   - `max_score` 表示从起点 `'S'` 到达 `(i, j)` 的最大得分。如果无法到达，则设为 `-1`。
+   - `path_count` 表示获得该最大得分的方案数。
+
+2. **初始状态**：
+
+   - 起点 `'S'` 位于 `(N-1, N-1)`，其初始状态为 `[0, 1]`（得分为0，方案数为1）。
+   - 其他位置初始化为 `[-1, 0]`，表示初始时均不可达。
+
+3. **状态转移**：
+   对于任意位置 `(i, j)`（排除起点 `'S'` 和障碍物 `'X'`）：
+   它可以从以下三个方向转移而来：
+
+   - 下方：`(i+1, j)`
+   - 右方：`(i, j+1)`
+   - 右下方：`(i+1, j+1)`
+
+   我们首先收集这三个位置中**可达**的相邻状态（即 `max_score >= 0` 的状态）。
+
+   - 如果没有可达的相邻状态，则当前位置 `(i, j)` 不可达，保持 `[-1, 0]`。
+   - 如果有可达的状态：
+     - 找出这些状态中的最大得分 `max_prev_score`。
+     - 计算这些状态中，得分等于 `max_prev_score` 的方案数之和 `total_paths`。
+     - 当前位置的数字值为 `val`（如果是 `'E'` 则为 0，否则为字符对应的数字）。
+     - 更新当前状态：`dp[i][j] = [max_prev_score + val, total_paths % MOD]`。
+
+4. **最终结果**：
+
+   - 如果终点 `dp[0][0]` 的得分为 `-1`，说明无法到达终点，返回 `[0, 0]`。
+   - 否则返回 `dp[0][0]`。
+
+**Python 3 实现**
+
+```python
+from typing import List
+
+class Solution:
+    def pathsWithMaxScore(self, board: List[str]) -> List[int]:
+        MOD = 10**9 + 7
+        n = len(board)
+        
+        # dp[i][j] 存储 [最大得分, 方案数]
+        # 初始化为 [-1, 0]，表示未达
+        dp = [[[-1, 0] for _ in range(n)] for _ in range(n)]
+        
+        # 起点初始化
+        dp[n-1][n-1] = [0, 1]
+        
+        # 从右下角向左上角遍历
+        for i in range(n - 1, -1, -1):
+            for j in range(n - 1, -1, -1):
+                # 跳过起点和障碍物
+                if i == n - 1 and j == n - 1:
+                    continue
+                if board[i][j] == 'X':
+                    continue
+                
+                candidates = []
+                # 检查下方
+                if i + 1 < n and dp[i+1][j][0] != -1:
+                    candidates.append(dp[i+1][j])
+                # 检查右方
+                if j + 1 < n and dp[i][j+1][0] != -1:
+                    candidates.append(dp[i][j+1])
+                # 检查右下方
+                if i + 1 < n and j + 1 < n and dp[i+1][j+1][0] != -1:
+                    candidates.append(dp[i+1][j+1])
+                
+                # 如果没有可达的来源，当前格也无法到达
+                if not candidates:
+                    continue
+                
+                # 找出最大的前置得分
+                max_prev_score = max(c[0] for c in candidates)
+                # 累加能带来最大前置得分的方案数
+                total_paths = sum(c[1] for c in candidates if c[0] == max_prev_score) % MOD
+                
+                # 确定当前格子的分值
+                val = 0 if board[i][j] == 'E' else int(board[i][j])
+                
+                dp[i][j] = [max_prev_score + val, total_paths]
+        
+        ans = dp[0][0]
+        if ans[0] == -1:
+            return [0, 0]
+        return ans
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(N^2)$。我们需要遍历大小为 $N \times N$ 的网格，每个格子最多进行常数次状态转移，因此时间复杂度与网格的大小呈线性关系。
+- **空间复杂度**：$O(N^2)$。使用了一个 $N \times N \times 2$ 的三维数组来存储 DP 状态。若进一步优化，由于每一行的状态只依赖于当前行和下一行，空间复杂度可以优化到 $O(N)$，但对于 $N \le 100$ 的数据规模，当前的 $O(N^2)$ 空间开销已足够轻量。
+
+
 
 
 
