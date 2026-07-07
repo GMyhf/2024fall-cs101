@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-07-05 10:29 GMT+8*
+*Updated 2026-07-07 10:29 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -1003,6 +1003,158 @@ class Solution:
 > - **双指针** 则更适合理解为按照列来计算雨水量，因为它直接计算每个柱子上方能接住的雨水量，而不需要显式地找出每个凹陷处。
 >
 > 两种方法虽然计算方式不同，但是都能有效地解决问题，并且时间复杂度都是 O(n)，其中 n 是高度数组的长度。空间复杂度方面，单调栈方法需要额外的空间来存储栈，而双指针方法只需要常数级别的额外空间。
+
+
+
+## LCP 49. 环形闯关游戏
+
+位运算、贪心、模拟、环形数组, https://leetcode.cn/problems/K8GULz/
+
+「力扣挑战赛」中有一个由 `N` 个关卡组成的**环形**闯关游戏，关卡编号为 `0`~`N-1`，编号 `0` 的关卡和编号 `N-1` 的关卡相邻。每个关卡均有积分要求，`challenge[i]` 表示挑战编号 `i` 的关卡最少需要拥有的积分。![图片.png](https://raw.githubusercontent.com/GMyhf/img/main/img/1630392170-ucncVS-%E5%9B%BE%E7%89%87.png)
+
+小扣想要挑战关卡，闯关具体规则如下：
+
+- 初始小扣可以指定其中一个关卡为「开启」状态，其余关卡将处于「未开启」状态。
+- 小扣可以挑战处于「开启」状态且**满足最少积分要求**的关卡，若小扣挑战该关卡前积分为 `score`，挑战结束后，积分将增长为 `score|challenge[i]`（即位运算中的 `"OR"` 运算）
+- 在挑战某个关卡后，该关卡两侧相邻的关卡将会开启（若之前未开启）
+
+请帮助小扣进行计算，初始最少需要多少积分，可以挑战 **环形闯关游戏** 的所有关卡。
+
+**示例1：**
+
+> 输入：`challenge = [5,4,6,2,7]`
+>
+> 输出：`4`
+>
+> 解释： 初始选择编号 3 的关卡开启，积分为 4 挑战编号 3 的关卡，积分变为 4∣2=6，开启 2、4 处的关卡 挑战编号 2 的关卡，积分变为 6∣6=6，开启 1 处的关卡 挑战编号 1 的关卡，积分变为 6∣4=6，开启 0 处的关卡 挑战编号 0 的关卡，积分变为 6∣5=7 挑战编号 4 的关卡，顺利完成全部的关卡
+
+**示例2：**
+
+> 输入：`challenge = [12,7,11,3,9]`
+>
+> 输出：`8`
+>
+> 解释： 初始选择编号 3 的关卡开启，积分为 8 挑战编号 3 的关卡，积分变为 8∣3=11，开启 2、4 处的关卡 挑战编号 2 的关卡，积分变为 11∣11=11，开启 1 处的关卡 挑战编号 4 的关卡，积分变为 11∣9=11，开启 0 处的关卡 挑战编号 1 的关卡，积分变为 11∣7=15 挑战编号 0 的关卡，顺利完成全部的关卡
+
+**示例3：**
+
+> 输入：`challenge = [1,1,1]`
+>
+> 输出：`1`
+
+**提示：**
+
+- `1 <= challenge.length <= 5*10^4`
+- `1 <= challenge[i] <= 10^14`
+
+
+
+
+
+**题意**
+
+给定环形数组 `challenge`，`challenge[i]` 表示挑战第 `i` 个关卡前至少需要的积分。
+
+初始可以任选一个关卡开启。若当前积分 `score >= challenge[i]`，则可以挑战该关卡，挑战后积分变为：
+
+```python
+score | challenge[i]
+```
+
+挑战一个关卡后，它左右相邻的关卡会开启。求完成所有关卡所需的最小初始积分。
+
+**思路**
+
+这题不能直接二分答案。
+
+原因是 OR 运算不满足普通数值单调性：初始积分更大，不一定在后续 OR 之后也更有利。例如 `7 | 8 = 15`，但 `8 | 8 = 8`。
+
+因此采用按位贪心：
+
+- 从高位到低位确定答案。
+- 假设当前位可以为 `0`，并把更低位全部设为 `1`，得到当前前缀下的最大候选值。
+- 如果这个候选值仍不能通关，说明当前位必须为 `1`。
+- 否则当前位可以保持为 `0`。
+
+对于固定初始积分 `score`，用 `check(score)` 判断能否通关：
+
+- 按关卡要求从大到小枚举起点。
+- 若当前起点已经被之前扩展覆盖，或 `score < challenge[i]`，跳过。
+- 从该起点开始，维护当前已挑战区间 `[left, right]`。
+- 每次尝试挑战左边界或右边界能挑战的关卡，并用 OR 更新积分。
+- 如果区间扩展成完整一圈，则说明可以通关。
+
+**代码**
+
+```python
+from typing import List
+
+
+class Solution:
+    def ringGame(self, challenge: List[int]) -> int:
+        n = len(challenge)
+        order = sorted(range(n), key=lambda i: challenge[i], reverse=True)
+
+        def check(score: int) -> bool:
+            visited = [False] * n
+
+            for i in order:
+                if visited[i] or score < challenge[i]:
+                    continue
+
+                cur = score | challenge[i]
+                visited[i] = True
+                left = right = i
+
+                while True:
+                    if (right + 1) % n == left:
+                        return True
+
+                    l = (left - 1) % n
+                    r = (right + 1) % n
+
+                    if cur >= challenge[l]:
+                        left = l
+                        cur |= challenge[left]
+                        visited[left] = True
+                    elif cur >= challenge[r]:
+                        right = r
+                        cur |= challenge[right]
+                        visited[right] = True
+                    else:
+                        break
+
+            return False
+
+        ans = 0
+        bit = 1 << max(challenge).bit_length()
+
+        while bit:
+            if not check((ans | bit) - 1):
+                ans |= bit
+            bit >>= 1
+
+        return ans
+```
+
+**复杂度**
+
+- 时间复杂度：`O(n log C)`，其中 `C = max(challenge)`。
+- 空间复杂度：`O(n)`。
+
+
+
+> 解法是： 位运算 + 贪心 + 模拟/区间扩展
+>
+>  \- 位运算：积分更新是 score | challenge[i]，答案也是按二进制位从高到低确定。
+>
+>  \- 贪心：每一位尝试压低；在 check 里，当前积分能吃左边或右边就直接扩展。
+>
+>  \- 模拟/区间扩展：从某个起点向环形数组左右扩张，模拟闯关过程。
+>
+>  \- 并查集：这份代码没有用。只是用 visited 跳过已覆盖的起点，不是并查集合并。
+>
+>  所以保存标签可以写：位运算、贪心、模拟、环形数组。
 
 
 
