@@ -16584,6 +16584,202 @@ if __name__ == "__main__":
 
 
 
+## T3534.针对图的路径存在性查询 II
+
+greedy, binary lifting, https://leetcode.cn/problems/path-existence-queries-in-a-graph-ii/
+
+给你一个整数 `n`，表示图中的节点数量，这些节点按从 `0` 到 `n - 1` 编号。
+
+同时给你一个长度为 `n` 的整数数组 `nums`，以及一个整数 `maxDiff`。
+
+如果满足 `|nums[i] - nums[j]| <= maxDiff`（即 `nums[i]` 和 `nums[j]` 的 **绝对差** 至多为 `maxDiff`），则节点 `i` 和节点 `j` 之间存在一条 **无向边** 。
+
+此外，给你一个二维整数数组 `queries`。对于每个 `queries[i] = [ui, vi]`，找到节点 `ui` 和节点 `vi`之间的 **最短距离** 。如果两节点之间不存在路径，则返回 -1。
+
+返回一个数组 `answer`，其中 `answer[i]` 是第 `i` 个查询的结果。
+
+**注意：**节点之间的边是无权重（unweighted）的。
+
+ 
+
+**示例 1：**
+
+**输入:** n = 5, nums = [1,8,3,4,2], maxDiff = 3, queries = [[0,3],[2,4]]
+
+**输出:** [1,1]
+
+**解释:**
+
+生成的图如下：
+
+![img](https://raw.githubusercontent.com/GMyhf/img/main/img/1745660620-PauXMH-4149example1drawio.png)
+
+| 查询   | 最短路径 | 最短距离 |
+| ------ | -------- | -------- |
+| [0, 3] | 0 → 3    | 1        |
+| [2, 4] | 2 → 4    | 1        |
+
+因此，输出为 `[1, 1]`。
+
+**示例 2：**
+
+**输入:** n = 5, nums = [5,3,1,9,10], maxDiff = 2, queries = [[0,1],[0,2],[2,3],[4,3]]
+
+**输出:** [1,2,-1,1]
+
+**解释:**
+
+生成的图如下：
+
+![img](https://raw.githubusercontent.com/GMyhf/img/main/img/1745660627-mSVsDs-4149example2drawio.png)
+
+| 查询   | 最短路径  | 最短距离 |
+| ------ | --------- | -------- |
+| [0, 1] | 0 → 1     | 1        |
+| [0, 2] | 0 → 1 → 2 | 2        |
+| [2, 3] | 无        | -1       |
+| [4, 3] | 3 → 4     | 1        |
+
+因此，输出为 `[1, 2, -1, 1]`。
+
+**示例 3：**
+
+**输入:** n = 3, nums = [3,6,1], maxDiff = 1, queries = [[0,0],[0,1],[1,2]]
+
+**输出:** [0,-1,-1]
+
+**解释:**
+
+由于以下原因，任意两个节点之间都不存在边：
+
+- 节点 0 和节点 1：`|nums[0] - nums[1]| = |3 - 6| = 3 > 1`
+- 节点 0 和节点 2：`|nums[0] - nums[2]| = |3 - 1| = 2 > 1`
+- 节点 1 和节点 2：`|nums[1] - nums[2]| = |6 - 1| = 5 > 1`
+
+因此，不存在任何可以到达其他节点的节点，输出为 `[0, -1, -1]`。
+
+ 
+
+**提示：**
+
+- `1 <= n == nums.length <= 10^5`
+- `0 <= nums[i] <= 10^5`
+- `0 <= maxDiff <= 10^5`
+- `1 <= queries.length <= 10^5`
+- `queries[i] == [ui, vi]`
+- `0 <= ui, vi < n`
+
+
+
+一个可行且高效的解决方案是利用**最近公共祖先 (LCA)** 中常用的**倍增法 (Binary Lifting)** 以及贪心策略。
+
+**算法思路**
+
+1. **值域简化与去重**：
+   因为图中的边仅取决于节点值的绝对差（$|nums[i] - nums[j]| \le maxDiff$），所有相同数值的节点在连接关系上是完全等价的。我们可以先对 $nums$ 中的所有值进行去重并升序排序，得到数组 $A$。
+
+2. **贪心转移**：
+   对于排序后的数组 $A$ 中的任意元素 $A[i]$，若要向右移动（即走向更大的值），为了以最少的步数到达目标，每一步应该尽可能贪心地走到当前能到达的最右侧位置。
+   设从 $A[i]$ 出发，一步能到达的最大索引为 $to[i]$。通过双指针可以在 $O(M)$ 时间内求出所有的 $to[i]$（其中 $M$ 为 $A$ 的长度）。
+
+3. **倍增法加速查询**：
+   当需要计算从 $i$ 到 $k$ ($i < k$) 的最少步数时，单步递推在最坏情况下需要 $O(M)$ 步。我们可以预处理倍增表（即跳跃表），令 `dp[j][i]` 表示从索引 $i$ 出发，走 $2^j$ 步能到达的最右索引。
+   - 初始化：`dp[0][i] = to[i]`
+   - 递推：`dp[j][i] = dp[j-1][dp[j-1][i]]`
+     对于每次查询，从高到低尝试进行 $2^j$ 的大步跳跃，累加步数，直到恰好不能跨越或到达目标。
+
+4. **特殊情况处理**：
+   - 若查询的两个节点是同一个（$u == v$），距离为 `0`。
+   - 若 $nums[u] == nums[v]$ 且 $u \ne v$，由于绝对差为 $0 \le maxDiff$，两点间必有直接相连的边，距离为 `1`。
+
+**Python 3 实现**
+
+```python
+from typing import List
+
+class Solution:
+    def pathExistenceQueries(self, n: int, nums: List[int], maxDiff: int, queries: List[List[int]]) -> List[int]:
+        # 去重并排序
+        A = sorted(list(set(nums)))
+        M = len(A)
+        
+        # 使用双指针计算一步能到达的最远位置
+        to = [0] * M
+        r = 0
+        for l in range(M):
+            while r < M and A[r] - A[l] <= maxDiff:
+                r += 1
+            to[l] = r - 1
+            
+        # 预处理倍增表，18层足以应对 10^5 大小的数据 (2^17 = 131072)
+        LOG_M = 18
+        dp = [[0] * M for _ in range(LOG_M)]
+        dp[0] = to
+        
+        for j in range(1, LOG_M):
+            dp_prev = dp[j-1]
+            # 利用列表推导式加速倍增表的转移
+            dp[j] = [dp_prev[x] for x in dp_prev]
+                
+        # 建立数值到排序后索引的映射（使用数组代替字典以提高运行速度）
+        max_val = max(nums)
+        val_to_idx = [-1] * (max_val + 1)
+        for idx, val in enumerate(A):
+            val_to_idx[val] = idx
+        
+        ans = []
+        for u, v in queries:
+            if u == v:
+                ans.append(0)
+                continue
+            
+            val_u = nums[u]
+            val_v = nums[v]
+            if val_u == val_v:
+                ans.append(1)
+                continue
+            
+            # 获取在有序数组 A 中的索引
+            i = val_to_idx[val_u]
+            k = val_to_idx[val_v]
+            if i > k:
+                i, k = k, i
+                
+            steps = 0
+            curr = i
+            # 从高位到低位尝试倍增跳跃
+            for j in range(17, -1, -1):
+                nxt = dp[j][curr]
+                if nxt < k and nxt > curr:
+                    steps += (1 << j)
+                    curr = nxt
+            
+            # 判断最后一步能否跨越或到达目标
+            if dp[0][curr] >= k:
+                ans.append(steps + 1)
+            else:
+                ans.append(-1)
+                
+        return ans
+```
+
+**复杂度分析**
+
+- **时间复杂度**：
+  - 去重与排序：$O(n \log n)$
+  - 双指针计算 $to$：$O(M)$，其中 $M \le n$
+  - 倍增表预处理：$O(M \log M)$，共 18 层
+  - 每次查询：使用二分倍增进行 $O(\log M)$ 的跳转。
+  - **总时间复杂度** 为 $O((n + Q) \log n)$，其中 $Q$ 为查询数量。在 $n, Q \le 10^5$ 的限制下，能够在限定时间内顺利通过。
+
+- **空间复杂度**：
+  - 主要开销在于倍增表 `dp`，大小为 $18 \times M$。
+  - **总空间复杂度** 为 $O(n \log n)$。
+
+
+
+
+
 ## T3538.合并得到最小旅行时间
 
 dp, https://leetcode.cn/problems/merge-operations-for-minimum-travel-time/
