@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-07-122 09:18 GMT+8*
+*Updated 2026-07-13 09:18 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -16796,7 +16796,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -31856,7 +31856,65 @@ class Solution:
 
 
 
+## M1291.顺次数
 
+implementation, https://leetcode.cn/problems/sequential-digits/
+
+我们定义「顺次数」为：每一位上的数字都比前一位上的数字大 `1` 的整数。
+
+请你返回由 `[low, high]` 范围内所有顺次数组成的 **有序** 列表（从小到大排序）。
+
+ 
+
+**示例 1：**
+
+```
+输出：low = 100, high = 300
+输出：[123,234]
+```
+
+**示例 2：**
+
+```
+输出：low = 1000, high = 13000
+输出：[1234,2345,3456,4567,5678,6789,12345]
+```
+
+ 
+
+**提示：**
+
+- `10 <= low <= high <= 10^9`
+
+
+
+可以使用滑动窗口的思想来生成所有可能的顺次数。因为顺次数的每一位都比前一位大 1，所以所有的顺次数都是字符串 `"123456789"` 的子串。
+
+由于顺次数的位数在 2 到 9 之间，且总共只有 36 个可能的顺次数，我们可以直接生成所有可能的顺次数，过滤出在 `[low, high]` 范围内的值。因为生成顺序是从小到大的，所以结果自然也是有序的。
+
+**Python 3 实现**
+
+```python
+class Solution:
+    def sequentialDigits(self, low: int, high: int) -> List[int]:
+        ans = []
+        digits = "123456789"
+        
+        # 顺次数的长度在 2 到 9 之间
+        for length in range(2, 10):
+            # 起始索引的范围是 0 到 9 - length
+            for i in range(10 - length):
+                num = int(digits[i : i + length])
+                if low <= num <= high:
+                    ans.append(num)
+                    
+        return ans
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(1)$。顺次数的总数是固定的（最多 36 个），因此循环次数为常数级别，运行时间与输入规模无关。
+- **空间复杂度**：$O(1)$。除了用于存储答案的列表外，只使用了常数级别的辅助空间。
 
 
 
