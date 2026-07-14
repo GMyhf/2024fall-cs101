@@ -13452,6 +13452,96 @@ class Solution:
 
 
 
+## E3658.奇数和与偶数和的最大公约数
+
+math, https://leetcode.cn/problems/gcd-of-odd-and-even-sums/
+
+给你一个整数 `n`。请你计算以下两个值的 **最大公约数**（GCD）：
+
+- `sumOdd`：最小的 `n` 个正奇数的总和。
+- `sumEven`：最小的 `n` 个正偶数的总和。
+
+返回 `sumOdd` 和 `sumEven` 的 GCD。
+
+ 
+
+**示例 1：**
+
+**输入：** n = 4
+
+**输出：** 4
+
+**解释：**
+
+- 前 4 个奇数的总和 `sumOdd = 1 + 3 + 5 + 7 = 16`
+- 前 4 个偶数的总和 `sumEven = 2 + 4 + 6 + 8 = 20`
+
+因此，`GCD(sumOdd, sumEven) = GCD(16, 20) = 4`。
+
+**示例 2：**
+
+**输入：** n = 5
+
+**输出：** 5
+
+**解释：**
+
+- 前 5 个奇数的总和 `sumOdd = 1 + 3 + 5 + 7 + 9 = 25`
+- 前 5 个偶数的总和 `sumEven = 2 + 4 + 6 + 8 + 10 = 30`
+
+因此，`GCD(sumOdd, sumEven) = GCD(25, 30) = 5`。
+
+ 
+
+**提示：**
+
+- `1 <= n <= 1000`
+
+
+
+**方法分析**
+
+我们可以通过数学公式来推导首 $n$ 个奇数之和与首 $n$ 个偶数之和的关系：
+
+1. **最小的 $n$ 个正奇数的总和 $sumOdd$**：
+   前 $n$ 个奇数分别为 $1, 3, 5, \dots, 2n-1$。
+   其和为等差数列求和公式：
+   $$sumOdd = \frac{(1 + 2n - 1) \times n}{2} = n^2$$
+
+2. **最小的 $n$ 个正偶数的总和 $sumEven$**：
+   前 $n$ 个偶数分别为 $2, 4, 6, \dots, 2n$。
+   其和同样可以使用求和公式：
+   $$sumEven = \frac{(2 + 2n) \times n}{2} = n(n+1)$$
+
+根据最大公约数（GCD）的性质，我们可以提取公共公因数：
+$$\text{GCD}(sumOdd, sumEven) = \text{GCD}(n^2, n(n+1))$$
+
+由于 $n > 0$，我们可以将公因数 $n$ 提取到外面：
+$$\text{GCD}(n^2, n(n+1)) = n \cdot \text{GCD}(n, n+1)$$
+
+因为 $n$ 和 $n+1$ 是两个连续的整数，它们是互质的（即它们的最大公约数为 $1$）：
+$$\text{GCD}(n, n+1) = 1$$
+
+所以：
+$$\text{GCD}(sumOdd, sumEven) = n \cdot 1 = n$$
+
+因此，对于任意的正整数 $n$，其结果总是 $n$ 本身。
+
+**Python 代码实现**
+
+```python
+class Solution:
+    def gcdOfOddEvenSums(self, n: int) -> int:
+        return n
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(1)$，只需直接返回 $n$。
+- **空间复杂度**：$O(1)$，不需要额外的辅助空间。
+
+
+
 ## E3740.三个相等元素之间的最小距离 I
 
 hash table, https://leetcode.cn/problems/minimum-distance-between-three-equal-elements-i/
@@ -16796,7 +16886,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
