@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-07-07 10:29 GMT+8*
+*Updated 2026-07-14 16:33 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -13152,6 +13152,160 @@ class Solution:
 
 *   **时间复杂度**：$O(n \log (\text{avg\_children})) \approx O(n \log n)$。构建树和遍历是 $O(n)$，对所有孩子节点排序的总代价在最坏情况下（星型树）为 $O(n \log n)$。Manacher 算法是 $O(n)$。最终查询每个节点是 $O(n)$。
 *   **空间复杂度**：$O(n)$。用于存储邻接表、Manacher 半径数组 `p` 以及辅助字符串 `m_str`。
+
+
+
+## T3336.最大公约数相等的子序列数量
+
+dp, https://leetcode.cn/problems/find-the-number-of-subsequences-with-equal-gcd/
+
+给你一个整数数组 `nums`。
+
+请你统计所有满足以下条件的 **非空** 子序列 对 `(seq1, seq2)` 的数量：
+
+- 子序列 `seq1` 和 `seq2` **不相交**，意味着 `nums` 中 **不存在** 同时出现在两个序列中的下标。
+- `seq1` 元素的 GCD 等于 `seq2` 元素的 GCD。
+
+返回满足条件的子序列对的总数。
+
+由于答案可能非常大，请返回其对 `109 + 7` **取余** 的结果。
+
+ 
+
+**示例 1：**
+
+**输入：** nums = [1,2,3,4]
+
+**输出：** 10
+
+**解释：**
+
+元素 GCD 等于 1 的子序列对有：
+
+- `([**1**, 2, 3, 4], [1, **2**, **3**, 4])`
+- `([**1**, 2, 3, 4], [1, **2**, **3**, **4**])`
+- `([**1**, 2, 3, 4], [1, 2, **3**, **4**])`
+- `([**1**, **2**, 3, 4], [1, 2, **3**, **4**])`
+- `([**1**, 2, 3, **4**], [1, **2**, **3**, 4])`
+- `([1, **2**, **3**, 4], [**1**, 2, 3, 4])`
+- `([1, **2**, **3**, 4], [**1**, 2, 3, **4**])`
+- `([1, **2**, **3**, **4**], [**1**, 2, 3, 4])`
+- `([1, 2, **3**, **4**], [**1**, 2, 3, 4])`
+- `([1, 2, **3**, **4**], [**1**, **2**, 3, 4])`
+
+**示例 2：**
+
+**输入：** nums = [10,20,30]
+
+**输出：** 2
+
+**解释：**
+
+元素 GCD 等于 10 的子序列对有：
+
+- `([**10**, 20, 30], [10, **20**, **30**])`
+- `([10, **20**, **30**], [**10**, 20, 30])`
+
+**示例 3：**
+
+**输入：** nums = [1,1,1,1]
+
+**输出：** 50
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 200`
+- `1 <= nums[i] <= 200`
+
+
+
+为您提供该题目的深度解析与高效的 Python 3 解决方案。
+
+**方法说明**
+
+题目要求计算满足两个不相交非空子序列 `(seq1, seq2)` 具有相同最大公约数（GCD）的子序列对的数量。由于数组的长度 $N \le 200$，且每个元素 $nums[i] \le 200$，这意味着任何子序列的最大可能 GCD 也不会超过 $200$。
+
+我们可以采用动态规划（DP）方法：
+
+- 令 `dp[g1][g2]` 表示在处理当前前缀时，将部分元素划分到两个不相交子序列中，且第一个子序列的 GCD 为 `g1`，第二个子序列的 GCD 为 `g2` 的方案数。
+- 状态值为 `0` 表示对应的子序列为空。
+- 对于数组中的每个元素 `x`，我们有三种决策：
+  1. 不将 `x` 放入任何一个子序列。状态保持 `(g1, g2)` 不变。
+  2. 将 `x` 放入第一个子序列。状态转移至 `(gcd(g1, x), g2)`。
+  3. 将 `x` 放入第二个子序列。状态转移至 `(g1, gcd(g2, x))`。
+
+**优化：**
+
+1. **预计算 GCD 数组**：由于元素范围较小，可以提前计算出 `0` 到 $200$ 之间的两两 GCD，避免在主循环中重复调用 `math.gcd`。
+2. **活跃状态追踪**：不使用完整的二维数组循环，而是只维护一个记录当前非零状态的列表 `active`。通过 1D 布尔数组 `in_active` 来快速去重，从而避免在 Python 中使用 `set` 带来的额外开销。
+
+**Python 3 代码实现**
+
+```python
+import math
+from typing import List
+
+class Solution:
+    def subsequencePairCount(self, nums: List[int]) -> int:
+        
+        MOD = 10**9 + 7
+        M = max(nums)
+        stride = M + 1
+        
+        # 预计算 GCD 表，避免在动态规划转移时重复计算
+        gcd_table = [[0] * stride for _ in range(stride)]
+        for i in range(stride):
+            for j in range(stride):
+                gcd_table[i][j] = math.gcd(i, j)
+                
+        # dp[g1][g2] 记录两个子序列 GCD 分别为 g1 和 g2 的方案数
+        dp = [[0] * stride for _ in range(stride)]
+        dp[0][0] = 1
+        active = [(0, 0)]
+        
+        for x in nums:
+            next_dp = [row[:] for row in dp]
+            next_active = list(active)
+            
+            # 使用一维布尔列表快速判断状态是否已存在于 active 列表中，避免去重开销
+            in_active = [False] * (stride * stride)
+            for g1, g2 in active:
+                in_active[g1 * stride + g2] = True
+                
+            for g1, g2 in active:
+                c = dp[g1][g2]
+                if c == 0:
+                    continue
+                
+                # 选择 1：将 x 放入第一个子序列
+                ng1 = gcd_table[g1][x]
+                idx1 = ng1 * stride + g2
+                if not in_active[idx1]:
+                    in_active[idx1] = True
+                    next_active.append((ng1, g2))
+                next_dp[ng1][g2] = (next_dp[ng1][g2] + c) % MOD
+                
+                # 选择 2：将 x 放入第二个子序列
+                ng2 = gcd_table[g2][x]
+                idx2 = g1 * stride + ng2
+                if not in_active[idx2]:
+                    in_active[idx2] = True
+                    next_active.append((g1, ng2))
+                next_dp[g1][ng2] = (next_dp[g1][ng2] + c) % MOD
+                
+            dp = next_dp
+            active = next_active
+            
+        # 统计所有满足 g1 == g2 且非空的方案数（即 g >= 1）
+        ans = 0
+        for g in range(1, stride):
+            ans = (ans + dp[g][g]) % MOD
+            
+        return ans
+        
+```
 
 
 
