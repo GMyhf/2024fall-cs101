@@ -12983,6 +12983,147 @@ class Solution:
 
 
 
+## T3312.查询排序后的最大公约数
+
+https://leetcode.cn/problems/sorted-gcd-pair-queries/
+
+给你一个长度为 `n` 的整数数组 `nums` 和一个整数数组 `queries` 。
+
+`gcdPairs` 表示数组 `nums` 中所有满足 `0 <= i < j < n` 的数对 `(nums[i], nums[j])` 的 最大公约数 **升序** 排列构成的数组。
+
+对于每个查询 `queries[i]` ，你需要找到 `gcdPairs` 中下标为 `queries[i]` 的元素。
+
+请你返回一个整数数组 `answer` ，其中 `answer[i]` 是 `gcdPairs[queries[i]]` 的值。
+
+`gcd(a, b)` 表示 `a` 和 `b` 的 **最大公约数** 。
+
+ 
+
+**示例 1：**
+
+**输入：**nums = [2,3,4], queries = [0,2,2]
+
+**输出：**[1,2,2]
+
+**解释：**
+
+`gcdPairs = [gcd(nums[0], nums[1]), gcd(nums[0], nums[2]), gcd(nums[1], nums[2])] = [1, 2, 1]`.
+
+升序排序后得到 `gcdPairs = [1, 1, 2]` 。
+
+所以答案为 `[gcdPairs[queries[0]], gcdPairs[queries[1]], gcdPairs[queries[2]]] = [1, 2, 2]` 。
+
+**示例 2：**
+
+**输入：**nums = [4,4,2,1], queries = [5,3,1,0]
+
+**输出：**[4,2,1,1]
+
+**解释：**
+
+`gcdPairs` 升序排序后得到 `[1, 1, 1, 2, 2, 4]` 。
+
+**示例 3：**
+
+**输入：**nums = [2,2], queries = [0,0]
+
+**输出：**[2,2]
+
+**解释：**
+
+`gcdPairs = [2]` 。
+
+ 
+
+**提示：**
+
+- `2 <= n == nums.length <= 10^5`
+- `1 <= nums[i] <= 5 * 10^4`
+- `1 <= queries.length <= 10^5`
+- `0 <= queries[i] < n * (n - 1) / 2`
+
+
+
+这个问题要求我们处理一个数组中所有数对的最大公约数（GCD），并对这些 GCD 进行排序后回答查询。由于数对的数量可能高达 $5 \times 10^9$（当 $n=10^5$ 时），我们**不能**直接生成并排序所有的 GCD。
+
+**核心思路**
+
+我们可以通过统计每个可能的 GCD 值出现的次数，然后利用前缀和与二分查找来解决。
+
+1.  **统计倍数个数**：
+    首先统计 `nums` 中每个数字出现的频率。然后，对于每一个可能的 GCD 值 $g$（从 1 到 $\max(nums)$），计算 `nums` 中有多少个数字是 $g$ 的倍数，记为 $cnt[g]$。
+
+2.  **计算以 $g$ 为公约数的数对总数**：
+    如果一个数对的 GCD 是 $g$ 的倍数，那么这两个数本身必须都是 $g$ 的倍数。因此，包含 $g$ 作为公约数（不一定是最大公约数）的数对总数为：
+    $P_g = \frac{cnt[g] \times (cnt[g] - 1)}{2}$
+
+3.  **容斥原理求精确 GCD 个数**：
+    我们要的是 GCD **正好等于** $g$ 的数对数量，记为 $f(g)$。
+    $f(g) = (\text{所有是 } g \text{ 倍数的数对数量}) - (\text{GCD 是 } 2g, 3g, 4g... \text{ 的数对数量})$
+    我们从 $\max(nums)$ 开始递减地计算 $f(g)$，这样在计算 $f(g)$ 时，所有 $f(k \cdot g)$（$k > 1$）都已经计算好了。
+
+4.  **前缀和与二分查找**：
+    计算 $f(g)$ 的前缀和 `presum`。`presum[g]` 表示所有 GCD 小于等于 $g$ 的数对总数。由于 `gcdPairs` 是升序排列的，`presum` 实际上定义了每个 GCD 值在排序后数组中的索引范围。对于每个查询，使用二分查找定位它属于哪个 $g$。
+
+**Python 代码实现**
+
+```python
+from typing import List
+import bisect
+
+class Solution:
+    def gcdValues(self, nums: List[int], queries: List[int]) -> List[int]:
+        
+        max_val = max(nums)
+        # 统计 nums 中每个数字出现的次数
+        freq = [0] * (max_val + 1)
+        for x in nums:
+            freq[x] += 1
+            
+        # cnt[g] 表示 nums 中有多少个数是 g 的倍数
+        cnt = [0] * (max_val + 1)
+        for g in range(1, max_val + 1):
+            for multiple in range(g, max_val + 1, g):
+                cnt[g] += freq[multiple]
+        
+        # f[g] 表示 GCD 恰好等于 g 的数对数量
+        f = [0] * (max_val + 1)
+        for g in range(max_val, 0, -1):
+            # 组合数：从 cnt[g] 个数中选 2 个
+            total_pairs_with_g_as_factor = cnt[g] * (cnt[g] - 1) // 2
+            # 减去 GCD 是 g 的倍数（2g, 3g...）的情况
+            sub_count = 0
+            for multiple in range(2 * g, max_val + 1, g):
+                sub_count += f[multiple]
+            f[g] = total_pairs_with_g_as_factor - sub_count
+            
+        # 计算 f 的前缀和，用于确定排序后 GCD 的位置
+        presum = [0] * (max_val + 1)
+        for i in range(1, max_val + 1):
+            presum[i] = presum[i - 1] + f[i]
+            
+        # 对每个查询，使用二分查找找到对应的 GCD 值
+        ans = []
+        for q in queries:
+            # 找到第一个满足 presum[g] > q 的 g
+            # 因为 query 是从 0 开始的下标
+            idx = bisect.bisect_right(presum, q)
+            ans.append(idx)
+            
+        return ans
+
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：
+    *   统计倍数 $cnt[g]$：$O(M \log M)$，其中 $M$ 是 `nums` 中的最大值（依据调和级数 $\sum M/i \approx M \log M$）。
+    *   容斥计算 $f[g]$：$O(M \log M)$。
+    *   前缀和：$O(M)$。
+    *   查询：$O(Q \log M)$，其中 $Q$ 是查询数组的长度。
+    *   总复杂度为 $O((M + Q) \log M)$。在 $M=5 \cdot 10^4, Q=10^5$ 的情况下，计算量约为 $2 \cdot 10^6$，完全符合时限要求。
+*   **空间复杂度**：$O(M)$，用于存储频率、计数和前缀和数组。
+
 
 
 ## T3327.判断 DFS 字符串是否是回文串
