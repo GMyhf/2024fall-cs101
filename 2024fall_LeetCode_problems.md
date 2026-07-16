@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-07-13 09:18 GMT+8*
+*Updated 2026-07-16 14:31 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -16886,7 +16886,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -54075,6 +54075,160 @@ class Solution:
         return max(nums[0], nums[-1])
         
 ```
+
+
+
+## M3867.数对的最大公约数之和
+
+https://leetcode.cn/problems/sum-of-gcd-of-formed-pairs/
+
+给你一个长度为 `n` 的整数数组 `nums`。
+
+构造一个数组 `prefixGcd`，其中对于每个下标 `i`：
+
+- 令 `mxi = max(nums[0], nums[1], ..., nums[i])`。
+- `prefixGcd[i] = gcd(nums[i], mxi)`。
+
+在构造 `prefixGcd` 之后：
+
+- 将 `prefixGcd` 按 **非递减** 顺序排序。
+- 通过取 **最小的未配对** 元素和 **最大的未配对** 元素来形成数对。
+- 重复此过程，直到无法再形成更多数对。
+- 对于每个形成的数对，**计算** 两个元素的最大公约数 `gcd`。
+- 如果 `n` 是奇数，`prefixGcd` 数组中的 **中间** 元素保持 **未配对** 状态，并应被忽略。
+
+返回一个整数，表示所有形成数对的 **最大公约数之和**。
+
+术语 `gcd(a, b)` 表示 `a` 和 `b` 的 **最大公约数**。
+
+ 
+
+**示例 1：**
+
+**输入：** nums = [2,6,4]
+
+**输出：** 2
+
+**解释：**
+
+构造 `prefixGcd`：
+
+| `i`  | `nums[i]` | `mxi` | `prefixGcd[i]` |
+| ---- | --------- | ----- | -------------- |
+| 0    | 2         | 2     | 2              |
+| 1    | 6         | 6     | 6              |
+| 2    | 4         | 6     | 2              |
+
+`prefixGcd = [2, 6, 2]`。排序后形成 `[2, 2, 6]`。
+
+将最小和最大的元素配对：`gcd(2, 6) = 2`。剩下的中间元素 2 被忽略。因此，总和为 2。
+
+**示例 2：**
+
+**输入：** nums = [3,6,2,8]
+
+**输出：** 5
+
+**解释：**
+
+构造 `prefixGcd`：
+
+| `i`  | `nums[i]` | `mxi` | `prefixGcd[i]` |
+| ---- | --------- | ----- | -------------- |
+| 0    | 3         | 3     | 3              |
+| 1    | 6         | 6     | 6              |
+| 2    | 2         | 6     | 2              |
+| 3    | 8         | 8     | 8              |
+
+`prefixGcd = [3, 6, 2, 8]`。排序后形成 `[2, 3, 6, 8]`。
+
+形成数对：`gcd(2, 8) = 2` 和 `gcd(3, 6) = 3`。因此，总和为 `2 + 3 = 5`。
+
+ 
+
+**提示：**
+
+- `1 <= n == nums.length <= 10^5`
+- `1 <= nums[i] <= 10^9`
+
+
+
+这个问题可以通过模拟题目描述的步骤来解决。题目要求的核心逻辑分为三个阶段：构造 `prefixGcd` 数组、对数组排序、以及计算配对后的最大公约数之和。
+
+**解题步骤：**
+
+1.  **构造 `prefixGcd` 数组**：
+    *   遍历输入数组 `nums`。
+    *   维护一个变量 `mxi`，记录从下标 0 到当前下标 `i` 的最大值（即前缀最大值）。
+    *   计算 `nums[i]` 与 `mxi` 的最大公约数，将其存入 `prefixGcd[i]`。
+
+2.  **排序**：
+    *   将 `prefixGcd` 数组按非递减（从小到大）顺序排序。
+
+3.  **配对并求和**：
+    *   使用双指针，一个指向数组开头（最小值），一个指向数组末尾（最大值）。
+    *   依次取出这两个数并计算它们的 `gcd`，将结果累加到总和中。
+    *   如果数组长度 `n` 是奇数，双指针最终会指向同一个中间元素，根据题目要求，该元素被忽略（不参与配对）。
+
+**时间复杂度分析：**
+
+*   **构造数组**：$O(n \log(\max(nums)))$，计算 $n$ 次 GCD。
+*   **排序**：$O(n \log n)$。
+*   **配对计算**：$O(n \log(\max(nums)))$，计算 $n/2$ 次 GCD。
+*   **总体复杂度**：$O(n(\log n + \log(\max(nums))))$。在 $n=10^5$ 的量级下，该复杂度是完全可以接受的。
+
+**代码实现：**
+
+```python
+import math
+
+class Solution:
+    def gcdSum(self, nums: list[int]) -> int:
+        n = len(nums)
+        # 1. 构造 prefixGcd 数组
+        prefixGcd = [0] * n
+        curr_max = 0
+        for i in range(n):
+            # 更新前缀最大值
+            if nums[i] > curr_max:
+                curr_max = nums[i]
+            # 计算当前元素与前缀最大值的 GCD
+            prefixGcd[i] = math.gcd(nums[i], curr_max)
+        
+        # 2. 将 prefixGcd 按非递减顺序排序
+        prefixGcd.sort()
+        
+        # 3. 形成数对并计算最大公约数之和
+        total_sum = 0
+        left = 0
+        right = n - 1
+        
+        # 使用双指针从两端向中间配对
+        while left < right:
+            # 取最小的未配对元素 prefixGcd[left] 和最大的未配对元素 prefixGcd[right]
+            total_sum += math.gcd(prefixGcd[left], prefixGcd[right])
+            left += 1
+            right -= 1
+            
+        # 如果 n 是奇数，循环结束时 left == right，中间元素被自然忽略
+        return total_sum
+
+```
+
+**示例解析：**
+
+以 `nums = [3, 6, 2, 8]` 为例：
+
+1.  `i=0`: `max=3`, `gcd(3,3)=3`
+2.  `i=1`: `max=6`, `gcd(6,6)=6`
+3.  `i=2`: `max=6`, `gcd(2,6)=2`
+4.  `i=3`: `max=8`, `gcd(8,8)=8`
+
+*   `prefixGcd = [3, 6, 2, 8]`
+*   排序后：`[2, 3, 6, 8]`
+*   配对 1: `gcd(2, 8) = 2`
+*   配对 2: `gcd(3, 6) = 3`
+*   总和: `2 + 3 = 5`。
 
 
 
