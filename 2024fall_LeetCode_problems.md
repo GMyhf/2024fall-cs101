@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-07-16 14:31 GMT+8*
+*Updated 2026-07-19 08:56 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -16886,7 +16886,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -30842,6 +30842,76 @@ class Solution:
 
         # 如果没有成功覆盖到终点
         return -1
+```
+
+
+
+## M1081.不同字符的最小子序列
+
+monotonic stack, https://leetcode.cn/problems/smallest-subsequence-of-distinct-characters/
+
+返回 `s` 字典序最小的子序列，该子序列包含 `s` 的所有不同字符，且只包含一次。
+
+ 
+
+**示例 1：**
+
+```
+输入：s = "bcabc"
+输出："abc"
+```
+
+**示例 2：**
+
+```
+输入：s = "cbacdcbc"
+输出："acdb"
+```
+
+ 
+
+**提示：**
+
+- `1 <= s.length <= 1000`
+- `s` 由小写英文字母组成
+
+
+
+思路：单调栈 + 剩余次数
+
+```python
+class Solution:
+    def smallestSubsequence(self, s: str) -> str:
+        # 统计每个字符还会出现多少次
+        count = [0] * 26
+        for c in s:
+            count[ord(c) - ord('a')] += 1
+
+        stack = []
+        in_stack = [False] * 26
+
+        for c in s:
+            index = ord(c) - ord('a')
+
+            # 当前字符已经选择过，不能重复选择
+            if in_stack[index]:
+                count[index] -= 1
+                continue
+
+            # 尽可能弹出较大的、且后面还能再次出现的字符
+            while (
+                stack
+                and stack[-1] > c
+                and count[ord(stack[-1]) - ord('a')] > 0
+            ):
+                removed = stack.pop()
+                in_stack[ord(removed) - ord('a')] = False
+
+            stack.append(c)
+            in_stack[index] = True
+            count[index] -= 1
+
+        return ''.join(stack)
 ```
 
 
