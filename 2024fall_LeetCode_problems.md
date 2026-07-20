@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-07-19 08:56 GMT+8*
+*Updated 2026-07-20 17:23 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -6429,6 +6429,120 @@ class Solution:
         
         return ans
 ```
+
+
+
+## E1260.二维网格迁移
+
+matrix, https://leetcode.cn/problems/shift-2d-grid/
+
+给你一个 `m` 行 `n` 列的二维网格 `grid` 和一个整数 `k`。你需要将 `grid` 迁移 `k` 次。
+
+每次「迁移」操作将会引发下述活动：
+
+- 位于 `grid[i][j]`（`j < n - 1`）的元素将会移动到 `grid[i][j + 1]`。
+- 位于 `grid[i][n - 1]` 的元素将会移动到 `grid[i + 1][0]`。
+- 位于 `grid[m - 1][n - 1]` 的元素将会移动到 `grid[0][0]`。
+
+请你返回 `k` 次迁移操作后最终得到的 **二维网格**。
+
+ 
+
+**示例 1：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/e1-1.png" alt="img" style="zoom: 33%;" />
+
+```
+输入：grid = [[1,2,3],[4,5,6],[7,8,9]], k = 1
+输出：[[9,1,2],[3,4,5],[6,7,8]]
+```
+
+**示例 2：**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/e2-1.png" alt="img" style="zoom:50%;" />
+
+```
+输入：grid = [[3,8,1,9],[19,7,2,5],[4,6,11,10],[12,0,21,13]], k = 4
+输出：[[12,0,21,13],[3,8,1,9],[19,7,2,5],[4,6,11,10]]
+```
+
+**示例 3：**
+
+```
+输入：grid = [[1,2,3],[4,5,6],[7,8,9]], k = 9
+输出：[[1,2,3],[4,5,6],[7,8,9]]
+```
+
+ 
+
+**提示：**
+
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m <= 50`
+- `1 <= n <= 50`
+- `-1000 <= grid[i][j] <= 1000`
+- `0 <= k <= 100`
+
+
+
+这个问题可以通过将二维网格“打平”成一维列表来简化。
+
+**解题思路**
+
+1.  **映射关系**：
+    观察题目描述的迁移规则，你会发现这本质上是将二维数组看作一个一维序列，然后将该序列循环右移 $k$ 次。
+    *   二维网格大小为 $m \times n$，总元素个数为 $S = m \times n$。
+    *   二维坐标 $(i, j)$ 对应一维索引为 $idx = i \times n + j$。
+    *   经过 $k$ 次迁移后，原来的元素会移动到新的一维索引：$new\_idx = (idx + k) \pmod S$。
+
+2.  **具体步骤**：
+    *   **计算参数**：获取行数 `m` 和列数 `n`。
+    *   **简化 $k$**：因为移动 $m \times n$ 次网格会回到原状，所以我们令 $k = k \pmod{(m \times n)}$。
+    *   **打平网格**：将二维数组 `grid` 转换为一个一维列表 `flat`。
+    *   **循环移动**：利用 Python 的切片特性，将 `flat` 列表向右循环移动 $k$ 位：`flat[-k:] + flat[:-k]`。
+    *   **重构网格**：将移动后的一维列表重新填充回 $m \times n$ 的二维数组。
+
+**代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def shiftGrid(self, grid: List[List[int]], k: int) -> List[List[int]]:
+        m, n = len(grid), len(grid[0])
+        num_elements = m * n
+        
+        # 1. 实际上移动 k 次相当于移动 k % (m * n) 次
+        k %= num_elements
+        if k == 0:
+            return grid
+        
+        # 2. 将二维网格展平成一维列表
+        flat = []
+        for row in grid:
+            flat.extend(row)
+            
+        # 3. 这里的迁移操作等同于一维列表的循环右移
+        # 将最后 k 个元素移到最前面
+        shifted_flat = flat[-k:] + flat[:-k]
+        
+        # 4. 将一维列表重新构造成二维网格
+        res = []
+        for i in range(0, num_elements, n):
+            res.append(shifted_flat[i : i + n])
+            
+        return res
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(m \times n)$。我们需要遍历整个网格来展平它，然后再遍历一次来重构它。
+*   **空间复杂度**：$O(m \times n)$。我们需要一个额外的列表来存储展平后的数据以及最终的结果网格。
+
+**进阶：原地修改（可选）**
+
+如果面试要求尽量减少空间开销，可以使用一维坐标转换公式直接填充结果数组，或者通过多次翻转（Reverse）实现原地的循环移位。但在本题 $m, n \le 50$ 的数据范围内，上述 Pythonic 的写法最为简洁高效。
 
 
 
@@ -16886,7 +17000,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
