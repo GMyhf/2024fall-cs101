@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-07-14 16:33 GMT+8*
+*Updated 2026-07-22 16:33 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -15975,6 +15975,263 @@ class Solution:
 > 位操作利用二进制本质。从“数值” → “二进制结构”
 >
 > Dijkstra 的 Shunting Yard 算法（调度场算法）将表达式转换成计算机能够轻松、线性处理的后缀表达式。
+
+
+
+## T3501.操作后最大活跃区段数 II
+
+setment tree, https://leetcode.cn/problems/maximize-active-section-with-trade-ii/
+
+给你一个长度为 `n` 的二进制字符串 `s` ，其中：
+
+- `'1'` 表示一个 **活跃** 区段。
+- `'0'` 表示一个 **非活跃** 区段。
+
+你最多可以进行一次 **操作** 来最大化 `s` 中活跃区段的数量。在一次操作中，你可以：
+
+- 将一个被 `'0'` 包围的连续 `'1'` 区块转换为全 `'0'`。
+- 然后，将一个被 `'1'` 包围的连续 `'0'` 区块转换为全 `'1'`。
+
+此外，你还有一个 **二维数组** `queries`，其中 `queries[i] = [li, ri]` 表示子字符串 `s[li...ri]`。
+
+对于每个查询，确定在对子字符串 `s[li...ri]` 进行最优交换后，字符串 `s` 中 **可能的最大** 活跃区段数。
+
+返回一个数组 `answer`，其中 `answer[i]` 是 `queries[i]` 的结果。
+
+**注意**
+
+- 对于每个查询，仅对 `s[li...ri]` 处理时，将其看作是在两端都加上一个 `'1'` 后的字符串，形成 `t = '1' + s[li...ri] + '1'`。这些额外的 `'1'` 不会对最终的活跃区段数有贡献。
+- 各个查询相互独立。
+
+ 
+
+**示例 1：**
+
+**输入：** s = "01", queries = [[0,1]]
+
+**输出：** [1]
+
+**解释：**
+
+因为没有被 `'0'` 包围的 `'1'` 区块，所以没有有效的操作可以进行。最大活跃区段数是 1。
+
+**示例 2：**
+
+**输入：** s = "0100", queries = [[0,3],[0,2],[1,3],[2,3]]
+
+**输出：** [4,3,1,1]
+
+**解释：**
+
+- 查询 `[0, 3]` → 子字符串 `"0100"` → 变为 `"101001"`
+  选择 `"0100"`，`"0100"` → `"0000"` → `"1111"`。
+  最终字符串（去掉添加的 `'1'`）为 `"1111"`。最大活跃区段数为 4。
+- 查询 `[0, 2]` → 子字符串 `"010"` → 变为 `"10101"`
+  选择 `"010"`，`"010"` → `"000"` → `"111"`。
+  最终字符串（去掉添加的 `'1'`）为 `"1110"`。最大活跃区段数为 3。
+- 查询 `[1, 3]` → 子字符串 `"100"` → 变为 `"11001"`
+  因为没有被 `'0'` 包围的 `'1'` 区块，所以没有有效的操作可以进行。最大活跃区段数为 1。
+- 查询 `[2, 3]` → 子字符串 `"00"` → 变为 `"1001"`
+  因为没有被 `'0'` 包围的 `'1'` 区块，所以没有有效的操作可以进行。最大活跃区段数为 1。
+
+**示例 3：**
+
+**输入：** s = "1000100", queries = [[1,5],[0,6],[0,4]]
+
+**输出：** [6,7,2]
+
+**解释：**
+
+- 查询 `[1, 5]` → 子字符串 `"00010"` → 变为 `"1000101"`
+  选择 `"00010"`，`"00010"` → `"00000"` → `"11111"`。
+  最终字符串（去掉添加的 `'1'`）为 `"1111110"`。最大活跃区段数为 6。
+- 查询 `[0, 6]` → 子字符串 `"1000100"` → 变为 `"110001001"`
+  选择 `"000100"`，`"000100"` → `"000000"` → `"111111"`。
+  最终字符串（去掉添加的 `'1'`）为 `"1111111"`。最大活跃区段数为 7。
+- 查询 `[0, 4]` → 子字符串 `"10001"` → 变为 `"1100011"`
+  因为没有被 `'0'` 包围的 `'1'` 区块，所以没有有效的操作可以进行。最大活跃区段数为 2。
+
+**示例 4：**
+
+**输入：** s = "01010", queries = [[0,3],[1,4],[1,3]]
+
+**输出：** [4,4,2]
+
+**解释：**
+
+- 查询 `[0, 3]` → 子字符串 `"0101"` → 变为 `"101011"`
+  选择 `"010"`，`"010"` → `"000"` → `"111"`。
+  最终字符串（去掉添加的 `'1'`）为 `"11110"`。最大活跃区段数为 4。
+- 查询 `[1, 4]` → 子字符串 `"1010"` → 变为 `"110101"`
+  选择 `"010"`，`"010"` → `"000"` → `"111"`。
+  最终字符串（去掉添加的 `'1'`）为 `"01111"`。最大活跃区段数为 4。
+- 查询 `[1, 3]` → 子字符串 `"101"` → 变为 `"11011"`
+  因为没有被 `'0'` 包围的 `'1'` 区块，所以没有有效的操作可以进行。最大活跃区段数为 2。
+
+ 
+
+**提示：**
+
+- `1 <= n == s.length <= 10^5`
+- `1 <= queries.length <= 10^5`
+- `s[i]` 只有 `'0'` 或 `'1'`。
+- `queries[i] = [li, ri]`
+- `0 <= li <= ri < n`
+
+
+
+这个问题要求我们通过一次“操作”（移除一个被 `'0'` 包围的 `'1'` 区块，然后填充一个被 `'1'` 包围的 `'0'` 区块）来最大化字符串中 `'1'` 的总数。该操作是在给定的查询范围 $[l_i, r_i]$ 内进行的，且在边界处虚拟补 `'1'`。
+
+**核心思路**
+
+1.  **操作的本质**：
+    *   移除一个 `'1'` 区块 $B_1 = [x, y]$，代价是减少了 $|B_1|$ 个 `'1'`。
+    *   填充一个 `'0'` 区块 $B_0$，收益是增加了 $|B_0|$ 个 `'1'`。
+    *   为了使收益最大化，我们应该选择一个 $B_1$，使得移除它后能产生或合并出一个极大的 `'0'` 区块。
+    *   设 $B_1$ 左右相邻的 `'0'` 区块长度分别为 $L_0$ 和 $R_0$（在查询范围内截断）。移除 $B_1$ 后，合并出的新 `'0'` 区块长度为 $L_0 + |B_1| + R_0$。填充这个新区块后的净收益为 $(L_0 + |B_1| + R_0) - |B_1| = L_0 + R_0$。
+    *   因此，问题转化为在查询范围 $[l_i, r_i]$ 内寻找一个可移除的 `'1'` 区块 $B_i$，使得其左右相邻 `'0'` 区块在范围内的长度之和 $L_0 + R_0$ 最大。
+
+2.  **数学建模**：
+    *   设全局中一个可移除的 `'1'` 区块为 $B_i = [x_i, y_i]$。
+    *   其左侧 `'0'` 区块起始于 $u_i$，右侧 `'0'` 区块结束于 $v_i$。
+    *   对于查询 $[l, r]$，该区块在范围内的收益 $G_i(l, r) = (x_i - \max(u_i, l)) + (\min(v_i, r) - y_i)$。
+    *   条件是该区块必须完全在范围内：$l < x_i$ 且 $y_i < r$。
+
+3.  **高效求解**：
+    *   由于查询和区块数量均为 $10^5$，我们需要 $O((N+Q) \log^k N)$ 的算法。
+    *   $G_i$ 中的 $\max$ 和 $\min$ 项可以根据 $l$ 与 $u_i$、$r$ 与 $v_i$ 的关系拆分为四种情况。
+    *   我们可以使用**时间轴线段树 (Segment Tree over Timeline)** 对 $l$ 进行分治，并结合一个维护 $r$ 方向收益的**全局线段树（支持撤销）**。
+    *   对于每个区块，它在 $l$ 的某些区间内收益函数形式不同（常数或含 $-l$ 项），将其加入时间轴。
+    *   遍历时间轴线段树，在每个叶子节点（即每个可能的 $l$）处理对应的查询。
+
+**代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def maxActiveSectionsAfterTrade(self, s: str, queries: List[List[int]]) -> List[int]:
+        n = len(s)
+        ones_count = s.count('1')
+        
+        # 预处理：记录所有 '0' 区块的边界，方便定位 u_i 和 v_i
+        left_zero_start = {}
+        right_zero_end = {}
+        i = 0
+        while i < n:
+            if s[i] == '0':
+                start = i
+                while i < n and s[i] == '0': i += 1
+                end = i - 1
+                left_zero_start[end + 1] = start
+                right_zero_end[start - 1] = end
+            else:
+                i += 1
+        
+        # 找到全局所有可移除的 '1' 区块 (两侧都有 '0')
+        removables = []
+        i = 0
+        while i < n:
+            if s[i] == '1':
+                start = i
+                while i < n and s[i] == '1': i += 1
+                end = i - 1
+                if start > 0 and end < n - 1 and s[start-1] == '0' and s[end+1] == '0':
+                    u = left_zero_start[start]
+                    v = right_zero_end[end]
+                    removables.append((start, end, u, v))
+            else:
+                i += 1
+        
+        # 如果没有可移除的 '1'，所有查询结果均为原始 '1' 的数量
+        if not removables:
+            return [ones_count] * len(queries)
+
+        # 构建时间轴线段树 (针对 li)
+        tree_size = 1
+        while tree_size < n: tree_size *= 2
+        timeline = [[] for _ in range(2 * tree_size)]
+        
+        for x, y, u, v in removables:
+            # 收益拆分为四种情况，根据 li 和 ri 的范围加入 timeline
+            # 情况 1&3 (Type B): li 在 [0, u]，左收益为常数 x-u
+            # 情况 2&4 (Type A): li 在 [u+1, x-1]，左收益为 x-li
+            sub_items = []
+            if y + 1 <= v - 1: # ri 在右 '0' 区块内部
+                sub_items.append((y + 1, v - 1, x - u - y, 0)) # Type B
+                sub_items.append((y + 1, v - 1, x - y, 2))     # Type A
+            if v <= n - 1: # ri 超过右 '0' 区块
+                sub_items.append((v, n - 1, v + x - u - y, 1)) # Type B
+                sub_items.append((v, n - 1, v + x - y, 3))     # Type A
+            
+            for l_ri, r_ri, val, t in sub_items:
+                tl, tr = (0 + tree_size, u + tree_size) if t < 2 else (u + 1 + tree_size, x - 1 + tree_size)
+                if tl > tr: continue
+                while tl <= tr:
+                    if tl % 2 == 1: timeline[tl].append((l_ri, r_ri, val, t)); tl += 1
+                    if tr % 2 == 0: timeline[tr].append((l_ri, r_ri, val, t)); tr -= 1
+                    tl >>= 1; tr >>= 1
+
+        # 将查询按 li 分组
+        queries_at_li = [[] for _ in range(n)]
+        for idx, (li, ri) in enumerate(queries):
+            queries_at_li[li].append((ri, idx))
+            
+        results = [ones_count] * len(queries)
+        # ri_trees 维护四个类型的最大值，支持撤销的操作
+        ri_trees = [[[] for _ in range(2 * tree_size)] for _ in range(4)]
+        t0, t1, t2, t3 = ri_trees
+        target_tree = [t0, t1, t2, t3]
+        INF = 10**9
+
+        # 迭代 DFS 遍历时间轴线段树
+        stack = [(1, 0, tree_size - 1)]
+        while stack:
+            node_idx, l, r = stack.pop()
+            if node_idx > 0:
+                stack.append((-node_idx, l, r))
+                for l_ri, r_ri, val, t in timeline[node_idx]:
+                    tr = target_tree[t]
+                    ll, rr = l_ri + tree_size, r_ri + tree_size
+                    while ll <= rr:
+                        if ll % 2 == 1:
+                            sn = tr[ll]
+                            sn.append(max(sn[-1], val) if sn else val); ll += 1
+                        if rr % 2 == 0:
+                            sn = tr[rr]
+                            sn.append(max(sn[-1], val) if sn else val); rr -= 1
+                        ll >>= 1; rr >>= 1
+                
+                if l == r: # 叶子节点，处理查询
+                    if l < n:
+                        for ri, q_idx in queries_at_li[l]:
+                            res_b, res_a = -INF, -INF
+                            idx = ri + tree_size
+                            while idx >= 1:
+                                s0, s1, s2, s3 = t0[idx], t1[idx], t2[idx], t3[idx]
+                                if s0: v = s0[-1] + ri; res_b = v if v > res_b else res_b
+                                if s1: v = s1[-1]; res_b = v if v > res_b else res_b
+                                if s2: v = s2[-1] + ri; res_a = v if v > res_a else res_a
+                                if s3: v = s3[-1]; res_a = v if v > res_a else res_a
+                                idx >>= 1
+                            gain = res_b if res_b > res_a - l else res_a - l
+                            if gain > 0: results[q_idx] = ones_count + gain
+                else:
+                    mid = (l + r) >> 1
+                    stack.append((2 * node_idx + 1, mid + 1, r))
+                    stack.append((2 * node_idx, l, mid))
+            else: # 撤销操作 (Undo)
+                node_idx = -node_idx
+                for l_ri, r_ri, val, t in timeline[node_idx]:
+                    tr = target_tree[t]
+                    ll, rr = l_ri + tree_size, r_ri + tree_size
+                    while ll <= rr:
+                        if ll % 2 == 1: tr[ll].pop(); ll += 1
+                        if rr % 2 == 0: tr[rr].pop(); rr -= 1
+                        ll >>= 1; rr >>= 1
+        
+        return results
+```
 
 
 
