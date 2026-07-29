@@ -1,6 +1,6 @@
 # Tough Problems in leetcode.cn
 
-*Updated 2026-07-22 16:33 GMT+8*
+*Updated 2026-07-29 09:26 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -16919,7 +16919,113 @@ hash table, math, string, combinatorics, counting,  https://leetcode.cn/problems
 
 
 
+这道题要求在给定的 **回文串** `s` 的所有不同的回文排列中，按 **字典序** 找出第 `k` 小的回文排列。如果不同的回文排列总数不足 `k` 个，则返回空字符串 `""`。
 
+---
+
+**解题思路**
+
+1. **转化问题**：
+   - 因为字符串是回文串，所以整个回文串完全由其 **左半部分**（长度为 `n // 2`）确定。
+   - 如果字符串长度为奇数，中间的字符是固定的（即 `s[n // 2]`）。
+   - 因此，**整个回文串按字典序排列，等价于其左半部分按字典序排列**。
+   - 题目转化为：计算由 `s` 的左半部分字符构成的多重集排列，求其按字典序第 `k` 小的左半部分。
+
+2. **多重集排列数计算（组合数学）**：
+   - 假设当前剩余的待排列字符频次为 `cnt`，总字符数为 `total = sum(cnt)`。
+   - 这些字符能构成的不同排列数为：
+     $$\text{ways} = \prod_{i=0}^{25} \binom{\text{total}_{i}}{\text{cnt}[i]}$$
+     其中 $\text{total}_i$ 是除去前 $i-1$ 种字符后剩余的位置数。
+   - 由于 $k \le 10^6$，当组合数乘积达到 $k + 1$ 时即可 **截断 (Limit)**，避免产生巨大的大数运算，保证计算效率。
+
+3. **逐位确定（逐字符试填法）**：
+   - 从左到右依次确定左半部分的每个位置。
+   - 对于每个位置，按照字母表顺序 `'a'` 到 `'z'` 尝试填入字符 `c`：
+     - 若字符 `c` 的剩余频次大于 0，假设将 `c` 填入当前位置，计算剩余字符能够构成的**不同排列数** `ways`。
+     - 如果 $k \le \text{ways}$，说明目标排列就在以 `c` 开头的分支中，因此确定当前位置填入 `c`，跳出内层循环。
+     - 如果 $k > \text{ways}$，说明以 `c` 开头的分支不够 $k$ 个，将 $k$ 减去 `ways`（$k \leftarrow k - \text{ways}$），撤销选择并尝试下一个字符。
+
+4. **拼接完整回文串**：
+   - 构造出左半部分 `left` 后，最终答案即为 `left + mid + left[::-1]`。
+
+---
+
+**Python3 代码实现**
+
+```python
+import math
+
+
+class Solution:
+
+  def smallestPalindrome(self, s: str, k: int) -> str:
+    n = len(s)
+    half_len = n // 2
+    # 奇数长度时确定中间字符，偶数长度时为空字符串
+    mid = s[half_len] if n % 2 == 1 else ""
+
+    # 统计左半部分的字符频次
+    cnt = [0] * 26
+    for i in range(half_len):
+      cnt[ord(s[i]) - ord("a")] += 1
+
+    # 上限截断值，避免无意义的大数乘法
+    LIMIT = k + 1
+
+    # 计算多重集排列数，超过 LIMIT 时立即截断
+    def count_arrangements(counts: list[int]) -> int:
+      total = sum(counts)
+      res = 1
+      for c in counts:
+        if c == 0:
+          continue
+        res *= math.comb(total, c)
+        total -= c
+        if res >= LIMIT:
+          return LIMIT
+      return res
+
+    # 如果总排列数小于 k，说明不存在第 k 个回文排列
+    if count_arrangements(cnt) < k:
+      return ""
+
+    left = []
+    # 逐位试填左半部分的字符
+    for _ in range(half_len):
+      for i in range(26):
+        if cnt[i] == 0:
+          continue
+
+        # 尝试将字符 i 填入当前位
+        cnt[i] -= 1
+        ways = count_arrangements(cnt)
+
+        if k <= ways:
+          # 目标在当前分支，确定填入字符 i
+          left.append(chr(ord("a") + i))
+          break
+        else:
+          # 不在当前分支，恢复频次并跳过
+          cnt[i] += 1
+          k -= ways
+
+    left_str = "".join(left)
+    # 拼接最终的回文串
+    return left_str + mid + left_str[::-1]
+```
+
+---
+
+**复杂度分析**
+
+- **时间复杂度**：$O(n + \frac{n}{2} \times 26) = O(n)$。
+  - 统计频次需要 $O(n)$ 时间。
+  - 左半部分有 $m = n/2$ 个位置，每个位置最多枚举 26 个字符。
+  - `count_arrangements` 函数内部在乘积超过 `k + 1` 后会触发提前返回（通常仅需循环 1~3 次），因此每次调用可视为 $O(1)$ 时间。
+  - Overall 运行时间非常高效，可以远低于 0.1 秒通过 $n = 10^4$ 的数据。
+
+- **空间复杂度**：$O(n)$。
+  - 辅助频次数组大小固定为 26，存储答案的数组大小为 $O(n)$。
 
 
 
