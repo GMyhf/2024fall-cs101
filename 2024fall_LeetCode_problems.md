@@ -17114,7 +17114,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -27043,6 +27043,175 @@ class Solution:
 
         return res
 ```
+
+
+
+## M486.预测赢家
+
+game theory, dp, https://leetcode.cn/problems/predict-the-winner/
+
+给你一个整数数组 `nums` 。玩家 1 和玩家 2 基于这个数组设计了一个游戏。
+
+玩家 1 和玩家 2 轮流进行自己的回合，玩家 1 先手。开始时，两个玩家的初始分值都是 `0` 。每一回合，玩家从数组的任意一端取一个数字（即，`nums[0]` 或 `nums[nums.length - 1]`），取到的数字将会从数组中移除（数组长度减 `1` ）。玩家选中的数字将会加到他的得分上。当数组中没有剩余数字可取时，游戏结束。
+
+如果玩家 1 能成为赢家，返回 `true` 。如果两个玩家得分相等，同样认为玩家 1 是游戏的赢家，也返回 `true` 。你可以假设每个玩家的玩法都会使他的分数最大化。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,5,2]
+输出：false
+解释：一开始，玩家 1 可以从 1 和 2 中进行选择。
+如果他选择 2（或者 1 ），那么玩家 2 可以从 1（或者 2 ）和 5 中进行选择。如果玩家 2 选择了 5 ，那么玩家 1 则只剩下 1（或者 2 ）可选。 
+所以，玩家 1 的最终分数为 1 + 2 = 3，而玩家 2 为 5 。
+因此，玩家 1 永远不会成为赢家，返回 false 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,5,233,7]
+输出：true
+解释：玩家 1 一开始选择 1 。然后玩家 2 必须从 5 和 7 中进行选择。无论玩家 2 选择了哪个，玩家 1 都可以选择 233 。
+最终，玩家 1（234 分）比玩家 2（12 分）获得更多的分数，所以返回 true，表示玩家 1 可以成为赢家。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 20`
+- `0 <= nums[i] <= 10^7`
+
+
+
+这道题是一道经典的**零和博弈问题**（Zero-Sum Game），可以通过**动态规划（Dynamic Programming）**或**记忆化搜索（Memoization）**来解决。
+
+---
+
+**解题思路**
+
+如果我们分别去维护“玩家 1 的得分”和“玩家 2 的得分”，状态会比较复杂。
+更巧妙的做法是**计算相对分数差**：
+定义 $dp(i, j)$ 表示在数组区间 `nums[i...j]` 内，**当前轮到操作的玩家**能够获得的**最大净胜分**（即当前玩家得分 - 对手得分）。
+
+对于当前玩家，在 `nums[i...j]` 区间内有两种选择：
+
+1. **选择左端的数字 `nums[i]`**：
+   * 当前玩家获得 `nums[i]` 分。
+   * 接下来轮到对手在 `nums[i+1...j]` 范围内操作，对手能获得的净胜分是 $dp(i+1, j)$。
+   * 因此，当前玩家相较于对手的净胜分为：`nums[i] - dp(i + 1, j)`。
+2. **选择右端的数字 `nums[j]`**：
+   * 当前玩家获得 `nums[j]` 分。
+   * 接下来轮到对手在 `nums[i...j-1]` 范围内操作，对手能获得的净胜分是 $dp(i, j-1)$。
+   * 因此，当前玩家相较于对手的净胜分为：`nums[j] - dp(i, j - 1)`。
+
+由于玩家都是极智的（极大化自己的优势），当前玩家会选择上面两种方案中**净胜分更大**的那个：
+$$dp(i, j) = \max(\text{nums}[i] - dp(i+1, j),\ \text{nums}[j] - dp(i, j-1))$$
+
+**递归基（Base Case）：**
+当 $i == j$ 时，只剩一个数字，当前玩家只能选 `nums[i]`，净胜分为 `nums[i]`。
+
+最后，如果是玩家 1 先手从区间 `nums[0...n-1]` 开始游戏，只要 $dp(0, n-1) \ge 0$，就说明玩家 1 的分数可以大于或等于玩家 2，即返回 `True`。
+
+---
+
+**代码实现**
+
+#### 方法一：记忆化搜索（推荐，代码最简洁）
+
+使用 `@cache` 装饰器记录已经计算过的区间，避免重复计算。
+
+```python
+from functools import cache
+from typing import List
+
+
+class Solution:
+
+    def predictTheWinner(self, nums: List[int]) -> bool:
+        @cache
+        def dp(i: int, j: int) -> int:
+            # 递归基：只剩一个数字时，当前玩家获得该数字
+            if i == j:
+                return nums[i]
+
+            # 选左边 或 选右边，减去对手在剩余区间的最大净胜分
+            pick_left = nums[i] - dp(i + 1, j)
+            pick_right = nums[j] - dp(i, j - 1)
+
+            return max(pick_left, pick_right)
+
+        # 玩家1 从区间 [0, len(nums) - 1] 开始，如果净胜分 >= 0，则获胜
+        return dp(0, len(nums) - 1) >= 0
+```
+
+---
+
+#### 方法二：二维动态规划（自底向上）
+
+从区间长度较小的情况逐步递推到整个数组。
+
+```python
+from typing import List
+
+
+class Solution:
+
+    def predictTheWinner(self, nums: List[int]) -> bool:
+        n = len(nums)
+        # dp[i][j] 表示在 nums[i...j] 范围内当前玩家的最大净胜分
+        dp = [[0] * n for _ in range(n)]
+
+        # 初始化：区间长度为 1 的情况
+        for i in range(n):
+            dp[i][i] = nums[i]
+
+        # 从区间长度 2 开始迭代到 n
+        for length in range(2, n + 1):
+            for i in range(n - length + 1):
+                j = i + length - 1
+                dp[i][j] = max(
+                    nums[i] - dp[i + 1][j], nums[j] - dp[i][j - 1]
+                )
+
+        return dp[0][n - 1] >= 0
+```
+
+---
+
+#### 方法三：一维动态规划（空间优化）
+
+通过观察转移方程，$dp[i][j]$ 只依赖于下一行 $dp[i+1][j]$ 和同行左侧 $dp[i][j-1]$，因此可以将空间压缩到 $O(N)$。
+
+```python
+from typing import List
+
+
+class Solution:
+
+    def predictTheWinner(self, nums: List[int]) -> bool:
+        n = len(nums)
+        dp = nums[:]  # 初始状态，相当于 dp[i][i] = nums[i]
+
+        for i in range(n - 2, -1, -1):
+            for j in range(i + 1, n):
+                dp[j] = max(nums[i] - dp[j], nums[j] - dp[j - 1])
+
+        return dp[n - 1] >= 0
+```
+
+---
+
+**复杂度分析**
+
+* **时间复杂度**：
+  * **方法一/二/三**：状态个数为 $O(N^2)$（数组长度 $N \le 20$），每个状态转移为 $O(1)$。因此时间复杂度为 **$O(N^2)$**。由于 $N \le 20$，$N^2 \le 400$，计算速度极快（在微秒级完成）。
+* **空间复杂度**：
+  * **方法一/二**：递归栈/二维表格空间均为 **$O(N^2)$**。
+  * **方法三**：经过空间优化后，只需要一维数组，空间复杂度为 **$O(N)$**。
 
 
 
