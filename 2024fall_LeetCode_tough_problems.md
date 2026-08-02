@@ -6454,6 +6454,168 @@ class Solution:
 
 
 
+## T1406.石子游戏 III
+
+game theory, dp, https://leetcode.cn/problems/stone-game-iii/
+
+Alice 和 Bob 继续他们的石子游戏。几堆石子 **排成一行** ，每堆石子都对应一个得分，由数组 `stoneValue` 给出。
+
+Alice 和 Bob 轮流取石子，**Alice** 总是先开始。在每个玩家的回合中，该玩家可以拿走剩下石子中的的前 **1、2 或 3 堆石子** 。比赛一直持续到所有石头都被拿走。
+
+每个玩家的最终得分为他所拿到的每堆石子的对应得分之和。每个玩家的初始分数都是 **0** 。
+
+比赛的目标是决出最高分，得分最高的选手将会赢得比赛，比赛也可能会出现平局。
+
+假设 Alice 和 Bob 都采取 **最优策略** 。
+
+如果 Alice 赢了就返回 `"Alice"` *，*Bob 赢了就返回 `"Bob"`*，*分数相同返回 `"Tie"` 。
+
+ 
+
+**示例 1：**
+
+```
+输入：values = [1,2,3,7]
+输出："Bob"
+解释：Alice 总是会输，她的最佳选择是拿走前三堆，得分变成 6 。但是 Bob 的得分为 7，Bob 获胜。
+```
+
+**示例 2：**
+
+```
+输入：values = [1,2,3,-9]
+输出："Alice"
+解释：Alice 要想获胜就必须在第一个回合拿走前三堆石子，给 Bob 留下负分。
+如果 Alice 只拿走第一堆，那么她的得分为 1，接下来 Bob 拿走第二、三堆，得分为 5 。之后 Alice 只能拿到分数 -9 的石子堆，输掉比赛。
+如果 Alice 拿走前两堆，那么她的得分为 3，接下来 Bob 拿走第三堆，得分为 3 。之后 Alice 只能拿到分数 -9 的石子堆，同样会输掉比赛。
+注意，他们都应该采取 最优策略 ，所以在这里 Alice 将选择能够使她获胜的方案。
+```
+
+**示例 3：**
+
+```
+输入：values = [1,2,3,6]
+输出："Tie"
+解释：Alice 无法赢得比赛。如果她决定选择前三堆，她可以以平局结束比赛，否则她就会输。
+```
+
+ 
+
+**提示：**
+
+- `1 <= stoneValue.length <= 5 * 10^4`
+- `-1000 <= stoneValue[i] <= 1000`
+
+
+
+这道题是一道经典的博弈论 + 动态规划问题。
+
+**解题思路**
+
+1. **状态定义**：
+   定义 $dp[i]$ 表示从第 $i$ 堆石子开始到结束，**当前轮到的玩家**能够获取的**最大分数差**（即当前玩家的分数减去对手的分数）。
+
+2. **状态转移方程**：
+   在第 $i$ 堆石子时，当前玩家可以拿走 1、2 或 3 堆石子（假设拿走 $k$ 堆，其中 $k \in \{1, 2, 3\}$）：
+   - 当前玩家拿走的石子分数为：$\sum_{j=i}^{i+k-1} stoneValue[j]$。
+   - 拿走这 $k$ 堆后，剩下的石子从第 $i+k$ 堆开始，轮到对手拿。
+   - 对手能够获取的最大分数差为 $dp[i+k]$（即 对手分数 - 当前玩家分数）。
+   - 因此，从当前玩家的角度来看，拿走 $k$ 堆石子后获得的分数差为：
+     $$\text{当前选择的分数差} = \sum_{j=i}^{i+k-1} stoneValue[j] - dp[i+k]$$
+   - 当前玩家采取最优策略，会选择能让自己得分差最大的选择：
+     $$dp[i] = \max_{1 \le k \le 3, \, i+k \le n} \left( \sum_{j=i}^{i+k-1} stoneValue[j] - dp[i+k] \right)$$
+
+3. **边界条件**：
+   - $dp[n] = 0$，表示没有石子时，两人的分数差为 0。
+
+4. **最终结果**：
+   因为游戏由 Alice 先开始，所以 $dp[0]$ 就是 Alice 相对于 Bob 的最大分数差：
+   - 如果 $dp[0] > 0$，Alice 获胜，返回 `"Alice"`。
+   - 如果 $dp[0] < 0$，Bob 获胜，返回 `"Bob"`。
+   - 如果 $dp[0] == 0$，平局，返回 `"Tie"`。
+
+---
+
+**Python 代码实现**
+
+```python
+from typing import List
+
+class Solution:
+    def stoneGameIII(self, stoneValue: List[int]) -> str:
+        n = len(stoneValue)
+        # dp[i] 表示从 index i 开始，当前玩家能获得的最大分数差
+        dp = [0] * (n + 1)
+        
+        # 从后往前逆序计算 DP
+        for i in range(n - 1, -1, -1):
+            dp[i] = float('-inf')
+            take = 0
+            # 当前玩家尝试拿 1, 2, 3 堆石子
+            for k in range(1, 4):
+                if i + k <= n:
+                    take += stoneValue[i + k - 1]
+                    dp[i] = max(dp[i], take - dp[i + k])
+        
+        # 判断 Alice 相对于 Bob 的得分差
+        if dp[0] > 0:
+            return "Alice"
+        elif dp[0] < 0:
+            return "Bob"
+        else:
+            return "Tie"
+```
+
+---
+
+**空间优化版本（可选）**
+
+注意到 $dp[i]$ 只依赖于它后面的三个状态 $dp[i+1]$, $dp[i+2]$, $dp[i+3]$，因此可以使用常量空间（类似于滚动数组）将空间复杂度优化至 $O(1)$：
+
+```python
+class Solution:
+    def stoneGameIII(self, stoneValue: List[int]) -> str:
+        n = len(stoneValue)
+        # 只需要记录后续 3 个状态：dp[i+1], dp[i+2], dp[i+3]
+        a = b = c = 0  # 相当于 dp[i+1], dp[i+2], dp[i+3]
+        
+        for i in range(n - 1, -1, -1):
+            res = float('-inf')
+            take = 0
+            # 按顺序代表 dp[i+1], dp[i+2], dp[i+3]
+            dp_next = [a, b, c]
+            
+            for k in range(1, 4):
+                if i + k <= n:
+                    take += stoneValue[i + k - 1]
+                    res = max(res, take - dp_next[k - 1])
+            
+            # 状态更新向前滚动
+            c = b
+            b = a
+            a = res
+            
+        if a > 0:
+            return "Alice"
+        elif a < 0:
+            return "Bob"
+        else:
+            return "Tie"
+```
+
+---
+
+**复杂度分析**
+
+- **时间复杂度**：$O(N)$，其中 $N$ 是 `stoneValue` 数组的长度。我们只需要从后往前遍历一遍数组，内部循环固定最多执行 3 次。
+- **空间复杂度**：
+  - 基础版：$O(N)$，需要长度为 $N+1$ 的 DP 数组。
+  - 优化版：$O(1)$，仅需常数级别的变量保存后续状态。
+
+
+
+
+
 ## T1483.树节点的第 K 个祖先
 
 LCA, binary lifting, https://leetcode.cn/problems/kth-ancestor-of-a-tree-node/
