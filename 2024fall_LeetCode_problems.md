@@ -1,6 +1,6 @@
 # Problems in leetcode.cn
 
-*Updated 2026-07-30 10:28 GMT+8*
+*Updated 2026-08-04 10:28 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -13770,6 +13770,94 @@ class Solution:
 
 
 
+## E3731.找出缺失的元素
+
+https://leetcode.cn/problems/find-missing-elements/
+
+给你一个整数数组 `nums` ，数组由若干 **互不相同** 的整数组成。
+
+数组 `nums` 原本包含了某个范围内的 **所有整数** 。但现在，其中可能 **缺失** 部分整数。
+
+该范围内的 **最小** 整数和 **最大** 整数仍然存在于 `nums` 中。
+
+返回一个 **有序** 列表，包含该范围内缺失的所有整数，并 **按从小到大排序**。如果没有缺失的整数，返回一个 **空** 列表。
+
+ 
+
+**示例 1：**
+
+**输入：** nums = [1,4,2,5]
+
+**输出：** [3]
+
+**解释：**
+
+最小整数为 1，最大整数为 5，因此完整的范围应为 `[1,2,3,4,5]`。其中只有 3 缺失。
+
+**示例 2：**
+
+**输入：** nums = [7,8,6,9]
+
+**输出：** []
+
+**解释：**
+
+最小整数为 6，最大整数为 9，因此完整的范围为 `[6,7,8,9]`。所有整数均已存在，因此没有缺失的整数。
+
+**示例 3：**
+
+**输入：** nums = [5,1]
+
+**输出：** [2,3,4]
+
+**解释：**
+
+最小整数为 1，最大整数为 5，因此完整的范围应为 `[1,2,3,4,5]`。缺失的整数为 2、3 和 4。
+
+ 
+
+**提示：**
+
+- `2 <= nums.length <= 100`
+- `1 <= nums[i] <= 100`
+
+
+
+这道题要求我们找出在最小值和最大值所构成的连续整数区间 `[min(nums), max(nums)]` 中缺失的所有整数，并按从小到大的顺序返回。
+
+**解题思路**
+
+1. **确定区间范围**：首先求出数组 `nums` 中的最小值 `min_val` 和最大值 `max_val`。
+2. **快速查找存在性**：将数组 `nums` 转换为集合 `set`，以便能在 $O(1)$ 时间复杂度内检查某个数是否存在于原数组中。
+3. **遍历缺失元素**：从 `min_val` 到 `max_val` 遍历区间内的每一个整数，如果该整数不在集合中，则将其加入结果列表中。
+
+**Python 代码**
+
+```python
+from typing import List
+
+class Solution:
+    def findMissingElements(self, nums: List[int]) -> List[int]:
+        num_set = set(nums)
+        min_val = min(nums)
+        max_val = max(nums)
+        
+        # 遍历 [min_val, max_val] 范围内的每个整数，收集缺失的数
+        return [x for x in range(min_val, max_val + 1) if x not in num_set]
+```
+
+**复杂度分析**
+
+- **时间复杂度**：$O(N + M)$，其中 $N$ 是数组 `nums` 的长度，$M$ 是最大值与最小值的差值（即区间大小 $max\_val - min\_val + 1$）。
+  - 求最小值、最大值和转换为集合需要 $O(N)$ 时间。
+  - 遍历区间并进行 $O(1)$ 的集合查找需要 $O(M)$ 时间。
+  - 本题中 $N, M \le 100$，运行时间极快。
+- **空间复杂度**：$O(N)$，用于存储原数组元素的哈希集合 `num_set`。
+
+
+
+
+
 ## E3740.三个相等元素之间的最小距离 I
 
 hash table, https://leetcode.cn/problems/minimum-distance-between-three-equal-elements-i/
@@ -17114,7 +17202,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
