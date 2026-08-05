@@ -1,6 +1,6 @@
 # Medium Problems in leetcode.cn
 
-*Updated 2026-08-04 09:36 GMT+8*
+*Updated 2026-08-05 09:36 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -17,7 +17,7 @@
 
 
 
-# 中等Medium
+# 中等Medium(2~2000)
 
 
 
@@ -2993,7 +2993,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -24012,6 +24012,8 @@ if __name__ == "__main__":
 
 
 
+# 中等Medium(2001+)
+
 ## 2012.数组美丽值求和
 
 https://leetcode.cn/problems/sum-of-beauty-in-the-array/
@@ -30573,6 +30575,143 @@ class Solution:
 
 
 
+## M3047.求交集区域内的最大正方形面积
+
+https://leetcode.cn/problems/find-the-largest-area-of-square-inside-two-rectangles/
+
+在二维平面上存在 `n` 个矩形。给你两个下标从 **0** 开始的二维整数数组 `bottomLeft` 和 `topRight`，两个数组的大小都是 `n x 2` ，其中 `bottomLeft[i]` 和 `topRight[i]` 分别代表第 `i` 个矩形的 **左下角** 和 **右上角** 坐标。
+
+我们定义 **向右** 的方向为 x 轴正半轴（**x 坐标增加**），**向左** 的方向为 x 轴负半轴（**x 坐标减少**）。同样地，定义 **向上** 的方向为 y 轴正半轴（**y 坐标增加**）**，向下** 的方向为 y 轴负半轴（**y 坐标减少**）。
+
+你可以选择一个区域，该区域由两个矩形的 **交集** 形成。你需要找出能够放入该区域 **内** 的 **最大** 正方形面积，并选择最优解。
+
+返回能够放入交集区域的正方形的 **最大** 可能面积，如果矩形之间不存在任何交集区域，则返回 `0`。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2024/01/05/example12.png)
+
+```
+输入：bottomLeft = [[1,1],[2,2],[3,1]], topRight = [[3,3],[4,4],[6,6]]
+输出：1
+解释：边长为 1 的正方形可以放入矩形 0 和矩形 1 的交集区域，或矩形 1 和矩形 2 的交集区域。因此最大面积是边长 * 边长，即 1 * 1 = 1。
+可以证明，边长更大的正方形无法放入任何交集区域。
+```
+
+**示例 2：**
+
+![img](https://assets.leetcode.com/uploads/2024/01/04/rectanglesexample2.png)
+
+```
+输入：bottomLeft = [[1,1],[2,2],[1,2]], topRight = [[3,3],[4,4],[3,4]]
+输出：1
+解释：边长为 1 的正方形可以放入矩形 0 和矩形 1，矩形 1 和矩形 2，或所有三个矩形的交集区域。因此最大面积是边长 * 边长，即 1 * 1 = 1。
+可以证明，边长更大的正方形无法放入任何交集区域。
+请注意，区域可以由多于两个矩形的交集构成。
+```
+
+**示例 3：**
+
+![img](https://assets.leetcode.com/uploads/2024/01/04/rectanglesexample3.png)
+
+```
+输入：bottomLeft = [[1,1],[3,3],[3,1]], topRight = [[2,2],[4,4],[4,2]]
+输出：0
+解释：不存在相交的矩形，因此，返回 0 。
+```
+
+ 
+
+**提示：**
+
+- `n == bottomLeft.length == topRight.length`
+- `2 <= n <= 10^3`
+- `bottomLeft[i].length == topRight[i].length == 2`
+- `1 <= bottomLeft[i][0], bottomLeft[i][1] <= 10^7`
+- `1 <= topRight[i][0], topRight[i][1] <= 10^7`
+- `bottomLeft[i][0] < topRight[i][0]`
+- `bottomLeft[i][1] < topRight[i][1]`
+
+
+
+这是一道几何问题，主要考察如何计算两个矩形的交集，并在该交集中找到最大的正方形。
+
+**解题思路**
+
+1. **矩形交集的计算**：
+   对于两个矩形，设第一个矩形的左下角为 $(ax_1, ay_1)$，右上角为 $(ax_2, ay_2)$；第二个矩形的左下角为 $(bx_1, by_1)$，右上角为 $(bx_2, by_2)$。
+   它们的交集也是一个矩形（或者不存在），其坐标范围如下：
+
+   *   交集左下角 $x$：$ix_1 = \max(ax_1, bx_1)$
+   *   交集左下角 $y$：$iy_1 = \max(ay_1, by_1)$
+   *   交集右上角 $x$：$ix_2 = \min(ax_2, bx_2)$
+   *   交集右上角 $y$：$iy_2 = \min(ay_2, by_2)$
+
+2. **判断交集有效性**：
+   交集的宽度 $w = ix_2 - ix_1$，高度 $h = iy_2 - iy_1$。
+   只有当 $w > 0$ 且 $h > 0$ 时，这两个矩形才存在有效的重叠区域。
+
+3. **计算最大正方形**：
+   在一个宽为 $w$、高为 $h$ 的矩形区域内，能放入的最大正方形的边长受限于矩形的短边。
+   因此，最大正方形边长 $side = \min(w, h)$。
+
+4. **遍历所有对**：
+   题目要求我们找任意两个矩形交集中的最大正方形。由于 $n$ 的范围较小 ($2 \le n \le 1000$)，我们可以直接使用双重循环遍历所有可能的矩形对 $(i, j)$，计算它们的交集，并更新全局的最大边长。时间复杂度为 $O(n^2)$，在 $n=1000$ 时计算量约为 $5 \times 10^5$，完全符合时间要求。
+
+   **代码实现**
+
+```python
+class Solution:
+    def largestSquareArea(self, bottomLeft: List[List[int]], topRight: List[List[int]]) -> int:
+        n = len(bottomLeft)
+        max_side = 0
+        
+        # 遍历所有矩形对 (i, j)
+        for i in range(n):
+            # 获取矩形 i 的坐标
+            ax1, ay1 = bottomLeft[i]
+            ax2, ay2 = topRight[i]
+            
+            for j in range(i + 1, n):
+                # 获取矩形 j 的坐标
+                bx1, by1 = bottomLeft[j]
+                bx2, by2 = topRight[j]
+                
+                # 计算交集的左下角 (取最大值)
+                inter_x1 = max(ax1, bx1)
+                inter_y1 = max(ay1, by1)
+                
+                # 计算交集的右上角 (取最小值)
+                inter_x2 = min(ax2, bx2)
+                inter_y2 = min(ay2, by2)
+                
+                # 计算交集的宽和高
+                width = inter_x2 - inter_x1
+                height = inter_y2 - inter_y1
+                
+                # 如果存在有效交集
+                if width > 0 and height > 0:
+                    # 正方形边长由宽和高中的较小值决定
+                    current_side = min(width, height)
+                    # 更新最大边长
+                    if current_side > max_side:
+                        max_side = current_side
+                        
+        # 返回最大面积 (边长的平方)
+        return max_side * max_side
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(n^2)$。我们需要遍历所有唯一的矩形对，对数约为 $\frac{n(n-1)}{2}$。
+*   **空间复杂度**：$O(1)$。除了存储输入外，我们只使用了常数个变量来存储坐标和最大值。
+
+
+
+
+
 ## 3066.超过阈值的最少操作数II
 
 heap, https://leetcode.cn/problems/minimum-operations-to-exceed-threshold-value-ii/
@@ -31741,6 +31880,146 @@ class Solution:
 
 
 
+## M3310.移除可疑的方法
+
+bfs, https://leetcode.cn/problems/remove-methods-from-project/
+
+你正在维护一个项目，该项目有 `n` 个方法，编号从 `0` 到 `n - 1`。
+
+给你两个整数 `n` 和 `k`，以及一个二维整数数组 `invocations`，其中 `invocations[i] = [ai, bi]` 表示方法 `ai` 调用了方法 `bi`。
+
+已知如果方法 `k` 存在一个已知的 bug。那么方法 `k` 以及它直接或间接调用的任何方法都被视为 **可疑方法** ，我们需要从项目中移除这些方法。
+
+只有当一组方法没有被这组之外的任何方法调用时，这组方法才能被移除。
+
+返回一个数组，包含移除所有 **可疑方法** 后剩下的所有方法。你可以以任意顺序返回答案。如果无法移除 **所有** 可疑方法，则 **不** 移除任何方法。
+
+ 
+
+**示例 1:**
+
+**输入:** n = 4, k = 1, invocations = [[1,2],[0,1],[3,2]]
+
+**输出:** [0,1,2,3]
+
+**解释:**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/graph-2.png" alt="img" style="zoom: 67%;" />
+
+方法 2 和方法 1 是可疑方法，但它们分别直接被方法 3 和方法 0 调用。由于方法 3 和方法 0 不是可疑方法，我们无法移除任何方法，故返回所有方法。
+
+**示例 2:**
+
+**输入:** n = 5, k = 0, invocations = [[1,2],[0,2],[0,1],[3,4]]
+
+**输出:** [3,4]
+
+**解释:**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/graph-3.png" alt="img" style="zoom:67%;" />
+
+方法 0、方法 1 和方法 2 是可疑方法，且没有被任何其他方法直接调用。我们可以移除它们。
+
+**示例 3:**
+
+**输入:** n = 3, k = 2, invocations = [[1,2],[0,1],[2,0]]
+
+**输出:** []
+
+**解释:**
+
+<img src="https://raw.githubusercontent.com/GMyhf/img/main/img/graph.png" alt="img" style="zoom:67%;" />
+
+所有方法都是可疑方法。我们可以移除它们。
+
+ 
+
+**提示:**
+
+- `1 <= n <= 10^5`
+- `0 <= k <= n - 1`
+- `0 <= invocations.length <= 2 * 10^5`
+- `invocations[i] == [ai, bi]`
+- `0 <= ai, bi <= n - 1`
+- `ai != bi`
+- `invocations[i] != invocations[j]`
+
+
+
+这道题可以通过 **图的遍历（BFS/DFS）** 来解决。
+
+**解题思路**
+
+1. **寻找所有可疑方法**：
+   - 题目定义：方法 `k` 以及从方法 `k` **直接或间接调用**的所有方法均为“可疑方法”。
+   - 我们可以根据 `invocations` 建立邻接表 $u \to v$（表示 $u$ 调用了 $v$）。
+   - 从节点 `k` 出发进行广度优先搜索（BFS）或深度优先搜索（DFS），记录所有能到达的节点，这些节点构成了 **可疑方法集合** `suspicious`。
+
+2. **检查移除条件**：
+   - 题目要求：“只有当这组可疑方法没有被这组之外的任何方法调用时，才能被移除”。
+   - 遍历 `invocations` 中的所有调用关系 $[u, v]$：
+     - 如果 $u$ **不在**可疑方法集合中（$u \notin \text{suspicious}$），而 $v$ **在**可疑方法集合中（$v \in \text{suspicious}$），说明外部有方法调用了可疑方法，不满足移除条件。
+     - 此时 **无法移除任何方法**，直接返回所有方法：`[0, 1, ..., n-1]`。
+
+3. **构造最终答案**：
+   - 如果检查后没有发现上述非法调用，说明可疑方法可以被安全移除。
+   - 返回所有**不在**可疑方法集合中的方法。
+
+---
+
+**Python 代码实现**
+
+```python
+from collections import deque
+from typing import List
+
+class Solution:
+    def remainingMethods(self, n: int, k: int, invocations: List[List[int]]) -> List[int]:
+        # 1. 构建图的邻接表：adj[u] 包含 u 调用的所有方法 v
+        adj = [[] for _ in range(n)]
+        for u, v in invocations:
+            adj[u].append(v)
+        
+        # 2. 从 k 出发进行 BFS，找出所有可疑方法
+        suspicious = set([k])
+        queue = deque([k])
+        
+        while queue:
+            u = queue.popleft()
+            for v in adj[u]:
+                if v not in suspicious:
+                    suspicious.add(v)
+                    queue.append(v)
+        
+        # 3. 检查是否有“非可疑方法”调用了“可疑方法”
+        for u, v in invocations:
+            if u not in suspicious and v in suspicious:
+                # 存在外部方法调用了可疑方法，无法移除，返回所有方法
+                return list(range(n))
+        
+        # 4. 如果可以安全移除，返回剩余的方法
+        return [i for i in range(n) if i not in suspicious]
+```
+
+---
+
+**复杂度分析**
+
+- **时间复杂度**：$\mathcal{O}(n + m)$，其中 $n$ 为方法数量，$m$ 为调用关系数量 `invocations.length`。
+  - 构建邻接表需要 $\mathcal{O}(m)$。
+  - BFS 遍历可疑方法最多访问 $n$ 个节点和 $m$ 条边，复杂度为 $\mathcal{O}(n + m)$。
+  - 检查合法性遍历所有边需要 $\mathcal{O}(m)$。
+  - 生成最终列表需要 $\mathcal{O}(n)$。
+  - 整体耗时极优，可在规定时间内轻松通过 $n \le 10^5, m \le 2 \times 10^5$ 的测试用例。
+
+- **空间复杂度**：$\mathcal{O}(n + m)$。
+  - 邻接表需要 $\mathcal{O}(n + m)$ 的空间。
+  - BFS 的队列和 `suspicious` 集合需要 $\mathcal{O}(n)$ 的空间。
+
+
+
+
+
 ## M3325.字符至少出现 K 次的子字符串 I
 
 sliding window, https://leetcode.cn/problems/count-substrings-with-k-frequency-characters-i/
@@ -32495,140 +32774,6 @@ if __name__ == "__main__":
 
 - 每个节点最多被访问两次（奇数步和偶数步），因此总共有 `n * m * 2` 个状态。
 - 使用堆优化的 Dijkstra 算法，总时间复杂度为 `O(n * m * log(n * m))`，在 `n, m <= 750` 下是可以通过的。
-
-
-
-## M3047.求交集区域内的最大正方形面积
-
-https://leetcode.cn/problems/find-the-largest-area-of-square-inside-two-rectangles/
-
-在二维平面上存在 `n` 个矩形。给你两个下标从 **0** 开始的二维整数数组 `bottomLeft` 和 `topRight`，两个数组的大小都是 `n x 2` ，其中 `bottomLeft[i]` 和 `topRight[i]` 分别代表第 `i` 个矩形的 **左下角** 和 **右上角** 坐标。
-
-我们定义 **向右** 的方向为 x 轴正半轴（**x 坐标增加**），**向左** 的方向为 x 轴负半轴（**x 坐标减少**）。同样地，定义 **向上** 的方向为 y 轴正半轴（**y 坐标增加**）**，向下** 的方向为 y 轴负半轴（**y 坐标减少**）。
-
-你可以选择一个区域，该区域由两个矩形的 **交集** 形成。你需要找出能够放入该区域 **内** 的 **最大** 正方形面积，并选择最优解。
-
-返回能够放入交集区域的正方形的 **最大** 可能面积，如果矩形之间不存在任何交集区域，则返回 `0`。
-
- 
-
-**示例 1：**
-
-![img](https://assets.leetcode.com/uploads/2024/01/05/example12.png)
-
-```
-输入：bottomLeft = [[1,1],[2,2],[3,1]], topRight = [[3,3],[4,4],[6,6]]
-输出：1
-解释：边长为 1 的正方形可以放入矩形 0 和矩形 1 的交集区域，或矩形 1 和矩形 2 的交集区域。因此最大面积是边长 * 边长，即 1 * 1 = 1。
-可以证明，边长更大的正方形无法放入任何交集区域。
-```
-
-**示例 2：**
-
-![img](https://assets.leetcode.com/uploads/2024/01/04/rectanglesexample2.png)
-
-```
-输入：bottomLeft = [[1,1],[2,2],[1,2]], topRight = [[3,3],[4,4],[3,4]]
-输出：1
-解释：边长为 1 的正方形可以放入矩形 0 和矩形 1，矩形 1 和矩形 2，或所有三个矩形的交集区域。因此最大面积是边长 * 边长，即 1 * 1 = 1。
-可以证明，边长更大的正方形无法放入任何交集区域。
-请注意，区域可以由多于两个矩形的交集构成。
-```
-
-**示例 3：**
-
-![img](https://assets.leetcode.com/uploads/2024/01/04/rectanglesexample3.png)
-
-```
-输入：bottomLeft = [[1,1],[3,3],[3,1]], topRight = [[2,2],[4,4],[4,2]]
-输出：0
-解释：不存在相交的矩形，因此，返回 0 。
-```
-
- 
-
-**提示：**
-
-- `n == bottomLeft.length == topRight.length`
-- `2 <= n <= 10^3`
-- `bottomLeft[i].length == topRight[i].length == 2`
-- `1 <= bottomLeft[i][0], bottomLeft[i][1] <= 10^7`
-- `1 <= topRight[i][0], topRight[i][1] <= 10^7`
-- `bottomLeft[i][0] < topRight[i][0]`
-- `bottomLeft[i][1] < topRight[i][1]`
-
-
-
-这是一道几何问题，主要考察如何计算两个矩形的交集，并在该交集中找到最大的正方形。
-
-**解题思路**
-
-1.  **矩形交集的计算**：
-    对于两个矩形，设第一个矩形的左下角为 $(ax_1, ay_1)$，右上角为 $(ax_2, ay_2)$；第二个矩形的左下角为 $(bx_1, by_1)$，右上角为 $(bx_2, by_2)$。
-    它们的交集也是一个矩形（或者不存在），其坐标范围如下：
-    *   交集左下角 $x$：$ix_1 = \max(ax_1, bx_1)$
-    *   交集左下角 $y$：$iy_1 = \max(ay_1, by_1)$
-    *   交集右上角 $x$：$ix_2 = \min(ax_2, bx_2)$
-    *   交集右上角 $y$：$iy_2 = \min(ay_2, by_2)$
-
-2.  **判断交集有效性**：
-    交集的宽度 $w = ix_2 - ix_1$，高度 $h = iy_2 - iy_1$。
-    只有当 $w > 0$ 且 $h > 0$ 时，这两个矩形才存在有效的重叠区域。
-
-3.  **计算最大正方形**：
-    在一个宽为 $w$、高为 $h$ 的矩形区域内，能放入的最大正方形的边长受限于矩形的短边。
-    因此，最大正方形边长 $side = \min(w, h)$。
-
-4.  **遍历所有对**：
-    题目要求我们找任意两个矩形交集中的最大正方形。由于 $n$ 的范围较小 ($2 \le n \le 1000$)，我们可以直接使用双重循环遍历所有可能的矩形对 $(i, j)$，计算它们的交集，并更新全局的最大边长。时间复杂度为 $O(n^2)$，在 $n=1000$ 时计算量约为 $5 \times 10^5$，完全符合时间要求。
-
-    **代码实现**
-
-```python
-class Solution:
-    def largestSquareArea(self, bottomLeft: List[List[int]], topRight: List[List[int]]) -> int:
-        n = len(bottomLeft)
-        max_side = 0
-        
-        # 遍历所有矩形对 (i, j)
-        for i in range(n):
-            # 获取矩形 i 的坐标
-            ax1, ay1 = bottomLeft[i]
-            ax2, ay2 = topRight[i]
-            
-            for j in range(i + 1, n):
-                # 获取矩形 j 的坐标
-                bx1, by1 = bottomLeft[j]
-                bx2, by2 = topRight[j]
-                
-                # 计算交集的左下角 (取最大值)
-                inter_x1 = max(ax1, bx1)
-                inter_y1 = max(ay1, by1)
-                
-                # 计算交集的右上角 (取最小值)
-                inter_x2 = min(ax2, bx2)
-                inter_y2 = min(ay2, by2)
-                
-                # 计算交集的宽和高
-                width = inter_x2 - inter_x1
-                height = inter_y2 - inter_y1
-                
-                # 如果存在有效交集
-                if width > 0 and height > 0:
-                    # 正方形边长由宽和高中的较小值决定
-                    current_side = min(width, height)
-                    # 更新最大边长
-                    if current_side > max_side:
-                        max_side = current_side
-                        
-        # 返回最大面积 (边长的平方)
-        return max_side * max_side
-```
-
-**复杂度分析**
-
-*   **时间复杂度**：$O(n^2)$。我们需要遍历所有唯一的矩形对，对数约为 $\frac{n(n-1)}{2}$。
-*   **空间复杂度**：$O(1)$。除了存储输入外，我们只使用了常数个变量来存储坐标和最大值。
 
 
 
