@@ -1,6 +1,6 @@
 # Medium Problems in leetcode.cn
 
-*Updated 2026-08-05 09:36 GMT+8*
+*Updated 2026-08-08 01:07 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -2993,7 +2993,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -31679,6 +31679,174 @@ class Solution:
 
         return res
 ```
+
+
+
+## M3302.字典序最小的合法序列
+
+贪心算法 + 后缀预处理，https://leetcode.cn/problems/find-the-lexicographically-smallest-valid-sequence/
+
+给你两个字符串 `word1` 和 `word2` 。
+
+如果一个字符串 `x` 修改 **至多** 一个字符会变成 `y` ，那么我们称它与 `y` **几乎相等** 。
+
+如果一个下标序列 `seq` 满足以下条件，我们称它是 **合法的** ：
+
+- 下标序列是 **升序** 的**。**
+- 将 `word1` 中这些下标对应的字符 **按顺序** 连接，得到一个与 `word2` **几乎相等** 的字符串。
+
+请你返回一个长度为 `word2.length` 的数组，表示一个 字典序最小 的 **合法** 下标序列。如果不存在这样的序列，请你返回一个 **空** 数组。
+
+**注意** ，答案数组必须是字典序最小的下标数组，而 **不是** 由这些下标连接形成的字符串。
+
+ 
+
+**示例 1：**
+
+**输入：**word1 = "vbcca", word2 = "abc"
+
+**输出：**[0,1,2]
+
+**解释：**
+
+字典序最小的合法下标序列为 `[0, 1, 2]` ：
+
+- 将 `word1[0]` 变为 `'a'` 。
+- `word1[1]` 已经是 `'b'` 。
+- `word1[2]` 已经是 `'c'` 。
+
+**示例 2：**
+
+**输入：**word1 = "bacdc", word2 = "abc"
+
+**输出：**[1,2,4]
+
+**解释：**
+
+字典序最小的合法下标序列为 `[1, 2, 4]` ：
+
+- `word1[1]` 已经是 `'a'` 。
+- 将 `word1[2]` 变为 `'b'` 。
+- `word1[4]` 已经是 `'c'` 。
+
+**示例 3：**
+
+**输入：**word1 = "aaaaaa", word2 = "aaabc"
+
+**输出：**[]
+
+**解释：**
+
+没有合法的下标序列。
+
+**示例 4：**
+
+**输入：**word1 = "abc", word2 = "ab"
+
+**输出：**[0,1]
+
+ 
+
+**提示：**
+
+- `1 <= word2.length < word1.length <= 3 * 10^5`
+- `word1` 和 `word2` 只包含小写英文字母。
+
+
+
+我们可以使用**贪心算法 + 后缀预处理**来解决这个问题。
+
+**解题思路**
+
+为了让下标序列 `seq` 的**字典序最小**，我们需要尽可能是让 `seq` 中的每一个下标越小越好。因此，我们应该从左到右依次为 `word2` 的每个字符 `word2[j]` 挑选 `word1` 中可用的最小下标 `curr_i`。
+
+我们可以修改至多 **1** 个字符：
+
+1. **后缀匹配预处理**：
+   预处理一个数组 `R`，其中 `R[j]` 表示在 `word1` 中能够**完全无错**匹配后缀 `word2[j:]` 的**最靠右起始下标的右边界**（即 `word2[j:]` 匹配到 `word1` 的最晚位置）。
+2. **贪心选择**：
+   按顺序遍历 `word2` 的每一个位置 $j$（从 $0$ 到 $M-1$），维护当前在 `word1` 中的查找起始下标 `curr_i` 和是否已经使用了 1 次修改机会 `changed`：
+   - 如果**尚未消耗修改机会**（`changed == False`）：
+     - 如果当前位置 `curr_i < R[j + 1]`，说明从 `curr_i + 1` 开始一定能够无错匹配剩下的 `word2[j + 1:]`。因此直接选择 `curr_i` 是绝对最优的！若 `word1[curr_i] != word2[j]`，则在此处消耗掉唯一的修改机会，设置 `changed = True`。
+     - 如果 `curr_i >= R[j + 1]`，说明我们不能在此处使用修改机会（否则后续无法无错匹配完成）。我们只能顺延寻找下一个满足 `word1[curr_i] == word2[j]` 的下标。
+   - 如果**已经消耗了修改机会**（`changed == True`）：
+     - 我们必须寻找满足 `word1[curr_i] == word2[j]` 且 `curr_i < R[j + 1]` 的最小 `curr_i`。
+
+由于 `curr_i` 在整个过程中只增不减，算法的时间复杂度为 $O(N + M)$。
+
+---
+
+**Python 3 代码**
+
+```python
+from typing import List
+
+class Solution:
+    def validSequence(self, word1: str, word2: str) -> List[int]:       
+        n, m = len(word1), len(word2)
+        
+        # R[j] 表示无错匹配 word2[j:] 在 word1 中可行的最大下标界限
+        R = [-1] * (m + 1)
+        R[m] = n
+        
+        p = n - 1
+        for j in range(m - 1, -1, -1):
+            while p >= 0 and word1[p] != word2[j]:
+                p -= 1
+            R[j] = p
+            if p >= 0:
+                p -= 1
+                
+        ans = []
+        curr_i = 0
+        changed = False
+        
+        for j in range(m):
+            found = False
+            if changed:
+                # 已经修改过一次，后续必须完全匹配
+                while curr_i < n:
+                    if word1[curr_i] == word2[j] and curr_i < R[j + 1]:
+                        ans.append(curr_i)
+                        curr_i += 1
+                        found = True
+                        break
+                    curr_i += 1
+            else:
+                # 尚未修改过
+                while curr_i < n:
+                    if curr_i < R[j + 1]:
+                        # 可以在此处匹配（即使字符不同，也可以使用修改机会）
+                        ans.append(curr_i)
+                        if word1[curr_i] != word2[j]:
+                            changed = True
+                        curr_i += 1
+                        found = True
+                        break
+                    else:
+                        # 必须完全匹配
+                        if word1[curr_i] == word2[j]:
+                            ans.append(curr_i)
+                            curr_i += 1
+                            found = True
+                            break
+                        else:
+                            curr_i += 1
+            
+            if not found:
+                return []
+                
+        return ans
+```
+
+---
+
+**复杂度分析**
+
+- **时间复杂度**：$O(N + M)$，其中 $N = \text{len}(word1)$，$M = \text{len}(word2)$。预处理 `R` 数组以及双指针搜索过程每个字符最多访问一次。
+- **空间复杂度**：$O(M)$，用于存储后缀匹配数组 `R` 及结果数组 `ans`。        
+
+
 
 
 
