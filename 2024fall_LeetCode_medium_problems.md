@@ -1,6 +1,6 @@
 # Medium Problems in leetcode.cn
 
-*Updated 2026-08-08 01:07 GMT+8*
+*Updated 2026-08-09 12:43 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -2993,7 +2993,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -18047,6 +18047,123 @@ class Solution:
         
         return ans
 ```
+
+
+
+## M1140.石子游戏 II
+
+game theory, dp, https://leetcode.cn/problems/stone-game-ii/
+
+Alice 和 Bob 继续他们的石子游戏。许多堆石子 **排成一行**，每堆都有正整数颗石子 `piles[i]`。游戏以谁手中的石子最多来决出胜负。
+
+Alice 和 Bob 轮流进行，Alice 先开始。最初，`M = 1`。
+
+在每个玩家的回合中，该玩家可以拿走剩下的 **前** `X` 堆的所有石子，其中 `1 <= X <= 2M`。然后，令 `M = max(M, X)`。
+
+游戏一直持续到所有石子都被拿走。
+
+假设 Alice 和 Bob 都发挥出最佳水平，返回 Alice 可以得到的最大数量的石头。
+
+ 
+
+**示例 1：**
+
+```
+输入：piles = [2,7,9,4,4]
+输出：10
+解释：如果一开始 Alice 取了一堆，Bob 取了两堆，然后 Alice 再取两堆。Alice 可以得到 2 + 4 + 4 = 10 堆。
+如果 Alice 一开始拿走了两堆，那么 Bob 可以拿走剩下的三堆。在这种情况下，Alice 得到 2 + 7 = 9 堆。返回 10，因为它更大。
+```
+
+**示例 2:**
+
+```
+输入：piles = [1,2,3,4,5,100]
+输出：104
+```
+
+ 
+
+**提示：**
+
+- `1 <= piles.length <= 100`
+- `1 <= piles[i] <= 10^4`
+
+
+
+这是一个经典的博弈论动态规划问题。我们可以通过**记忆化搜索（DFS + Memoization）**或**动态规划**来解决。
+
+**解题思路**
+
+1.  **游戏规则分析**：
+    *   总共有 $n$ 堆石子。
+    *   当前玩家可以拿走前 $X$ 堆，其中 $1 \le X \le 2M$。
+    *   更新 $M = \max(M, X)$。
+    *   目标是让 Alice 拿到的石子数最大。
+
+2.  **状态定义**：
+    定义 `dfs(i, M)` 为：从第 `i` 堆石子开始取，且当前限制系数为 `M` 时，**当前行动者**能拿到的最大石子数。
+
+3.  **状态转移**：
+    *   如果当前玩家拿走了 $X$ 堆石子（$1 \le X \le 2M$），那么剩下的石子总数是 `suffix_sum[i + X]`（后缀和）。
+    *   对手在剩下的石子中，从 `i + X` 开始取，其 $M$ 变为 $\max(M, X)$。对手能拿到的最大石子数是 `dfs(i + X, max(M, X))`。
+    *   因此，当前玩家能拿到的石子数 = `当前剩余石子总数 - 对手能拿到的最大石子数`。
+    *   公式：`dfs(i, M) = max(suffix_sum[i] - dfs(i + X, max(M, X)))`，其中 $1 \le X \le 2M$。
+
+4.  **边界条件**：
+    *   如果剩余的石子堆数少于或等于 $2M$（即 `i + 2M >= n`），当前玩家可以直接拿走剩下的所有石子，此时 `dfs(i, M) = suffix_sum[i]`。
+
+5.  **后缀和优化**：
+    为了快速计算从第 $i$ 堆到最后一堆的石子总数，我们预处理一个后缀和数组 `suffix_sum`，其中 `suffix_sum[i]` 表示 `piles[i]` 到 `piles[n-1]` 的总和。
+
+**Python 代码实现**
+
+```python
+from typing import List
+from functools import lru_cache
+
+class Solution:
+    def stoneGameII(self, piles: List[int]) -> int:
+        n = len(piles)
+        
+        # 计算后缀和：suffix_sum[i] 表示从 piles[i] 到 piles[n-1] 的总石子数
+        suffix_sum = [0] * (n + 1)
+        for i in range(n - 1, -1, -1):
+            suffix_sum[i] = suffix_sum[i + 1] + piles[i]
+            
+        @lru_cache(None)
+        def dfs(i, m):
+            # 边界情况：如果当前玩家可以一次性拿走剩下的所有石子
+            if i + 2 * m >= n:
+                return suffix_sum[i]
+            
+            # 尝试拿走 X 堆石子，1 <= X <= 2M
+            # 当前能获得的最大值 = 剩余总和 - 对手在下一步能获得的最大值
+            max_stones = 0
+            for x in range(1, 2 * m + 1):
+                # 更新状态：起始位置变为 i+x，M 变为 max(m, x)
+                max_stones = max(max_stones, suffix_sum[i] - dfs(i + x, max(m, x)))
+            
+            return max_stones
+
+        # Alice 从第 0 堆开始，初始 M = 1
+        return dfs(0, 1)
+
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(n^3)$。
+    *   状态共有 $i$ ($0$ 到 $n$) 和 $M$ ($1$ 到 $n$) 两个维度，共 $O(n^2)$ 个状态。
+    *   每个状态需要遍历 $X$ ($1$ 到 $2M$)，最多遍历 $2n$ 次，因此总复杂度为 $O(n^3)$。
+    *   鉴于 $n \le 100$，$100^3 = 1,000,000$，在 Python 中完全可以接受。
+
+*   **空间复杂度**：$O(n^2)$。
+    *   主要是由于递归缓存（memoization）存储的状态数量。
+
+**为什么这个逻辑有效？**
+
+这属于博弈论中的 **Minimax（极大极小算法）** 思想。在每一回合中，当前玩家都在尝试最大化自己的利益，而由于总石子数是固定的，**“我方收益最大”** 等价于 **“总数减去对方的最佳收益”**。递归地应用这个逻辑，就能得出 Alice 在双方都发挥最佳水平时的得分。
 
 
 
