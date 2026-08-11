@@ -1,6 +1,6 @@
 # Medium Problems in leetcode.cn
 
-*Updated 2026-08-09 12:43 GMT+8*
+*Updated 2026-08-12 00:13 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -2993,7 +2993,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -29638,6 +29638,110 @@ if __name__ == '__main__':
 
 
 ```
+
+
+
+## M2958.最多 K 个重复元素的最长子数组
+
+sliding window, https://leetcode.cn/problems/length-of-longest-subarray-with-at-most-k-frequency/
+
+给你一个整数数组 `nums` 和一个整数 `k` 。
+
+一个元素 `x` 在数组中的 **频率** 指的是它在数组中的出现次数。
+
+如果一个数组中所有元素的频率都 **小于等于** `k` ，那么我们称这个数组是 **好** 数组。
+
+请你返回 `nums` 中 **最长好** 子数组的长度。
+
+**子数组** 指的是一个数组中一段连续非空的元素序列。
+
+ 
+
+**示例 1：**
+
+```
+输入：nums = [1,2,3,1,2,3,1,2], k = 2
+输出：6
+解释：最长好子数组是 [1,2,3,1,2,3] ，值 1 ，2 和 3 在子数组中的频率都没有超过 k = 2 。[2,3,1,2,3,1] 和 [3,1,2,3,1,2] 也是好子数组。
+最长好子数组的长度为 6 。
+```
+
+**示例 2：**
+
+```
+输入：nums = [1,2,1,2,1,2,1,2], k = 1
+输出：2
+解释：最长好子数组是 [1,2] ，值 1 和 2 在子数组中的频率都没有超过 k = 1 。[2,1] 也是好子数组。
+最长好子数组的长度为 2 。
+```
+
+**示例 3：**
+
+```
+输入：nums = [5,5,5,5,5,5,5], k = 4
+输出：4
+解释：最长好子数组是 [5,5,5,5] ，值 5 在子数组中的频率没有超过 k = 4 。
+最长好子数组的长度为 4 。
+```
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 10^5`
+- `1 <= nums[i] <= 10^9`
+- `1 <= k <= nums.length`
+
+
+
+这个问题可以使用 **滑动窗口 (Sliding Window)** 算法来解决。
+
+**解题思路**
+
+1.  **核心思想**：维护一个窗口 `[left, right]`，使得窗口内的每一个元素的出现频率都小于等于 `k`。
+2.  **窗口移动规则**：
+    *   右指针 `right` 不断向右移动，并将当前元素 `nums[right]` 加入窗口，同时更新它的频率。
+    *   如果当前元素 `nums[right]` 的频率超过了 `k`，说明当前窗口不再是“好”数组。此时需要移动左指针 `left`，将 `nums[left]` 移出窗口并减少其频率，直到 `nums[right]` 的频率恢复到 `k` 以内。
+3.  **更新答案**：在每次移动右指针并确保窗口合法后，计算当前窗口的长度 `right - left + 1`，并记录最大值。
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(n)$，其中 $n$ 是数组的长度。虽然代码里有嵌套的 `while` 循环，但每个元素最多被 `right` 访问一次，被 `left` 访问一次。
+*   **空间复杂度**：$O(n)$，最坏情况下需要用哈希表存储数组中所有不同元素的频率。
+
+**Python 代码实现**
+
+```python
+from typing import List
+from collections import Counter
+
+class Solution:
+    def maxSubarrayLength(self, nums: List[int], k: int) -> int:
+        ans = 0
+        cnt = Counter()  # 用于记录窗口内每个元素的频率
+        left = 0
+        
+        # 枚举右端点
+        for right, x in enumerate(nums):
+            # 将当前元素加入哈希表并增加计数
+            cnt[x] += 1
+            
+            # 如果当前元素的频率超过了 k，则收缩左边界
+            # 只需要针对当前加入的 x 进行检查
+            while cnt[x] > k:
+                cnt[nums[left]] -= 1
+                left += 1
+            
+            # 此时窗口 [left, right] 满足所有元素频率 <= k
+            # 更新最大长度
+            ans = max(ans, right - left + 1)
+            
+        return ans
+```
+
+
+
+
 
 
 
