@@ -1,6 +1,6 @@
 # Easy Problems in leetcode.cn
 
-*Updated 2026-08-11 09:38 GMT+8*
+*Updated 2026-08-14 00:12 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -11008,6 +11008,93 @@ if __name__ == "__main__":
     sol = Solution()
     print(sol.sumOfEncryptedInt([123, 456, 789])) 
 ```
+
+
+
+## E3090.每个字符最多出现两次的最长子字符串
+
+sliding window, https://leetcode.cn/problems/maximum-length-substring-with-two-occurrences/
+
+给你一个字符串 `s` ，请找出满足每个字符最多出现两次的最长子字符串，并返回该子字符串的 **最大** 长度。
+
+ 
+
+**示例 1：**
+
+**输入：** s = "bcbbbcba"
+
+**输出：** 4
+
+**解释：**
+
+以下子字符串长度为 4，并且每个字符最多出现两次：`"bcbbbcba"`。
+
+**示例 2：**
+
+**输入：** s = "aaaa"
+
+**输出：** 2
+
+**解释：**
+
+以下子字符串长度为 2，并且每个字符最多出现两次：`"aaaa"`。
+
+ 
+
+**提示：**
+
+- `2 <= s.length <= 100`
+- `s` 仅由小写英文字母组成。
+
+
+
+这个问题可以通过 **滑动窗口 (Sliding Window)** 算法来高效解决。
+
+**解题思路**
+
+1.  **核心思想**：维护一个窗口 `[left, right]`，保证窗口内的每个字符出现次数都不超过 2 次。
+2.  **变量维护**：
+    *   `left`：窗口的左边界。
+    *   `right`：窗口的右边界，不断向右移动。
+    *   `cnt`：一个哈希表或计数数组，记录当前窗口内每个字符出现的次数。
+    *   `ans`：记录满足条件的最大长度。
+3.  **操作流程**：
+    *   遍历字符串，将 `s[right]` 加入窗口，并在 `cnt` 中增加其计数。
+    *   如果发现 `s[right]` 的计数超过了 2，则说明当前窗口不合法。此时需要不断移动左边界 `left`，并减少 `s[left]` 的计数，直到 `s[right]` 的计数重新回到 2 或以下。
+    *   每次移动后，计算窗口的长度 `right - left + 1`，并更新最大值 `ans`。
+
+**Python 代码实现**
+
+```python
+class Solution:
+    def maximumLengthSubstring(self, s: str) -> int:
+        from collections import Counter
+        
+        # 初始化计数器和左指针
+        cnt = Counter()
+        left = 0
+        ans = 0
+        
+        # 遍历右指针
+        for right in range(len(s)):
+            char = s[right]
+            cnt[char] += 1
+            
+            # 如果当前字符出现次数超过 2，缩小左边界
+            while cnt[char] > 2:
+                cnt[s[left]] -= 1
+                left += 1
+            
+            # 更新最大长度
+            ans = max(ans, right - left + 1)
+            
+        return ans
+```
+
+**复杂度分析**
+
+*   **时间复杂度**：$O(n)$，其中 $n$ 是字符串的长度。虽然代码中有 `while` 循环，但 `left` 指针和 `right` 指针各自最多只遍历字符串一次。
+*   **空间复杂度**：$O(1)$ 或 $O(|\Sigma|)$。由于题目规定字符串仅由小写英文字母组成，计数器 `cnt` 最多只会存储 26 个键值对，因此空间复杂度是常数级别的。
 
 
 
