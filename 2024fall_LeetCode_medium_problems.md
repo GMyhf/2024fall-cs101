@@ -1,6 +1,6 @@
 # Medium Problems in leetcode.cn
 
-*Updated 2026-08-12 00:13 GMT+8*
+*Updated 2026-08-15 13:12 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -2993,7 +2993,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -39872,6 +39872,100 @@ class Solution:
     def maxTotalValue(self, nums: List[int], k: int) -> int:
         return k * (max(nums) - min(nums))
 ```
+
+
+
+## M3702.按位异或非零的最长子序列
+
+bit manipulation, https://leetcode.cn/problems/longest-subsequence-with-non-zero-bitwise-xor/
+
+给你一个整数数组 `nums`。
+
+返回 `nums` 中 **按位异或**（XOR）计算结果 **非零** 的 **最长子序列** 的长度。如果不存在这样的 **子序列** ，返回 0 。
+
+**子序列** 是一个 **非空** 数组，可以通过从原数组中删除一些或不删除任何元素（不改变剩余元素的顺序）派生而来。
+
+ 
+
+**示例 1：**
+
+**输入：** nums = [1,2,3]
+
+**输出：** 2
+
+**解释：**
+
+最长子序列之一是 `[2, 3]`。按位异或计算为 `2 XOR 3 = 1`，它是非零的。
+
+**示例 2：**
+
+**输入：** nums = [2,3,4]
+
+**输出：** 3
+
+**解释：**
+
+最长子序列是 `[2, 3, 4]`。按位异或计算为 `2 XOR 3 XOR 4 = 5`，它是非零的。
+
+ 
+
+**提示：**
+
+- `1 <= nums.length <= 10^5`
+- `0 <= nums[i] <= 10^9`
+
+
+
+这道题可以通过分析按位异或（XOR）的性质来在线性时间 $O(N)$ 内求解。
+
+**解题思路**
+
+1. **计算整个数组的异或和**：设数组 `nums` 的长度为 $N$，所有元素的按位异或总和为 `total_xor`。
+2. **分类讨论**：
+   - **情况 1：`total_xor != 0`**
+     整个数组本身就是一个合法的子序列，其异或和非零。因此最长子序列的长度就是数组的长度 **$N$**。
+   - **情况 2：`total_xor == 0`**
+     - 如果数组中**存在至少一个非零元素** $x$：
+       如果我们从数组中删去这个非零元素 $x$，剩余 $N - 1$ 个元素的异或和就会变成 `total_xor ^ x = 0 ^ x = x`。因为 $x \neq 0$，所以这 $N - 1$ 个元素的异或和是非零的。因此最长子序列的长度为 **$N - 1$**。
+     - 如果数组中**所有元素均为 0**：
+       无论怎么选择非空子序列，其异或和永远为 0，无法构成合法的子序列。因此返回 **0**。
+
+---
+
+**Python3 代码 implementation**
+
+```python
+from typing import List
+
+
+class Solution:
+
+    def longestSubsequence(self, nums: List[int]) -> int:
+        total_xor = 0
+        has_non_zero = False
+
+        for x in nums:
+            total_xor ^= x
+            if x != 0:
+                has_non_zero = True
+
+        # 如果整体异或和不为0，直接返回数组长度
+        if total_xor != 0:
+            return len(nums)
+        # 如果整体异或和为0，但有非0元素，去掉一个非0元素即可
+        elif has_non_zero:
+            return len(nums) - 1
+        # 全是0的情况
+        else:
+            return 0
+```
+
+---
+
+**复杂度分析**
+
+- **时间复杂度**：$O(N)$，其中 $N$ 是数组 `nums` 的长度。只需要对数组进行一次遍历即可完成计算。
+- **空间复杂度**：$O(1)$，仅使用了常数级别的额外变量。
 
 
 
