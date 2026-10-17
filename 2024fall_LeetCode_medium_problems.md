@@ -1,6 +1,6 @@
 # Medium Problems in leetcode.cn
 
-*Updated 2026-08-26 10:50 GMT+8*
+*Updated 2026-10-17 10:50 GMT+8*
  *Compiled by Hongfei Yan (2024 Fall)*
 
 
@@ -2993,7 +2993,7 @@ if __name__ == "__main__":
 >     # 初始
 >     indices = [0, 1, 2]
 >     cycles = [3, 2, 1]  # 初始状态
->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 >     # 交换发生在 i=1 且 j=1
 >     indices[1], indices[-1] = indices[-1], indices[1]  
 >     # indices 变成 [0, 2, 1]（因为 indices[-1] 其实是 indices[2]）
@@ -38373,57 +38373,144 @@ https://leetcode.cn/problems/minimum-swaps-to-sort-by-digit-sum/
 
 
 
-下面是一种基于「最小交换次数排序」的经典做法：
+这是一道求**置换群的最小交换次数**的经典问题。
+
+### 解题思路
+
+1. **计算排序规则**：
+   - 题目要求的排序规则为：首先按**数位和**升序排序；若数位和相同，则按**数值大小**升序排序。
+   - 由于数组中的数字互不相同，排序后的目标顺序是**唯一确定**的。
+
+2. **最小交换次数模型**：
+   - 将原数组中的每个元素和其初始下标 `i` 绑定。
+   - 按照给定的规则排序后，设原本位于下标 `orig_idx` 的元素现在需要放置到下标 `i` 上。
+   - 这构成了一个大小为 $n$ 的置换。任何一个置换都可以唯一分解为若干个互不相交的**置换环（Cycle）**。
+   - 对于一个长度为 $k$ 的置换环，最少需要 $k - 1$ 次交换才能将其中的所有元素还原到正确的位置（单元素自环需要 $1 - 1 = 0$ 次交换）。
+   - 因此，如果有 $c$ 个置换环，所需要的总最小交换次数即为：
+     $$\sum (k_i - 1) = \sum k_i - \sum 1 = n - c$$
+     即：**总元素个数 $n$ 减去置换环的数量 $c$**。
+
+3. **算法步骤**：
+   1. 预处理每个数字的数位和，将三元组 `(数位和, 原数值, 原下标)` 存入列表。
+   2. 按照 `(数位和, 原数值)` 升序排序。
+   3. 排序完成后，列表中的第 $i$ 个元素对应其原下标 $j$。我们使用一个布尔数组 `visited` 记录访问过的下标。
+   4. 遍历 $0$ 到 $n-1$，若下标未被访问，则沿着置换关系追踪整条环，并将环上所有节点标记为已访问，同时环计数器加 1。
+   5. 最终答案为 $n - \text{环的数量}$。
+
+---
+
+### 代码实现
+
+#### Python 3
 
 ```python
 class Solution:
-    def minSwaps(self, nums: List[int]) -> int:
+    def minSwaps(self, nums: list[int]) -> int:
         n = len(nums)
-        # 1. 构造 (原下标, 值, 数位和) 三元组列表
+        
         def digit_sum(x: int) -> int:
             s = 0
             while x:
                 s += x % 10
                 x //= 10
             return s
-
-        arr = [(i, nums[i], digit_sum(nums[i])) for i in range(n)]
         
-        # 2. 根据 (数位和, 值) 排序，得到目标位置
-        arr_sorted = sorted(arr, key=lambda x: (x[2], x[1]))
+        # 记录 (数位和, 原始值, 原始下标)
+        arr = []
+        for i, x in enumerate(nums):
+            arr.append((digit_sum(x), x, i))
+            
+        # 按照数位和升序，数位和相同按数值升序
+        arr.sort(key=lambda item: (item[0], item[1]))
         
-        # 3. to[i] = 元素原来在 i，排序后应该去的位置
-        to = [0] * n
-        for new_pos, (orig_pos, _, _) in enumerate(arr_sorted):
-            to[orig_pos] = new_pos
-        
-        # 4. 统计最小交换次数 = 所有环的 (环长 - 1) 之和
+        # 统计置换环的个数
         visited = [False] * n
-        swaps = 0
+        cycle_count = 0
+        
         for i in range(n):
-            if visited[i] or to[i] == i:
+            if visited[i]:
                 continue
-            cycle_len = 0
-            j = i
-            while not visited[j]:
-                visited[j] = True
-                j = to[j]
-                cycle_len += 1
-            swaps += cycle_len - 1
-        return swaps
+            
+            # 找到一个新的环，沿环遍历
+            curr = i
+            while not visited[curr]:
+                visited[curr] = True
+                curr = arr[curr][2]  # 跳转到该位置元素原本的下标
+            cycle_count += 1
+            
+        return n - cycle_count
 ```
 
-**思路解析**
+#### C++
 
-1. **计算数位和**：用一个 `digit_sum` 函数对每个 `nums[i]` 求各位数字之和。
-2. **确定目标顺序**：将 `(原下标, 值, 数位和)` 三元组按 `(数位和升序, 值升序)` 排序，得到每个元素在排序后的目标下标。
-3. **建立映射**：用数组 `to` 表示当前位置到目标位置的映射：`to[orig_pos] = new_pos`。
-4. **最小交换次数 = 排序映射的最小换位**
-   - 这相当于给定一个长度为 `n` 的排列，用最少的两两交换将其变成恒等排列。
-   - 每个环（cycle）长为 `k` 都需要 `k-1` 次交换。
-   - 因此遍历一遍、把所有环长度累加 `(k-1)`，就是答案。
+```cpp
+#include <vector>
+#include <algorithm>
 
-   该算法的总体时间复杂度为 $O(n\log n)$，满足 $n\le10^5$ 的要求。
+using namespace std;
+
+class Solution {
+public:
+    int minSwaps(vector<int>& nums) {
+        int n = nums.size();
+        
+        auto get_digit_sum = [](int x) {
+            int s = 0;
+            while (x > 0) {
+                s += x % 10;
+                x /= 10;
+            }
+            return s;
+        };
+        
+        // 存储 {数位和, 数值, 原始下标}
+        struct Node {
+            int sum;
+            int val;
+            int orig_idx;
+        };
+        
+        vector<Node> arr(n);
+        for (int i = 0; i < n; ++i) {
+            arr[i] = {get_digit_sum(nums[i]), nums[i], i};
+        }
+        
+        sort(arr.begin(), arr.end(), [](const Node& a, const Node& b) {
+            if (a.sum != b.sum) return a.sum < b.sum;
+            return a.val < b.val;
+        });
+        
+        vector<bool> visited(n, false);
+        int cycle_count = 0;
+        
+        for (int i = 0; i < n; ++i) {
+            if (visited[i]) continue;
+            
+            int curr = i;
+            while (!visited[curr]) {
+                visited[curr] = true;
+                curr = arr[curr].orig_idx;
+            }
+            cycle_count++;
+        }
+        
+        return n - cycle_count;
+    }
+};
+```
+
+---
+
+### 复杂度分析
+
+- **时间复杂度**：
+  - 计算数位和：每个数字 $\le 10^9$，数位不超过 10，计算复杂度为 $O(n \log_{10} M)$，其中 $M = \max(nums)$。
+  - 排序：时间复杂度为 $O(n \log n)$。
+  - 环检测：每个节点恰好被访问一次，时间复杂度为 $O(n)$。
+  - **总时间复杂度**：$O(n \log n)$，能够在 $10^5$ 的数据规模下高效运行。
+
+- **空间复杂度**：
+  - 辅助存储结构数组和访问标记数组 `visited`，空间复杂度为 $O(n)$。
 
 
 
